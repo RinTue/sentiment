@@ -1,18 +1,18 @@
 {
- "generated_at": "2026-10-08T12:17:07+00:00",
+ "generated_at": "2026-10-08T12:49:19+00:00",
  "scoring": "AI + từ điển (100% số bài có điểm AI)",
- "raw_count": 1025,
- "kept_count": 339,
- "new_count": 339,
- "stored_7d": 298,
+ "raw_count": 1150,
+ "kept_count": 366,
+ "new_count": 73,
+ "stored_7d": 322,
  "filter_reasons": {
-  "bot / báo giá tự động": 180,
+  "không liên quan crypto": 112,
+  "bot / báo giá tự động": 179,
   "không phải tiếng Anh": 125,
+  "trùng lặp": 284,
   "quảng cáo / rao bán": 14,
-  "không liên quan crypto": 88,
-  "trùng lặp": 228,
   "quá ngắn": 5,
-  "cùng tác giả quá nhiều": 46
+  "cùng tác giả quá nhiều": 65
  },
  "source_status": {
   "CoinDesk": 25,
@@ -23,11 +23,11 @@
   "CryptoSlate": 10,
   "NewsBTC": 10,
   "CryptoPotato": 36,
-  "r/CryptoCurrency": "25 (qua RSS)",
-  "r/Bitcoin": "lỗi: 403 Client Error: Blocked for url: https://www.reddit.com/r/ / 429 Client Error: Too Many Requests for url: https://www.red",
-  "r/ethereum": "lỗi: 403 Client Error: Blocked for url: https://www.reddit.com/r/ / 429 Client Error: Too Many Requests for url: https://www.red",
-  "r/CryptoMarkets": "lỗi: 403 Client Error: Blocked for url: https://www.reddit.com/r/ / 429 Client Error: Too Many Requests for url: https://www.red",
-  "r/BitcoinMarkets": "lỗi: 403 Client Error: Blocked for url: https://www.reddit.com/r/ / 429 Client Error: Too Many Requests for url: https://www.red",
+  "r/CryptoCurrency": 50,
+  "r/Bitcoin": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/Bitcoin/ne",
+  "r/ethereum": 50,
+  "r/CryptoMarkets": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/CryptoMark",
+  "r/BitcoinMarkets": 50,
   "#bitcoin": 120,
   "#btc": 120,
   "#crypto": 120,
@@ -39,75 +39,75 @@
   "HN cryptocurrency": 5,
   "HN ethereum": 2
  },
- "runtime_sec": 58.5,
+ "runtime_sec": 164.5,
  "all": {
-  "score": -0.0483,
+  "score": -0.0383,
   "index": 48,
-  "n": 139,
-  "pos": 30.9,
-  "neg": 35.3,
-  "neu": 33.8
+  "n": 138,
+  "pos": 30.4,
+  "neg": 34.1,
+  "neu": 35.5
  },
  "news": {
-  "score": 0.004,
-  "index": 50,
-  "n": 110,
-  "pos": 32.7,
-  "neg": 30.9,
-  "neu": 36.4
+  "score": 0.0126,
+  "index": 51,
+  "n": 107,
+  "pos": 31.8,
+  "neg": 29.9,
+  "neu": 38.3
  },
  "social": {
-  "score": -0.2514,
-  "index": 37,
-  "n": 29,
-  "pos": 24.1,
-  "neg": 51.7,
-  "neu": 24.1
+  "score": -0.2181,
+  "index": 39,
+  "n": 31,
+  "pos": 25.8,
+  "neg": 48.4,
+  "neu": 25.8
  },
- "trend": -0.0274,
+ "trend": -0.0124,
  "window_hours": 24,
  "daily": [
   {
    "date": "2026-10-02",
-   "n": 11,
-   "score": -0.0118
+   "n": 13,
+   "score": -0.0063
   },
   {
    "date": "2026-10-03",
-   "n": 15,
-   "score": -0.1156
+   "n": 18,
+   "score": -0.0816
   },
   {
    "date": "2026-10-04",
-   "n": 6,
-   "score": 0.124
+   "n": 11,
+   "score": 0.0338
   },
   {
    "date": "2026-10-05",
-   "n": 9,
-   "score": 0.0185
+   "n": 14,
+   "score": -0.0309
   },
   {
    "date": "2026-10-06",
-   "n": 45,
-   "score": 0.0046
+   "n": 47,
+   "score": 0.011
   },
   {
    "date": "2026-10-07",
-   "n": 99,
-   "score": -0.0275
+   "n": 101,
+   "score": -0.0279
   },
   {
    "date": "2026-10-08",
-   "n": 108,
-   "score": -0.061
+   "n": 113,
+   "score": -0.0556
   }
  ],
  "sources": [
   {
    "src": "Tin tức",
-   "n": 110,
-   "score": 0.004
+   "n": 107,
+   "score": 0.0126
   },
   {
    "src": "Mastodon",
@@ -120,55 +120,35 @@
    "score": -0.4533
   },
   {
+   "src": "Reddit",
+   "n": 6,
+   "score": 0.3375
+  },
+  {
    "src": "Hacker News",
    "n": 6,
    "score": -0.2231
-  },
-  {
-   "src": "Reddit",
-   "n": 4,
-   "score": 0.3799
   }
  ],
  "keywords": [
-  [
-   "while",
-   17
-  ],
-  [
-   "post",
-   15
-  ],
-  [
-   "million",
-   15
-  ],
-  [
-   "first",
-   15
-  ],
   [
    "assets",
    15
   ],
   [
-   "appeared",
+   "stablecoin",
    11
   ],
   [
    "wallet",
+   11
+  ],
+  [
+   "bank",
    10
   ],
   [
    "funds",
-   10
-  ],
-  [
-   "stablecoin",
-   10
-  ],
-  [
-   "bank",
    10
   ],
   [
@@ -180,18 +160,38 @@
    9
   ],
   [
-   "october",
-   9
+   "next",
+   8
   ],
   [
-   "billion",
-   9
+   "below",
+   8
+  ],
+  [
+   "institutional",
+   8
+  ],
+  [
+   "roughly",
+   8
+  ],
+  [
+   "money",
+   8
+  ],
+  [
+   "addresses",
+   8
+  ],
+  [
+   "bunker",
+   8
   ]
  ],
  "coins": [
   [
    "BTC",
-   51
+   50
   ],
   [
    "ETH",
@@ -199,7 +199,7 @@
   ],
   [
    "Stablecoin",
-   17
+   18
   ],
   [
    "SOL",
@@ -207,11 +207,11 @@
   ],
   [
    "XRP",
-   6
+   5
   ],
   [
    "BNB",
-   2
+   3
   ],
   [
    "ADA",
@@ -225,7 +225,8 @@
    "t": 1791383754000,
    "s": 0.741,
    "text": "Arthur Hayes: AI Is Overbuilt, and Bitcoin Could Benefit From It",
-   "url": "https://cryptopotato.com/arthur-hayes-ai-is-overbuilt-and-bitcoin-could-benefit-from-it/"
+   "url": "https://cryptopotato.com/arthur-hayes-ai-is-overbuilt-and-bitcoin-could-benefit-from-it/",
+   "vi": "Arthur Hayes: AI được xây dựng quá mức và Bitcoin có thể hưởng lợi từ nó"
   },
   {
    "src": "Tin tức",
@@ -233,7 +234,8 @@
    "t": 1791453367000,
    "s": 0.737,
    "text": "Bitcoin monthly ‘new money’ inflows near $5B as BTC price rally stalls",
-   "url": "https://cointelegraph.com/markets/bitcoin-monthly-new-money-inflows-near-5b-as-btc-price-rally-stalls?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+   "url": "https://cointelegraph.com/markets/bitcoin-monthly-new-money-inflows-near-5b-as-btc-price-rally-stalls?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+   "vi": "Dòng 'tiền mới‘ hàng tháng của Bitcoin gần 5 tỷ $ khi đà tăng giá BTC chững lại"
   },
   {
    "src": "Tin tức",
@@ -241,15 +243,8 @@
    "t": 1791432426000,
    "s": 0.708,
    "text": "XRP Nears Key Breakout as Analyst Eyes $2 Target: But Here’s the Catch",
-   "url": "https://cryptopotato.com/xrp-nears-key-breakout-as-analyst-eyes-2-target-but-heres-the-catch/"
-  },
-  {
-   "src": "Tin tức",
-   "outlet": "CryptoSlate",
-   "t": 1791456637000,
-   "s": 0.693,
-   "text": "BitMine’s Ethereum buying spree could end in six weeks",
-   "url": "https://cryptoslate.com/bitmines-ethereum-buying-spree-could-be-over-in-five-weeks/"
+   "url": "https://cryptopotato.com/xrp-nears-key-breakout-as-analyst-eyes-2-target-but-heres-the-catch/",
+   "vi": "XRP gần đạt được đột phá quan trọng với mục tiêu $ 2 của nhà phân tích: Nhưng đây là điểm mấu chốt"
   },
   {
    "src": "Reddit",
@@ -257,7 +252,17 @@
    "t": 1791431969000,
    "s": 0.693,
    "text": "Bitcoin at $840K? Wall Street Could Trigger a Bull Run Most Investors Won’t See Coming.",
-   "url": "https://www.reddit.com/r/CryptoCurrency/comments/1x0h4hx/bitcoin_at_840k_wall_street_could_trigger_a_bull/"
+   "url": "https://www.reddit.com/r/CryptoCurrency/comments/1x0h4hx/bitcoin_at_840k_wall_street_could_trigger_a_bull/",
+   "vi": "Bitcoin ở mức $ 840K? Phố Wall có thể kích hoạt một đợt tăng giá mà hầu hết các nhà đầu tư sẽ không thấy sắp tới."
+  },
+  {
+   "src": "Tin tức",
+   "outlet": "CryptoSlate",
+   "t": 1791456637000,
+   "s": 0.693,
+   "text": "BitMine’s Ethereum buying spree could end in six weeks",
+   "url": "https://cryptoslate.com/bitmines-ethereum-buying-spree-could-be-over-in-five-weeks/",
+   "vi": "Đợt mua Ethereum của BitMine có thể kết thúc sau sáu tuần"
   }
  ],
  "top_neg": [
@@ -267,7 +272,8 @@
    "t": 1791454102000,
    "s": -0.531,
    "text": "Hack the Backup Von tar auf Band über rsync und rsnapshot bis zu Borg im Append-only-Modus: elf Stopps auf einer Straße, auf der jedes Werkzeug ein Problem löst und ein neues schafft. Und am Ende steht wieder der Bandschrank. Jeder Admin ha",
-   "url": "https://podcasts.social/@behindtheconsole/117404736074353581"
+   "url": "https://podcasts.social/@behindtheconsole/117404736074353581",
+   "vi": "Hack Backup Von tar auf Band über rsync und rsnapshot bis zu Borg im Append-only-Modus: elf Stopps auf einer Straße, auf der jedes Werkzeug ein Problem löst und ein neues schafft. Und am Ende steht wieder der Bandsch"
   },
   {
    "src": "Mastodon",
@@ -275,7 +281,8 @@
    "t": 1791452250052,
    "s": -0.646,
    "text": "Ethereum researcher Justin Drake urges a gradual move to fresh wallet addresses, warning AI-assisted math could threaten ECDSA sooner than expected. Buterin agrees on the risk, cautions against panic. No attack has been demonstrated yet. Fu",
-   "url": "https://mastodon.social/@AInews_report/117404614659265484"
+   "url": "https://mastodon.social/@AInews_report/117404614659265484",
+   "vi": "Nhà nghiên cứu Ethereum Justin Drake kêu gọi chuyển dần sang các địa chỉ ví mới, cảnh báo toán học hỗ trợ AI có thể đe dọa ECDSA sớm hơn dự kiến. Buterin đồng ý về rủi ro, thận trọng trước sự hoảng loạn. Chưa có cuộc tấn công nào"
   },
   {
    "src": "Lemmy",
@@ -283,7 +290,8 @@
    "t": 1791400259557,
    "s": -0.807,
    "text": "Also, crypto and blockchain has an ENORMOUS negative ecological and energetic impact; I think that AIs are worse on that, but I'd still say that if AIs are the number one, cryptos are the number two. And then you have the worst part: incel ",
-   "url": "https://scribe.disroot.org/comment/13471973"
+   "url": "https://scribe.disroot.org/comment/13471973",
+   "vi": "Ngoài ra, tiền điện tử và blockchain có tác động tiêu cực RẤT LỚN đến sinh thái và năng lượng; Tôi nghĩ rằng AI còn tệ hơn thế, nhưng tôi vẫn nói rằng nếu AI là số một, tiền điện tử là số hai. Và sau đó bạn có"
   },
   {
    "src": "Mastodon",
@@ -291,7 +299,8 @@
    "t": 1791400312735,
    "s": -0.605,
    "text": "A sudden risk-off wave wiped tens of billions off digital asset valuations Tuesday, with Uniswap's UNI token tumbling double digits even as Solana-linked projects defied the slide. # Crypto # Bitcoin https://www. loopwire.news/story-crypto-",
-   "url": "https://mastodon.social/@loopwire/117401210895126666"
+   "url": "https://mastodon.social/@loopwire/117401210895126666",
+   "vi": "Một làn sóng rủi ro bất ngờ đã xóa sạch hàng chục tỷ đô la định giá tài sản kỹ thuật số vào thứ ba, với token Uni của Uniswap giảm hai con số ngay cả khi các dự án liên kết với Solana bất chấp sự trượt giá. # Crypto # Bitcoin https://www. loopwir"
   },
   {
    "src": "Lemmy",
@@ -299,7 +308,9 @@
    "t": 1791400504031,
    "s": -0.919,
    "text": "The investors that pissed their money away on these scams owe a duty of care to their clients. That doesn’t mean I feel any pity for the stupid fuckers that fell for the scams. And this whole Generative AI scam was a scam, just like NFTs an",
-   "url": "https://aussie.zone/comment/25341987"
+   "url": "https://aussie.zone/comment/25341987",
+   "vi": "Các nhà đầu tư đã bỏ tiền của họ vào những trò gian lận này có nghĩa vụ chăm sóc khách hàng của họ. Điều đó không có nghĩa là tôi cảm thấy thương hại cho những kẻ ngu ngốc đã rơi vào những trò gian lận. Và toàn bộ trò lừa đảo Generative AI này là một trò lừa đảo"
   }
- ]
+ ],
+ "translation": "ok"
 }
