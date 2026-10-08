@@ -111,7 +111,8 @@ def lex_score(text: str) -> float:
 
 
 # ---------------------------------------------------------------- tầng 1: thu thập
-BOILER = re.compile(r"(the post .{0,200}? appeared first on .{0,80}?\.?$|continue reading.*$|read more.*$|\[…\]|\[\.\.\.\])", re.I)
+BOILER = re.compile(r"(the post .{0,200}? appeared first on .{0,80}?\.?$|continue reading.*$|read more.*$|\[…\]|\[\.\.\.\]"
+                    r"|submitted by\s+/?u/[\w-]+|\[link\]|\[comments\]|&#32;)", re.I)
 
 
 def strip(markup: str) -> str:
@@ -340,7 +341,7 @@ def hybrid(ai: float | None, lx: float) -> float:
 
 
 # ---------------------------------------------------------------- tầng 4: tổng hợp
-STOP = set("the a an and or but if then than that this these those there their they them is are was were be been being have has had do does did of to in on for with as at by from about into over after before under between out up down off so not no yes it its it's i you your we our us my me he she his her him what which who whom when where why how all any some more most other such only own same too very can will just should now also like get got one two new would could may might much many even back still well way make made think know see go going said says say really people time year years day days thing things lot good don't im i'm thats that's there's dont doesnt isnt via amp https http www com html week today amid while first post appeared million billion thousand percent according reported report latest since around across continue read october november december january february march april june july august september monday tuesday wednesday thursday friday saturday sunday".split())
+STOP = set("the a an and or but if then than that this these those there their they them is are was were be been being have has had do does did of to in on for with as at by from about into over after before under between out up down off so not no yes it its it's i you your we our us my me he she his her him what which who whom when where why how all any some more most other such only own same too very can will just should now also like get got one two new would could may might much many even back still well way make made think know see go going said says say really people time year years day days thing things lot good don't im i'm thats that's there's dont doesnt isnt via amp https http www com html week today amid while first post appeared submitted link comments reddit million billion thousand percent according reported report latest since around across continue read october november december january february march april june july august september monday tuesday wednesday thursday friday saturday sunday".split())
 GENERIC = set("bitcoin btc crypto cryptocurrency cryptocurrencies ethereum eth coin coins blockchain price prices market markets news token tokens".split())
 COINS = [("BTC", r"\b(bitcoin|btc|sats?|satoshi)\b"), ("ETH", r"\b(ethereum|eth|ether)\b"), ("SOL", r"\b(solana|sol)\b"), ("XRP", r"\b(xrp|ripple)\b"),
          ("DOGE", r"\b(dogecoin|doge)\b"), ("BNB", r"\b(bnb)\b"), ("ADA", r"\b(cardano|ada)\b"), ("Stablecoin", r"\b(stablecoins?|usdt|usdc|tether)\b")]
@@ -822,6 +823,7 @@ def load_items() -> dict:
             for line in f:
                 try:
                     x = json.loads(line)
+                    x["text"] = re.sub(r"\s{2,}", " ", BOILER.sub("", x.get("text") or "")).strip()   # dọn bài cũ lưu trước khi có bộ lọc mới
                     out[x["id"]] = x
                 except json.JSONDecodeError:
                     continue
