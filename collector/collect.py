@@ -152,14 +152,16 @@ def fetch_rss() -> tuple[list, dict]:
 def fetch_reddit() -> tuple[list, dict]:
     """Reddit chặn API JSON từ máy chủ đám mây, nên đọc RSS và nghỉ giữa các lần gọi."""
     items, status = [], {}
-    for k, sub in enumerate(SUBREDDITS):
+    h = datetime.now(timezone.utc).hour
+    order = SUBREDDITS[h % len(SUBREDDITS):] + SUBREDDITS[:h % len(SUBREDDITS)]   # xoay vòng để sub bị chặn không luôn là một
+    for k, sub in enumerate(order):
         if k:
-            time.sleep(6)
+            time.sleep(8)
         for attempt in range(2):
             try:
                 r = requests.get(f"https://www.reddit.com/r/{sub}/new/.rss?limit=50", headers={"User-Agent": UA}, timeout=20)
                 if r.status_code == 429 and attempt == 0:
-                    time.sleep(20)
+                    time.sleep(30)
                     continue
                 r.raise_for_status()
                 feed = feedparser.parse(r.content)
@@ -457,30 +459,187 @@ def translate_posts(posts: list) -> str:
     return status
 
 
-# ---------------------------------------------------------------- vĩ mô (FRED, miễn phí)
+# ---------------------------------------------------------------- vĩ mô (miễn phí, nhiều nguồn dự phòng)
 FRED = {
     "WALCL": "Bảng cân đối Fed", "WTREGEN": "Tài khoản Kho bạc (TGA)", "RRPONTSYD": "Repo ngược (RRP)", "M2SL": "Cung tiền M2",
-    "DGS2": "Lợi suất 2 năm", "DGS10": "Lợi suất 10 năm", "DFII10": "Lợi suất thực 10 năm", "DTWEXBGS": "Chỉ số USD (rổ rộng)",
+    "DGS2": "Lợi suất 2 năm", "DGS10": "Lợi suất 10 năm", "DFII10": "Lợi suất thực 10 năm", "DTWEXBGS": "Chỉ số USD",
     "VIXCLS": "VIX", "BAMLH0A0HYM2": "Chênh lệch trái phiếu rủi ro cao", "NASDAQ100": "Nasdaq 100", "DEXJPUS": "USD/JPY",
-    "CBBTCUSD": "Bitcoin (Coinbase)",
+    "CBBTCUSD": "Bitcoin",
+}
+MACRO_CACHE = os.path.join(DATA, "macro_cache.json")
+BROWSER_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+FRED_KEY = os.environ.get("FRED_API_KEY", "").strip()
+_FREDGRAPH_OK = [True]   # tắt đường fredgraph ngay khi nó treo, để không tốn 30 giây cho mỗi chỉ số
+_TREASURY = {}
+
+
+def _day(s: str, fmt: str = "%Y-%m-%d") -> float:
+    return datetime.strptime(s, fmt).replace(tzinfo=timezone.utc).timestamp()
+
+
+def _since(days: int) -> datetime:
+    return datetime.now(timezone.utc) - timedelta(days=days)
+
+
+def _finish(out: list) -> list:
+    out = sorted({t: v for t, v in out}.items())
+    if len(out) < 5:
+        raise ValueError("không có dữ liệu")
+    return out
+
+
+def fred_api(sid: str, days: int) -> list:
+    r = requests.get("https://api.stlouisfed.org/fred/series/observations",
+                     params={"series_id": sid, "api_key": FRED_KEY, "file_type": "json", "observation_start": _since(days).strftime("%Y-%m-%d")}, timeout=20)
+    r.raise_for_status()
+    return _finish([(_day(o["date"]), float(o["value"])) for o in r.json().get("observations", []) if o.get("value") not in (".", "", None)])
+
+
+def fred_graph(sid: str, days: int) -> list:
+    try:
+        r = requests.get("https://fred.stlouisfed.org/graph/fredgraph.csv", params={"id": sid, "cosd": _since(days).strftime("%Y-%m-%d")},
+                         headers={"User-Agent": BROWSER_UA}, timeout=12)
+        r.raise_for_status()
+    except requests.RequestException:
+        _FREDGRAPH_OK[0] = False
+        raise
+    out = []
+    for row in list(csv.reader(r.text.splitlines()))[1:]:
+        if len(row) >= 2 and row[1] not in (".", ""):
+            try:
+                out.append((_day(row[0]), float(row[1])))
+            except ValueError:
+                continue
+    return _finish(out)
+
+
+def yahoo(symbol: str, days: int) -> list:
+    rng = "2y" if days > 365 else "1y"
+    last = None
+    for host in ("query1", "query2"):
+        try:
+            r = requests.get(f"https://{host}.finance.yahoo.com/v8/finance/chart/{requests.utils.quote(symbol)}",
+                             params={"range": rng, "interval": "1d"}, headers={"User-Agent": BROWSER_UA}, timeout=15)
+            r.raise_for_status()
+            res = r.json()["chart"]["result"][0]
+            closes = res["indicators"]["quote"][0]["close"]
+            out = [(float(t - t % 86400), float(c)) for t, c in zip(res["timestamp"], closes) if c is not None]
+            return _finish(out)
+        except Exception as ex:  # noqa: BLE001
+            last = ex
+    raise last
+
+
+def treasury(kind: str, column: str, days: int) -> list:
+    """Lợi suất trái phiếu Mỹ do Bộ Tài chính Mỹ công bố (cùng số liệu FRED dùng)."""
+    if kind not in _TREASURY:
+        rows = []
+        y = datetime.now(timezone.utc).year
+        for year in range(_since(days).year, y + 1):
+            r = requests.get(f"https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/{year}/all",
+                             params={"type": kind, "field_tdr_date_value": year, "page": "", "_format": "csv"}, headers={"User-Agent": BROWSER_UA}, timeout=20)
+            r.raise_for_status()
+            rows += list(csv.DictReader(r.text.splitlines()))
+        _TREASURY[kind] = rows
+    out = []
+    for row in _TREASURY[kind]:
+        key = next((k for k in row if k and k.strip().lower() == column.lower()), None)
+        if key and row.get(key) not in (None, "", "N/A"):
+            try:
+                out.append((_day(row["Date"], "%m/%d/%Y"), float(row[key])))
+            except (KeyError, ValueError):
+                continue
+    return _finish(out)
+
+
+def tga(days: int) -> list:
+    r = requests.get("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/operating_cash_balance",
+                     params={"filter": f"record_date:gte:{_since(days).strftime('%Y-%m-%d')},account_type:eq:Treasury General Account (TGA) Closing Balance",
+                             "fields": "record_date,open_today_bal", "sort": "record_date", "page[size]": 1000}, timeout=20)
+    r.raise_for_status()
+    return _finish([(_day(x["record_date"]), float(x["open_today_bal"])) for x in r.json().get("data", []) if x.get("open_today_bal") not in (None, "", "null")])
+
+
+def rrp(days: int) -> list:
+    r = requests.get("https://markets.newyorkfed.org/api/rp/reverserepo/propositions/search.json",
+                     params={"startDate": _since(days).strftime("%Y-%m-%d")}, headers={"User-Agent": BROWSER_UA}, timeout=20)
+    r.raise_for_status()
+    tot = defaultdict(float)
+    for op in r.json().get("repo", {}).get("operations", []):
+        if op.get("operationDate") and op.get("totalAmtAccepted") is not None:
+            tot[op["operationDate"]] += float(op["totalAmtAccepted"]) / 1e9
+    return _finish([(_day(d), v) for d, v in tot.items()])
+
+
+def coingecko_btc(days: int) -> list:
+    r = requests.get("https://api.coingecko.com/api/v3/coins/bitcoin/market_chart", params={"vs_currency": "usd", "days": min(days, 365), "interval": "daily"},
+                     headers={"User-Agent": BROWSER_UA}, timeout=20)
+    r.raise_for_status()
+    return _finish([(float(int(t / 1000) - int(t / 1000) % 86400), float(v)) for t, v in r.json().get("prices", [])])
+
+
+# Nguồn dự phòng khi FRED không trả lời. Tên hiển thị đổi theo nguồn nếu chỉ số khác (DXY thay cho rổ rộng, HYG thay cho chênh lệch).
+FALLBACK = {
+    "WTREGEN": [("Bộ Tài chính Mỹ", lambda d: tga(d))],
+    "RRPONTSYD": [("Fed New York", lambda d: rrp(d))],
+    "DGS2": [("Bộ Tài chính Mỹ", lambda d: treasury("daily_treasury_yield_curve", "2 Yr", d))],
+    "DGS10": [("Bộ Tài chính Mỹ", lambda d: treasury("daily_treasury_yield_curve", "10 Yr", d))],
+    "DFII10": [("Bộ Tài chính Mỹ", lambda d: treasury("daily_treasury_real_yield_curve", "10 YR", d))],
+    "DTWEXBGS": [("Yahoo (DXY)", lambda d: yahoo("DX-Y.NYB", d))],
+    "VIXCLS": [("Yahoo", lambda d: yahoo("^VIX", d))],
+    "NASDAQ100": [("Yahoo", lambda d: yahoo("^NDX", d))],
+    "DEXJPUS": [("Yahoo", lambda d: yahoo("JPY=X", d))],
+    "CBBTCUSD": [("Yahoo", lambda d: yahoo("BTC-USD", d)), ("CoinGecko", lambda d: coingecko_btc(d))],
+    "HYG": [("Yahoo", lambda d: yahoo("HYG", d))],
 }
 
 
-def fred(series_id: str, days: int = 420) -> list:
-    start = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
-    r = requests.get("https://fred.stlouisfed.org/graph/fredgraph.csv", params={"id": series_id, "cosd": start}, headers={"User-Agent": UA}, timeout=30)
-    r.raise_for_status()
-    out = []
-    for row in list(csv.reader(r.text.splitlines()))[1:]:
-        if len(row) < 2 or row[1] in (".", ""):
-            continue
-        try:
-            out.append((datetime.strptime(row[0], "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp(), float(row[1])))
-        except ValueError:
-            continue
-    if not out:
-        raise ValueError("không có dữ liệu")
-    return out
+def macro_fetch() -> tuple[dict, dict, dict]:
+    """Lấy từng chỉ số theo thứ tự: FRED có khóa -> FRED không khóa -> nguồn dự phòng -> bản lưu gần nhất (tối đa 10 ngày)."""
+    try:
+        with open(MACRO_CACHE, encoding="utf-8") as f:
+            cache = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        cache = {}
+    data, src, errs = {}, {}, {}
+    t0 = time.time()
+    for sid in list(FRED) + ["HYG"]:
+        if sid == "HYG" and "BAMLH0A0HYM2" in data:
+            continue   # đã có chênh lệch tín dụng thật, không cần quỹ HYG
+        days = 900 if sid == "M2SL" else 420
+        tries = []
+        if sid in FRED and FRED_KEY:
+            tries.append(("FRED", lambda d, s=sid: fred_api(s, d)))
+        if sid in FRED and _FREDGRAPH_OK[0]:
+            tries.append(("FRED", lambda d, s=sid: fred_graph(s, d)))
+        tries += FALLBACK.get(sid, [])
+        msg = []
+        for name, fn in tries:
+            if time.time() - t0 > 180:
+                msg.append("hết giờ")
+                break
+            try:
+                data[sid], src[sid] = fn(days), name
+                break
+            except Exception as ex:  # noqa: BLE001
+                msg.append(f"{name}: {str(ex)[:70]}")
+            time.sleep(0.3)
+        if sid not in data:
+            c = cache.get(sid)
+            if c and c.get("saved", 0) > time.time() - 10 * 86400:
+                data[sid], src[sid] = [tuple(x) for x in c["series"]], c["src"] + " (bản lưu)"
+            if sid not in data:
+                errs[sid] = "; ".join(msg)[:160] if msg else "chỉ có trên FRED, mà FRED không trả lời (thêm khóa FRED_API_KEY để lấy)"
+    for sid, ser in data.items():
+        if not src[sid].endswith("(bản lưu)"):
+            cache[sid] = {"saved": time.time(), "src": src[sid], "series": [[int(t), v] for t, v in ser]}
+    try:
+        with open(MACRO_CACHE, "w", encoding="utf-8") as f:
+            json.dump(cache, f, separators=(",", ":"))
+    except OSError:
+        pass
+    print(f"Vĩ mô: {len(data)} chỉ số, lỗi {len(errs)}, {time.time() - t0:.0f} giây")
+    return data, src, errs
 
 
 def at_or_before(series: list, t: float):
@@ -530,13 +689,7 @@ def label_of(score: int) -> str:
 
 
 def macro() -> dict:
-    data, errs = {}, {}
-    for sid in FRED:
-        try:
-            data[sid] = fred(sid, 900 if sid == "M2SL" else 420)
-        except Exception as ex:  # noqa: BLE001
-            errs[sid] = str(ex)[:80]
-        time.sleep(0.5)
+    data, src, errs = macro_fetch()
     groups = []
     f1 = lambda v, d=1: None if v is None else round(v, d)  # noqa: E731
 
@@ -549,14 +702,28 @@ def macro() -> dict:
             if tga is not None and rrp is not None:
                 net.append((t, w / 1000 - tga / 1000 - rrp))
         c4, c13 = change(net, 28), change(net, 91)
-        items.append({"name": "Thanh khoản ròng của Fed", "value": round(net[-1][1]), "unit": " tỷ $", "ch": f1(c4, 2), "chLabel": "4 tuần", "ch2": f1(c13, 2), "ch2Label": "13 tuần"})
+        items.append({"name": "Thanh khoản ròng của Fed", "value": round(net[-1][1]), "unit": " tỷ $", "ch": f1(c4, 2), "chLabel": "4 tuần", "ch2": f1(c13, 2), "ch2Label": "13 tuần", "src": src["WALCL"]})
         if c4 is not None:
             score += 1 if c4 > 1 else -1 if c4 < -1 else 0
             notes.append(f"thanh khoản ròng {'tăng' if c4 > 0 else 'giảm'} {abs(c4):.1f}% trong 4 tuần")
         chart = {"name": "Thanh khoản ròng (tỷ $)", "series": thin(net)}
+    elif "WTREGEN" in data and "RRPONTSYD" in data:
+        # Thiếu bảng cân đối Fed: theo dõi phần tiền bị hút khỏi hệ thống ngân hàng (TGA + RRP). Tăng là bất lợi.
+        drain = []
+        for t, g in data["WTREGEN"]:
+            r_ = at_or_before(data["RRPONTSYD"], t)
+            if r_ is not None:
+                drain.append((t, g / 1000 + r_))
+        d4 = change(drain, 28, pct=False)
+        items.append({"name": "Tiền bị hút khỏi hệ thống (TGA + RRP)", "value": round(drain[-1][1]), "unit": " tỷ $",
+                      "ch": None if d4 is None else round(d4), "chLabel": "tỷ $, 4 tuần", "src": src["WTREGEN"]})
+        if d4 is not None:
+            score += -1 if d4 > 100 else 1 if d4 < -100 else 0
+            notes.append(f"TGA + RRP {'tăng' if d4 > 0 else 'giảm'} {abs(d4):.0f} tỷ $ trong 4 tuần ({'hút' if d4 > 0 else 'bơm'} tiền khỏi hệ thống)")
+        chart = {"name": "TGA + RRP (tỷ $), tăng là hút tiền", "series": thin(drain)}
     if "M2SL" in data:
         y = change(data["M2SL"], 365)
-        items.append({"name": "Cung tiền M2", "value": round(data["M2SL"][-1][1]), "unit": " tỷ $", "ch": f1(y), "chLabel": "1 năm", "asof": int(data["M2SL"][-1][0] * 1000)})
+        items.append({"name": "Cung tiền M2", "value": round(data["M2SL"][-1][1]), "unit": " tỷ $", "ch": f1(y), "chLabel": "1 năm", "asof": int(data["M2SL"][-1][0] * 1000), "src": src["M2SL"]})
         if y is not None:
             score += 1 if y > 5 else -1 if y < 0 else 0
             notes.append(f"M2 {'tăng' if y >= 0 else 'giảm'} {abs(y):.1f}% so với cùng kỳ")
@@ -567,7 +734,7 @@ def macro() -> dict:
     for sid, nm in (("DGS2", "Lợi suất 2 năm"), ("DGS10", "Lợi suất 10 năm"), ("DFII10", "Lợi suất thực 10 năm")):
         if sid in data:
             bp = change(data[sid], 30, pct=False)
-            items.append({"name": nm, "value": data[sid][-1][1], "unit": "%", "ch": None if bp is None else round(bp * 100), "chLabel": "điểm cơ bản, 1 tháng"})
+            items.append({"name": nm, "value": data[sid][-1][1], "unit": "%", "ch": None if bp is None else round(bp * 100), "chLabel": "điểm cơ bản, 1 tháng", "src": src[sid]})
     if "DFII10" in data:
         bp = change(data["DFII10"], 30, pct=False)
         if bp is not None:
@@ -576,7 +743,7 @@ def macro() -> dict:
         chart = {"name": "Lợi suất thực 10 năm (%)", "series": thin(data["DFII10"])}
     if "DTWEXBGS" in data:
         c = change(data["DTWEXBGS"], 30)
-        items.append({"name": "Chỉ số USD (rổ rộng)", "value": data["DTWEXBGS"][-1][1], "unit": "", "ch": f1(c, 2), "chLabel": "1 tháng"})
+        items.append({"name": "Chỉ số USD (DXY)" if "DXY" in src["DTWEXBGS"] else "Chỉ số USD (rổ rộng)", "value": data["DTWEXBGS"][-1][1], "unit": "", "ch": f1(c, 2), "chLabel": "1 tháng", "src": src["DTWEXBGS"]})
         if c is not None:
             score += -1 if c > 1.5 else 1 if c < -1.5 else 0
             notes.append(f"USD {'mạnh lên' if c > 0 else 'yếu đi'} {abs(c):.1f}% trong tháng")
@@ -586,20 +753,26 @@ def macro() -> dict:
     items, score, notes, chart = [], 0, [], None
     if "VIXCLS" in data:
         v = data["VIXCLS"][-1][1]
-        items.append({"name": "VIX", "value": v, "unit": "", "ch": f1(change(data["VIXCLS"], 30, pct=False)), "chLabel": "điểm, 1 tháng"})
+        items.append({"name": "VIX", "value": v, "unit": "", "ch": f1(change(data["VIXCLS"], 30, pct=False)), "chLabel": "điểm, 1 tháng", "src": src["VIXCLS"]})
         score += -2 if v >= 30 else -1 if v >= 22 else 1 if v < 15 else 0
         notes.append(f"VIX ở {v:.1f}" + (" (căng thẳng)" if v >= 22 else " (bình yên)" if v < 15 else ""))
         chart = {"name": "VIX", "series": thin(data["VIXCLS"])}
     if "BAMLH0A0HYM2" in data:
         hy = data["BAMLH0A0HYM2"][-1][1]
         d = change(data["BAMLH0A0HYM2"], 30, pct=False)
-        items.append({"name": "Chênh lệch trái phiếu rủi ro cao", "value": hy, "unit": "%", "ch": None if d is None else round(d * 100), "chLabel": "điểm cơ bản, 1 tháng"})
+        items.append({"name": "Chênh lệch trái phiếu rủi ro cao", "value": hy, "unit": "%", "ch": None if d is None else round(d * 100), "chLabel": "điểm cơ bản, 1 tháng", "src": src["BAMLH0A0HYM2"]})
         if d is not None and d > 0.5:
             score -= 1
             notes.append("chênh lệch tín dụng giãn rộng nhanh")
+    elif "HYG" in data:
+        c = change(data["HYG"], 30)
+        items.append({"name": "Quỹ trái phiếu rủi ro cao (HYG)", "value": data["HYG"][-1][1], "unit": " $", "ch": f1(c, 2), "chLabel": "1 tháng", "src": src["HYG"]})
+        if c is not None and c < -2:
+            score -= 1
+            notes.append(f"trái phiếu rủi ro cao bị bán, HYG giảm {abs(c):.1f}% trong tháng")
     if "DEXJPUS" in data:
         c = change(data["DEXJPUS"], 30)
-        items.append({"name": "USD/JPY", "value": data["DEXJPUS"][-1][1], "unit": "", "ch": f1(c, 2), "chLabel": "1 tháng"})
+        items.append({"name": "USD/JPY", "value": data["DEXJPUS"][-1][1], "unit": "", "ch": f1(c, 2), "chLabel": "1 tháng", "src": src["DEXJPUS"]})
         if c is not None and c < -4:
             score -= 1
             notes.append(f"yên Nhật tăng mạnh {abs(c):.1f}% trong tháng: nguy cơ tháo vốn vay rẻ bằng yên")
@@ -611,8 +784,8 @@ def macro() -> dict:
         n7, b7 = change(data["NASDAQ100"], 7), change(data["CBBTCUSD"], 7)
         n30, b30 = change(data["NASDAQ100"], 30), change(data["CBBTCUSD"], 30)
         rho = corr(data["NASDAQ100"], data["CBBTCUSD"], 45)
-        items += [{"name": "Nasdaq 100", "value": data["NASDAQ100"][-1][1], "unit": "", "ch": f1(n30, 1), "chLabel": "1 tháng", "ch2": f1(n7, 1), "ch2Label": "1 tuần"},
-                  {"name": "Bitcoin", "value": data["CBBTCUSD"][-1][1], "unit": " $", "ch": f1(b30, 1), "chLabel": "1 tháng", "ch2": f1(b7, 1), "ch2Label": "1 tuần"},
+        items += [{"name": "Nasdaq 100", "value": data["NASDAQ100"][-1][1], "unit": "", "ch": f1(n30, 1), "chLabel": "1 tháng", "ch2": f1(n7, 1), "ch2Label": "1 tuần", "src": src["NASDAQ100"]},
+                  {"name": "Bitcoin", "value": data["CBBTCUSD"][-1][1], "unit": " $", "ch": f1(b30, 1), "chLabel": "1 tháng", "ch2": f1(b7, 1), "ch2Label": "1 tuần", "src": src["CBBTCUSD"]},
                   {"name": "Tương quan BTC–Nasdaq (45 ngày)", "value": None if rho is None else round(rho, 2), "unit": "", "ch": None, "chLabel": ""}]
         if n30 is not None:
             score += 1 if n30 > 3 else -1 if n30 < -5 else 0
@@ -635,8 +808,10 @@ def macro() -> dict:
         g["notes"] = [re.sub(r"(\d)\.(\d)", r"\1,\2", n) for n in g["notes"]]
     total = sum(g["score"] for g in groups if g["items"])
     asof = max((v[-1][0] for k, v in data.items() if k not in ("M2SL", "WALCL", "WTREGEN")), default=None)
-    return {"score": total, "label": "Thuận lợi" if total >= 2 else "Bất lợi" if total <= -2 else "Trung tính",
-            "groups": groups, "errors": errs, "asof": int(asof * 1000) if asof else None}
+    names = dict(FRED, HYG="Quỹ HYG")
+    return {"sources": sorted({v.replace(" (bản lưu)", "") for v in src.values()}), "missing": [names[k] for k in errs if k not in data and not (k == "BAMLH0A0HYM2" and "HYG" in data) and not (k == "HYG" and "BAMLH0A0HYM2" in data)],
+            "have": len(data), "score": total, "label": "Thuận lợi" if total >= 2 else "Bất lợi" if total <= -2 else "Trung tính",
+            "groups": groups, "errors": {names[k]: v for k, v in errs.items()}, "asof": int(asof * 1000) if asof else None}
 
 
 # ---------------------------------------------------------------- chạy
