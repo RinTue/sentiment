@@ -36,6 +36,10 @@ jobs:
 
       - name: Thu thập, lọc, chấm điểm, tổng hợp
         run: python collector/collect.py
+        env:   # cả ba đều không bắt buộc; để trống vẫn chạy
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
       - name: Lưu dữ liệu vào kho
         run: |

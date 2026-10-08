@@ -889,6 +889,25 @@ def main() -> int:
             w.writerow(["time_utc", "index_all", "score_all", "n_all", "index_news", "index_social", "pos_pct", "neg_pct"])
         a, nw, so = agg["all"] or {}, agg["news"] or {}, agg["social"] or {}
         w.writerow([stamp.strftime("%Y-%m-%dT%H:%M:%SZ"), a.get("index", ""), a.get("score", ""), a.get("n", ""), nw.get("index", ""), so.get("index", ""), a.get("pos", ""), a.get("neg", "")])
+
+    # Tầng 4 trên máy chủ và cảnh báo: lỗi ở đây không được làm hỏng phần đã lưu ở trên.
+    try:
+        import market
+        with open(HISTORY_FILE, encoding="utf-8") as f:
+            text_hist = [float(r["index_all"]) for r in csv.DictReader(f) if r.get("index_all") not in (None, "")]
+        latest["market"] = market.run(latest, text_hist)
+    except Exception as ex:  # noqa: BLE001
+        latest["market"] = {"error": str(ex)[:200]}
+        print("Lỗi chỉ số tổng hợp:", ex, file=sys.stderr)
+    try:
+        import alerts
+        latest["alerts"] = alerts.run(latest)
+    except Exception as ex:  # noqa: BLE001
+        latest["alerts"] = {"error": str(ex)[:200]}
+        print("Lỗi cảnh báo:", ex, file=sys.stderr)
+    latest["runtime_sec"] = round(time.time() - started, 1)
+    with open(LATEST_FILE, "w", encoding="utf-8") as f:
+        json.dump(latest, f, ensure_ascii=False, indent=1)
     print(json.dumps({k: latest[k] for k in ("scoring", "kept_count", "new_count", "stored_7d")}, ensure_ascii=False), agg["all"])
     return 0
 
