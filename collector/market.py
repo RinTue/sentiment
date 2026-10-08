@@ -306,34 +306,48 @@ def okx_liquidations(hours: int = 24, max_pages: int = 30) -> dict:
     return {"long": round(long_usd), "short": round(short_usd), "hours": round(covered, 1)}
 
 
-def classify_move(dp: float, doi: float, fpct: float | None, spot_net: float | None, prem: float | None, thr_p: float, thr_oi: float) -> tuple[str, str, str]:
-    """Trả về (mã, nhãn, giải thích). Ý tưởng: giá tăng mà OI giảm là short bị ép đóng; giá tăng kèm OI và funding cùng tăng là long đòn bẩy;
-    giá tăng mà OI đứng yên, có mua spot và Coinbase Premium dương là tiền thật."""
-    spot_up = (spot_net is not None and spot_net > 0.02) or (prem is not None and prem > 0.03)
-    spot_dn = (spot_net is not None and spot_net < -0.02) or (prem is not None and prem < -0.03)
+def classify_move(dp: float, doi: float, fpct: float | None, spot_net: float | None, perp_net: float | None, prem: float | None,
+                  liq: dict | None, thr_p: float, thr_oi: float) -> tuple[str, str, str]:
+    """Trả về (mã, nhãn, giải thích). Đọc theo thứ tự: open interest (vị thế đóng hay mở), thanh lý (phe nào bị ép),
+    funding (đòn bẩy), lệnh mua bán chủ động futures so với spot, rồi Coinbase Premium (người mua Mỹ)."""
+    sp = 0
+    if spot_net is not None:
+        sp += 1 if spot_net > 0.02 else -1 if spot_net < -0.02 else 0
+    if prem is not None:
+        sp += 1 if prem > 0.03 else -1 if prem < -0.03 else 0
+    spot_txt = (" Spot đang được mua ròng" + (" và Coinbase Premium dương" if prem is not None and prem > 0.03 else "") + ", nên có tiền thật đỡ giá." if sp >= 1 else
+                " Spot đang bị bán" + (" (Coinbase Premium âm: phía Mỹ bán)" if prem is not None and prem < -0.03 else "") + ", áp lực có thể còn kéo dài." if sp <= -1 else
+                " Spot gần như trung tính.")
+    lq_long, lq_short = (liq or {}).get("long", 0) or 0, (liq or {}).get("short", 0) or 0
+    pn, sn = perp_net or 0, spot_net or 0
     if abs(dp) < thr_p:
         if doi > thr_oi * 1.5:
             return "build", "Đòn bẩy đang tích tụ", "Giá đi ngang nhưng open interest tăng: vị thế mới đang dồn vào, dễ có cú quét mạnh ở một trong hai phía."
         return "flat", "Chưa có đà rõ", "Giá và open interest đều ít thay đổi."
     if dp > 0:
         if doi <= -thr_oi:
-            return ("squeeze_up", "Short bị ép đóng (short squeeze)",
-                    "Giá tăng trong khi open interest giảm: phần lớn lực mua đến từ phe short phải đóng lệnh."
-                    + (" Có lực mua spot đi kèm nên đà tăng có nền." if spot_up else " Chưa thấy lực mua spot rõ, đà tăng dễ hụt hơi khi việc đóng short kết thúc."))
+            return "squeeze_up", "Short bị ép đóng (short squeeze)", "Giá tăng trong khi open interest giảm: phần lớn lực mua đến từ phe short phải đóng lệnh." + spot_txt
+        if lq_short >= 10e6 and lq_short >= 3 * lq_long:
+            return "liq_up", "Short bị thanh lý dây chuyền", "Short bị thanh lý gấp nhiều lần long, đẩy giá lên nhanh; open interest chưa giảm nhiều vì có vị thế mới mở thêm." + spot_txt
         if doi >= thr_oi and (fpct or 0) >= 70:
-            return "lev_up", "Long đòn bẩy dẫn dắt", "Giá, open interest và funding cùng tăng: người mua chủ yếu dùng đòn bẩy, dễ bị đảo chiều và thanh lý dây chuyền."
-        if spot_up:
-            return "spot_up", "Mua spot dẫn dắt", "Giá tăng mà đòn bẩy không tăng tương ứng, lực mua spot và Coinbase Premium dương: đà tăng lành mạnh hơn."
-        return "mixed_up", "Tăng do nhiều lực cùng lúc", "Không có dấu hiệu nào áp đảo giữa đóng short, long đòn bẩy và mua spot."
+            return "lev_up", "Long đòn bẩy dẫn dắt", "Giá, open interest và funding cùng tăng: người mua chủ yếu dùng đòn bẩy, dễ bị đảo chiều và thanh lý dây chuyền." + spot_txt
+        if pn > 0.015 and pn > sn + 0.01 and sp <= 0:
+            return "perp_up", "Mua futures dẫn dắt", "Lệnh mua chủ động tập trung ở futures, spot không theo kịp: đà tăng thiếu nền tiền thật." + spot_txt
+        if sp >= 1:
+            return "spot_up", "Mua spot dẫn dắt", "Giá tăng mà đòn bẩy không tăng tương ứng, trong khi spot được mua ròng: đà tăng lành mạnh hơn."
+        return "mixed_up", "Tăng do nhiều lực cùng lúc", "Không có dấu hiệu nào áp đảo giữa đóng short, long đòn bẩy và mua spot." + spot_txt
     if doi <= -thr_oi:
-        return ("squeeze_dn", "Long bị thanh lý (xả đòn bẩy)",
-                "Giá giảm trong khi open interest giảm: phần lớn lực bán đến từ long bị thanh lý hoặc tự đóng lệnh."
-                + (" Spot vẫn đang bị bán, áp lực có thể còn." if spot_dn else " Spot không bị bán mạnh, đợt giảm có thể chủ yếu là xả đòn bẩy."))
+        return "squeeze_dn", "Long bị thanh lý (xả đòn bẩy)", "Giá giảm trong khi open interest giảm: phần lớn lực bán đến từ long bị thanh lý hoặc tự đóng lệnh." + spot_txt
+    if lq_long >= 10e6 and lq_long >= 3 * lq_short:
+        return ("liq_dn", "Long bị thanh lý" + (", short mới vào" if doi >= 0 else ""),
+                "Long bị thanh lý gấp nhiều lần short, kéo giá xuống" + ("; open interest không giảm vì phe short mở thêm vị thế." if doi >= 0 else ".") + spot_txt)
     if doi >= thr_oi and (fpct if fpct is not None else 50) <= 30:
-        return "lev_dn", "Short đòn bẩy dẫn dắt", "Giá giảm trong khi open interest tăng và funding thấp: short mới đang dồn vào; nếu giá bật lên, dễ thành short squeeze."
-    if spot_dn:
-        return "spot_dn", "Bán spot dẫn dắt", "Giá giảm cùng lực bán spot và Coinbase Premium âm: người bán thật đang rút tiền, đáng lo hơn xả đòn bẩy."
-    return "mixed_dn", "Giảm do nhiều lực cùng lúc", "Không có dấu hiệu nào áp đảo giữa thanh lý long, short mới và bán spot."
+        return "lev_dn", "Short đòn bẩy dẫn dắt", "Giá giảm trong khi open interest tăng và funding thấp: short mới đang dồn vào; nếu giá bật lên, dễ thành short squeeze." + spot_txt
+    if pn < -0.015 and pn < sn - 0.01 and sp >= 0:
+        return "perp_dn", "Bán futures dẫn dắt", "Lệnh bán chủ động tập trung ở futures trong khi spot không bị bán mạnh: đợt giảm chủ yếu do giới đầu cơ." + spot_txt
+    if sp <= -1:
+        return "spot_dn", "Bán spot dẫn dắt", "Giá giảm cùng lực bán spot" + (" và Coinbase Premium âm" if prem is not None and prem < -0.03 else "") + ": người bán thật đang rút tiền, đáng lo hơn xả đòn bẩy."
+    return "mixed_dn", "Giảm do nhiều lực cùng lúc", "Không có dấu hiệu nào áp đảo giữa thanh lý long, short mới và bán spot." + spot_txt
 
 
 def drivers(cb: dict | None, M: dict, errs: dict) -> dict | None:
@@ -364,7 +378,7 @@ def drivers(cb: dict | None, M: dict, errs: dict) -> dict | None:
         perp_net = (sum(b - s for _, s, b in pp) / sum(b + s for _, s, b in pp)) if pp and sum(b + s for _, s, b in pp) else None
         pr = [v for t, v in prem_series if t >= t0 * 1000]
         prem = sum(pr) / len(pr) if pr else None
-        code, label, why = classify_move(dp, doi, fpct, spot_net, prem, thr_p, thr_oi)
+        code, label, why = classify_move(dp, doi, fpct, spot_net, perp_net, prem, liq if hours == 24 else None, thr_p, thr_oi)
         out["windows"][str(hours)] = {"dp": round(dp, 2), "doi": round(doi, 2), "spot_net": None if spot_net is None else round(spot_net * 100, 1),
                                      "perp_net": None if perp_net is None else round(perp_net * 100, 1), "spot_btc": round(sum(b - s for _, s, b in sp), 1) if sp else None,
                                      "perp_usd": round(sum(b - s for _, s, b in pp)) if pp else None, "prem": None if prem is None else round(prem, 3),
