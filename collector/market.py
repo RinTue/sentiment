@@ -280,6 +280,7 @@ def okx_liquidations(hours: int = 24, max_pages: int = 30) -> dict:
     cutoff = (time.time() - hours * 3600) * 1000
     long_usd = short_usd = 0.0
     oldest, after = None, None
+    hourly: dict = {}
     for _ in range(max_pages):
         p = {"instType": "SWAP", "uly": "BTC-USDT", "state": "filled", "limit": 100}
         if after:
@@ -293,17 +294,94 @@ def okx_liquidations(hours: int = 24, max_pages: int = 30) -> dict:
             if t < cutoff:
                 continue
             usd = float(d["sz"]) * 0.01 * float(d["bkPx"])
+            hb = hourly.setdefault(int(t // 3600000) * 3600000, [0.0, 0.0])
             if (d.get("posSide") or ("short" if d.get("side") == "buy" else "long")) == "short":
                 short_usd += usd
+                hb[1] += usd
             else:
                 long_usd += usd
+                hb[0] += usd
         oldest = min(float(d["ts"]) for d in det)
         if oldest < cutoff:
             break
         after = int(oldest)
         time.sleep(0.15)
     covered = min(hours, (time.time() * 1000 - (oldest or time.time() * 1000)) / 3600e3)
-    return {"long": round(long_usd), "short": round(short_usd), "hours": round(covered, 1)}
+    return {"long": round(long_usd), "short": round(short_usd), "hours": round(covered, 1),
+            "series": [[t, round(v[0]), round(v[1])] for t, v in sorted(hourly.items())]}
+
+
+COINALYZE_KEY = os.environ.get("COINALYZE_API_KEY", "").strip()
+COINALYZE_CACHE = os.path.join(DATA, "coinalyze_markets.json")
+CZ_PRIORITY = ["binance", "bybit", "okx", "bitget", "hyperliquid", "deribit", "bitmex", "gate", "htx", "huobi", "kraken", "bitfinex", "dydx", "coinbase", "bingx", "mexc"]
+
+
+def cz_get(path: str, params: dict | None = None):
+    r = requests.get("https://api.coinalyze.net/v1/" + path, params=params, headers={"api_key": COINALYZE_KEY, "User-Agent": UA}, timeout=20)
+    if r.status_code == 429:
+        time.sleep(min(30, float(r.headers.get("Retry-After", 10))))
+        r = requests.get("https://api.coinalyze.net/v1/" + path, params=params, headers={"api_key": COINALYZE_KEY, "User-Agent": UA}, timeout=20)
+    r.raise_for_status()
+    return r.json()
+
+
+def cz_markets() -> dict:
+    """Danh sách hợp đồng vĩnh cửu BTC trên các sàn lớn (lưu 3 ngày để tiết kiệm lượt gọi)."""
+    try:
+        with open(COINALYZE_CACHE, encoding="utf-8") as f:
+            c = json.load(f)
+        if time.time() - c.get("saved", 0) < 3 * 86400 and c.get("symbols"):
+            return c
+    except (OSError, json.JSONDecodeError):
+        pass
+    ex = {e["code"]: e["name"] for e in cz_get("exchanges")}
+    mk = [m for m in cz_get("future-markets") if (m.get("base_asset") or "").upper() == "BTC" and m.get("is_perpetual")]
+    def rank(m):
+        name = ex.get(m.get("exchange"), "").lower()
+        pr = next((i for i, k in enumerate(CZ_PRIORITY) if k in name), 99)
+        q = (m.get("quote_asset") or "").upper()
+        return (pr, 0 if q == "USDT" else 1 if q == "USD" else 2)
+    mk = sorted([m for m in mk if rank(m)[0] < 99], key=rank)[:16]
+    c = {"saved": time.time(), "symbols": [m["symbol"] for m in mk], "exchanges": sorted({ex.get(m["exchange"], m["exchange"]) for m in mk}, key=lambda n: next((i for i, k in enumerate(CZ_PRIORITY) if k in n.lower()), 99))}
+    with open(COINALYZE_CACHE, "w", encoding="utf-8") as f:
+        json.dump(c, f, ensure_ascii=False)
+    return c
+
+
+def coinalyze(cb: dict | None) -> dict:
+    """Thanh lý và open interest gộp nhiều sàn (cần khóa COINALYZE_API_KEY miễn phí)."""
+    mk = cz_markets()
+    syms = ",".join(mk["symbols"])
+    now = int(time.time())
+    liq = cz_get("liquidation-history", {"symbols": syms, "interval": "1hour", "from": now - 25 * 3600, "to": now, "convert_to_usd": "true"})
+    agg: dict = {}
+    for row in liq:
+        for h in row.get("history", []):
+            a = agg.setdefault(int(h["t"]), [0.0, 0.0])
+            a[0] += float(h.get("l") or 0)
+            a[1] += float(h.get("s") or 0)
+    series = [[t * 1000, round(v[0]), round(v[1])] for t, v in sorted(agg.items()) if t >= (now - now % 3600) - 23 * 3600]
+    out = {"exchanges": mk["exchanges"], "symbols": len(mk["symbols"]), "series": series,
+           "h24": {"long": round(sum(x[1] for x in series)), "short": round(sum(x[2] for x in series))}}
+    oi = cz_get("open-interest-history", {"symbols": syms, "interval": "1hour", "from": now - 100 * 3600, "to": now, "convert_to_usd": "true"})
+    tot: dict = {}
+    cnt: dict = {}
+    for row in oi:
+        for h in row.get("history", []):
+            tot[int(h["t"])] = tot.get(int(h["t"]), 0.0) + float(h.get("c") or 0)
+            cnt[int(h["t"])] = cnt.get(int(h["t"]), 0) + 1
+    full = max(cnt.values()) if cnt else 0
+    if cb and full:
+        ser = []
+        for t in sorted(tot):
+            if cnt[t] < full:      # bỏ giờ thiếu sàn để chuỗi không nhảy bậc
+                continue
+            px = cb.get(t) or cb.get(t - t % 3600)
+            if px:
+                ser.append((t, tot[t] / px))
+        if len(ser) >= 30:
+            out["oi_btc"] = ser
+    return out
 
 
 def classify_move(dp: float, doi: float, fpct: float | None, spot_net: float | None, perp_net: float | None, prem: float | None,
@@ -351,12 +429,15 @@ def classify_move(dp: float, doi: float, fpct: float | None, spot_net: float | N
 
 
 def drivers(cb: dict | None, M: dict, errs: dict) -> dict | None:
-    oi = try_(errs, "oi_okx", okx_oi_hourly)
+    agg = M.get("liq_agg") or {}
+    oi = agg.get("oi_btc") or try_(errs, "oi_okx", okx_oi_hourly)
+    oi_src = f"{len(agg.get('exchanges', []))} sàn (Coinalyze)" if agg.get("oi_btc") else "OKX"
     if not oi or len(oi) < 30:
         return None
     spot = try_(errs, "taker_spot", okx_taker_hourly, "SPOT") or []
     perp = try_(errs, "taker_perp", okx_taker_hourly, "CONTRACTS") or []
     liq = try_(errs, "liq_okx", okx_liquidations, 24)
+    liq_cls = {"long": agg["h24"]["long"], "short": agg["h24"]["short"]} if agg.get("h24") else liq
     price = cb or {}
     if not price:
         return None
@@ -378,7 +459,7 @@ def drivers(cb: dict | None, M: dict, errs: dict) -> dict | None:
         perp_net = (sum(b - s for _, s, b in pp) / sum(b + s for _, s, b in pp)) if pp and sum(b + s for _, s, b in pp) else None
         pr = [v for t, v in prem_series if t >= t0 * 1000]
         prem = sum(pr) / len(pr) if pr else None
-        code, label, why = classify_move(dp, doi, fpct, spot_net, perp_net, prem, liq if hours == 24 else None, thr_p, thr_oi)
+        code, label, why = classify_move(dp, doi, fpct, spot_net, perp_net, prem, liq_cls if hours == 24 else None, thr_p, thr_oi)
         out["windows"][str(hours)] = {"dp": round(dp, 2), "doi": round(doi, 2), "spot_net": None if spot_net is None else round(spot_net * 100, 1),
                                      "perp_net": None if perp_net is None else round(perp_net * 100, 1), "spot_btc": round(sum(b - s for _, s, b in sp), 1) if sp else None,
                                      "perp_usd": round(sum(b - s for _, s, b in pp)) if pp else None, "prem": None if prem is None else round(prem, 3),
@@ -386,6 +467,8 @@ def drivers(cb: dict | None, M: dict, errs: dict) -> dict | None:
     if not out["windows"]:
         return None
     out["liq"] = liq
+    out["liq_src"] = "agg" if agg.get("h24") else "okx"
+    out["oi_src"] = oi_src
     out["funding_pct"] = fpct
     # chuỗi theo giờ cho biểu đồ (4 ngày): giá, OI, CVD spot (BTC), CVD futures (USD)
     t_min = t_end - 96 * 3600
@@ -495,7 +578,15 @@ def run(latest: dict, text_history: list) -> dict:
                             "avg7d": round(sum(v for _, v in ser) / len(ser), 4), "series": [[t * 1000, round(v, 4)] for t, v in ser]}
         M["btc"] = {"price": cb[max(cb)], "ch24": round((cb[max(cb)] / cb[max(cb) - 86400] - 1) * 100, 2) if max(cb) - 86400 in cb else None}
 
+    if COINALYZE_KEY:
+        ca = try_(errs, "coinalyze", coinalyze, cb)
+        if ca:
+            M["liq_agg"] = {k: v for k, v in ca.items() if k != "oi_btc"}
+            if ca.get("oi_btc"):
+                M["liq_agg"]["oi_btc"] = ca["oi_btc"]
     dv = try_(errs, "drivers", drivers, cb, M, errs)
+    if M.get("liq_agg"):
+        M["liq_agg"].pop("oi_btc", None)   # đã dùng trong phân tích đà giá, không cần ghi vào latest.json
     if dv:
         M["drivers"] = dv
 
