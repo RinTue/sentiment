@@ -1,4 +1,4 @@
-# Trạm tâm lý crypto
+# Sentiment Analysis Crypto
 
 Hệ thống phân tích tâm lý thị trường crypto theo 5 tầng, chạy miễn phí trên GitHub.
 
