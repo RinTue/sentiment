@@ -215,9 +215,10 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <div><h3>Bài tích cực nổi bật</h3><div class="posts" id="tx-pos"></div></div>
       <div><h3>Bài tiêu cực nổi bật</h3><div class="posts" id="tx-neg"></div></div>
     </div>
+    <details class="method" style="margin-top:14px"><summary>Thử nghiệm: CryptoBERT so với mô hình đang dùng</summary><div id="mc-model" style="margin-top:10px"></div></details>
     <h3>Tầng 2: đã lọc bỏ</h3>
     <div class="chips" id="tx-filter"></div>
-    <p class="note" id="tx-note">Khi mở từ đường link GitHub, văn bản đến từ bộ thu thập chạy mỗi giờ: 8 báo crypto, Reddit, Mastodon, Lemmy, Hacker News. Khi mở file trên máy, trang tự đọc Mastodon, Lemmy và Hacker News, là cộng đồng thiên về công nghệ và thường hoài nghi crypto, nên hãy chú ý mức thay đổi hơn con số tuyệt đối.</p>
+    <p class="note" id="tx-note">Khi mở từ đường link GitHub, văn bản đến từ bộ thu thập chạy mỗi giờ: 8 báo crypto, Reddit, YouTube, Telegram, Mastodon, Lemmy, Hacker News. Khi mở file trên máy, trang tự đọc Mastodon, Lemmy và Hacker News, là cộng đồng thiên về công nghệ và thường hoài nghi crypto, nên hãy chú ý mức thay đổi hơn con số tuyệt đối.</p>
   </section>
 
   <section class="panel">
@@ -277,13 +278,13 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
     <details class="method">
       <summary>Cách hệ thống hoạt động và giới hạn</summary>
       <ol>
-        <li><b>Thu thập:</b> mỗi giờ, bộ thu thập trên GitHub đọc 8 báo crypto, Reddit, Mastodon, Lemmy và Hacker News; cùng dữ liệu thị trường (Fear &amp; Greed, CoinGecko, funding và tỷ lệ long/short của OKX/Hyperliquid, quyền chọn Deribit, Wikipedia, Coinbase, DefiLlama) và số liệu vĩ mô (FRED, Bộ Tài chính Mỹ, Fed New York, Yahoo). Khi bạn mở trang, trình duyệt lấy thêm số liệu trực tiếp từ Bybit, OKX, Deribit, SoSoValue và lịch Investing.com.</li>
+        <li><b>Thu thập:</b> mỗi giờ, bộ thu thập trên GitHub đọc 8 báo crypto, Reddit, tiêu đề video của 11 kênh YouTube crypto lớn, 4 kênh tin Telegram, Mastodon, Lemmy và Hacker News; cùng dữ liệu thị trường (Fear &amp; Greed, CoinGecko, funding và tỷ lệ long/short của OKX/Hyperliquid, quyền chọn Deribit, Wikipedia, Coinbase, DefiLlama) và số liệu vĩ mô (FRED, Bộ Tài chính Mỹ, Fed New York, Yahoo). Khi bạn mở trang, trình duyệt lấy thêm số liệu trực tiếp từ Bybit, OKX, Deribit, SoSoValue và lịch Investing.com.</li>
         <li><b>Lọc:</b> bỏ bài trùng, bot báo giá, quảng cáo, bài không phải tiếng Anh, bài không nói về crypto, và giới hạn số bài của mỗi tác giả.</li>
         <li><b>Chấm điểm:</b> mỗi bài nhận điểm từ −1 đến +1, kết hợp mô hình AI Twitter RoBERTa với từ điển thuật ngữ crypto (hiểu "rekt", "ATH", "outflows", phủ định…).</li>
         <li><b>Chỉ số:</b> điểm văn bản (so với lịch sử) kết hợp với Fear &amp; Greed, phiếu cộng đồng, funding, tỷ lệ long/short, quyền chọn và mức chú ý thành chỉ số 0–100. Máy chủ lưu chỉ số mỗi giờ; con số trên đồng hồ được trình duyệt tính lại bằng dữ liệu trực tiếp nên có thể lệch vài điểm so với máy chủ.</li>
         <li><b>Nhận định và cảnh báo:</b> các quy tắc cố định chuyển số liệu thành câu chữ. Nếu đã cài Telegram, máy chủ gửi bản tin mỗi sáng, cảnh báo khi tâm lý vào vùng cực đoan, funding bất thường và nhắc trước số liệu vĩ mô cấp 1 (tối đa 3 cảnh báo thị trường mỗi ngày).</li>
       </ol>
-      <p>Giới hạn: chưa đọc được X (Twitter), Telegram, YouTube, nơi phần lớn đám đông crypto lên tiếng; trọng số và ngưỡng do con người đặt, chưa được kiểm chứng bằng dữ liệu của chính chỉ số này (mới kiểm chứng Fear &amp; Greed); nguồn miễn phí có thể đổi hoặc chặn bất cứ lúc nào. Đây là công cụ tham khảo, không phải lời khuyên đầu tư.</p>
+      <p>Giới hạn: chưa đọc được X (Twitter) và các nhóm chat Telegram, nơi phần lớn đám đông crypto lên tiếng (kênh Telegram và YouTube mới phản ánh giọng điệu của người có ảnh hưởng); trọng số và ngưỡng do con người đặt, chưa được kiểm chứng bằng dữ liệu của chính chỉ số này (mới kiểm chứng Fear &amp; Greed); nguồn miễn phí có thể đổi hoặc chặn bất cứ lúc nào. Đây là công cụ tham khảo, không phải lời khuyên đầu tư.</p>
     </details>
   </section>
 
@@ -942,6 +943,17 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     } else { $("c-stable").innerHTML = `<div class="msg">${S.sv ? "Bộ thu thập chưa có số liệu stablecoin." : "Số liệu stablecoin do bộ thu thập trên GitHub cung cấp."}</div>`; $("stable-note").textContent = ""; }
   }
 
+  function renderModelCompare() {
+    const box = $("mc-model"); if (!box) return;
+    const mc = S.sv && S.sv.L.model_compare;
+    if (!mc || !mc.eval) { box.innerHTML = `<p class="note">${S.sv ? "Kết quả so sánh sẽ có sau lần chạy tới của bộ thu thập." : "Phần này do bộ thu thập trên GitHub tính."}</p>`; return; }
+    const rows = Object.entries(mc.eval).map(([k, v]) => `<tr${/^Đang dùng/.test(k) ? ' style="font-weight:600"' : ""}><td>${esc(k)}</td><td class="num">${v.acc}%</td><td class="num">${v.by.pos}%</td><td class="num">${v.by.neg}%</td><td class="num">${v.by.neu}%</td><td class="num">${v.wrong_dir}</td></tr>`).join("");
+    const L = mc.live || {};
+    box.innerHTML = `<div class="tbl-wrap"><table><thead><tr><th>Cách chấm</th><th>Đúng nhãn</th><th>Đúng câu tích cực</th><th>Đúng câu tiêu cực</th><th>Đúng câu trung tính</th><th>Chấm ngược chiều</th></tr></thead><tbody>${rows}</tbody></table></div>` +
+      `<p class="note">Chấm ${Object.values(mc.eval)[0].n} câu crypto có nhãn sẵn (tiếng lóng, tin tức, câu trung tính). Bộ câu nhỏ và do người viết, nên chỉ để tham khảo; "chấm ngược chiều" (câu tích cực bị chấm tiêu cực hoặc ngược lại) là lỗi nặng nhất.</p>` +
+      (L.n ? `<p class="note">Trên ${L.n} bài thật 24 giờ qua: chỉ số theo cách đang dùng <b>${L.index_current}</b>/100, theo CryptoBERT + từ điển <b>${L.index_cryptobert}</b>/100; hai cách cho cùng nhãn ở ${L.agree}% số bài.</p>` +
+        (L.examples && L.examples.length ? `<div class="posts">${L.examples.map((e) => `<div class="post"><div class="meta">${esc(e.src)} · đang dùng ${num(e.current, 2)} · CryptoBERT ${num(e.cryptobert, 2)}</div><p class="orig">${esc(e.text)}</p></div>`).join("")}</div>` : "") : "");
+  }
   function renderAlertNote() {
     const el = $("alert-note"); if (!el) return;
     const a = S.sv && S.sv.L.alerts;
@@ -1116,7 +1128,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       $("p2").textContent = `giữ ${kept.length}, loại ${col.items.length - kept.length}`;
       S.mode = "lex"; ENGINE.score(S.kept, null);
     }
-    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, afterScore];
+    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, afterScore];
     steps.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
     const failed = keys.filter((k) => S.err[k]).map((k) => SRC_NAME[k]).concat(Object.keys(col.errs || {}));
     $("updated").textContent = `Cập nhật lúc ${fmtTime(Date.now())} (giờ Việt Nam)` + (S.mode === "server" ? ` · văn bản từ máy chủ lúc ${fmtTime(Date.parse(S.server.L.generated_at))}` : "") + (failed.length ? ` · Không tải được: ${failed.join(", ")}` : "");

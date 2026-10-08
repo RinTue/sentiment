@@ -46,6 +46,15 @@ RSS_FEEDS = {
 }
 SUBREDDITS = ["CryptoCurrency", "Bitcoin", "ethereum", "CryptoMarkets", "BitcoinMarkets"]
 MASTODON_TAGS = ["bitcoin", "btc", "crypto", "cryptocurrency", "ethereum"]
+# Kênh YouTube crypto lớn (tiêu đề video phản ánh giọng điệu của người có ảnh hưởng). Tên thật lấy từ RSS.
+YOUTUBE = {
+    "UCqK_GSMbpiV8spgD3ZGloSw": "Coin Bureau", "UCbLhGKVY-bJPcawebgtNfbw": "Altcoin Daily", "UCRvqjQPSeaWn-uEx-w0XOIg": "Benjamin Cowen",
+    "UCN9Nj4tjXbVTLYWN0EKly_Q": "Crypto Banter", "UCl2oCaw8hdR_kbqyqd2klIA": "Lark Davis", "UClgJyzwGs-GyaNxUHcLZrkg": "InvestAnswers",
+    "UCCatR7nWbYrkVXdxXb4cGXw": "DataDash", "UCAl9Ld79qaZxp9JzEOwd3aA": "Bankless", "UCc4Rz_T9Sb1w5rqqo9pL1Og": "The Moon",
+    "UCiUnrCUGCJTCC7KjuW493Ww": "Crypto Zombie", "UC4VPa7EOvObpyCRI4YKRQRw": "Paul Barron Network",
+}
+# Kênh Telegram công khai (đọc qua trang xem trước t.me/s/), chủ yếu là kênh tin nhanh.
+TELEGRAM = ["WatcherGuru", "cointelegraph", "bitcoinmagazinetelegram", "wublockchainenglish"]
 
 # ---------------------------------------------------------------- tầng 3a: từ điển
 PHRASES = [("to the moon", 2), ("all-time high", 2), ("all time high", 2), ("new high", 1.5), ("record high", 1.6),
@@ -203,6 +212,57 @@ def fetch_mastodon() -> tuple[list, dict]:
     return items, status
 
 
+def fetch_youtube() -> tuple[list, dict]:
+    items, status = [], {}
+    for cid, name in YOUTUBE.items():
+        try:
+            r = requests.get("https://www.youtube.com/feeds/videos.xml", params={"channel_id": cid}, headers={"User-Agent": UA}, timeout=15)
+            r.raise_for_status()
+            feed = feedparser.parse(r.content)
+            ch = (feed.feed.get("title") or name).strip()
+            for e in feed.entries:
+                ts = e.get("published_parsed") or e.get("updated_parsed")
+                title = strip(e.get("title", ""))   # chỉ dùng tiêu đề: phần mô tả thường là quảng cáo, mã giới thiệu
+                items.append({"src": "YouTube", "outlet": ch, "id": "yt:" + e.get("yt_videoid", e.get("id", "")), "t": calendar.timegm(ts) if ts else NOW,
+                              "text": title, "title": title, "url": e.get("link"), "author": ch,
+                              "eng": 0, "lang": "en", "bot": False, "kind": "social"})
+            status["YT " + ch] = len(feed.entries)
+        except Exception as ex:  # noqa: BLE001
+            status["YT " + name] = "lỗi: " + str(ex)[:80]
+        time.sleep(0.5)
+    return items, status
+
+
+def fetch_telegram() -> tuple[list, dict]:
+    items, status = [], {}
+    for ch in TELEGRAM:
+        try:
+            r = requests.get(f"https://t.me/s/{ch}", headers={"User-Agent": UA}, timeout=15)
+            r.raise_for_status()
+            blocks = r.text.split('class="tgme_widget_message_wrap')[1:]
+            n = 0
+            for b in blocks:
+                post = re.search(r'data-post="([^"]+)"', b)
+                tm = re.search(r'<time[^>]*datetime="([^"]+)"', b)
+                tx = re.search(r'<div class="tgme_widget_message_text[^"]*"[^>]*>(.*?)</div>', b, re.S)
+                if not (post and tm and tx):
+                    continue
+                text = strip(tx.group(1))
+                text = re.sub(r"@\w+\s*$", "", text).strip()
+                try:
+                    t = datetime.fromisoformat(tm.group(1)).timestamp()
+                except ValueError:
+                    continue
+                items.append({"src": "Telegram", "outlet": "@" + ch, "id": "tg:" + post.group(1), "t": t, "text": text[:700],
+                              "title": None, "url": "https://t.me/" + post.group(1), "author": ch, "eng": 0, "lang": None, "bot": False, "kind": "social"})
+                n += 1
+            status["TG @" + ch] = n
+        except Exception as ex:  # noqa: BLE001
+            status["TG @" + ch] = "lỗi: " + str(ex)[:80]
+        time.sleep(0.5)
+    return items, status
+
+
 def fetch_lemmy_hn() -> tuple[list, dict]:
     items, status = [], {}
     for q in ["bitcoin", "crypto"]:
@@ -251,6 +311,13 @@ def looks_foreign(s: str) -> bool:
     return len(words) >= 6 and len(FOREIGN.findall(s)) / len(words) > 0.08
 
 
+NEWS_CRYPTO = re.compile(r"crypto|bitcoin|\bbtc\b|ether|\beth\b|token|stablecoin|tether|usd[ct]\b|blockchain|defi\b|\bnfts?\b|\betfs?\b|coins?\b|"
+                         r"zcash|cardano|\bada\b|solana|\bsol\b|xrp|ripple|binance|coinbase|kraken|wallet|mining|miners?\b|satoshi|altcoin|"
+                         r"memecoin|web3|\bdaos?\b|on-?chain|ledger|exchange|\bsec\b|cftc|circle\b|saylor|doge|hyperliquid|polymarket|"
+                         r"prediction market|digital asset|world liberty|wlfi|usd1|\blink\b|market maker|risk assets|tokeni[sz]|rwa\b|halving|layer[ -]?2|airdrop|staking|validator|mixer|tornado", re.I)
+EMOJI_RE = re.compile("[\U0001F000-\U0001FAFF\u2600-\u27BF\u2B00-\u2BFF\uFE0F\u200D\u20E3]")
+
+
 def ascii_ratio(s: str) -> float:
     return sum(1 for ch in s if ord(ch) < 128) / max(1, len(s))
 
@@ -278,18 +345,22 @@ def clean(items: list) -> tuple[list, dict]:
         if ADS.search(text):
             reasons["quảng cáo / rao bán"] += 1
             continue
-        if (it.get("lang") and it["lang"] != "en") or ascii_ratio(core) < 0.9 or looks_foreign(core):
+        plain = EMOJI_RE.sub("", core)
+        if (it.get("lang") and it["lang"] != "en") or ascii_ratio(plain) < 0.9 or looks_foreign(plain):
             reasons["không phải tiếng Anh"] += 1
             continue
         if len(core) < 25:
             reasons["quá ngắn"] += 1
+            continue
+        if it["kind"] == "news" and not NEWS_CRYPTO.search(text):   # báo crypto đôi khi đăng tin game, AI, công nghệ chung
+            reasons["không liên quan crypto"] += 1
             continue
         if it["kind"] == "social" and (not RELEVANT.search(text) or (NOT_CRYPTO.search(text) and not re.search(r"\b(bitcoin|btc|ethereum|eth|cryptocurrenc)", text, re.I))):
             reasons["không liên quan crypto"] += 1
             continue
         a = it["src"] + ":" + str(it.get("author"))
         per_author[a] += 1
-        if it["kind"] == "social" and per_author[a] > 3:
+        if it["kind"] == "social" and it["src"] not in ("YouTube", "Telegram") and per_author[a] > 3:
             reasons["cùng tác giả quá nhiều"] += 1
             continue
         kept.append(it)
@@ -345,7 +416,7 @@ STOP = set("the a an and or but if then than that this these those there their t
 GENERIC = set("bitcoin btc crypto cryptocurrency cryptocurrencies ethereum eth coin coins blockchain price prices market markets news token tokens".split())
 COINS = [("BTC", r"\b(bitcoin|btc|sats?|satoshi)\b"), ("ETH", r"\b(ethereum|eth|ether)\b"), ("SOL", r"\b(solana|sol)\b"), ("XRP", r"\b(xrp|ripple)\b"),
          ("DOGE", r"\b(dogecoin|doge)\b"), ("BNB", r"\b(bnb)\b"), ("ADA", r"\b(cardano|ada)\b"), ("Stablecoin", r"\b(stablecoins?|usdt|usdc|tether)\b")]
-SRC_WEIGHT = {"Tin tức": 1.0, "Reddit": 1.0, "Mastodon": 0.8, "Hacker News": 0.7, "Lemmy": 0.5}
+SRC_WEIGHT = {"Tin tức": 1.0, "Reddit": 1.0, "YouTube": 0.8, "Telegram": 0.8, "Mastodon": 0.8, "Hacker News": 0.7, "Lemmy": 0.3}
 
 
 def wmean(arr):
@@ -824,6 +895,8 @@ def load_items() -> dict:
                 try:
                     x = json.loads(line)
                     x["text"] = re.sub(r"\s{2,}", " ", BOILER.sub("", x.get("text") or "")).strip()   # dọn bài cũ lưu trước khi có bộ lọc mới
+                    if x.get("kind") == "news" and not NEWS_CRYPTO.search(x["text"]):
+                        continue
                     out[x["id"]] = x
                 except json.JSONDecodeError:
                     continue
@@ -834,7 +907,7 @@ def main() -> int:
     os.makedirs(DATA, exist_ok=True)
     started = time.time()
     raw, status = [], {}
-    for fn in (fetch_rss, fetch_reddit, fetch_mastodon, fetch_lemmy_hn):
+    for fn in (fetch_rss, fetch_reddit, fetch_mastodon, fetch_lemmy_hn, fetch_youtube, fetch_telegram):
         a, st = fn()
         raw += a
         status.update(st)
