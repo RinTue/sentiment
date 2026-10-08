@@ -1,23 +1,23 @@
 {
- "generated_at": "2026-10-08T14:29:26+00:00",
+ "generated_at": "2026-10-08T14:41:33+00:00",
  "scoring": "AI + từ điển (100% số bài có điểm AI)",
- "raw_count": 1384,
- "kept_count": 493,
- "new_count": 176,
+ "raw_count": 1405,
+ "kept_count": 506,
+ "new_count": 115,
  "stored_7d": 456,
  "filter_reasons": {
-  "không phải tiếng Anh": 126,
-  "trùng lặp": 264,
-  "không liên quan crypto": 216,
-  "bot / báo giá tự động": 180,
-  "quảng cáo / rao bán": 17,
-  "quá ngắn": 15,
-  "cùng tác giả quá nhiều": 73
+  "không liên quan crypto": 211,
+  "không phải tiếng Anh": 127,
+  "bot / báo giá tự động": 181,
+  "trùng lặp": 281,
+  "quảng cáo / rao bán": 18,
+  "quá ngắn": 16,
+  "cùng tác giả quá nhiều": 65
  },
  "source_status": {
   "CoinDesk": 25,
   "Cointelegraph": 30,
-  "Decrypt": 35,
+  "Decrypt": 55,
   "The Block": 20,
   "Bitcoin Magazine": 10,
   "CryptoSlate": 10,
@@ -26,8 +26,8 @@
   "r/BitcoinMarkets": 50,
   "r/CryptoCurrency": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/CryptoCurr",
   "r/Bitcoin": 50,
-  "r/ethereum": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/ethereum/n",
-  "r/CryptoMarkets": 50,
+  "r/ethereum": 50,
+  "r/CryptoMarkets": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/CryptoMark",
   "#bitcoin": 120,
   "#btc": 120,
   "#crypto": 120,
@@ -49,37 +49,37 @@
   "YT The Moon Show": 15,
   "YT Crypto Zombie": 15,
   "YT Paul Barron Network": 15,
-  "TG @WatcherGuru": 17,
+  "TG @WatcherGuru": 18,
   "TG @cointelegraph": 15,
   "TG @bitcoinmagazinetelegram": 17,
   "TG @wublockchainenglish": 20
  },
- "runtime_sec": 193.9,
+ "runtime_sec": 212.2,
  "all": {
-  "score": 0.062,
+  "score": 0.0679,
   "index": 53,
-  "n": 209,
-  "pos": 37.8,
-  "neg": 24.4,
-  "neu": 37.8
+  "n": 206,
+  "pos": 37.9,
+  "neg": 23.8,
+  "neu": 38.3
  },
  "news": {
-  "score": 0.0566,
+  "score": 0.0541,
   "index": 53,
-  "n": 113,
-  "pos": 34.5,
-  "neg": 23.0,
-  "neu": 42.5
+  "n": 111,
+  "pos": 34.2,
+  "neg": 22.5,
+  "neu": 43.2
  },
  "social": {
-  "score": 0.0693,
-  "index": 53,
-  "n": 96,
-  "pos": 41.7,
-  "neg": 26.0,
-  "neu": 32.3
+  "score": 0.0865,
+  "index": 54,
+  "n": 95,
+  "pos": 42.1,
+  "neg": 25.3,
+  "neu": 32.6
  },
- "trend": 0.034,
+ "trend": 0.0325,
  "window_hours": 24,
  "daily": [
   {
@@ -100,44 +100,44 @@
   {
    "date": "2026-10-05",
    "n": 18,
-   "score": 0.0154
+   "score": 0.0135
   },
   {
    "date": "2026-10-06",
    "n": 61,
-   "score": 0.0809
+   "score": 0.0761
   },
   {
    "date": "2026-10-07",
    "n": 140,
-   "score": 0.0377
+   "score": 0.0381
   },
   {
    "date": "2026-10-08",
    "n": 180,
-   "score": 0.0404
+   "score": 0.0547
   }
  ],
  "sources": [
   {
    "src": "Tin tức",
-   "n": 113,
-   "score": 0.0566
-  },
-  {
-   "src": "Reddit",
-   "n": 33,
-   "score": 0.2517
+   "n": 111,
+   "score": 0.0541
   },
   {
    "src": "Telegram",
+   "n": 33,
+   "score": 0.1579
+  },
+  {
+   "src": "Reddit",
    "n": 32,
-   "score": 0.1378
+   "score": 0.2318
   },
   {
    "src": "Mastodon",
-   "n": 12,
-   "score": -0.3145
+   "n": 11,
+   "score": -0.2579
   },
   {
    "src": "Lemmy",
@@ -145,21 +145,17 @@
    "score": -0.4403
   },
   {
-   "src": "Hacker News",
-   "n": 6,
-   "score": -0.2231
-  },
-  {
    "src": "YouTube",
    "n": 6,
    "score": 0.2235
+  },
+  {
+   "src": "Hacker News",
+   "n": 6,
+   "score": -0.2232
   }
  ],
  "keywords": [
-  [
-   "magazine",
-   23
-  ],
   [
    "assets",
    23
@@ -170,53 +166,57 @@
   ],
   [
    "bank",
-   16
-  ],
-  [
-   "next",
-   14
-  ],
-  [
-   "institutional",
-   14
+   15
   ],
   [
    "wallet",
    14
   ],
   [
-   "stablecoin",
-   13
-  ],
-  [
-   "months",
-   13
-  ],
-  [
    "asset",
    13
   ],
   [
-   "trading",
-   12
+   "institutional",
+   13
   ],
   [
    "funds",
    12
   ],
   [
-   "supply",
-   11
+   "stablecoin",
+   12
+  ],
+  [
+   "trading",
+   12
   ],
   [
    "treasury",
+   11
+  ],
+  [
+   "money",
+   11
+  ],
+  [
+   "custody",
+   11
+  ],
+  [
+   "quantum",
+   11
+  ],
+  [
+   "addresses",
    11
   ]
  ],
  "coins": [
   [
    "BTC",
-   101
+   99
   ],
   [
    "ETH",
@@ -224,7 +224,7 @@
   ],
   [
    "Stablecoin",
-   24
+   23
   ],
   [
    "SOL",
@@ -263,15 +263,6 @@
    "vi": "Tăng trưởng mạng Solana tăng 124%: Đây là lý do tại sao nó có thể quan trọng đối với SOL"
   },
   {
-   "src": "Reddit",
-   "outlet": "r/Bitcoin",
-   "t": 1791458908000,
-   "s": 0.771,
-   "text": "What if Bitcoin never hits a new ATH again?",
-   "url": "https://www.reddit.com/r/Bitcoin/comments/1x0oglu/what_if_bitcoin_never_hits_a_new_ath_again/",
-   "vi": "Điều gì sẽ xảy ra nếu Bitcoin không bao giờ chạm lại ATH mới?"
-  },
-  {
    "src": "Tin tức",
    "outlet": "Bitcoin Magazine",
    "t": 1791466064000,
@@ -282,24 +273,24 @@
   },
   {
    "src": "Tin tức",
-   "outlet": "CryptoPotato",
-   "t": 1791383754000,
-   "s": 0.741,
-   "text": "Arthur Hayes: AI Is Overbuilt, and Bitcoin Could Benefit From It",
-   "url": "https://cryptopotato.com/arthur-hayes-ai-is-overbuilt-and-bitcoin-could-benefit-from-it/",
-   "vi": "Arthur Hayes: AI được xây dựng quá mức và Bitcoin có thể hưởng lợi từ nó"
+   "outlet": "Cointelegraph",
+   "t": 1791453367000,
+   "s": 0.737,
+   "text": "Bitcoin monthly ‘new money’ inflows near $5B as BTC price rally stalls",
+   "url": "https://cointelegraph.com/markets/bitcoin-monthly-new-money-inflows-near-5b-as-btc-price-rally-stalls?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+   "vi": "Dòng 'tiền mới‘ hàng tháng của Bitcoin gần 5 tỷ $ khi đà tăng giá BTC chững lại"
+  },
+  {
+   "src": "Reddit",
+   "outlet": "r/Bitcoin",
+   "t": 1791439320000,
+   "s": 0.736,
+   "text": "I’m having fun buying - you?",
+   "url": "https://www.reddit.com/r/Bitcoin/comments/1x0j8tr/im_having_fun_buying_you/",
+   "vi": "Tôi đang rất vui khi mua hàng - bạn?"
   }
  ],
  "top_neg": [
-  {
-   "src": "Mastodon",
-   "outlet": "#btc",
-   "t": 1791454102000,
-   "s": -0.531,
-   "text": "Hack the Backup Von tar auf Band über rsync und rsnapshot bis zu Borg im Append-only-Modus: elf Stopps auf einer Straße, auf der jedes Werkzeug ein Problem löst und ein neues schafft. Und am Ende steht wieder der Bandschrank. Jeder Admin ha",
-   "url": "https://podcasts.social/@behindtheconsole/117404736074353581",
-   "vi": "Hack Backup Von tar auf Band über rsync und rsnapshot bis zu Borg im Append-only-Modus: elf Stopps auf einer Straße, auf der jedes Werkzeug ein Problem löst und ein neues schafft. Und am Ende steht wieder der Bandsch"
-  },
   {
    "src": "Mastodon",
    "outlet": "#crypto",
@@ -335,6 +326,15 @@
    "text": "Vitalik Buterin urges calm as AI raises new fears over Bitcoin and Ethereum cryptography security",
    "url": "https://cryptoslate.com/vitalik-buterin-urges-calm-as-ai-raises-new-fears-over-bitcoin-and-ethereum-cryptography-security/",
    "vi": "Vitalik Buterin kêu gọi bình tĩnh khi AI làm dấy lên những lo ngại mới về bảo mật mật mã hóa Bitcoin và Ethereum"
+  },
+  {
+   "src": "Telegram",
+   "outlet": "@wublockchainenglish",
+   "t": 1791446164000,
+   "s": -0.737,
+   "text": "Ethereum Researcher Warns AI Could Break Crypto Wallet Security Before Quantum Computers Do Ethereum Foundation researcher Justin Drake urged the crypto industry to prepare for \"bunker mode,\" warning that advances in AI and mathematics coul",
+   "url": "https://t.me/wublockchainenglish/26324",
+   "vi": "Nhà nghiên cứu Ethereum cảnh báo AI có thể phá vỡ bảo mật ví tiền điện tử trước khi nhà nghiên cứu Ethereum Foundation Justin Drake kêu gọi ngành công nghiệp tiền điện tử chuẩn bị cho \"chế độ hầm trú ẩn\", cảnh báo rằng những tiến bộ trong AI"
   }
  ],
  "translation": "ok",
@@ -700,9 +700,9 @@
      },
      {
       "name": "Chỉ số USD (DXY)",
-      "value": 102.2040023803711,
+      "value": 102.10299682617188,
       "unit": "",
-      "ch": 3.4,
+      "ch": 3.3,
       "chLabel": "1 tháng",
       "src": "Yahoo (DXY)"
      }
@@ -1074,7 +1074,7 @@
     },
     "notes": [
      "lợi suất thực tăng 49 điểm cơ bản trong tháng",
-     "USD mạnh lên 3,4% trong tháng"
+     "USD mạnh lên 3,3% trong tháng"
     ],
     "label": "Bất lợi"
    },
@@ -1085,25 +1085,25 @@
     "items": [
      {
       "name": "VIX",
-      "value": 15.380000114440918,
+      "value": 15.300000190734863,
       "unit": "",
-      "ch": -0.3,
+      "ch": -0.4,
       "chLabel": "điểm, 1 tháng",
       "src": "Yahoo"
      },
      {
       "name": "Quỹ trái phiếu rủi ro cao (HYG)",
-      "value": 77.125,
+      "value": 77.08499908447266,
       "unit": " $",
-      "ch": -2.52,
+      "ch": -2.57,
       "chLabel": "1 tháng",
       "src": "Yahoo"
      },
      {
       "name": "USD/JPY",
-      "value": 158.06300354003906,
+      "value": 158.11399841308594,
       "unit": "",
-      "ch": 2.99,
+      "ch": 3.02,
       "chLabel": "1 tháng",
       "src": "Yahoo"
      }
@@ -1449,13 +1449,13 @@
       ],
       [
        1791417600000,
-       15.38
+       15.3
       ]
      ]
     },
     "notes": [
-     "VIX ở 15,4",
-     "trái phiếu rủi ro cao bị bán, HYG giảm 2,5% trong tháng"
+     "VIX ở 15,3",
+     "trái phiếu rủi ro cao bị bán, HYG giảm 2,6% trong tháng"
     ],
     "label": "Bất lợi"
    },
@@ -1466,21 +1466,21 @@
     "items": [
      {
       "name": "Nasdaq 100",
-      "value": 31118.599609375,
+      "value": 31073.677734375,
       "unit": "",
-      "ch": 5.5,
+      "ch": 5.3,
       "chLabel": "1 tháng",
-      "ch2": 2.0,
+      "ch2": 1.9,
       "ch2Label": "1 tuần",
       "src": "Yahoo"
      },
      {
       "name": "Bitcoin",
-      "value": 82683.1796875,
+      "value": 82506.1015625,
       "unit": " $",
-      "ch": 5.4,
+      "ch": 5.2,
       "chLabel": "1 tháng",
-      "ch2": -2.6,
+      "ch2": -2.8,
       "ch2Label": "1 tuần",
       "src": "Yahoo"
      },
@@ -1745,7 +1745,7 @@
       ],
       [
        1791417600000,
-       122.59
+       122.42
       ]
      ],
      "series2": [
@@ -1991,7 +1991,7 @@
       ],
       [
        1791417600000,
-       113.18
+       112.94
       ]
      ]
     },
@@ -2015,7 +2015,7 @@
    "cls": "Greed",
    "d7": -10
   },
-  "votes": 59.8,
+  "votes": 58.38,
   "funding": {
    "src": "OKX",
    "last": -1.6852889759e-06,
@@ -2023,7 +2023,7 @@
    "n": 270
   },
   "ls": {
-   "buy": 0.6362,
+   "buy": 0.6348,
    "src": "OKX"
   },
   "pc": 0.586,
@@ -2037,7 +2037,7 @@
     {
      "key": "text",
      "name": "Giọng điệu tin tức và mạng xã hội",
-     "raw": "+0.06 (209 bài)",
+     "raw": "+0.07 (206 bài)",
      "v": 53,
      "w": 25,
      "note": "điểm tuyệt đối",
@@ -2055,8 +2055,8 @@
     {
      "key": "votes",
      "name": "Phiếu cộng đồng CoinGecko",
-     "raw": "59.8% tăng",
-     "v": 49.5,
+     "raw": "58.4% tăng",
+     "v": 46.0,
      "w": 10,
      "note": "40% → 0, 80% → 100",
      "src": "CoinGecko"
@@ -2073,8 +2073,8 @@
     {
      "key": "ls",
      "name": "Tài khoản đang long",
-     "raw": "64%",
-     "v": 67.5,
+     "raw": "63%",
+     "v": 67.1,
      "w": 10,
      "note": "40% → 0, 75% → 100 (OKX)",
      "src": "OKX"
@@ -2101,10 +2101,10 @@
    "weight": 110
   },
   "premium": {
-   "last": -0.2222,
-   "avg24": -0.0757,
+   "last": -0.1052,
+   "avg24": -0.0708,
    "ref": "OKX",
-   "avg7d": -0.0292,
+   "avg7d": -0.0285,
    "series": [
     [
      1790866800000,
@@ -2776,13 +2776,13 @@
     ],
     [
      1791468000000,
-     -0.2222
+     -0.1052
     ]
    ]
   },
   "btc": {
-   "price": 82562.22,
-   "ch24": -0.49
+   "price": 82496.11,
+   "ch24": -0.57
   },
   "stable": {
    "total": 312.3,
@@ -3644,7 +3644,7 @@
    },
    "days": 3167
   },
-  "runtime_sec": 2.6
+  "runtime_sec": 3.5
  },
  "alerts": {
   "configured": true,
@@ -3700,10 +3700,10 @@
    }
   },
   "live": {
-   "n": 208,
+   "n": 204,
    "index_current": 54,
-   "index_cryptobert": 63,
-   "agree": 52,
+   "index_cryptobert": 64,
+   "agree": 50,
    "examples": [
     {
      "src": "Telegram",
@@ -3731,7 +3731,7 @@
     }
    ]
   },
-  "updated": "2026-10-08T14:31:27Z",
-  "runtime_sec": 83.2
+  "updated": "2026-10-08T14:42:02Z",
+  "runtime_sec": 3.3
  }
 }
