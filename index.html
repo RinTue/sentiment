@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trạm tâm lý crypto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: một cột đọc từ trên xuống theo 5 tầng — dải quy trình, nhận định (tầng 5), chỉ số tổng hợp (tầng 4), đám đông nói gì (tầng 1–3), xác nhận bằng hành vi, lịch, vĩ mô */
+:root {
+  --bg: #f4f5f3; --panel: #ffffff; --ink: #14181b; --ink-2: #4c5459; --ink-3: #7b8388; --line: #e1e4e2;
+  --accent: #0f5f6b; --accent-bg: #e3eff0; --good: #1d7a3e; --good-bg: #e3f2e8; --bad: #b3261e; --bad-bg: #fbe7e5;
+  --warn: #8a5a00; --warn-bg: #fbefd6; --neutral-bg: #eceeed; --t1: #b3261e; --t1-bg: #fbe7e5; --t2: #8a5a00; --t2-bg: #fbefd6;
+  --z0: #b3261e; --z1: #d9792b; --z2: #9aa09f; --z3: #4f9a5a; --z4: #1d7a3e;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
+  --font: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #101315; --panel: #191d20; --ink: #eef1f2; --ink-2: #b5bcc0; --ink-3: #868e93; --line: #2a3034;
+    --accent: #5cc0cc; --accent-bg: #15313a; --good: #6fd08f; --good-bg: #173322; --bad: #ff8a80; --bad-bg: #3a1a18;
+    --warn: #f0c060; --warn-bg: #3a2c10; --neutral-bg: #262b2e; --t1: #ff8a80; --t1-bg: #3a1a18; --t2: #f0c060; --t2-bg: #3a2c10;
+    --z0: #ff8a80; --z1: #f0a35e; --z2: #7d8588; --z3: #7cc489; --z4: #6fd08f;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 980px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 48px; display: grid; gap: 18px; }
+header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
+h1 { font-weight: 700; font-size: 1.6rem; letter-spacing: -0.01em; margin: 0; }
+.sub { color: var(--ink-3); font-size: .85rem; margin: 2px 0 0; }
+.btn { font: inherit; font-weight: 600; font-size: .9rem; border-radius: 8px; padding: 8px 14px; border: 1px solid var(--accent); background: var(--accent); color: var(--panel); cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.btn:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); }
+section.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; min-width: 0; }
+h2 { font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+h2 .layer { font-family: var(--mono); letter-spacing: 0; text-transform: none; font-weight: 500; font-size: .72rem; color: var(--accent); background: var(--accent-bg); padding: 1px 7px; border-radius: 4px; }
+h3 { font-size: .95rem; font-weight: 600; margin: 18px 0 8px; }
+.note { color: var(--ink-3); font-size: .82rem; margin: 10px 0 0; }
+.msg { border-radius: 8px; padding: 10px 12px; font-size: .88rem; background: var(--warn-bg); color: var(--warn); }
+.loading { color: var(--ink-3); font-size: .9rem; margin: 0; }
+.up { color: var(--good); } .down { color: var(--bad); }
+
+.pipe { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.pipe div { border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; background: var(--panel); min-width: 0; }
+.pipe b { display: block; font-size: .7rem; font-weight: 600; color: var(--ink-3); letter-spacing: .03em; }
+.pipe span { display: block; font-size: .8rem; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 640px) { .pipe { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pipe div:last-child { grid-column: span 2; } }
+
+.verdict { border-left: 0; }
+.headline { font-size: 1.55rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; margin: 0; text-wrap: balance; }
+.headline .zone { display: inline-block; padding: 0 10px; border-radius: 8px; color: #fff; }
+.lede { font-size: 1.05rem; color: var(--ink); margin: 10px 0 0; max-width: 70ch; }
+.points { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.points li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; max-width: 76ch; }
+.points li i { font-style: normal; font-size: .72rem; font-weight: 700; text-align: center; border-radius: 6px; padding: 2px 0; margin-top: 2px; background: var(--neutral-bg); color: var(--ink-2); }
+.points li i.pos { background: var(--good-bg); color: var(--good); } .points li i.neg { background: var(--bad-bg); color: var(--bad); } .points li i.warn { background: var(--warn-bg); color: var(--warn); }
+.reading { margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: var(--accent-bg); color: var(--ink); font-size: .92rem; max-width: 76ch; }
+.reading b { color: var(--accent); }
+.watch { margin: 8px 0 0; padding-left: 18px; color: var(--ink-2); font-size: .9rem; }
+
+.gauge { position: relative; margin: 6px 0 4px; }
+.gauge .bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; height: 12px; }
+.gauge .bar span { border-radius: 3px; }
+.gauge .mark { position: absolute; top: -6px; width: 4px; height: 24px; border-radius: 2px; background: var(--ink); transform: translateX(-2px); }
+.gauge-labels { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; font-size: .7rem; color: var(--ink-3); }
+.big { font-family: var(--mono); font-size: 2.4rem; font-weight: 500; line-height: 1; }
+.big small { font-size: 1rem; color: var(--ink-3); }
+.row { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: baseline; }
+
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th, td { text-align: right; padding: 7px 8px; border-top: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { font-weight: 500; color: var(--ink-3); font-size: .76rem; border-top: 0; }
+td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+td.wrap { white-space: normal; text-align: left; min-width: 180px; }
+.meter { display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: var(--neutral-bg); position: relative; vertical-align: middle; }
+.meter span { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--accent); }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.stat { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+.stat .k { font-size: .76rem; color: var(--ink-3); }
+.stat .v { font-family: var(--mono); font-size: 1.12rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+.stat .d { font-size: .8rem; color: var(--ink-2); }
+.split { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--neutral-bg); margin: 8px 0 4px; }
+.split span { display: block; height: 100%; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips span { font-size: .82rem; padding: 3px 9px; border-radius: 999px; background: var(--neutral-bg); color: var(--ink-2); }
+.chips span b { font-family: var(--mono); font-weight: 500; color: var(--ink); margin-left: 4px; }
+.posts { display: grid; gap: 8px; }
+.post { border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; font-size: .88rem; min-width: 0; }
+.post .meta { color: var(--ink-3); font-size: .76rem; margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; }
+.post .meta a { color: var(--ink-3); }
+.post p { margin: 0; overflow-wrap: anywhere; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.ai-box { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; padding: 10px 12px; border-radius: 10px; border: 1px dashed var(--line); font-size: .86rem; color: var(--ink-2); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .82rem; color: var(--ink-2); margin-bottom: 6px; }
+.legend i { display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-right: 6px; }
+.legend i.sq { width: 10px; height: 10px; border-radius: 2px; }
+.chart { position: relative; }
+.chart svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+.tip { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; font: .78rem/1.45 var(--mono); color: var(--ink); white-space: nowrap; z-index: 2; }
+.levels { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: .85rem; color: var(--ink-2); }
+.levels b { font-family: var(--mono); font-weight: 500; color: var(--ink); }
+.feed { max-height: 200px; overflow-y: auto; font: .8rem/1.6 var(--mono); border-top: 1px solid var(--line); margin-top: 8px; padding-top: 6px; }
+.feed div { display: flex; justify-content: space-between; gap: 10px; }
+
+.ev { display: grid; grid-template-columns: 70px minmax(0, 1fr) auto; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); align-items: start; }
+.ev time { font-family: var(--mono); font-size: .82rem; color: var(--ink-2); }
+.ev .t { font-weight: 600; }
+.ev .t a { color: var(--ink); text-decoration: none; }
+.ev .t a:hover { color: var(--accent); text-decoration: underline; }
+.ev .m { color: var(--ink-3); font-size: .8rem; }
+.ev .cd { font-family: var(--mono); font-size: .78rem; color: var(--ink-3); text-align: right; }
+.ev.soon .cd { color: var(--warn); font-weight: 500; }
+.ev.past { opacity: .5; }
+.day { font-weight: 600; font-size: .85rem; color: var(--ink-2); margin: 14px 0 0; padding-bottom: 4px; }
+.tier, .imp { display: inline-block; font-size: .68rem; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-right: 6px; vertical-align: 1px; }
+.tier.t1, .imp.high { background: var(--t1-bg); color: var(--t1); }
+.tier.t2, .imp.medium { background: var(--t2-bg); color: var(--t2); }
+.res { display: inline-block; font-size: .74rem; font-weight: 600; padding: 1px 7px; border-radius: 4px; background: var(--neutral-bg); color: var(--ink-2); }
+.res.pos { background: var(--good-bg); color: var(--good); } .res.neg { background: var(--bad-bg); color: var(--bad); }
+.bar-opts { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: .85rem; color: var(--ink-2); margin-bottom: 4px; }
+.bar-opts label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.tv { min-height: 420px; }
+details.method summary { cursor: pointer; font-weight: 600; }
+details.method p, details.method li { color: var(--ink-2); font-size: .88rem; max-width: 76ch; }
+footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height: 1.7; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Trạm tâm lý crypto</h1>
+      <p class="sub" id="updated">Đang thu thập dữ liệu…</p>
+    </div>
+    <button class="btn" id="refresh" type="button">Làm mới dữ liệu</button>
+  </header>
+
+  <div class="pipe" aria-label="Năm tầng xử lý">
+    <div><b>1 · THU THẬP</b><span id="p1">đang chạy…</span></div>
+    <div><b>2 · LỌC</b><span id="p2">chờ</span></div>
+    <div><b>3 · CHẤM ĐIỂM</b><span id="p3">chờ</span></div>
+    <div><b>4 · CHỈ SỐ</b><span id="p4">chờ</span></div>
+    <div><b>5 · NHẬN ĐỊNH</b><span id="p5">chờ</span></div>
+  </div>
+
+  <section class="panel verdict" aria-live="polite">
+    <h2><span class="layer">Tầng 5</span>Nhận định hôm nay</h2>
+    <p class="headline" id="headline">Đang phân tích…</p>
+    <p class="lede" id="lede"></p>
+    <ul class="points" id="points"></ul>
+    <div class="reading" id="reading" hidden></div>
+    <div id="watch-wrap" hidden><h3>Điều cần theo dõi</h3><ul class="watch" id="watch"></ul></div>
+  </section>
+
+  <section class="panel">
+    <h2><span class="layer">Tầng 4</span>Chỉ số tâm lý tổng hợp</h2>
+    <div class="row"><div class="big" id="ci-big">–<small>/100</small></div><div id="ci-label" style="font-weight:600"></div><div class="note" id="ci-change" style="margin:0"></div></div>
+    <div class="gauge"><div class="bar"><span style="background:var(--z0)"></span><span style="background:var(--z1)"></span><span style="background:var(--z2)"></span><span style="background:var(--z3)"></span><span style="background:var(--z4)"></span></div><div class="mark" id="ci-mark" hidden></div></div>
+    <div class="gauge-labels"><span>Sợ hãi cực độ</span><span>Sợ hãi</span><span>Trung tính</span><span>Tham lam</span><span>Tham lam cực độ</span></div>
+    <h3>Thành phần</h3>
+    <div class="tbl-wrap" id="ci-table"><p class="loading">Đang tính…</p></div>
+    <h3>Lịch sử chỉ số trên máy này</h3>
+    <div class="legend"><span><i style="background:var(--s1)"></i>Chỉ số tổng hợp</span><span><i style="background:var(--s2)"></i>Tâm lý văn bản</span></div>
+    <div class="chart" id="c-hist"></div>
+    <p class="note" id="hist-note"></p>
+  </section>
+
+  <section class="panel">
+    <h2><span class="layer">Tầng 1–3</span>Đám đông đang nói gì</h2>
+    <div class="row"><div class="big" id="tx-big">–</div><div id="tx-label" style="font-weight:600"></div><div class="note" id="tx-sub" style="margin:0"></div></div>
+    <div class="split" id="tx-split" aria-hidden="true"></div>
+    <div class="legend"><span><i class="sq" style="background:var(--good)"></i>Tích cực</span><span><i class="sq" style="background:var(--z2)"></i>Trung tính</span><span><i class="sq" style="background:var(--bad)"></i>Tiêu cực</span></div>
+    <div class="ai-box" id="ai-box"></div>
+    <div class="two">
+      <div><h3 id="tx-chart-title">Theo ngày (giờ Việt Nam)</h3><div class="chart" id="c-text"></div></div>
+      <div><h3>Theo nguồn</h3><div class="tbl-wrap" id="tx-src"></div>
+        <h3>Đồng được nhắc nhiều</h3><div class="chips" id="tx-coins"></div>
+        <h3>Từ khóa nổi bật</h3><div class="chips" id="tx-kw"></div></div>
+    </div>
+    <div class="two">
+      <div><h3>Bài tích cực nổi bật</h3><div class="posts" id="tx-pos"></div></div>
+      <div><h3>Bài tiêu cực nổi bật</h3><div class="posts" id="tx-neg"></div></div>
+    </div>
+    <h3>Tầng 2: đã lọc bỏ</h3>
+    <div class="chips" id="tx-filter"></div>
+    <p class="note" id="tx-note">Khi mở từ đường link GitHub, văn bản đến từ bộ thu thập chạy mỗi giờ: 8 báo crypto, Reddit, Mastodon, Lemmy, Hacker News. Khi mở file trên máy, trang tự đọc Mastodon, Lemmy và Hacker News, là cộng đồng thiên về công nghệ và thường hoài nghi crypto, nên hãy chú ý mức thay đổi hơn con số tuyệt đối.</p>
+  </section>
+
+  <section class="panel">
+    <h2><span class="layer">Tầng 1</span>Chú ý của nhỏ lẻ</h2>
+    <div class="stats" id="att-stats"><p class="loading">Đang tải…</p></div>
+    <h3>Lượt xem trang Bitcoin trên Wikipedia, 90 ngày</h3>
+    <div class="chart" id="c-wiki"></div>
+    <h3>Đang thịnh hành trên CoinGecko</h3>
+    <div class="chips" id="trending"></div>
+    <p class="note">Người mới thường tra Wikipedia khi giá gây chú ý; lượt xem tăng đột biến hay đi kèm giai đoạn hưng phấn.</p>
+  </section>
+
+  <section class="panel">
+    <h2><span class="layer">Xác nhận</span>Tiền thật đang làm gì</h2>
+    <div class="stats" id="pos-stats"><p class="loading">Đang tải…</p></div>
+    <h3>Dòng tiền ETF Bitcoin, 30 phiên</h3>
+    <div class="legend"><span><i class="sq" style="background:var(--good)"></i>Tiền vào</span><span><i class="sq" style="background:var(--bad)"></i>Tiền ra</span></div>
+    <div class="chart" id="c-etf"></div>
+    <div class="two">
+      <div><h3>Funding BTC (Bybit), khoảng 90 ngày</h3><div class="chart" id="c-fund"></div></div>
+      <div><h3>Thanh lý trực tiếp (Bybit, từ lúc mở trang)</h3><div class="stats" id="live-sum"></div><div class="feed" id="live-feed"><span class="loading">Đang kết nối…</span></div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>BTC 180 ngày</h2>
+    <div class="legend"><span><i style="background:var(--s1)"></i>Giá đóng cửa</span><span><i style="background:var(--s2)"></i>SMA 50</span><span><i style="background:var(--s3)"></i>SMA 200</span></div>
+    <div class="chart" id="c-btc"><p class="loading">Đang tải…</p></div>
+    <div class="levels" id="levels"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Lịch kinh tế Mỹ</h2>
+    <div class="legend"><span><span class="tier t1">CẤP 1</span>Có thể làm BTC biến động mạnh trong vài phút</span><span><span class="imp high">Cao</span><span class="imp medium">Vừa</span>Mức quan trọng theo Investing.com</span></div>
+    <div id="cal-box"><p class="loading">Đang tải lịch…</p></div>
+    <p class="note">"Tốt cho USD" nghĩa là số liệu khiến USD mạnh lên (lạm phát cao, việc làm mạnh…), thường bất lợi cho crypto trong ngắn hạn. Xem thêm: <a href="https://www.investing.com/economic-calendar/" target="_blank" rel="noopener">Investing.com</a>, <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener">Forex Factory</a>.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Vĩ mô và ETF (TradingView)</h2>
+    <div class="tv" id="tv-macro"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Tin crypto (TradingView)</h2>
+    <div class="tv" id="tv-news"></div>
+  </section>
+
+  <section class="panel">
+    <details class="method">
+      <summary>Cách hệ thống hoạt động và giới hạn</summary>
+      <ol>
+        <li><b>Thu thập:</b> mỗi lần mở trang, đọc khoảng vài trăm bài mới về crypto trên Mastodon, Lemmy, Hacker News; phiếu bầu cộng đồng CoinGecko; lượt xem Wikipedia; cùng dữ liệu thị trường từ Bybit, OKX, Deribit, SoSoValue, alternative.me, CoinGecko, DefiLlama, Investing.com.</li>
+        <li><b>Lọc:</b> bỏ bài trùng, bot báo giá, quảng cáo rao bán, bài không phải tiếng Anh, bài quá ngắn hoặc không nói về crypto, và giới hạn mỗi tác giả 2 bài.</li>
+        <li><b>Chấm điểm:</b> mỗi bài nhận điểm từ −1 đến +1 bằng từ điển thuật ngữ crypto (hiểu "rekt", "ATH", "outflows", phủ định…). Khi bật AI, mô hình Twitter RoBERTa chạy ngay trong trình duyệt được kết hợp với từ điển.</li>
+        <li><b>Chỉ số:</b> điểm văn bản được gộp có trọng số theo tương tác, rồi kết hợp với Fear &amp; Greed, phiếu cộng đồng, funding, tỷ lệ long/short, quyền chọn và mức chú ý thành một chỉ số 0–100. Mỗi lần mở trang, chỉ số được lưu trên máy này để so sánh theo thời gian.</li>
+        <li><b>Nhận định:</b> các quy tắc cố định chuyển số liệu thành câu chữ: mức tâm lý, thay đổi, phân kỳ với giá, vị thế phái sinh và sự kiện sắp tới.</li>
+      </ol>
+      <p>Giới hạn: mẫu văn bản nhỏ và lệch về giới công nghệ; không đọc được Reddit, X, Telegram hay báo crypto; lịch sử chỉ có trên trình duyệt này và chỉ dày lên khi bạn mở trang thường xuyên. Đây là công cụ tham khảo, không phải lời khuyên đầu tư.</p>
+    </details>
+  </section>
+
+  <footer>Thông tin tham khảo, không phải lời khuyên đầu tư. Dữ liệu tải khi mở trang hoặc bấm làm mới.</footer>
+</div>
+
+<script>
+/* ===== Tầng 1–4: thu thập văn bản, lọc, chấm điểm, tổng hợp ===== */
+const ENGINE = (() => {
+  "use strict";
+
+  /* ---------- Tầng 3a: từ điển thuật ngữ crypto ---------- */
+  const PHRASES = [
+    ["to the moon", 2], ["all-time high", 2], ["all time high", 2], ["new high", 1.5], ["record high", 1.6], ["buy the dip", 1.2],
+    ["short squeeze", 1], ["long squeeze", -1], ["below support", -1.2], ["above resistance", 1.2], ["lost everything", -2.4],
+    ["sell-off", -1.8], ["sell off", -1.8], ["rug pull", -2.2], ["hot cpi", -1], ["not your keys", 0], ["going up", 1], ["going down", -1]
+  ];
+  const WORDS = {
+    bullish: 2, bull: 1.2, bulls: 1.2, moon: 1.8, mooning: 2, pump: 1.2, pumping: 1.5, pumped: 1.2, rally: 1.5, rallies: 1.5, rallying: 1.5,
+    surge: 1.8, surges: 1.8, surging: 1.8, soar: 1.8, soars: 1.8, soaring: 1.8, breakout: 1.5, ath: 2, record: 0.8, buy: 0.6, buying: 0.9,
+    bought: 0.6, accumulate: 1.2, accumulating: 1.2, accumulation: 1.2, hodl: 1, hodling: 1, wagmi: 1.5, lfg: 1.5, gain: 1, gains: 1.2,
+    profit: 1.2, profits: 1.2, green: 0.6, recover: 1, recovers: 1.1, recovery: 1.2, rebound: 1.4, rebounds: 1.4, inflow: 1.5, inflows: 1.5,
+    adoption: 1.2, approve: 1.2, approves: 1.4, approved: 1.5, approval: 1.2, upgrade: 0.8, strong: 1, stronger: 1, strength: 1,
+    optimistic: 1.5, confident: 1.2, great: 1.2, good: 0.7, love: 1.1, win: 1, winning: 1.2, success: 1.2, successful: 1.2,
+    opportunity: 0.8, undervalued: 1, higher: 0.6, rise: 1, rises: 1, rising: 1, climb: 1, climbs: 1.2, jump: 1.2, jumps: 1.2,
+    rocket: 1.5, bullrun: 2, outperform: 1.2, outperforms: 1.2, excited: 1.3, amazing: 1.5, best: 1, huge: 0.5, boost: 1.2, boosts: 1.2,
+    bearish: -2, bear: -1.2, bears: -1.2, dump: -1.8, dumps: -1.8, dumping: -1.8, dumped: -1.6, crash: -2, crashes: -2, crashing: -2,
+    crashed: -2, plunge: -2, plunges: -2, plunged: -2, slide: -1.2, slides: -1.2, sliding: -1.2, drop: -1.2, drops: -1.2, dropped: -1.2,
+    fall: -1, falls: -1, falling: -1.2, fell: -1.1, sell: -0.6, selling: -1, sold: -0.6, selloff: -1.8, liquidated: -1.8, liquidation: -1.5,
+    liquidations: -1.5, rekt: -2, ngmi: -1.5, scam: -2, scams: -2, scammer: -2, scammers: -2, ponzi: -2.2, fraud: -2, rug: -1.8,
+    rugpull: -2.2, hack: -2, hacked: -2, hacks: -2, exploit: -1.8, exploited: -1.8, stolen: -1.8, outflow: -1.5, outflows: -1.5,
+    fear: -1.5, fears: -1.5, panic: -1.8, capitulation: -1.8, red: -0.5, loss: -1.2, losses: -1.4, lost: -1.1, lose: -1.1, losing: -1.2,
+    worst: -1.8, bad: -1, terrible: -2, awful: -2, weak: -1, weaker: -1, weakness: -1.2, risky: -0.8, bubble: -1.4, collapse: -2,
+    collapsed: -2, collapses: -2, bankrupt: -2.2, bankruptcy: -2.2, insolvent: -2, lawsuit: -1.4, sued: -1.4, sues: -1.4, ban: -1.5,
+    bans: -1.5, banned: -1.5, crackdown: -1.6, decline: -1.2, declines: -1.2, declining: -1.2, lower: -0.6, tumble: -1.8, tumbles: -1.8,
+    slump: -1.8, slumps: -1.8, worry: -1.2, worries: -1.2, worried: -1.4, concern: -0.8, concerns: -0.8, uncertainty: -1, overvalued: -1,
+    useless: -1.8, waste: -1.4, garbage: -2, dead: -1.5, dying: -1.5, warning: -1, warns: -1.2, downturn: -1.5, recession: -1.4,
+    inflation: -0.4, delist: -1.6, delisted: -1.6, delisting: -1.6, underperform: -1.2, underperforms: -1.2, struggling: -1.3, struggles: -1.3,
+    hate: -1.5, stupid: -1.5, ridiculous: -1.2, fail: -1.4, fails: -1.4, failed: -1.4, failure: -1.6, failing: -1.4, greed: -0.3, fud: -1
+  };
+  const EMOJI = [["🚀", 1.5], ["📈", 1.2], ["🟢", 0.8], ["💎", 0.8], ["🐂", 1.2], ["🔥", 0.5], ["📉", -1.2], ["🔴", -0.8], ["💀", -1.2], ["😱", -1.2], ["🩸", -1.4], ["🐻", -1.2], ["😭", -1]];
+  const NEG = new Set(["not", "no", "never", "isn't", "wasn't", "aren't", "don't", "doesn't", "didn't", "won't", "can't", "cannot", "hardly", "without", "nor", "isnt", "dont", "doesnt", "didnt", "wont", "cant"]);
+
+  function lexScore(text) {
+    let s = String(text || "").toLowerCase().slice(0, 700), sum = 0, hits = []; const used = new Set();
+    for (const [p, w] of PHRASES) { if (s.includes(p)) { sum += w; hits.push(p); s = s.split(p).join(" "); } }
+    for (const [e, w] of EMOJI) { const n = s.split(e).length - 1; if (n) { sum += w; hits.push(e); } }
+    const toks = s.replace(/https?:\/\/\S+/g, " ").split(/[^a-z'’-]+/).filter(Boolean);
+    toks.forEach((tk, i) => {
+      const key = tk.replace(/’/g, "'"), w = WORDS[key]; if (!w || used.has(key)) return; used.add(key);
+      let neg = false; for (let k = Math.max(0, i - 3); k < i; k++) if (NEG.has(toks[k].replace(/’/g, "'"))) neg = true;
+      sum += neg ? -0.7 * w : w; hits.push((neg ? "không " : "") + tk);
+    });
+    return { s: Math.tanh(sum / 2.5), raw: sum, hits };
+  }
+
+  /* ---------- Tầng 1: thu thập ---------- */
+  const strip = (html) => String(html || "").replace(/<br\s*\/?>|<\/p>/gi, " ").replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;|&#x27;/g, "'").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+
+  async function collect(getJSON, onProgress) {
+    const items = [], errs = {};
+    const add = (arr) => items.push(...arr);
+    const mastoTag = async (tag) => {
+      let maxId = null, out = [];
+      for (let page = 0; page < 3; page++) {
+        const a = await getJSON(`https://mastodon.social/api/v1/timelines/tag/${tag}?limit=40${maxId ? "&max_id=" + maxId : ""}`);
+        if (!Array.isArray(a) || !a.length) break;
+        out = out.concat(a); maxId = a[a.length - 1].id;
+        if (Date.now() - Date.parse(a[a.length - 1].created_at) > 7 * 864e5) break;
+      }
+      return out.map((x) => ({ src: "Mastodon", id: "m" + x.id, t: Date.parse(x.created_at), text: strip(x.content), url: x.url, author: x.account && x.account.acct, eng: (x.favourites_count || 0) + (x.reblogs_count || 0) + (x.replies_count || 0), lang: x.language, bot: !!(x.account && x.account.bot) }));
+    };
+    const lemmy = async (q) => {
+      const j = await getJSON(`https://lemmy.world/api/v3/search?q=${encodeURIComponent(q)}&type_=All&sort=New&limit=50`);
+      const posts = (j.posts || []).map((p) => ({ src: "Lemmy", id: "lp" + p.post.id, t: Date.parse(p.post.published), text: strip((p.post.name || "") + ". " + (p.post.body || "")), url: p.post.ap_id, author: p.creator && p.creator.name, eng: (p.counts && p.counts.score) || 0, lang: null, bot: !!(p.creator && p.creator.bot_account) }));
+      const comments = (j.comments || []).map((c) => ({ src: "Lemmy", id: "lc" + c.comment.id, t: Date.parse(c.comment.published), text: strip(c.comment.content), url: c.comment.ap_id, author: c.creator && c.creator.name, eng: (c.counts && c.counts.score) || 0, lang: null, bot: !!(c.creator && c.creator.bot_account) }));
+      return posts.concat(comments);
+    };
+    const hn = async (q) => {
+      const since = Math.floor(Date.now() / 1000) - 7 * 86400;
+      const j = await getJSON(`https://hn.algolia.com/api/v1/search_by_date?query=${encodeURIComponent(q)}&tags=(story,comment)&numericFilters=created_at_i>${since}&hitsPerPage=300`);
+      return (j.hits || []).map((h) => ({ src: "Hacker News", id: "h" + h.objectID, t: h.created_at_i * 1000, text: strip(h.title ? h.title + ". " + (h.story_text || "") : h.comment_text), url: "https://news.ycombinator.com/item?id=" + h.objectID, author: h.author, eng: h.points || 0, lang: null, bot: false }));
+    };
+    const jobs = [
+      ["Mastodon", () => Promise.all(["bitcoin", "btc", "crypto", "cryptocurrency", "ethereum"].map((t) => mastoTag(t).catch(() => []))).then((r) => { const a = r.flat(); if (!a.length) throw new Error("không có bài"); return a; })],
+      ["Lemmy", () => Promise.all(["bitcoin", "crypto"].map((q) => lemmy(q).catch(() => []))).then((r) => { const a = r.flat(); if (!a.length) throw new Error("không có bài"); return a; })],
+      ["Hacker News", () => Promise.all(["bitcoin", "cryptocurrency", "ethereum"].map((q) => hn(q).catch(() => []))).then((r) => { const a = r.flat(); if (!a.length) throw new Error("không có bài"); return a; })]
+    ];
+    const counts = {};
+    await Promise.all(jobs.map(async ([name, fn]) => {
+      try { const a = await fn(); add(a); counts[name] = a.length; } catch (e) { errs[name] = e.message; counts[name] = 0; }
+      if (onProgress) onProgress(name);
+    }));
+    return { items, errs, counts };
+  }
+
+  /* ---------- Tầng 2: lọc và làm sạch ---------- */
+  const RELEVANT = /\b(bitcoins?|btc|ethereum|ether|eth|solana|xrp|ripple|dogecoin|doge|stablecoins?|altcoins?|memecoins?|cryptocurrenc(y|ies)|crypto (market|markets|price|prices|exchange|exchanges|etf|etfs|asset|assets|investor|investors|trader|traders|trading|bull|bear|crash|winter|rally|regulation|industry|holders?|treasury|adoption)|defi|satoshis?|sats|hodl|coinbase|binance|bybit|kraken|saylor|microstrategy|ibit|halving|blockchain|on-?chain|spot etf|bitcoin etf)\b/i;
+  const NOT_CRYPTO = /\b(cryptograph\w*|crypto librar\w*|crypto api|encryption|cipher)\b/i;
+  const ADS = /(for sale|in stock|open-box|ready to ship|we accept|paid in btc|discount|giveaway|airdrop|promo code|referral|sign ?up bonus|join (our|my|us)|follow (us|me)|dm me|t\.me\/|telegram group|whatsapp|free \d+|claim (your|now)|presale|subscribe)/i;
+  const PRICE_BOT = /(price\s*[:：]|market cap\s*[:：]|【.*レポート】|\b24h\b.*%|▲|▼|🔼|🔽)/i;
+
+  function asciiRatio(s) { if (!s) return 0; let a = 0; for (const ch of s) if (ch.charCodeAt(0) < 128) a++; return a / [...s].length; }
+  const norm = (s) => s.toLowerCase().replace(/https?:\/\/\S+/g, "").replace(/[#@]\w+/g, "").replace(/[^a-z ]/g, "").replace(/\s+/g, " ").trim().slice(0, 90);
+
+  function clean(items) {
+    const reasons = { "trùng lặp": 0, "bot / báo giá tự động": 0, "quảng cáo / rao bán": 0, "không phải tiếng Anh": 0, "quá ngắn": 0, "không liên quan crypto": 0, "cùng tác giả quá nhiều": 0 };
+    const seen = new Set(), perAuthor = {}, kept = [];
+    items.slice().sort((a, b) => b.t - a.t).forEach((it) => {
+      const text = it.text || "", core = text.replace(/https?:\/\/\S+/g, "").replace(/[#@][\w.]+/g, "").trim();
+      const key = norm(text);
+      if (!key || seen.has(key) || seen.has(it.id)) { reasons["trùng lặp"]++; return; }
+      seen.add(key); seen.add(it.id);
+      if (it.bot || PRICE_BOT.test(text) || (core.replace(/[^0-9]/g, "").length / Math.max(1, core.length)) > 0.18) { reasons["bot / báo giá tự động"]++; return; }
+      if (ADS.test(text)) { reasons["quảng cáo / rao bán"]++; return; }
+      if ((it.lang && it.lang !== "en") || asciiRatio(core) < 0.9) { reasons["không phải tiếng Anh"]++; return; }
+      if (core.length < 25) { reasons["quá ngắn"]++; return; }
+      if (!RELEVANT.test(text) || (NOT_CRYPTO.test(text) && !/\b(bitcoin|btc|ethereum|eth|cryptocurrenc)/i.test(text))) { reasons["không liên quan crypto"]++; return; }
+      const a = it.src + ":" + (it.author || "?"); perAuthor[a] = (perAuthor[a] || 0) + 1;
+      if (perAuthor[a] > 2) { reasons["cùng tác giả quá nhiều"]++; return; }
+      kept.push(it);
+    });
+    return { kept, reasons };
+  }
+
+  /* ---------- Tầng 3b: mô hình AI trong trình duyệt (tùy chọn) ---------- */
+  let clfPromise = null;
+  function loadModel(onProgress) {
+    if (!clfPromise) {
+      clfPromise = (async () => {
+        const tf = await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2");
+        return tf.pipeline("sentiment-analysis", "Xenova/twitter-roberta-base-sentiment-latest", {
+          dtype: "q8",
+          progress_callback: (p) => { if (onProgress && p.status === "progress" && p.file && /onnx/.test(p.file)) onProgress(Math.round(p.progress || 0)); }
+        });
+      })();
+      clfPromise.catch(() => { clfPromise = null; });
+    }
+    return clfPromise;
+  }
+  async function aiScore(texts, onProgress) {
+    const clf = await loadModel();
+    const out = [], B = 16;
+    for (let i = 0; i < texts.length; i += B) {
+      const batch = texts.slice(i, i + B).map((t) => t.slice(0, 400));
+      const res = await clf(batch, { top_k: 3 });
+      res.forEach((r) => { const arr = Array.isArray(r) ? r : [r]; const g = (l) => (arr.find((x) => x.label === l) || { score: 0 }).score; out.push(g("positive") - g("negative")); });
+      if (onProgress) onProgress(Math.min(texts.length, i + B), texts.length);
+      await new Promise((r) => setTimeout(r, 0));
+    }
+    return out;
+  }
+
+  function score(kept, ai) {
+    kept.forEach((it, i) => {
+      const lx = lexScore(it.text);
+      it.lex = lx.s; it.hits = lx.hits;
+      if (ai && ai[i] != null) {
+        const a = ai[i];
+        it.ai = a;
+        it.s = (Math.abs(a) < 0.35 && Math.abs(lx.s) >= 0.5) ? lx.s * 0.8 : 0.7 * a + 0.3 * lx.s;
+      } else it.s = lx.s;
+      it.label = it.s > 0.15 ? "pos" : it.s < -0.15 ? "neg" : "neu";
+      it.w = (1 + Math.log1p(Math.max(0, it.eng || 0))) * (it.src === "Lemmy" ? 0.6 : 1);
+    });
+    return kept;
+  }
+
+  /* ---------- Tầng 4: tổng hợp ---------- */
+  const STOP = new Set("the a an and or but if then than that this these those there their they them is are was were be been being have has had do does did of to in on for with as at by from about into over after before under between out up down off so not no yes it its it's i you your we our us my me he she his her him what which who whom when where why how all any some more most other such only own same too very can will just should now also like get got one two new would could may might much many even back still well way make made think know see go going said says say really people time year years day days thing things lot good really don't im i'm thats that's there's dont doesnt isnt via amp https http www com html rt gt lt quot".split(" "));
+  const GENERIC = new Set("bitcoin btc crypto cryptocurrency cryptocurrencies ethereum eth coin coins blockchain price market markets news token tokens".split(" "));
+  const COINS = [["BTC", /\b(bitcoin|btc|sats?|satoshi)\b/i], ["ETH", /\b(ethereum|eth|ether)\b/i], ["SOL", /\b(solana|sol)\b/i], ["XRP", /\b(xrp|ripple)\b/i], ["DOGE", /\b(dogecoin|doge)\b/i], ["BNB", /\b(bnb|binance coin)\b/i], ["ADA", /\b(cardano|ada)\b/i], ["Stablecoin", /\b(stablecoins?|usdt|usdc|tether)\b/i]];
+  const vnDay = (t) => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Ho_Chi_Minh", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(t));
+
+  function aggregate(kept) {
+    const now = Date.now();
+    const wmean = (arr) => { let a = 0, w = 0; arr.forEach((x) => { a += x.s * x.w; w += x.w; }); return w ? a / w : null; };
+    const recent = kept.filter((x) => now - x.t <= 48 * 3600e3);
+    const base = recent.length >= 30 ? recent : kept;
+    const sc = wmean(base);
+    const share = (l) => base.length ? base.filter((x) => x.label === l).length / base.length * 100 : 0;
+    const last24 = kept.filter((x) => now - x.t <= 24 * 3600e3), prev = kept.filter((x) => now - x.t > 24 * 3600e3 && now - x.t <= 96 * 3600e3);
+    const trend = (last24.length >= 10 && prev.length >= 10) ? wmean(last24) - wmean(prev) : null;
+    const days = {};
+    kept.forEach((x) => { const d = vnDay(x.t); (days[d] = days[d] || []).push(x); });
+    const daily = Object.keys(days).sort().map((d) => ({ date: d, n: days[d].length, s: wmean(days[d]) })).filter((d) => d.n >= 5).slice(-7);
+    const coinCount = COINS.map(([c, re]) => [c, base.filter((x) => re.test(x.text)).length]).filter((x) => x[1] > 0).sort((a, b) => b[1] - a[1]);
+    const wc = {};
+    base.forEach((x) => {
+      const seenHere = new Set();
+      x.text.toLowerCase().replace(/https?:\/\/\S+/g, " ").split(/[^a-z0-9$-]+/).forEach((w) => {
+        w = w.replace(/^-+|-+$/g, "");
+        if (w.length < 4 || STOP.has(w) || GENERIC.has(w) || /^\d+$/.test(w) || seenHere.has(w)) return;
+        seenHere.add(w); wc[w] = (wc[w] || 0) + 1;
+      });
+    });
+    const keywords = Object.entries(wc).filter((x) => x[1] >= 3).sort((a, b) => b[1] - a[1]).slice(0, 14);
+    const bySrc = {};
+    base.forEach((x) => { (bySrc[x.src] = bySrc[x.src] || []).push(x); });
+    const sources = Object.entries(bySrc).map(([k, a]) => ({ src: k, n: a.length, s: wmean(a) }));
+    const ranked = base.filter((x) => x.text.length >= 40).slice().sort((a, b) => (b.s * b.w) - (a.s * a.w));
+    const topPos = ranked.filter((x) => x.label === "pos").slice(0, 4), topNeg = ranked.filter((x) => x.label === "neg").slice(-4).reverse();
+    const spanH = base.length ? (Math.max(...base.map((x) => x.t)) - Math.min(...base.map((x) => x.t))) / 3600e3 : 0;
+    return { score: sc, index: sc == null ? null : Math.round((sc + 1) * 50), n: base.length, total: kept.length, spanH, pos: share("pos"), neg: share("neg"), neu: share("neu"), trend, daily, coinCount, keywords, sources, topPos, topNeg };
+  }
+
+  return { lexScore, collect, clean, loadModel, aiScore, score, aggregate };
+})();
+if (typeof module !== "undefined") module.exports = ENGINE;
+
+</script>
+<script>
+(function () {
+  "use strict";
+  const TZ = "Asia/Ho_Chi_Minh";
+  const $ = (id) => document.getElementById(id);
+  const S = { err: {} };
+
+  /* ---------- tiện ích ---------- */
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const fmtTime = (ms) => new Intl.DateTimeFormat("vi-VN", { timeZone: TZ, hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" }).format(new Date(ms));
+  const fmtClock = (ms) => new Intl.DateTimeFormat("vi-VN", { timeZone: TZ, hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(new Date(ms));
+  const fmtDate = (ms) => new Intl.DateTimeFormat("vi-VN", { timeZone: TZ, day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(ms));
+  const fmtEvent = (ms) => new Intl.DateTimeFormat("vi-VN", { timeZone: TZ, weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).format(new Date(ms));
+  const num = (v, d = 0) => (v == null || !isFinite(v)) ? "–" : v.toLocaleString("vi-VN", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const pct = (v, d = 1) => (v == null || !isFinite(v)) ? "–" : (v > 0 ? "+" : "") + v.toLocaleString("vi-VN", { minimumFractionDigits: d, maximumFractionDigits: d }) + "%";
+  const cls = (v) => (v == null || !isFinite(v) || Math.abs(v) < 1e-9) ? "" : (v > 0 ? "up" : "down");
+  const clamp = (v, a = 0, b = 100) => Math.max(a, Math.min(b, v));
+  const usd = (v, signed) => {
+    if (v == null || !isFinite(v)) return "–";
+    const a = Math.abs(v), sg = signed ? (v > 0 ? "+" : v < 0 ? "−" : "") : (v < 0 ? "−" : "");
+    if (a >= 1e12) return sg + num(a / 1e12, 2) + " nghìn tỷ $";
+    if (a >= 1e9) return sg + num(a / 1e9, 2) + " tỷ $";
+    if (a >= 1e6) return sg + num(a / 1e6, 1) + " triệu $";
+    return sg + num(a, 0) + " $";
+  };
+  const pctRank = (arr, v) => 100 * arr.filter((x) => x <= v).length / arr.length;
+  const sma = (a, n, i) => { if (i < n - 1) return null; let s = 0; for (let k = i - n + 1; k <= i; k++) s += a[k]; return s / n; };
+  const store = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } } };
+
+  async function getJSON(url, opts = {}, ms = 15000) {
+    const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), ms);
+    try {
+      const r = await fetch(url, Object.assign({ signal: ctl.signal, cache: "no-store" }, opts));
+      if (!r.ok) throw new Error(r.status === 429 ? "bị giới hạn số lần gọi, thử lại sau 1 phút" : r.status === 403 || r.status === 451 ? "nguồn chặn truy cập" : "lỗi HTTP " + r.status);
+      return await r.json();
+    } catch (e) {
+      if (e.name === "AbortError") throw new Error("hết thời gian chờ");
+      if (e instanceof TypeError) throw new Error("không kết nối được");
+      throw e;
+    } finally { clearTimeout(t); }
+  }
+  const bybit = (p) => getJSON("https://api.bybit.com" + p).then((j) => { if (j.retCode !== 0) throw new Error("Bybit: " + j.retMsg); return j.result; });
+  const okx = (p) => getJSON("https://www.okx.com" + p).then((j) => { if (j.code !== "0") throw new Error("OKX: " + j.msg); return j.data; });
+  const deribit = (p) => getJSON("https://www.deribit.com/api/v2" + p).then((j) => j.result);
+  const soso = (p, b) => getJSON("https://api.sosovalue.xyz/openapi/v2/etf/" + p, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(b) }).then((j) => { if (j.code !== 0) throw new Error("SoSoValue: " + (j.msg || j.code)); return j.data; });
+  const kl = (list) => { const a = list.slice().reverse(); return { t: a.map((r) => +r[0]), h: a.map((r) => +r[2]), l: a.map((r) => +r[3]), c: a.map((r) => +r[4]) }; };
+  const ymd = (d) => d.toISOString().slice(0, 10).replace(/-/g, "");
+
+  /* ---------- Tầng 1: dữ liệu thị trường, chú ý, lịch ---------- */
+  const SOURCES = {
+    klines: () => bybit("/v5/market/kline?category=spot&symbol=BTCUSDT&interval=D&limit=400").then((r) => kl(r.list)),
+    funding: async () => {
+      const a = await bybit("/v5/market/funding/history?category=linear&symbol=BTCUSDT&limit=200");
+      let list = a.list;
+      if (list.length) { try { const b = await bybit("/v5/market/funding/history?category=linear&symbol=BTCUSDT&limit=70&endTime=" + (+list[list.length - 1].fundingRateTimestamp - 1)); list = list.concat(b.list); } catch (e) { /* trang đầu là đủ */ } }
+      return list.map((d) => ({ t: +d.fundingRateTimestamp, v: +d.fundingRate })).sort((x, y) => x.t - y.t);
+    },
+    oi: () => bybit("/v5/market/open-interest?category=linear&symbol=BTCUSDT&intervalTime=1d&limit=30").then((r) => r.list.map((d) => ({ t: +d.timestamp, v: +d.openInterest })).sort((x, y) => x.t - y.t)),
+    ls: () => bybit("/v5/market/account-ratio?category=linear&symbol=BTCUSDT&period=1d&limit=30").then((r) => r.list.map((d) => ({ t: +d.timestamp, buy: +d.buyRatio })).sort((x, y) => x.t - y.t)),
+    okxFund: () => okx("/api/v5/public/funding-rate?instId=BTC-USDT-SWAP").then((d) => +d[0].fundingRate),
+    etfNow: () => soso("currentEtfDataMetrics", { type: "us-btc-spot" }),
+    etfHist: () => soso("historicalInflowChart", { type: "us-btc-spot" }).then((a) => a.map((d) => ({ date: d.date, flow: +d.totalNetInflow, assets: +d.totalNetAssets })).sort((x, y) => x.date < y.date ? -1 : 1)),
+    options: () => deribit("/public/get_book_summary_by_currency?currency=BTC&kind=option"),
+    fng: () => getJSON("https://api.alternative.me/fng/?limit=365").then((j) => j.data.map((d) => ({ t: +d.timestamp * 1000, v: +d.value, cls: d.value_classification })).reverse()),
+    votes: () => getJSON("https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=false&market_data=false&community_data=true&developer_data=false").then((j) => ({ up: j.sentiment_votes_up_percentage, down: j.sentiment_votes_down_percentage })),
+    trending: () => getJSON("https://api.coingecko.com/api/v3/search/trending").then((j) => (j.coins || []).map((c) => ({ name: c.item.name, sym: c.item.symbol, rank: c.item.market_cap_rank, ch: c.item.data && c.item.data.price_change_percentage_24h && c.item.data.price_change_percentage_24h.usd }))),
+    wiki: () => { const end = new Date(Date.now() - 864e5), start = new Date(Date.now() - 91 * 864e5); return getJSON(`https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Bitcoin/daily/${ymd(start)}/${ymd(end)}`).then((j) => j.items.map((d) => ({ t: Date.UTC(+d.timestamp.slice(0, 4), +d.timestamp.slice(4, 6) - 1, +d.timestamp.slice(6, 8), 12), v: d.views }))); },
+    cal: () => loadCal()
+  };
+  const SRC_NAME = { klines: "Bybit nến BTC", funding: "Bybit funding", oi: "Bybit OI", ls: "Bybit long/short", okxFund: "OKX funding", etfNow: "SoSoValue ETF", etfHist: "SoSoValue lịch sử ETF", options: "Deribit", fng: "Fear & Greed", votes: "CoinGecko phiếu bầu", trending: "CoinGecko thịnh hành", wiki: "Wikipedia", cal: "Investing.com lịch" };
+
+  /* ---------- lịch kinh tế (Investing.com) ---------- */
+  const NAME_VI = [
+    [/Fed Interest Rate Decision/i, "Fed công bố lãi suất", 1], [/FOMC Press Conference/i, "Họp báo của Fed", 1], [/FOMC Statement/i, "Tuyên bố chính sách của Fed", 1], [/FOMC Economic Projections/i, "Dự báo kinh tế của Fed", 1],
+    [/FOMC Meeting Minutes/i, "Biên bản họp Fed", 2], [/Fed Chair|Powell/i, "Chủ tịch Fed phát biểu", 2], [/FOMC Member|Fed .*Speaks/i, "Thành viên Fed phát biểu", 0],
+    [/Core CPI/i, "CPI lõi", 1], [/^CPI/i, "CPI (lạm phát tiêu dùng)", 1], [/Core PCE/i, "PCE lõi", 1], [/PCE Price/i, "Chỉ số giá PCE", 2],
+    [/Nonfarm Payrolls/i, "Bảng lương phi nông nghiệp (NFP)", 1], [/Unemployment Rate/i, "Tỷ lệ thất nghiệp", 1], [/ADP/i, "Việc làm ADP", 2], [/Average Hourly Earnings/i, "Thu nhập bình quân theo giờ", 2],
+    [/Initial Jobless Claims/i, "Đơn xin trợ cấp thất nghiệp lần đầu", 2], [/JOLTS/i, "Việc làm trống (JOLTS)", 2], [/Core PPI/i, "PPI lõi", 2], [/^PPI/i, "PPI (giá sản xuất)", 2],
+    [/Core Retail Sales/i, "Bán lẻ lõi", 2], [/Retail Control/i, "Bán lẻ nhóm kiểm soát", 2], [/Retail Sales/i, "Doanh số bán lẻ", 2], [/GDPNow/i, "Dự báo GDP tức thời (Atlanta Fed)", 0], [/GDP/i, "Tăng trưởng GDP", 2],
+    [/ISM Manufacturing PMI/i, "ISM sản xuất", 2], [/ISM Non-Manufacturing|ISM Services/i, "ISM dịch vụ", 2], [/Inflation Expectations/i, "Kỳ vọng lạm phát", 0], [/Michigan/i, "Niềm tin tiêu dùng Michigan", 0],
+    [/CB Consumer Confidence/i, "Niềm tin tiêu dùng (CB)", 0], [/Crude Oil Inventories/i, "Tồn kho dầu thô", 0], [/Auction/i, "Đấu giá trái phiếu kho bạc", 0], [/Philadelphia Fed/i, "Chỉ số sản xuất Philadelphia Fed", 0],
+    [/Existing Home Sales/i, "Doanh số nhà hiện có", 0], [/New Home Sales/i, "Doanh số nhà mới", 0], [/Durable Goods/i, "Đơn hàng hàng lâu bền", 0], [/Trump/i, "Tổng thống Trump phát biểu", 0],
+    [/S&P Global Manufacturing PMI/i, "PMI sản xuất (S&P Global)", 0], [/S&P Global Services PMI/i, "PMI dịch vụ (S&P Global)", 0], [/Industrial Production/i, "Sản xuất công nghiệp", 0], [/Trade Balance/i, "Cán cân thương mại", 0]
+  ];
+  const PERIOD_VI = { MoM: "so với tháng trước", YoY: "so với cùng kỳ năm trước", QoQ: "so với quý trước" };
+  function viName(en) { const str = String(en || ""), m = str.match(/\((MoM|YoY|QoQ)\)/), base = str.replace(/\s*\((MoM|YoY|QoQ)\)\s*/g, " ").trim(); for (const [re, vi, tier] of NAME_VI) if (re.test(base)) return { vi: vi + (m ? ", " + PERIOD_VI[m[1]] : ""), tier }; return { vi: str, tier: 0 }; }
+  const fv = (v, u) => (v == null || v === "") ? "–" : (typeof v === "number" ? v.toLocaleString("vi-VN", { maximumFractionDigits: 3 }) : String(v)) + (u || "");
+  async function loadCal() {
+    const now = Date.now(), iso = (ms) => new Date(ms).toISOString().slice(0, 19) + "Z";
+    const base = "https://endpoints.investing.com/pd-instruments/v1/calendars/economic/events/occurrences?domain_id=1&limit=200&country_ids=5";
+    const q = `&start_date=${iso(now - 2 * 864e5)}&end_date=${iso(now + 21 * 864e5)}`;
+    const parts = await Promise.all(["high", "medium"].map((lv) => getJSON(base + "&importance=" + lv + q)));
+    const ev = {}, occ = [], seen = new Set();
+    parts.forEach((j) => { if (!j || !Array.isArray(j.occurrences)) throw new Error("dữ liệu không đúng dạng"); (j.events || []).forEach((e) => { ev[e.event_id] = e; }); j.occurrences.forEach((o) => { const k = o.occurrence_id || o.event_id + "@" + o.occurrence_time; if (!seen.has(k)) { seen.add(k); occ.push(o); } }); });
+    return occ.map((o) => { const e = ev[o.event_id] || {}, en = e.event_translated || e.short_name || "", n = viName(en); return { t: Date.parse(o.occurrence_time), en, vi: n.vi, tier: n.tier, imp: e.importance || "medium", actual: o.actual, forecast: o.forecast, previous: o.previous, unit: o.unit || "", atf: o.actual_to_forecast, link: e.page_link ? "https://www.investing.com" + e.page_link : null }; }).filter((x) => isFinite(x.t)).sort((a, b) => a.t - b.t);
+  }
+
+  /* ---------- Dữ liệu từ bộ thu thập trên GitHub (nếu có) ---------- */
+  async function loadServer() {
+    if (location.protocol === "file:") return null;
+    try {
+      const r = await fetch("data/latest.json?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) return null;
+      const L = await r.json();
+      let hist = [];
+      try {
+        const h = await fetch("data/history.csv?t=" + Date.now(), { cache: "no-store" }).then((x) => x.ok ? x.text() : "");
+        hist = h.trim().split("\n").slice(1).map((l) => l.split(",")).map((c) => ({ t: Date.parse(c[0]), all: c[1] === "" ? NaN : +c[1], news: c[4] === "" ? null : +c[4], social: c[5] === "" ? null : +c[5] })).filter((x) => isFinite(x.t) && isFinite(x.all));
+      } catch (e) { /* không có lịch sử */ }
+      return { L, hist, age: Date.now() - Date.parse(L.generated_at) };
+    } catch (e) { return null; }
+  }
+  function textFromServer(L) {
+    const a = L.all || {}, post = (p) => ({ src: p.outlet ? p.src + " · " + p.outlet : p.src, t: p.t, s: p.s, text: p.text || "", url: p.url });
+    return { score: a.score ?? null, index: a.index ?? null, n: a.n || 0, pos: a.pos || 0, neg: a.neg || 0, neu: a.neu || 0, trend: L.trend ?? null, spanH: L.window_hours || 24,
+      daily: (L.daily || []).map((d) => ({ date: d.date, n: d.n, s: d.score })), coinCount: L.coins || [], keywords: L.keywords || [],
+      sources: (L.sources || []).map((s) => ({ src: s.src, n: s.n, s: s.score })), topPos: (L.top_pos || []).map(post), topNeg: (L.top_neg || []).map(post), news: L.news, social: L.social };
+  }
+
+  /* ---------- Tầng 4: chỉ số tổng hợp ---------- */
+  const ZONES = [[20, "Sợ hãi cực độ", "--z0"], [40, "Sợ hãi", "--z1"], [60, "Trung tính", "--z2"], [80, "Tham lam", "--z3"], [101, "Tham lam cực độ", "--z4"]];
+  const zoneOf = (v) => ZONES.find((z) => v < z[0]);
+  function etfSeries() {
+    if (!S.etfHist) return null;
+    const a = S.etfHist.slice(), now = S.etfNow && S.etfNow.dailyNetInflow;
+    if (now && now.value != null && now.lastUpdateDate && (!a.length || now.lastUpdateDate > a.at(-1).date)) a.push({ date: now.lastUpdateDate, flow: +now.value });
+    return a;
+  }
+  function putCall() {
+    if (!S.options) return null; let p = 0, c = 0;
+    S.options.forEach((o) => { if (/-P$/.test(o.instrument_name)) p += +o.open_interest || 0; else c += +o.open_interest || 0; });
+    return c ? p / c : null;
+  }
+  function wikiZ() {
+    if (!S.wiki || S.wiki.length < 40) return null;
+    const v = S.wiki.map((x) => x.v), last = v.slice(-3), prior = v.slice(-63, -3);
+    const m = prior.reduce((a, b) => a + b, 0) / prior.length, sd = Math.sqrt(prior.reduce((a, b) => a + (b - m) ** 2, 0) / prior.length) || 1;
+    return { z: (last.reduce((a, b) => a + b, 0) / 3 - m) / sd, last: v.at(-1), mean: m };
+  }
+  function composite() {
+    const C = [];
+    const add = (name, raw, v, w, note) => { if (v != null && isFinite(v)) C.push({ name, raw, v: clamp(v), w, note }); };
+    const hist = store.get("tamly-history", []);
+    if (S.text && S.text.score != null) {
+      if (S.mode === "server") {
+        const hs = (S.server.hist || []).map((h) => h.all);
+        const rel = hs.length >= 24 ? pctRank(hs, S.text.index) : null;
+        add("Giọng điệu tin tức và mạng xã hội", num(S.text.score, 2) + " (" + S.text.n + " bài)", rel != null ? (rel + S.text.index) / 2 : S.text.index, 25, rel != null ? "so với lịch sử của máy chủ" : "điểm tuyệt đối");
+      } else {
+        const hx = hist.map((h) => h.xs).filter((x) => x != null);
+        const rel = hx.length >= 10 ? pctRank(hx, S.text.score) : null;
+        add("Giọng điệu mạng xã hội", num(S.text.score, 2) + " (" + S.text.n + " bài)", rel != null ? (rel + S.text.index) / 2 : S.text.index, 15, rel != null ? "so với lịch sử trên máy này" : "điểm tuyệt đối");
+      }
+    }
+    if (S.fng) add("Fear & Greed", String(S.fng.at(-1).v), S.fng.at(-1).v, 20, S.fng.at(-1).cls);
+    if (S.votes && S.votes.up != null) add("Phiếu cộng đồng CoinGecko", num(S.votes.up, 1) + "% tăng", (S.votes.up - 40) * 2.5, 10, "40% → 0, 80% → 100");
+    if (S.funding) { const arr = S.funding.map((x) => x.v); add("Funding BTC", pct(arr.at(-1) * 100, 4), pctRank(arr, arr.at(-1)), 20, "phân vị trong 90 ngày"); }
+    if (S.ls) add("Tài khoản đang long", num(S.ls.at(-1).buy * 100) + "%", (S.ls.at(-1).buy - 0.4) / 0.35 * 100, 10, "40% → 0, 75% → 100");
+    const pc = putCall(); if (pc != null) add("Put/call quyền chọn", num(pc, 2), (1 - pc) / 0.6 * 100, 10, "càng thấp càng chủ quan");
+    const wz = wikiZ(); if (wz) add("Chú ý Wikipedia", (wz.z >= 0 ? "+" : "") + num(wz.z, 1) + " độ lệch chuẩn", 50 + 25 * wz.z, 15, "so với 60 ngày");
+    const W = C.reduce((a, c) => a + c.w, 0);
+    const value = W ? C.reduce((a, c) => a + c.v * c.w, 0) / W : null;
+    return { value: value == null ? null : Math.round(value), parts: C, weight: W };
+  }
+
+  /* ---------- Tầng 5: nhận định bằng lời ---------- */
+  function buildVerdict(ci) {
+    const pts = [], watch = [];
+    const z = zoneOf(ci.value);
+    const hist = store.get("tamly-history", []);
+    const ref = hist.slice().reverse().find((h) => Date.now() - h.t >= 20 * 3600e3);
+    const chg = ref ? ci.value - ref.c : null;
+    let p7 = null;
+    if (S.klines) { const c = S.klines.c; p7 = (c.at(-1) / c.at(-8) - 1) * 100; }
+    const f7 = S.fng && S.fng.length > 8 ? S.fng.at(-1).v - S.fng.at(-8).v : null;
+    const T = S.text;
+
+    let lede = `Đám đông đang ở mức ${z[1].toLowerCase()} (${ci.value}/100)`;
+    if (chg != null && Math.abs(chg) >= 3) lede += `, ${chg > 0 ? "tăng" : "giảm"} ${Math.abs(chg)} điểm so với ${fmtTime(ref.t)}`;
+    lede += ".";
+
+    let key = null;
+    if (p7 != null && f7 != null) {
+      if (p7 > 3 && f7 < -5) key = ["neg", `Giá BTC tăng ${pct(p7)} trong 7 ngày nhưng Fear & Greed lại giảm ${Math.abs(f7)} điểm: đà tăng thiếu niềm tin, dễ hụt hơi.`];
+      else if (p7 < -3 && f7 > 5) key = ["neg", `Giá BTC giảm ${pct(p7)} trong 7 ngày nhưng tâm lý lại tăng ${f7} điểm: đám đông chưa sợ, chưa có dấu hiệu bán tháo cuối cùng, có thể còn giảm.`];
+      else if (p7 < -5 && ci.value < 30) key = ["pos", `Giá giảm ${pct(p7)} trong 7 ngày và đám đông đang sợ hãi: đây là vùng trader đánh ngược bắt đầu để ý, với điều kiện giá giữ được hỗ trợ.`];
+      else if (p7 > 5 && ci.value > 70) key = ["neg", `Giá tăng ${pct(p7)} trong 7 ngày và đám đông hưng phấn: rủi ro điều chỉnh đang tăng.`];
+      else key = ["", `Tâm lý đi cùng chiều giá (BTC ${pct(p7)} trong 7 ngày, Fear & Greed ${f7 >= 0 ? "+" : ""}${f7} điểm): chưa có phân kỳ đáng chú ý.`];
+      pts.push(key);
+    }
+
+    if (T && T.n) {
+      const tone = T.score > 0.1 ? "nghiêng tích cực" : T.score < -0.1 ? "nghiêng tiêu cực" : "khá trung tính";
+      let s = `${S.mode === "server" ? "Trên báo chí, Reddit và mạng xã hội" : "Trên mạng xã hội và diễn đàn"}, ${T.n} bài về crypto trong khoảng ${Math.max(1, Math.round(T.spanH))} giờ qua ${tone} (${num(T.pos)}% tích cực, ${num(T.neg)}% tiêu cực)`;
+      if (T.trend != null && Math.abs(T.trend) >= 0.08) s += `, và ${T.trend > 0 ? "đang cải thiện" : "đang xấu đi"} so với 1–3 ngày trước`;
+      s += ".";
+      if (T.keywords.length) s += ` Chủ đề nhắc nhiều: ${T.keywords.slice(0, 4).map((k) => k[0]).join(", ")}.`;
+      pts.push([T.score > 0.1 ? "pos" : T.score < -0.1 ? "neg" : "", s]);
+      if (T.news && T.social && T.news.n >= 10 && T.social.n >= 10) {
+        const gap = T.news.index - T.social.index;
+        if (Math.abs(gap) >= 12) pts.push(["", gap > 0 ? `Báo chí lạc quan hơn hẳn mạng xã hội (${T.news.index} so với ${T.social.index} trên 100): tin tốt chưa thuyết phục được đám đông.` : `Mạng xã hội lạc quan hơn hẳn báo chí (${T.social.index} so với ${T.news.index} trên 100): đám đông đang hưng phấn hơn mức tin tức cho phép.`]);
+      }
+    }
+
+    if (S.funding || S.ls) {
+      const fr = S.funding ? pctRank(S.funding.map((x) => x.v), S.funding.at(-1).v) : null, lb = S.ls ? S.ls.at(-1).buy : null;
+      let s, c = "";
+      if ((fr != null && fr >= 85) || (lb != null && lb >= 0.68)) { s = "Phe long đang đông"; c = "warn"; }
+      else if ((fr != null && fr <= 15) || (lb != null && lb <= 0.45)) { s = "Phe short đang đông"; c = "warn"; }
+      else s = "Vị thế phái sinh khá cân bằng";
+      const bits = [];
+      if (fr != null) bits.push(`funding cao hơn ${num(fr)}% các kỳ trong 90 ngày`);
+      if (lb != null) bits.push(`${num(lb * 100)}% tài khoản trên Bybit đang long`);
+      s += ": " + bits.join(", ") + ".";
+      if (c) s += s.startsWith("Phe long") ? " Nếu giá giảm, các vị thế này dễ bị thanh lý dây chuyền." : " Nếu giá tăng, phe short có thể bị ép mua lại.";
+      pts.push([c, s]);
+    }
+
+    const etf = etfSeries();
+    if (etf && etf.length) {
+      const last = etf.at(-1), dir = Math.sign(last.flow); let k = 0;
+      for (let i = etf.length - 1; i >= 0 && Math.sign(etf[i].flow) === dir && dir !== 0; i--) k++;
+      const sum5 = etf.slice(-5).reduce((a, x) => a + x.flow, 0);
+      pts.push([dir > 0 ? "pos" : dir < 0 ? "neg" : "", `Tổ chức: ETF Bitcoin ${dir > 0 ? "hút ròng" : "bị rút ròng"} ${usd(Math.abs(last.flow))} phiên gần nhất, ${k} phiên liên tiếp cùng chiều; tổng 5 phiên ${usd(sum5, true)}.`]);
+      if (k >= 3) watch.push(`Chuỗi ${k} phiên ETF ${dir > 0 ? "tiền vào" : "tiền ra"}: một phiên đảo chiều sẽ là tín hiệu thay đổi.`);
+    }
+
+    if (S.cal) {
+      const now = Date.now();
+      const nx = S.cal.filter((e) => e.tier === 1 && e.t > now).slice(0, 1)[0];
+      const recent = S.cal.filter((e) => e.tier === 1 && e.actual != null && e.actual !== "" && now - e.t <= 24 * 3600e3 && now >= e.t && (e.atf === "positive" || e.atf === "negative"));
+      recent.forEach((e) => pts.push([e.atf === "positive" ? "neg" : "pos", `${e.vi} vừa công bố ${fv(e.actual, e.unit)} (dự báo ${fv(e.forecast, e.unit)}): ${e.atf === "positive" ? "tốt cho USD, thường bất lợi cho crypto" : "xấu cho USD, thường có lợi cho crypto"}.`]));
+      if (nx) {
+        const h = (nx.t - now) / 3600e3;
+        if (h <= 72) pts.push(["warn", `Sự kiện lớn sắp tới: ${nx.vi} lúc ${fmtEvent(nx.t)} (còn ${h < 1 ? Math.round(h * 60) + " phút" : Math.round(h) + " giờ"}). Biến động thường tăng mạnh quanh giờ công bố.`]);
+        watch.push(`${nx.vi}: ${fmtEvent(nx.t)} giờ Việt Nam.`);
+      }
+    }
+
+    if (S.klines) {
+      const k = S.klines, lo = Math.min(...k.l.slice(-30)), hi = Math.max(...k.h.slice(-30)), m200 = sma(k.c, 200, k.c.length - 1);
+      watch.push(`Giá BTC giữ được đáy 30 ngày ${num(lo)} hay không; vượt đỉnh 30 ngày ${num(hi)} sẽ xác nhận đà tăng.` + (m200 ? ` SMA 200 ở ${num(m200)}.` : ""));
+    }
+    if (S.funding) watch.push("Funding vượt phân vị 90% (long quá đông) hoặc xuống dưới 10% (short quá đông).");
+
+    const readings = [
+      "Sợ hãi cực độ thường xuất hiện gần các đáy ngắn hạn. Trader tâm lý thường chờ giá ngừng giảm và giữ được hỗ trợ rồi mới tính, chứ không bắt dao rơi.",
+      "Thận trọng đang chiếm ưu thế; một phần tin xấu đã phản ánh vào giá. Tín hiệu mua chỉ có ý nghĩa khi giá xác nhận.",
+      "Không có cực đoan, nên tâm lý ít giá trị dự báo lúc này. Nên ưu tiên xu hướng giá và các sự kiện vĩ mô.",
+      "Lạc quan nhưng chưa quá đà. Xu hướng có thể tiếp diễn; cần để ý đòn bẩy (funding, tỷ lệ long) tăng nhanh.",
+      "Hưng phấn cực độ thường đi kèm các đỉnh ngắn hạn. Trader tâm lý thường giảm rủi ro và tránh đòn bẩy cao ở vùng này."
+    ];
+    return { headline: z, lede, pts, reading: readings[ZONES.indexOf(z)], watch, key };
+  }
+
+  /* ---------- vẽ biểu đồ ---------- */
+  function lineChart(el, { t, series, yfmt, H = 220, band, zero, bars, xfmt }) {
+    const W = 720, L = 8, R = 62, Tp = 10, B = 24, n = t.length;
+    if (!n) { el.innerHTML = ""; return; }
+    const all = series.flatMap((s) => s.v.filter((x) => x != null)).concat(band ? band : []).concat(zero ? [0] : []);
+    let lo = Math.min(...all), hi = Math.max(...all); const pad = (hi - lo) * 0.08 || 1; lo -= pad; hi += pad;
+    const x = (i) => L + (n === 1 ? (W - L - R) / 2 : i / (n - 1) * (W - L - R)), y = (v) => Tp + (1 - (v - lo) / (hi - lo)) * (H - Tp - B);
+    const raw = (hi - lo) / 4, mag = Math.pow(10, Math.floor(Math.log10(raw))), step = [1, 2, 2.5, 5, 10].map((k) => k * mag).find((s) => s >= raw);
+    let g = "";
+    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${W - R + 6}" y="${y(v) + 4}" font-size="11" fill="var(--ink-3)" font-family="var(--mono)">${yfmt(v)}</text>`;
+    if (xfmt) { const every = Math.max(1, Math.ceil(n / 7)); t.forEach((ts, i) => { if (i % every === 0 || i === n - 1) g += `<text x="${x(i)}" y="${H - 7}" font-size="11" fill="var(--ink-3)" text-anchor="middle">${xfmt(ts)}</text>`; }); }
+    else { let prev = -1; t.forEach((ts, i) => { const m = new Date(ts).getUTCMonth(); if (prev !== -1 && m !== prev) g += `<text x="${x(i)}" y="${H - 7}" font-size="11" fill="var(--ink-3)" text-anchor="middle">Th${m + 1}</text>`; prev = m; }); }
+    if (band) g += `<rect x="${L}" y="${y(band[1])}" width="${W - L - R}" height="${y(band[0]) - y(band[1])}" fill="var(--neutral-bg)" opacity=".7"/>`;
+    if (zero) g += `<line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--ink-3)"/>`;
+    let marks = "";
+    if (bars) {
+      const bw = Math.max(2, Math.min(40, (W - L - R) / n - 3));
+      series[0].v.forEach((v, i) => { if (v == null) return; const y0 = y(0), y1 = y(v); marks += `<rect x="${x(i) - bw / 2}" y="${Math.min(y0, y1)}" width="${bw}" height="${Math.max(1, Math.abs(y1 - y0))}" fill="${v >= 0 ? "var(--good)" : "var(--bad)"}" rx="2"/>`; });
+    } else {
+      series.slice().reverse().forEach((s) => { let p = "", pen = false; s.v.forEach((v, i) => { if (v == null) { pen = false; return; } p += (pen ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1); pen = true; }); marks += `<path d="${p}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round"/>`; if (n <= 40) s.v.forEach((v, i) => { if (v != null) marks += `<circle cx="${x(i)}" cy="${y(v)}" r="2.5" fill="${s.color}"/>`; }); });
+      const s0 = series[0], li = n - 1; if (s0.v[li] != null) marks += `<circle cx="${x(li)}" cy="${y(s0.v[li])}" r="4.5" fill="${s0.color}" stroke="var(--panel)" stroke-width="2"/>`;
+    }
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img">${g}${marks}<line class="xh" y1="${Tp}" y2="${H - B}" stroke="var(--ink-3)" stroke-dasharray="3 3" visibility="hidden"/><rect class="hit" x="${L}" y="${Tp}" width="${W - L - R}" height="${H - Tp - B}" fill="transparent"/></svg><div class="tip" hidden></div>`;
+    const svg = el.querySelector("svg"), tip = el.querySelector(".tip"), xh = el.querySelector(".xh"), hit = el.querySelector(".hit");
+    const move = (ev) => {
+      const r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * (W / r.width);
+      const i = Math.max(0, Math.min(n - 1, Math.round(((px - L) / (W - L - R)) * (n - 1))));
+      xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
+      tip.innerHTML = (xfmt ? xfmt(t[i]) : fmtDate(t[i])) + series.map((s) => `<br>${s.name}: ${s.fmt(s.v[i])}`).join("");
+      tip.hidden = false; const left = (x(i) / W) * r.width; tip.style.left = Math.max(0, Math.min(left + 10, r.width - tip.offsetWidth - 4)) + "px"; tip.style.top = "6px";
+    };
+    hit.addEventListener("pointermove", move); hit.addEventListener("pointerdown", move);
+    hit.addEventListener("pointerleave", () => { tip.hidden = true; xh.setAttribute("visibility", "hidden"); });
+  }
+  const statBoxes = (arr) => arr.map(([k, v, d, c]) => `<div class="stat"><div class="k">${esc(k)}</div><div class="v ${c || ""}">${esc(v)}</div><div class="d">${esc(d)}</div></div>`).join("");
+  const errFor = (...k) => k.filter((x) => S.err[x]).map((x) => SRC_NAME[x] + ": " + S.err[x]).join("; ") || "thiếu dữ liệu";
+
+  /* ---------- hiển thị ---------- */
+  function renderIndex(ci) {
+    if (ci.value == null) { $("ci-big").innerHTML = "–<small>/100</small>"; $("ci-table").innerHTML = `<div class="msg">Chưa đủ dữ liệu để tính chỉ số.</div>`; return; }
+    const z = zoneOf(ci.value);
+    $("ci-big").innerHTML = ci.value + "<small>/100</small>";
+    $("ci-label").textContent = z[1]; $("ci-label").style.color = `var(${z[2]})`;
+    const m = $("ci-mark"); m.hidden = false; m.style.left = ci.value + "%";
+    $("ci-table").innerHTML = `<table><thead><tr><th>Thành phần</th><th>Số liệu</th><th>Điểm 0–100</th><th>Trọng số</th><th style="text-align:left">Ghi chú</th></tr></thead><tbody>` +
+      ci.parts.map((p) => `<tr><td>${esc(p.name)}</td><td class="num">${esc(p.raw)}</td><td class="num"><span class="meter"><span style="width:${p.v}%"></span></span> ${Math.round(p.v)}</td><td class="num">${Math.round(p.w / ci.weight * 100)}%</td><td class="wrap" style="min-width:140px">${esc(p.note)}</td></tr>`).join("") + `</tbody></table>`;
+  }
+
+  function renderHistory() {
+    const h = store.get("tamly-history", []);
+    if (h.length < 2) { $("c-hist").innerHTML = ""; $("hist-note").textContent = `Mới có ${h.length} lần ghi. Mỗi lần bạn mở trang (cách nhau từ 30 phút), chỉ số được lưu lại trên trình duyệt này; sau vài ngày, biểu đồ sẽ cho thấy tâm lý thay đổi thế nào.`; return; }
+    const a = h.slice(-200);
+    lineChart($("c-hist"), { t: a.map((x) => x.t), H: 200, band: [40, 60], yfmt: (v) => Math.round(v), xfmt: (ts) => new Intl.DateTimeFormat("vi-VN", { timeZone: TZ, day: "2-digit", month: "2-digit" }).format(new Date(ts)), series: [{ name: "Tổng hợp", v: a.map((x) => x.c), color: "var(--s1)", fmt: (v) => v == null ? "–" : Math.round(v) }, { name: "Văn bản", v: a.map((x) => x.x), color: "var(--s2)", fmt: (v) => v == null ? "–" : Math.round(v) }] });
+    $("hist-note").textContent = `${h.length} lần ghi từ ${fmtTime(h[0].t)}. Vùng xám 40–60 là trung tính.`;
+  }
+
+  function renderText() {
+    const T = S.text;
+    if (!T || !T.n) { $("tx-big").textContent = "–"; $("tx-label").textContent = "Chưa đủ bài để chấm"; ["tx-src", "tx-coins", "tx-kw", "tx-pos", "tx-neg", "c-text"].forEach((id) => { $(id).innerHTML = ""; }); return; }
+    $("tx-big").textContent = (T.score > 0 ? "+" : "") + num(T.score, 2);
+    const lab = T.score > 0.25 ? "Tích cực" : T.score > 0.1 ? "Hơi tích cực" : T.score < -0.25 ? "Tiêu cực" : T.score < -0.1 ? "Hơi tiêu cực" : "Trung tính";
+    $("tx-label").textContent = lab; $("tx-label").style.color = T.score > 0.1 ? "var(--good)" : T.score < -0.1 ? "var(--bad)" : "var(--ink-2)";
+    $("tx-sub").textContent = S.mode === "server"
+      ? `${T.n} bài trong ${T.spanH} giờ · tin tức ${T.news ? T.news.index + "/100 (" + T.news.n + " bài)" : "–"} · mạng xã hội ${T.social ? T.social.index + "/100 (" + T.social.n + " bài)" : "–"} · chấm bằng ${S.server.L.scoring} · máy chủ cập nhật ${fmtTime(Date.parse(S.server.L.generated_at))}`
+      : `${T.n} bài trong ${Math.max(1, Math.round(T.spanH))} giờ · thang −1 đến +1 · chấm bằng ${S.mode === "ai" ? "AI + từ điển" : "từ điển crypto"}` + (T.trend != null ? ` · ${T.trend >= 0 ? "+" : ""}${num(T.trend, 2)} so với 1–3 ngày trước` : "");
+    $("tx-split").innerHTML = `<span style="width:${T.pos}%;background:var(--good)"></span><span style="width:${T.neu}%;background:var(--z2)"></span><span style="width:${T.neg}%;background:var(--bad)"></span>`;
+    const sh = S.mode === "server" ? (S.server.hist || []).filter((h) => Date.now() - h.t <= 7 * 864e5) : [];
+    $("tx-chart-title").textContent = sh.length >= 3 ? "Theo giờ, 7 ngày (0–100)" : "Theo ngày (giờ Việt Nam)";
+    if (sh.length >= 3) lineChart($("c-text"), { t: sh.map((h) => h.t), H: 180, band: [40, 60], yfmt: (v) => Math.round(v), xfmt: (ts) => new Intl.DateTimeFormat("vi-VN", { timeZone: TZ, day: "2-digit", month: "2-digit" }).format(new Date(ts)), series: [{ name: "Tổng", v: sh.map((h) => h.all), color: "var(--s1)", fmt: (v) => v == null ? "–" : Math.round(v) }, { name: "Tin tức", v: sh.map((h) => h.news), color: "var(--s2)", fmt: (v) => v == null ? "–" : Math.round(v) }, { name: "MXH", v: sh.map((h) => h.social), color: "var(--s3)", fmt: (v) => v == null ? "–" : Math.round(v) }] });
+    else if (T.daily.length) lineChart($("c-text"), { t: T.daily.map((d) => Date.parse(d.date + "T12:00:00+07:00")), H: 180, bars: true, zero: true, yfmt: (v) => num(v, 2), xfmt: (ts) => new Intl.DateTimeFormat("vi-VN", { timeZone: TZ, day: "2-digit", month: "2-digit" }).format(new Date(ts)), series: [{ name: "Điểm", v: T.daily.map((d) => d.s), fmt: (v) => num(v, 2) }, { name: "Số bài", v: T.daily.map((d) => d.n), fmt: (v) => v }] });
+    else $("c-text").innerHTML = `<p class="loading">Chưa đủ bài theo ngày.</p>`;
+    $("tx-src").innerHTML = `<table><thead><tr><th>Nguồn</th><th>Bài</th><th>Điểm</th></tr></thead><tbody>${T.sources.map((s) => `<tr><td>${esc(s.src)}</td><td class="num">${s.n}</td><td class="num ${s.s > 0.1 ? "up" : s.s < -0.1 ? "down" : ""}">${num(s.s, 2)}</td></tr>`).join("")}</tbody></table>`;
+    $("tx-coins").innerHTML = T.coinCount.map(([c, n]) => `<span>${esc(c)}<b>${n}</b></span>`).join("") || `<span>Không đủ dữ liệu</span>`;
+    $("tx-kw").innerHTML = T.keywords.map(([w, n]) => `<span>${esc(w)}<b>${n}</b></span>`).join("") || `<span>Không đủ dữ liệu</span>`;
+    const post = (p) => `<div class="post"><p>${esc(p.text.length > 220 ? p.text.slice(0, 217) + "…" : p.text)}</p><div class="meta"><span class="${p.s > 0 ? "up" : "down"}">${p.s > 0 ? "+" : ""}${num(p.s, 2)}</span><span>${esc(p.src)}</span><span>${fmtTime(p.t)}</span>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">mở bài</a>` : ""}</div></div>`;
+    $("tx-pos").innerHTML = T.topPos.map(post).join("") || `<p class="loading">Không có bài nổi bật.</p>`;
+    $("tx-neg").innerHTML = T.topNeg.map(post).join("") || `<p class="loading">Không có bài nổi bật.</p>`;
+  }
+
+  function renderFilter() {
+    if (!S.reasons) return;
+    $("tx-filter").innerHTML = Object.entries(S.reasons).filter((r) => r[1] > 0).map(([k, n]) => `<span>${esc(k)}<b>${n}</b></span>`).join("") || "<span>Không bài nào bị loại</span>";
+  }
+
+  function renderAttention() {
+    const out = [];
+    if (S.votes && S.votes.up != null) out.push(["Phiếu cộng đồng CoinGecko", num(S.votes.up, 1) + "% tăng", num(S.votes.down, 1) + "% giảm"]);
+    const wz = wikiZ(); if (wz) out.push(["Lượt xem Wikipedia hôm qua", num(wz.last), `${wz.z >= 0 ? "+" : ""}${num(wz.z, 1)} độ lệch chuẩn so với 60 ngày`, wz.z > 1 ? "up" : wz.z < -1 ? "down" : ""]);
+    if (S.fng) out.push(["Fear & Greed", String(S.fng.at(-1).v), S.fng.at(-1).cls + (S.fng.length > 8 ? `, 7 ngày trước ${S.fng.at(-8).v}` : "")]);
+    $("att-stats").innerHTML = out.length ? statBoxes(out) : `<div class="msg">Không lấy được: ${esc(errFor("votes", "wiki", "fng"))}.</div>`;
+    if (S.wiki) lineChart($("c-wiki"), { t: S.wiki.map((x) => x.t), H: 170, yfmt: (v) => Math.round(v / 1000) + "k", series: [{ name: "Lượt xem", v: S.wiki.map((x) => x.v), color: "var(--s1)", fmt: (v) => num(v) }] });
+    else $("c-wiki").innerHTML = `<div class="msg">Không lấy được Wikipedia: ${esc(errFor("wiki"))}.</div>`;
+    $("trending").innerHTML = S.trending ? S.trending.slice(0, 10).map((c) => `<span>${esc(c.name)} (${esc(c.sym)})${c.ch != null ? `<b class="${cls(c.ch)}">${pct(c.ch)}</b>` : ""}</span>`).join("") : `<span>${esc(errFor("trending"))}</span>`;
+  }
+
+  function renderPositioning() {
+    const out = [];
+    if (S.funding) { const arr = S.funding.map((x) => x.v); out.push(["Funding BTC (Bybit)", pct(arr.at(-1) * 100, 4), `phân vị ${num(pctRank(arr, arr.at(-1)))}% trong 90 ngày`]); }
+    if (S.okxFund != null) out.push(["Funding BTC (OKX)", pct(S.okxFund * 100, 4), "mỗi 8 giờ"]);
+    if (S.oi && S.oi.length >= 8) { const o7 = (S.oi.at(-1).v / S.oi.at(-8).v - 1) * 100; out.push(["Open interest 7 ngày", pct(o7), num(S.oi.at(-1).v) + " BTC trên Bybit", cls(o7)]); }
+    if (S.ls) out.push(["Tài khoản đang long", num(S.ls.at(-1).buy * 100) + "%", "Bybit, nhỏ lẻ"]);
+    const etf = etfSeries(); if (etf && etf.length) out.push(["ETF phiên gần nhất", usd(etf.at(-1).flow, true), "ngày " + etf.at(-1).date.split("-").reverse().join("/"), cls(etf.at(-1).flow)]);
+    const pc = putCall(); if (pc != null) out.push(["Put/call quyền chọn", num(pc, 2), "Deribit, theo vị thế mở"]);
+    $("pos-stats").innerHTML = out.length ? statBoxes(out) : `<div class="msg">Không lấy được dữ liệu phái sinh.</div>`;
+    if (etf && etf.length) { const a = etf.slice(-30); lineChart($("c-etf"), { t: a.map((x) => Date.parse(x.date + "T12:00:00Z")), H: 180, bars: true, zero: true, yfmt: (v) => Math.round(v / 1e6) + "tr", series: [{ name: "Dòng tiền", v: a.map((x) => x.flow), fmt: (v) => usd(v, true) }] }); }
+    else $("c-etf").innerHTML = `<div class="msg">Không lấy được ETF: ${esc(errFor("etfHist", "etfNow"))}.</div>`;
+    if (S.funding) lineChart($("c-fund"), { t: S.funding.map((x) => x.t), H: 180, bars: true, zero: true, yfmt: (v) => (v * 100).toFixed(3) + "%", series: [{ name: "Funding", v: S.funding.map((x) => x.v), fmt: (v) => pct(v * 100, 4) }] });
+    else $("c-fund").innerHTML = `<div class="msg">Không lấy được funding: ${esc(errFor("funding"))}.</div>`;
+  }
+
+  function renderBTC() {
+    if (!S.klines) { $("c-btc").innerHTML = `<div class="msg">Không lấy được nến BTC: ${esc(errFor("klines"))}.</div>`; $("levels").innerHTML = ""; return; }
+    const k = S.klines, c = k.c, idx = c.map((_, i) => i).slice(Math.max(0, c.length - 180)), f = (v) => v == null ? "–" : num(v);
+    lineChart($("c-btc"), { t: idx.map((i) => k.t[i]), H: 240, yfmt: (v) => Math.round(v / 1000) + "k", series: [{ name: "Giá", v: idx.map((i) => c[i]), color: "var(--s1)", fmt: f }, { name: "SMA50", v: idx.map((i) => sma(c, 50, i)), color: "var(--s2)", fmt: f }, { name: "SMA200", v: idx.map((i) => sma(c, 200, i)), color: "var(--s3)", fmt: f }] });
+    const hi = (a, n) => Math.max(...a.slice(-n)), lo = (a, n) => Math.min(...a.slice(-n));
+    $("levels").innerHTML = `<span>Giá <b>${num(c.at(-1))}</b></span><span>7 ngày <b class="${cls(c.at(-1) / c.at(-8) - 1)}">${pct((c.at(-1) / c.at(-8) - 1) * 100)}</b></span><span>Đáy 30 ngày <b>${num(lo(k.l, 30))}</b></span><span>Đỉnh 30 ngày <b>${num(hi(k.h, 30))}</b></span><span>SMA 200 <b>${num(sma(c, 200, c.length - 1))}</b></span>`;
+  }
+
+  const CAL_VIEW = { level: "h" };
+  function renderCal() {
+    const box = $("cal-box");
+    if (!S.cal) { box.innerHTML = `<div class="msg">Không tải được lịch: ${esc(errFor("cal"))}.</div>`; return; }
+    const now = Date.now(), list = S.cal.filter((e) => CAL_VIEW.level === "h" ? (e.imp === "high" || e.tier === 1) : true);
+    const dayKey = (t) => new Intl.DateTimeFormat("vi-VN", { timeZone: TZ, weekday: "long", day: "2-digit", month: "2-digit" }).format(new Date(t));
+    const hm = (t) => new Intl.DateTimeFormat("vi-VN", { timeZone: TZ, hour: "2-digit", minute: "2-digit" }).format(new Date(t));
+    let html = `<div class="bar-opts"><label><input type="radio" name="cal-lv" value="h" ${CAL_VIEW.level === "h" ? "checked" : ""}> Chỉ mức cao</label><label><input type="radio" name="cal-lv" value="hm" ${CAL_VIEW.level === "hm" ? "checked" : ""}> Cao và vừa</label><span>${list.length} sự kiện · 2 ngày qua và 3 tuần tới</span></div>`;
+    let cur = "";
+    list.forEach((e) => {
+      const k = dayKey(e.t); if (k !== cur) { cur = k; html += `<div class="day">${esc(k)}</div>`; }
+      const h = (e.t - now) / 3600e3, done = e.actual != null && e.actual !== "", past = h < -0.5;
+      const cd = done ? "đã công bố" : past ? "đã qua" : h < 0 ? "đang diễn ra" : h < 1 ? "trong " + Math.max(1, Math.round(h * 60)) + " phút" : h < 48 ? "còn " + Math.round(h) + " giờ" : "còn " + Math.round(h / 24) + " ngày";
+      const nums = [done ? `<b>Thực tế ${esc(fv(e.actual, e.unit))}</b>` : "", e.forecast != null ? "Dự báo " + esc(fv(e.forecast, e.unit)) : "", e.previous != null ? "Kỳ trước " + esc(fv(e.previous, e.unit)) : ""].filter(Boolean).join(" · ");
+      const res = done && e.atf === "positive" ? `<span class="res neg">Tốt cho USD, thường bất lợi cho crypto</span>` : done && e.atf === "negative" ? `<span class="res pos">Xấu cho USD, thường có lợi cho crypto</span>` : done && e.forecast != null ? `<span class="res">Sát dự báo</span>` : "";
+      const name = e.link ? `<a href="${esc(e.link)}" target="_blank" rel="noopener">${esc(e.vi)}</a>` : esc(e.vi);
+      html += `<div class="ev ${past && !done ? "past" : done ? "" : h < 48 ? "soon" : ""}"><time>${hm(e.t)}</time><div><div class="t">${e.tier === 1 ? '<span class="tier t1">CẤP 1</span>' : ""}<span class="imp ${e.imp === "high" ? "high" : "medium"}">${e.imp === "high" ? "Cao" : "Vừa"}</span>${name}</div><div class="m">${nums ? nums + " · " : ""}${esc(e.en)}</div>${res ? `<div style="margin-top:3px">${res}</div>` : ""}</div><div class="cd">${cd}</div></div>`;
+    });
+    box.innerHTML = html;
+    box.querySelectorAll('input[name="cal-lv"]').forEach((r) => r.addEventListener("change", (ev) => { CAL_VIEW.level = ev.target.value; renderCal(); }));
+  }
+
+  function renderVerdict(ci) {
+    if (ci.value == null) { $("headline").textContent = "Chưa đủ dữ liệu để kết luận"; $("lede").textContent = "Hầu hết nguồn không tải được. Kiểm tra kết nối mạng rồi bấm Làm mới dữ liệu."; $("points").innerHTML = ""; return; }
+    const v = buildVerdict(ci);
+    $("headline").innerHTML = `Tâm lý thị trường: <span class="zone" style="background:var(${v.headline[2]})">${esc(v.headline[1])}</span>`;
+    $("lede").textContent = v.lede;
+    const icon = { pos: "+", neg: "−", warn: "!", "": "•" };
+    $("points").innerHTML = v.pts.map(([c, s]) => `<li><i class="${c}">${icon[c]}</i><span>${esc(s)}</span></li>`).join("");
+    $("reading").hidden = false; $("reading").innerHTML = `<b>Cách đọc thường gặp ở mức này:</b> ${esc(v.reading)}`;
+    $("watch-wrap").hidden = !v.watch.length; $("watch").innerHTML = v.watch.map((w) => `<li>${esc(w)}</li>`).join("");
+    $("p5").textContent = v.headline[1];
+  }
+
+  /* ---------- AI ---------- */
+  const aiOn = () => store.get("tamly-ai", false);
+  function renderAiBox(state) {
+    const box = $("ai-box");
+    if (state === "running") return;
+    if (S.mode === "server") { box.innerHTML = `<span>Dữ liệu văn bản do <b>bộ thu thập trên GitHub</b> cung cấp (${esc(S.server.L.raw_count)} bài thô, giữ ${esc(S.server.L.kept_count)}; chấm bằng ${esc(S.server.L.scoring)}). Trang không cần tự chấm.</span>`; return; }
+    if (aiOn()) box.innerHTML = `<span>Đang dùng <b>AI + từ điển</b> cho bài 48 giờ qua (mô hình Twitter RoBERTa chạy trên máy bạn). Điểm từng bài chỉ mang tính tham khảo; điểm trung bình mới có ý nghĩa.</span><button class="btn ghost" id="ai-off" type="button">Tắt AI</button>`;
+    else box.innerHTML = `<span>Đang chấm bằng <b>từ điển thuật ngữ crypto</b>. Bật AI để chấm kỹ hơn các bài trong 48 giờ qua (mất khoảng 30 giây mỗi lần). Lần đầu tải khoảng 126 MB, các lần sau trình duyệt dùng lại bản đã lưu.</span><button class="btn" id="ai-on" type="button">Bật phân tích AI</button>`;
+    const on = $("ai-on"), off = $("ai-off");
+    if (on) on.addEventListener("click", () => { store.set("tamly-ai", true); runAI(); });
+    if (off) off.addEventListener("click", () => { store.set("tamly-ai", false); S.mode = "lex"; ENGINE.score(S.kept, null); afterScore(); renderAiBox(); });
+  }
+  async function runAI() {
+    if (!S.kept || !S.kept.length) { renderAiBox(); return; }
+    const box = $("ai-box");
+    box.innerHTML = `<span id="ai-status">Đang tải mô hình AI…</span>`;
+    $("p3").textContent = "đang chạy AI…";
+    try {
+      await ENGINE.loadModel((p) => { const el = $("ai-status"); if (el) el.textContent = `Đang tải mô hình AI: ${p}% (chỉ lần đầu)`; });
+      const idx = S.kept.map((x, i) => [x, i]).filter(([x]) => Date.now() - x.t <= 48 * 3600e3).map(([, i]) => i);
+      const part = await ENGINE.aiScore(idx.map((i) => S.kept[i].text), (d, n) => { const el = $("ai-status"); if (el) el.textContent = `AI đang chấm ${d}/${n} bài của 48 giờ qua…`; });
+      const scores = S.kept.map(() => null); idx.forEach((i, k) => { scores[i] = part[k]; });
+      ENGINE.score(S.kept, scores); S.mode = "ai";
+      afterScore();
+    } catch (e) {
+      box.innerHTML = `<span class="down">Không chạy được AI: ${esc(e.message || e)}. Trang tiếp tục dùng từ điển.</span>`;
+      S.mode = "lex"; $("p3").textContent = "từ điển crypto"; return;
+    }
+    renderAiBox();
+  }
+
+  /* ---------- quy trình chính ---------- */
+  function afterScore() {
+    if (S.mode !== "server") S.text = ENGINE.aggregate(S.kept);
+    $("p3").textContent = S.mode === "server" ? (S.server.L.scoring.startsWith("AI") ? "AI + từ điển (máy chủ)" : "từ điển (máy chủ)") : S.mode === "ai" ? "AI + từ điển" : "từ điển crypto";
+    const ci = composite();
+    $("p4").textContent = ci.value == null ? "chưa đủ dữ liệu" : ci.value + "/100 · " + zoneOf(ci.value)[1].toLowerCase();
+    if (ci.value != null) {
+      const h = store.get("tamly-history", []), last = h.at(-1), snap = { t: Date.now(), c: ci.value, x: S.text.index, xs: S.text.score, f: S.fng ? S.fng.at(-1).v : null, p: S.klines ? S.klines.c.at(-1) : null };
+      if (!last || Date.now() - last.t >= 30 * 60e3) h.push(snap); else if (S.mode === "ai") h[h.length - 1] = snap;
+      store.set("tamly-history", h.slice(-1000));
+    }
+    renderIndex(ci); renderText(); renderVerdict(ci); renderHistory();
+    const ref = store.get("tamly-history", []).slice().reverse().find((x) => Date.now() - x.t >= 20 * 3600e3);
+    $("ci-change").textContent = ref && ci.value != null ? `${ci.value - ref.c >= 0 ? "+" : ""}${ci.value - ref.c} điểm so với ${fmtTime(ref.t)}` : "";
+  }
+
+  let busy = false;
+  async function load() {
+    if (busy) return; busy = true;
+    const btn = $("refresh"); btn.disabled = true; btn.textContent = "Đang tải…";
+    S.err = {}; $("p1").textContent = "đang chạy…"; $("p2").textContent = "chờ"; $("p3").textContent = "chờ"; $("p4").textContent = "chờ"; $("p5").textContent = "chờ";
+    const keys = Object.keys(SOURCES);
+    const marketP = Promise.allSettled(keys.map((k) => SOURCES[k]())).then((res) => res.forEach((r, i) => { const k = keys[i]; if (r.status === "fulfilled") S[k] = r.value; else { S[k] = null; S.err[k] = (r.reason && r.reason.message) || "lỗi"; } }));
+    const serverP = loadServer();
+    const textP = serverP.then((sv) => (sv && sv.age < 3 * 3600e3) ? { items: [], errs: {}, counts: {}, server: sv } : ENGINE.collect(getJSON).catch((e) => ({ items: [], errs: { all: e.message }, counts: {} })));
+    const [, col] = await Promise.all([marketP, textP]);
+    const okMarket = keys.filter((k) => !S.err[k]).length;
+    if (col.server) {
+      S.server = col.server; S.mode = "server"; S.kept = null; S.text = textFromServer(col.server.L); S.reasons = col.server.L.filter_reasons || {};
+      $("p1").textContent = `${col.server.L.raw_count} bài (máy chủ) · ${okMarket}/${keys.length} nguồn thị trường`;
+      $("p2").textContent = `giữ ${col.server.L.kept_count}, lưu 7 ngày ${col.server.L.stored_7d}`;
+    } else {
+      $("p1").textContent = `${col.items.length} bài · ${okMarket}/${keys.length} nguồn thị trường`;
+      const { kept, reasons } = ENGINE.clean(col.items);
+      S.kept = kept; S.reasons = reasons;
+      $("p2").textContent = `giữ ${kept.length}, loại ${col.items.length - kept.length}`;
+      S.mode = "lex"; ENGINE.score(S.kept, null);
+    }
+    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, afterScore];
+    steps.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
+    const failed = keys.filter((k) => S.err[k]).map((k) => SRC_NAME[k]).concat(Object.keys(col.errs || {}));
+    $("updated").textContent = `Cập nhật lúc ${fmtTime(Date.now())} (giờ Việt Nam)` + (S.mode === "server" ? ` · văn bản từ máy chủ lúc ${fmtTime(Date.parse(S.server.L.generated_at))}` : "") + (failed.length ? ` · Không tải được: ${failed.join(", ")}` : "");
+    btn.disabled = false; btn.textContent = "Làm mới dữ liệu"; busy = false;
+    renderAiBox();
+    if (aiOn() && S.mode !== "server") runAI();
+  }
+  $("refresh").addEventListener("click", load);
+
+  /* ---------- thanh lý trực tiếp ---------- */
+  const LIVE = { long: 0, short: 0, nl: 0, ns: 0, since: Date.now(), rows: [] };
+  function renderLive() {
+    $("live-sum").innerHTML = statBoxes([["Long bị thanh lý", usd(LIVE.long), LIVE.nl + " lệnh", "down"], ["Short bị thanh lý", usd(LIVE.short), LIVE.ns + " lệnh", "up"]]);
+    if (LIVE.rows.length) $("live-feed").innerHTML = LIVE.rows.map((r) => `<div><span>${fmtClock(r.t)}</span><span class="${r.long ? "down" : "up"}">${r.long ? "Long" : "Short"} ${num(r.v, 3)} BTC</span><span>${usd(r.v * r.p)}</span></div>`).join("");
+  }
+  function startLive() {
+    renderLive(); let ws, ping, retry = 0;
+    const connect = () => {
+      try { ws = new WebSocket("wss://stream.bybit.com/v5/public/linear"); } catch (e) { $("live-feed").innerHTML = `<span class="loading">Không mở được kết nối trực tiếp.</span>`; return; }
+      ws.onopen = () => { retry = 0; ws.send(JSON.stringify({ op: "subscribe", args: ["allLiquidation.BTCUSDT"] })); clearInterval(ping); ping = setInterval(() => { try { ws.send(JSON.stringify({ op: "ping" })); } catch (e) { /* bỏ qua */ } }, 20000); if (!LIVE.rows.length) $("live-feed").innerHTML = `<span class="loading">Đã kết nối từ ${fmtClock(LIVE.since)}. Chưa có lệnh thanh lý nào.</span>`; };
+      ws.onmessage = (m) => { let j; try { j = JSON.parse(m.data); } catch (e) { return; } if (!j.topic || !Array.isArray(j.data)) return; j.data.forEach((d) => { const isLong = d.S === "Buy", v = +d.v, p = +d.p; if (isLong) { LIVE.long += v * p; LIVE.nl++; } else { LIVE.short += v * p; LIVE.ns++; } LIVE.rows.unshift({ t: +d.T, long: isLong, v, p }); }); LIVE.rows = LIVE.rows.slice(0, 60); renderLive(); };
+      ws.onclose = () => { clearInterval(ping); if (retry < 5) { retry++; setTimeout(connect, 3000 * retry); } };
+    };
+    connect();
+  }
+
+  /* ---------- widget TradingView ---------- */
+  function tvWidget(elId, name, cfg) {
+    const host = $(elId); host.innerHTML = "";
+    const box = document.createElement("div"); box.className = "tradingview-widget-container";
+    const inner = document.createElement("div"); inner.className = "tradingview-widget-container__widget"; box.appendChild(inner);
+    const s = document.createElement("script"); s.src = "https://s3.tradingview.com/external-embedding/embed-widget-" + name + ".js"; s.async = true;
+    s.textContent = JSON.stringify(cfg); box.appendChild(s); host.appendChild(box);
+  }
+  const theme = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  tvWidget("tv-macro", "market-quotes", { width: "100%", height: 420, colorTheme: theme, isTransparent: true, locale: "vi_VN", showSymbolLogo: true, symbolsGroups: [
+    { name: "Vĩ mô", symbols: [{ name: "TVC:DXY", displayName: "Chỉ số USD" }, { name: "TVC:US10Y", displayName: "Lợi suất Mỹ 10 năm" }, { name: "NASDAQ:NDX", displayName: "Nasdaq 100" }, { name: "TVC:GOLD", displayName: "Vàng" }] },
+    { name: "ETF Bitcoin", symbols: [{ name: "NASDAQ:IBIT", displayName: "BlackRock IBIT" }, { name: "AMEX:FBTC", displayName: "Fidelity FBTC" }] }] });
+  tvWidget("tv-news", "timeline", { feedMode: "market", market: "crypto", width: "100%", height: 460, colorTheme: theme, isTransparent: true, displayMode: "regular", locale: "vi_VN" });
+
+  renderAiBox();
+  startLive();
+  setInterval(() => { try { renderCal(); } catch (e) { /* bỏ qua */ } }, 60000);
+  load();
+})();
+
+</script>
+</body>
+</html>
