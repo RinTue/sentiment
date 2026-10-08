@@ -144,6 +144,9 @@ details.method summary { cursor: pointer; font-weight: 600; }
 .pill.pos { background: var(--good-bg); color: var(--good); } .pill.neg { background: var(--bad-bg); color: var(--bad); }
 .mcard .why { color: var(--ink-2); font-size: .86rem; margin: 0 0 8px; }
 .mcard table td { padding: 5px 6px; font-size: .84rem; }
+.mcard table { width: 100%; table-layout: fixed; }
+.mcard table td:first-child { width: 44%; white-space: normal; overflow-wrap: anywhere; } .mcard table td:nth-child(2) { width: 24%; text-align: right; white-space: normal; overflow-wrap: anywhere; } .mcard table td:last-child { text-align: right; }
+.mcard .lab { display: block; font-family: var(--font); font-size: .72rem; color: var(--ink-3); white-space: normal; line-height: 1.2; margin-bottom: 2px; }
 details.method p, details.method li { color: var(--ink-2); font-size: .88rem; max-width: 76ch; }
 footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height: 1.7; }
 </style>
@@ -154,6 +157,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
     <div>
       <h1>Sentiment Analysis</h1>
       <p class="sub" id="updated">Đang thu thập dữ liệu…</p>
+      <div class="msg" id="stale" hidden style="margin-top:8px"></div>
     </div>
     <button class="btn" id="refresh" type="button">Làm mới dữ liệu</button>
   </header>
@@ -250,7 +254,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
     <h2><span class="layer">Tầng 1–4</span>Bối cảnh vĩ mô</h2>
     <div class="row"><div class="mc-head" id="mc-label">–</div><div class="note" id="mc-sub" style="margin:0"></div></div>
     <div class="macro-grid" id="mc-groups"><p class="loading">Đang tải…</p></div>
-    <p class="note">Nguồn: FRED (Cục Dự trữ Liên bang St. Louis), bộ thu thập cập nhật mỗi giờ; dữ liệu ngày thường trễ một ngày, thanh khoản Fed theo tuần, M2 theo tháng. Vĩ mô hữu ích cho xu hướng vài tuần đến vài tháng, không dùng để vào lệnh trong ngày.</p>
+    <p class="note">Nguồn: FRED (Cục Dự trữ Liên bang St. Louis); khi FRED không trả lời, bộ thu thập lấy từ Bộ Tài chính Mỹ, Fed New York và Yahoo Finance, hoặc dùng bản lưu gần nhất. Cập nhật mỗi giờ; dữ liệu ngày thường trễ một ngày, thanh khoản Fed theo tuần, M2 theo tháng. Vĩ mô hữu ích cho xu hướng vài tuần đến vài tháng, không dùng để vào lệnh trong ngày.</p>
   </section>
 
   <section class="panel">
@@ -684,8 +688,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       }
     }
 
-    const MM = S.mode === "server" && S.server.L.macro;
-    if (MM && MM.groups) {
+    const MM = S.macro;
+    if (MM && MM.groups && MM.have !== 0 && MM.groups.some((g) => g.items.length)) {
       const strong = MM.groups.filter((g) => g.score !== 0 && g.notes.length).sort((x, y) => Math.abs(y.score) - Math.abs(x.score)).slice(0, 2);
       const detail = strong.map((g) => g.name.toLowerCase() + " " + g.label.toLowerCase() + " (" + g.notes[0] + ")").join("; ");
       pts.push([MM.score > 0 ? "pos" : MM.score < 0 ? "neg" : "", `Bối cảnh vĩ mô ${MM.label.toLowerCase()}` + (detail ? `: ${detail}.` : ": các nhóm thanh khoản, lãi suất, khẩu vị rủi ro và chứng khoán chưa cho tín hiệu rõ.")]);
@@ -864,14 +868,28 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   }
 
   function renderMacro() {
-    const M = S.mode === "server" && S.server.L.macro;
-    if (!M || !M.groups) { $("mc-label").textContent = "Chưa có dữ liệu"; $("mc-sub").textContent = ""; $("mc-groups").innerHTML = `<div class="msg">${M && M.error ? "Bộ thu thập báo lỗi phần vĩ mô: " + esc(M.error) : "Phần vĩ mô do bộ thu thập trên GitHub cung cấp. Hãy mở trang từ đường link GitHub (ví dụ https://rintue.github.io/sentiment/) để xem."}</div>`; return; }
+    const M = S.macro, box = $("mc-groups");
+    const why = () => {
+      if (location.protocol === "file:") return "Phần vĩ mô do bộ thu thập trên GitHub cung cấp. Hãy mở trang từ đường link GitHub (ví dụ https://rintue.github.io/sentiment/) để xem.";
+      if (S.svAge == null) return "Không đọc được tệp data/latest.json của bộ thu thập. Kiểm tra tab Actions trên GitHub xem lần chạy gần nhất có lỗi không.";
+      if (S.svAge >= 4 * 864e5) return `Dữ liệu của bộ thu thập đã cũ ${Math.round(S.svAge / 864e5)} ngày. Kiểm tra tab Actions trên GitHub: lịch chạy có thể đã bị tắt.`;
+      return "Bộ thu thập chưa có phần vĩ mô. Hãy tải tệp collect.py mới lên GitHub rồi bấm Run workflow.";
+    };
+    if (!M || !M.groups) { $("mc-label").textContent = "Chưa có dữ liệu"; $("mc-sub").textContent = ""; box.innerHTML = `<div class="msg">${M && M.error ? "Bộ thu thập báo lỗi phần vĩ mô: " + esc(M.error) : esc(why())}</div>`; return; }
+    const errList = Object.entries(M.errors || {});
+    if (M.have === 0 || !M.groups.some((g) => g.items.length)) {
+      $("mc-label").textContent = "Không lấy được số liệu";
+      $("mc-sub").textContent = "Lần chạy lúc " + fmtTime(Date.parse(S.server ? S.server.L.generated_at : Date.now()));
+      box.innerHTML = `<div class="msg">Lần chạy gần nhất không lấy được chỉ số vĩ mô nào. Bộ thu thập sẽ thử lại sau một giờ.${errList.length ? "<br><span class='note'>" + errList.slice(0, 4).map(([k, v]) => esc(k) + ": " + esc(v)).join("<br>") + "</span>" : ""}</div>`;
+      return;
+    }
     const c = (sc) => sc > 0 ? "pos" : sc < 0 ? "neg" : "";
     $("mc-label").innerHTML = `Vĩ mô: <span class="pill ${c(M.score)}" style="font-size:.9rem">${esc(M.label)}</span>`;
-    $("mc-sub").textContent = `Tổng điểm ${M.score > 0 ? "+" : ""}${M.score} từ 4 nhóm` + (M.asof ? ` · số liệu ngày ${fmtDate(M.asof)}` : "") + (M.errors && Object.keys(M.errors).length ? ` · thiếu: ${Object.keys(M.errors).join(", ")}` : "");
+    const missing = M.missing || Object.keys(M.errors || {});
+    $("mc-sub").textContent = `Tổng điểm ${M.score > 0 ? "+" : ""}${M.score} từ 4 nhóm` + (M.asof ? ` · số liệu ngày ${fmtDate(M.asof)}` : "") + (M.sources && M.sources.length ? ` · nguồn: ${M.sources.join(", ")}` : "") + (missing.length ? ` · thiếu: ${missing.join(", ")}` : "");
     const fmtV = (it) => it.value == null ? "–" : (typeof it.value === "number" ? it.value.toLocaleString("vi-VN", { maximumFractionDigits: Math.abs(it.value) >= 1000 ? 0 : 2 }) : it.value) + (it.unit || "");
-    const fmtC = (v, lab) => v == null ? "" : `<span class="${v > 0 ? "up" : v < 0 ? "down" : ""}">${v > 0 ? "+" : ""}${v.toLocaleString("vi-VN", { maximumFractionDigits: 2 })}${/điểm/.test(lab) ? "" : "%"}</span> <span class="note" style="margin:0">${esc(lab)}</span>`;
-    $("mc-groups").innerHTML = M.groups.map((g) => `<div class="mcard"><h3>${esc(g.name)}<span class="pill ${c(g.score)}">${esc(g.label)}</span></h3><p class="why">${g.notes.length ? esc(g.notes.join("; ")) + "." : "Không có tín hiệu đáng chú ý."}</p><table><tbody>${g.items.map((it) => `<tr><td>${esc(it.name)}</td><td class="num">${fmtV(it)}</td><td class="num">${fmtC(it.ch, it.chLabel || "")}${it.ch2 != null ? "<br>" + fmtC(it.ch2, it.ch2Label || "") : ""}</td></tr>`).join("")}</tbody></table>${g.chart ? `<div class="note" style="margin:8px 0 2px">${esc(g.chart.name)}</div><div class="chart" id="mc-chart-${g.key}"></div>` : ""}</div>`).join("");
+    const fmtC = (v, lab) => v == null ? "" : `<span class="${v > 0 ? "up" : v < 0 ? "down" : ""}">${v > 0 ? "+" : ""}${v.toLocaleString("vi-VN", { maximumFractionDigits: 2 })}${/điểm|tỷ/.test(lab) ? "" : "%"}</span><span class="lab">${esc(lab)}</span>`;
+    $("mc-groups").innerHTML = M.groups.map((g) => `<div class="mcard"><h3>${esc(g.name)}<span class="pill ${c(g.score)}">${esc(g.label)}</span></h3><p class="why">${g.notes.length ? esc(g.notes.join("; ")) + "." : "Không có tín hiệu đáng chú ý."}</p><table><tbody>${g.items.map((it) => `<tr><td>${esc(it.name)}${it.src ? `<div class="note" style="margin:0;${/bản lưu/.test(it.src) ? "color:var(--warn)" : ""}">${esc(it.src)}</div>` : ""}</td><td class="num">${fmtV(it)}</td><td class="num">${fmtC(it.ch, it.chLabel || "")}${it.ch2 != null ? fmtC(it.ch2, it.ch2Label || "") : ""}</td></tr>`).join("")}</tbody></table>${g.chart ? `<div class="note" style="margin:8px 0 2px">${esc(g.chart.name)}</div><div class="chart" id="mc-chart-${g.key}"></div>` : ""}</div>`).join("");
     const dfmt = (ts) => { const d = new Date(ts); return String(d.getUTCMonth() + 1).padStart(2, "0") + "/" + String(d.getUTCFullYear()).slice(2); };
     M.groups.forEach((g) => {
       if (!g.chart) return;
@@ -879,7 +897,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       const t = g.chart.series.map((p) => p[0]), f = (v) => v == null ? "–" : num(v, 2);
       const series = [{ name: g.key === "equity" ? "Nasdaq" : "Giá trị", v: g.chart.series.map((p) => p[1]), color: "var(--s1)", fmt: f }];
       if (g.chart.series2) { const m = new Map(g.chart.series2.map((p) => [p[0], p[1]])); series.push({ name: "BTC", v: t.map((x) => { let best = null; for (const [ts, v] of g.chart.series2) { if (ts <= x) best = v; else break; } return best; }), color: "var(--s2)", fmt: f }); }
-      lineChart(el, { t, H: 150, yfmt: (v) => Math.abs(v) >= 1000 ? Math.round(v / 1000) + "k" : num(v, 1), xfmt: dfmt, series });
+      lineChart(el, { t, H: 150, yfmt: (v) => Math.abs(v) >= 1000 ? (v / 1000).toLocaleString("vi-VN", { maximumFractionDigits: Math.abs(v) >= 100000 ? 0 : 1 }) + "k" : num(v, 1), xfmt: dfmt, series });
     });
   }
 
@@ -974,6 +992,10 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const serverP = loadServer();
     const textP = serverP.then((sv) => (sv && sv.age < 3 * 3600e3) ? { items: [], errs: {}, counts: {}, server: sv } : ENGINE.collect(getJSON).catch((e) => ({ items: [], errs: { all: e.message }, counts: {} })));
     const [, col] = await Promise.all([marketP, textP]);
+    const sv = await serverP;
+    S.svAge = sv ? sv.age : null;
+    // Vĩ mô thay đổi chậm: vẫn dùng bản của máy chủ dù cũ tới 4 ngày, kể cả khi phần văn bản phải tự thu thập.
+    S.macro = sv && sv.L.macro && sv.age < 4 * 864e5 ? sv.L.macro : null;
     const okMarket = keys.filter((k) => !S.err[k]).length;
     if (col.server) {
       S.server = col.server; S.mode = "server"; S.kept = null; S.text = textFromServer(col.server.L); S.reasons = col.server.L.filter_reasons || {};
@@ -990,6 +1012,12 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     steps.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
     const failed = keys.filter((k) => S.err[k]).map((k) => SRC_NAME[k]).concat(Object.keys(col.errs || {}));
     $("updated").textContent = `Cập nhật lúc ${fmtTime(Date.now())} (giờ Việt Nam)` + (S.mode === "server" ? ` · văn bản từ máy chủ lúc ${fmtTime(Date.parse(S.server.L.generated_at))}` : "") + (failed.length ? ` · Không tải được: ${failed.join(", ")}` : "");
+    const stale = $("stale");
+    if (stale) {
+      const h = S.svAge == null ? null : Math.round(S.svAge / 3600e3);
+      stale.hidden = !(location.protocol !== "file:" && (h == null || h >= 3));
+      stale.textContent = h == null ? "Không đọc được dữ liệu của bộ thu thập trên GitHub. Trang đang tự thu thập (ít nguồn hơn). Kiểm tra tab Actions trong kho GitHub." : `Bộ thu thập trên GitHub chưa cập nhật ${h >= 48 ? Math.round(h / 24) + " ngày" : h + " giờ"}. Trang đang tự thu thập (ít nguồn hơn). Kiểm tra tab Actions: lần chạy gần nhất có lỗi, hoặc lịch chạy đã bị tắt.`;
+    }
     btn.disabled = false; btn.textContent = "Làm mới dữ liệu"; busy = false;
     renderAiBox();
     if (aiOn() && S.mode !== "server") runAI();
