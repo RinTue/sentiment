@@ -341,7 +341,13 @@ def cz_markets() -> dict:
         pr = next((i for i, k in enumerate(CZ_PRIORITY) if k in name), 99)
         q = (m.get("quote_asset") or "").upper()
         return (pr, 0 if q == "USDT" else 1 if q == "USD" else 2)
-    mk = sorted([m for m in mk if rank(m)[0] < 99], key=rank)[:12]
+    per_ex: dict = {}
+    picked = []
+    for m in sorted([m for m in mk if rank(m)[0] < 99], key=rank):   # tối đa 2 hợp đồng mỗi sàn để phủ được nhiều sàn
+        if per_ex.get(m["exchange"], 0) < 2:
+            per_ex[m["exchange"]] = per_ex.get(m["exchange"], 0) + 1
+            picked.append(m)
+    mk = picked[:12]
     c = {"saved": time.time(), "symbols": [m["symbol"] for m in mk], "ex_of": {m["symbol"]: ex.get(m["exchange"], m["exchange"]) for m in mk}, "exchanges": sorted({ex.get(m["exchange"], m["exchange"]) for m in mk}, key=lambda n: next((i for i, k in enumerate(CZ_PRIORITY) if k in n.lower()), 99))}
     with open(COINALYZE_CACHE, "w", encoding="utf-8") as f:
         json.dump(c, f, ensure_ascii=False)
