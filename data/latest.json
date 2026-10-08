@@ -1,18 +1,18 @@
 {
- "generated_at": "2026-10-08T14:00:42+00:00",
+ "generated_at": "2026-10-08T14:06:25+00:00",
  "scoring": "AI + từ điển (100% số bài có điểm AI)",
- "raw_count": 1149,
- "kept_count": 378,
+ "raw_count": 1150,
+ "kept_count": 374,
  "new_count": 52,
- "stored_7d": 380,
+ "stored_7d": 381,
  "filter_reasons": {
+  "không liên quan crypto": 101,
   "bot / báo giá tự động": 179,
-  "không phải tiếng Anh": 124,
-  "không liên quan crypto": 113,
+  "không phải tiếng Anh": 125,
   "quảng cáo / rao bán": 17,
-  "trùng lặp": 260,
-  "quá ngắn": 4,
-  "cùng tác giả quá nhiều": 74
+  "trùng lặp": 280,
+  "quá ngắn": 9,
+  "cùng tác giả quá nhiều": 65
  },
  "source_status": {
   "CoinDesk": 25,
@@ -23,11 +23,11 @@
   "CryptoSlate": 10,
   "NewsBTC": 10,
   "CryptoPotato": 36,
-  "r/CryptoMarkets": 50,
   "r/BitcoinMarkets": 50,
   "r/CryptoCurrency": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/CryptoCurr",
   "r/Bitcoin": 50,
-  "r/ethereum": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/ethereum/n",
+  "r/ethereum": 50,
+  "r/CryptoMarkets": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/CryptoMark",
   "#bitcoin": 120,
   "#btc": 120,
   "#crypto": 120,
@@ -35,26 +35,26 @@
   "#ethereum": 120,
   "Lemmy bitcoin": 100,
   "Lemmy crypto": 100,
-  "HN bitcoin": 16,
+  "HN bitcoin": 17,
   "HN cryptocurrency": 5,
   "HN ethereum": 2
  },
- "runtime_sec": 212.7,
+ "runtime_sec": 204.9,
  "all": {
-  "score": 0.0291,
-  "index": 51,
-  "n": 172,
-  "pos": 36.6,
-  "neg": 27.9,
-  "neu": 35.5
+  "score": 0.0317,
+  "index": 52,
+  "n": 173,
+  "pos": 37.0,
+  "neg": 27.7,
+  "neu": 35.3
  },
  "news": {
-  "score": 0.0461,
+  "score": 0.0498,
   "index": 52,
-  "n": 117,
-  "pos": 35.9,
-  "neg": 25.6,
-  "neu": 38.5
+  "n": 118,
+  "pos": 36.4,
+  "neg": 25.4,
+  "neu": 38.1
  },
  "social": {
   "score": -0.0072,
@@ -64,7 +64,7 @@
   "neg": 32.7,
   "neu": 29.1
  },
- "trend": 0.0532,
+ "trend": 0.0558,
  "window_hours": 24,
  "daily": [
   {
@@ -99,15 +99,15 @@
   },
   {
    "date": "2026-10-08",
-   "n": 147,
-   "score": 0.0095
+   "n": 148,
+   "score": 0.0126
   }
  ],
  "sources": [
   {
    "src": "Tin tức",
-   "n": 117,
-   "score": 0.0461
+   "n": 118,
+   "score": 0.0498
   },
   {
    "src": "Reddit",
@@ -131,18 +131,6 @@
   }
  ],
  "keywords": [
-  [
-   "link",
-   24
-  ],
-  [
-   "submitted",
-   22
-  ],
-  [
-   "comments",
-   21
-  ],
   [
    "assets",
    18
@@ -184,14 +172,26 @@
    10
   ],
   [
+   "here",
+   10
+  ],
+  [
    "funds",
    10
+  ],
+  [
+   "buying",
+   9
+  ],
+  [
+   "through",
+   9
   ]
  ],
  "coins": [
   [
    "BTC",
-   78
+   79
   ],
   [
    "ETH",
@@ -675,9 +675,9 @@
      },
      {
       "name": "Chỉ số USD (DXY)",
-      "value": 102.26499938964844,
+      "value": 102.26000213623047,
       "unit": "",
-      "ch": 3.47,
+      "ch": 3.46,
       "chLabel": "1 tháng",
       "src": "Yahoo (DXY)"
      }
@@ -1060,25 +1060,25 @@
     "items": [
      {
       "name": "VIX",
-      "value": 15.5600004196167,
+      "value": 15.430000305175781,
       "unit": "",
-      "ch": -0.2,
+      "ch": -0.3,
       "chLabel": "điểm, 1 tháng",
       "src": "Yahoo"
      },
      {
       "name": "Quỹ trái phiếu rủi ro cao (HYG)",
-      "value": 77.1050033569336,
+      "value": 77.1449966430664,
       "unit": " $",
-      "ch": -2.55,
+      "ch": -2.5,
       "chLabel": "1 tháng",
       "src": "Yahoo"
      },
      {
       "name": "USD/JPY",
-      "value": 158.1219940185547,
+      "value": 158.1439971923828,
       "unit": "",
-      "ch": 3.03,
+      "ch": 3.04,
       "chLabel": "1 tháng",
       "src": "Yahoo"
      }
@@ -1424,12 +1424,12 @@
       ],
       [
        1791417600000,
-       15.56
+       15.43
       ]
      ]
     },
     "notes": [
-     "VIX ở 15,6",
+     "VIX ở 15,4",
      "trái phiếu rủi ro cao bị bán, HYG giảm 2,5% trong tháng"
     ],
     "label": "Bất lợi"
@@ -1441,21 +1441,21 @@
     "items": [
      {
       "name": "Nasdaq 100",
-      "value": 30970.548828125,
+      "value": 31012.697265625,
       "unit": "",
-      "ch": 5.0,
+      "ch": 5.1,
       "chLabel": "1 tháng",
-      "ch2": 1.5,
+      "ch2": 1.7,
       "ch2Label": "1 tuần",
       "src": "Yahoo"
      },
      {
       "name": "Bitcoin",
-      "value": 82183.75,
+      "value": 82390.1796875,
       "unit": " $",
-      "ch": 4.8,
+      "ch": 5.0,
       "chLabel": "1 tháng",
-      "ch2": -3.1,
+      "ch2": -2.9,
       "ch2Label": "1 tuần",
       "src": "Yahoo"
      },
@@ -1720,7 +1720,7 @@
       ],
       [
        1791417600000,
-       122.01
+       122.18
       ]
      ],
      "series2": [
@@ -1966,7 +1966,7 @@
       ],
       [
        1791417600000,
-       112.5
+       112.78
       ]
      ]
     },
@@ -1990,7 +1990,7 @@
    "cls": "Greed",
    "d7": -10
   },
-  "votes": 59.39,
+  "votes": 58.88,
   "funding": {
    "src": "OKX",
    "last": -1.6852889759e-06,
@@ -1998,7 +1998,7 @@
    "n": 270
   },
   "ls": {
-   "buy": 0.6313,
+   "buy": 0.6326,
    "src": "OKX"
   },
   "pc": 0.585,
@@ -2012,8 +2012,8 @@
     {
      "key": "text",
      "name": "Giọng điệu tin tức và mạng xã hội",
-     "raw": "+0.03 (172 bài)",
-     "v": 51,
+     "raw": "+0.03 (173 bài)",
+     "v": 52,
      "w": 25,
      "note": "điểm tuyệt đối",
      "src": "máy chủ"
@@ -2030,8 +2030,8 @@
     {
      "key": "votes",
      "name": "Phiếu cộng đồng CoinGecko",
-     "raw": "59.4% tăng",
-     "v": 48.5,
+     "raw": "58.9% tăng",
+     "v": 47.2,
      "w": 10,
      "note": "40% → 0, 80% → 100",
      "src": "CoinGecko"
@@ -2049,7 +2049,7 @@
      "key": "ls",
      "name": "Tài khoản đang long",
      "raw": "63%",
-     "v": 66.1,
+     "v": 66.5,
      "w": 10,
      "note": "40% → 0, 75% → 100 (OKX)",
      "src": "OKX"
@@ -2057,7 +2057,7 @@
     {
      "key": "pc",
      "name": "Put/call quyền chọn",
-     "raw": "0.59",
+     "raw": "0.58",
      "v": 69.2,
      "w": 10,
      "note": "càng thấp càng chủ quan",
@@ -2076,15 +2076,11 @@
    "weight": 110
   },
   "premium": {
-   "last": -0.1571,
-   "avg24": -0.0718,
+   "last": -0.3223,
+   "avg24": -0.0799,
    "ref": "OKX",
-   "avg7d": -0.0285,
+   "avg7d": -0.0298,
    "series": [
-    [
-     1790863200000,
-     -0.029
-    ],
     [
      1790866800000,
      -0.045
@@ -2751,13 +2747,17 @@
     ],
     [
      1791464400000,
-     -0.1571
+     -0.0759
+    ],
+    [
+     1791468000000,
+     -0.3223
     ]
    ]
   },
   "btc": {
-   "price": 82045.44,
-   "ch24": -1.32
+   "price": 82165.34,
+   "ch24": -0.97
   },
   "stable": {
    "total": 312.3,
@@ -3619,13 +3619,11 @@
    },
    "days": 3167
   },
-  "runtime_sec": 9.4
+  "runtime_sec": 2.9
  },
  "alerts": {
   "configured": false,
   "sent": [],
-  "skipped": [
-   "brief"
-  ]
+  "skipped": []
  }
 }
