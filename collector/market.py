@@ -315,9 +315,9 @@ def classify_move(dp: float, doi: float, fpct: float | None, spot_net: float | N
         sp += 1 if spot_net > 0.02 else -1 if spot_net < -0.02 else 0
     if prem is not None:
         sp += 1 if prem > 0.03 else -1 if prem < -0.03 else 0
-    spot_txt = (" Spot đang được mua ròng" + (" và Coinbase Premium dương" if prem is not None and prem > 0.03 else "") + ", nên có tiền thật đỡ giá." if sp >= 1 else
-                " Spot đang bị bán" + (" (Coinbase Premium âm: phía Mỹ bán)" if prem is not None and prem < -0.03 else "") + ", áp lực có thể còn kéo dài." if sp <= -1 else
-                " Spot gần như trung tính.")
+    okx_txt = "chưa có số liệu" if spot_net is None else "được mua ròng" if spot_net > 0.02 else "bị bán ròng" if spot_net < -0.02 else "gần như cân bằng"
+    us_txt = "" if prem is None else "đang mua mạnh hơn (Coinbase Premium dương)" if prem > 0.03 else "đang bán (Coinbase Premium âm)" if prem < -0.03 else "cân bằng"
+    spot_txt = f" Spot: trên OKX {okx_txt}" + (f", phía Mỹ {us_txt}" if us_txt else "") + "."
     lq_long, lq_short = (liq or {}).get("long", 0) or 0, (liq or {}).get("short", 0) or 0
     pn, sn = perp_net or 0, spot_net or 0
     if abs(dp) < thr_p:

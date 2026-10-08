@@ -179,6 +179,9 @@ details.method summary { cursor: pointer; font-weight: 600; }
 .kpi .v { font-family: var(--mono); font-size: 1.45rem; font-weight: 500; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .kpi .v.txt { font-family: var(--font); font-weight: 700; font-size: 1.2rem; }
 .kpi .s { font-size: .8rem; color: var(--ink-3); }
+.kpi.drv .why { font-size: .9rem; color: var(--ink-2); margin-top: 2px; }
+.kpi.drv .chips span { font-family: var(--mono); font-size: .76rem; }
+.kpi.drv .seg button { padding: 4px 10px; font-size: .78rem; }
 .nextev { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; font-size: .92rem; }
 .nextev.soon { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
 .nextev svg { width: 20px; height: 20px; flex: none; color: var(--ink-3); }
@@ -240,6 +243,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       </div>
     </section>
     <div class="kpis" id="kpis"></div>
+    <div class="kpi drv" id="drv-card"><div class="l"><span class="dot"></span>Đà giá đến từ đâu</div><div class="s">Đang tải…</div></div>
     <div class="nextev" id="next-ev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/></svg><span>Đang tải lịch kinh tế…</span></div>
     <section class="panel">
       <h2 id="hist-title">Lịch sử chỉ số</h2>
@@ -320,6 +324,10 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
         <div><h3>Coinbase Premium BTC, 7 ngày</h3><div class="chart" id="c-prem"></div><p class="note" id="prem-note"></p></div>
         <div><h3>Tổng stablecoin, 180 ngày</h3><div class="chart" id="c-stable"></div><p class="note" id="stable-note"></p></div>
       </div>
+    </section>
+    <section class="panel">
+      <h2>Đà giá đến từ đâu: spot, đòn bẩy hay short bị ép</h2>
+      <div id="drv-detail"><p class="loading">Đang tải…</p></div>
     </section>
     <section class="panel">
       <h2>Giá BTC 180 ngày</h2>
@@ -1176,6 +1184,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     else if (fpct != null && fpct <= 15) sig.push(["warn", `Funding thấp (phân vị ${num(fpct)}%): phe short khá đông`, "phe short đang đông"]);
     const etf = etfSeries();
     if (etf && etf.length) { const dir = Math.sign(etf.at(-1).flow); let k = 0; for (let i = etf.length - 1; i >= 0 && Math.sign(etf[i].flow) === dir && dir !== 0; i--) k++; if (k >= 3) sig.push([dir > 0 ? "pos" : "neg", `ETF Bitcoin ${dir > 0 ? "hút ròng" : "bị rút ròng"} ${k} phiên liên tiếp`, dir > 0 ? "ETF hút tiền liên tục" : "ETF bị rút tiền liên tục"]); }
+    const dv = drvWin("24");
+    if (dv && DRV_SHORT[dv.code]) sig.push([DRV_CLS[dv.code] || "warn", `Đà giá 24 giờ: ${dv.label.toLowerCase()} (giá ${pct(dv.dp, 1)}, open interest ${pct(dv.doi, 1)})`, DRV_SHORT[dv.code]]);
     const nx = S.cal ? S.cal.filter((e) => e.tier === 1 && e.t > Date.now()).sort((a, b) => a.t - b.t)[0] : null;
     if (nx && nx.t - Date.now() <= 48 * 3600e3) sig.push(["warn", `${nx.vi} lúc ${fmtEvent(nx.t)}: biến động có thể tăng mạnh`, "sắp có số liệu vĩ mô lớn"]);
     const order = { neg: 0, warn: 1, pos: 2 };
@@ -1220,6 +1230,51 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const dot = $("fresh-dot"), ft = $("fresh-text");
     if (S.svAge == null) { dot.className = "dot " + (location.protocol === "file:" ? "" : "neg"); ft.textContent = location.protocol === "file:" ? "Mở từ tệp trên máy: không có dữ liệu máy chủ" : "Không đọc được dữ liệu máy chủ"; }
     else { const hh = S.svAge / 3600e3; dot.className = "dot " + (hh < 2 ? "pos" : hh < 6 ? "warn" : "neg"); ft.textContent = `Máy chủ cập nhật ${fmtTime(Date.parse(S.sv.L.generated_at))} · ${hh < 2 ? "dữ liệu mới" : "dữ liệu cũ " + Math.round(hh) + " giờ"} · tải trang ${fmtClock(Date.now()).slice(0, 5)}`; }
+  }
+
+  /* ---------- Đà giá đến từ đâu ---------- */
+  const DRV_CLS = { spot_up: "pos", squeeze_up: "warn", liq_up: "warn", lev_up: "warn", perp_up: "warn", mixed_up: "", flat: "", build: "warn",
+    squeeze_dn: "warn", liq_dn: "neg", lev_dn: "warn", perp_dn: "warn", spot_dn: "neg", mixed_dn: "" };
+  const DRV_SHORT = { spot_up: "đà tăng có tiền spot thật", squeeze_up: "đà tăng do short bị ép đóng", liq_up: "short đang bị thanh lý dây chuyền", lev_up: "đà tăng dựa vào đòn bẩy",
+    perp_up: "đà tăng chỉ ở futures", build: "đòn bẩy đang tích tụ", squeeze_dn: "đà giảm do long bị thanh lý", liq_dn: "long đang bị thanh lý",
+    lev_dn: "short đòn bẩy đang dồn vào", perp_dn: "đà giảm do bán futures", spot_dn: "người bán spot đang rút tiền" };
+  const DRV_VIEW = { w: "24" };
+  const drvWin = (w) => S.mkt && S.mkt.drivers && S.mkt.drivers.windows ? S.mkt.drivers.windows[w] : null;
+  function drvFacts(d, liq) {
+    const f = [`Giá ${pct(d.dp, 1)}`, `Open interest ${pct(d.doi, 1)}`];
+    if (d.spot_btc != null) f.push(`Mua spot ròng ${d.spot_btc >= 0 ? "+" : ""}${num(d.spot_btc)} BTC`);
+    if (d.perp_usd != null) f.push(`Mua futures ròng ${usd(d.perp_usd, true)}`);
+    if (d.prem != null) f.push(`Coinbase Premium ${pct(d.prem, 3)}`);
+    if (liq && DRV_VIEW.w === "24" && (liq.long || liq.short)) f.push(`Thanh lý OKX: short ${usd(liq.short)}, long ${usd(liq.long)}`);
+    return f;
+  }
+  function renderDrivers() {
+    const D = S.mkt && S.mkt.drivers, box = $("drv-card"), det = $("drv-detail");
+    if (!D || !D.windows) {
+      const m = S.sv ? "Bộ thu thập sẽ phân tích đà giá từ lần chạy tới." : "Phần này do bộ thu thập trên GitHub tính.";
+      box.innerHTML = `<div class="l"><span class="dot"></span>Đà giá đến từ đâu</div><div class="s">${m}</div>`; if (det) det.innerHTML = `<div class="msg">${m}</div>`; return;
+    }
+    const d = D.windows[DRV_VIEW.w] || D.windows["24"] || D.windows["72"];
+    const seg = `<div class="seg" style="margin:0"><button type="button" data-w="24" class="${DRV_VIEW.w === "24" ? "on" : ""}">24 giờ</button><button type="button" data-w="72" class="${DRV_VIEW.w === "72" ? "on" : ""}">3 ngày</button></div>`;
+    const facts = drvFacts(d, D.liq).map((x) => `<span>${esc(x)}</span>`).join("");
+    box.innerHTML = `<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div class="l"><span class="dot ${DRV_CLS[d.code] || ""}"></span>Đà giá đến từ đâu</div>${seg}</div>
+      <div class="v txt" style="margin-top:4px">${esc(d.label)}</div><div class="why">${esc(d.why)}</div><div class="chips" style="margin-top:8px">${facts}</div>`;
+    box.querySelectorAll("button[data-w]").forEach((b) => b.addEventListener("click", () => { DRV_VIEW.w = b.dataset.w; renderDrivers(); }));
+    if (!det) return;
+    const sr = D.series || {}, dm = (ts) => { const d = new Date(ts + 7 * 3600e3); return `${d.getUTCDate()}/${d.getUTCMonth() + 1} ${String(d.getUTCHours()).padStart(2, "0")}h`; };
+    det.innerHTML = `<p class="note" style="margin-top:0">Cách đọc: giá tăng mà open interest giảm là short bị ép đóng; giá, open interest và funding cùng tăng là long đòn bẩy; giá tăng kèm mua spot ròng và Coinbase Premium dương là tiền thật. Open interest và lệnh mua bán chủ động lấy từ OKX (một sàn lớn, đại diện cho thị trường).</p>
+      <div class="two"><div><h3>Giá và open interest, 4 ngày (gốc 100)</h3><div class="legend"><span><i style="background:var(--s1)"></i>Giá BTC</span><span><i style="background:var(--s2)"></i>Open interest (BTC)</span></div><div class="chart" id="c-drv-oi"></div></div>
+      <div><h3>Mua bán chủ động cộng dồn, 4 ngày</h3><div class="legend"><span><i style="background:var(--s3)"></i>Spot (BTC)</span><span><i style="background:var(--s2)"></i>Futures (triệu $)</span></div><div class="chart" id="c-drv-cvd"></div><p class="note">Đường đi lên nghĩa là bên mua chủ động áp đảo. Hai đường khác đơn vị; xem hướng đi, không so độ lớn.</p></div></div>`;
+    if (sr.price && sr.oi && sr.price.length > 3 && sr.oi.length > 3) {
+      const t = sr.oi.map((p) => p[0]), pm = new Map(sr.price.map((p) => [p[0], p[1]]));
+      const pv = t.map((x) => pm.get(x) ?? null), base = pv.find((v) => v != null), ob = sr.oi[0][1];
+      lineChart($("c-drv-oi"), { t, H: 170, xfmt: dm, yfmt: (v) => num(v, 1), series: [{ name: "Giá", v: pv.map((v) => v == null ? null : v / base * 100), color: "var(--s1)", fmt: (v) => v == null ? "–" : num(v, 1) }, { name: "Open interest", v: sr.oi.map((p) => p[1] / ob * 100), color: "var(--s2)", fmt: (v) => num(v, 1) }] });
+    }
+    if (sr.cvd_spot && sr.cvd_spot.length > 3) {
+      const t = sr.cvd_spot.map((p) => p[0]), fm = new Map((sr.cvd_perp || []).map((p) => [p[0], p[1]]));
+      const sMax = Math.max(1, ...sr.cvd_spot.map((p) => Math.abs(p[1]))), fv = t.map((x) => fm.get(x) ?? null), fMax = Math.max(1, ...fv.filter((v) => v != null).map(Math.abs));
+      lineChart($("c-drv-cvd"), { t, H: 170, xfmt: dm, zero: true, yfmt: () => "", series: [{ name: "Spot (BTC)", v: sr.cvd_spot.map((p) => p[1] / sMax), color: "var(--s3)", fmt: (v) => v == null ? "–" : num(v * sMax) + " BTC" }, { name: "Futures (triệu $)", v: fv.map((v) => v == null ? null : v / fMax), color: "var(--s2)", fmt: (v) => v == null ? "–" : num(v * fMax) + " triệu $" }] });
+    }
   }
 
   /* ---------- Tab ---------- */
@@ -1326,7 +1381,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       $("p2").textContent = `giữ ${kept.length}, loại ${col.items.length - kept.length}`;
       S.mode = "lex"; ENGINE.score(S.kept, null);
     }
-    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, afterScore];
+    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, afterScore];
     steps.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
     const failed = keys.filter((k) => S.err[k]).map((k) => SRC_NAME[k]).concat(Object.keys(col.errs || {}));
     $("updated").textContent = failed.length ? `Không tải được: ${failed.join(", ")}` : "";
