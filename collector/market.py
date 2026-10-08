@@ -330,7 +330,7 @@ def cz_markets() -> dict:
     try:
         with open(COINALYZE_CACHE, encoding="utf-8") as f:
             c = json.load(f)
-        if time.time() - c.get("saved", 0) < 3 * 86400 and c.get("symbols"):
+        if time.time() - c.get("saved", 0) < 3 * 86400 and c.get("symbols") and c.get("ex_of"):
             return c
     except (OSError, json.JSONDecodeError):
         pass
@@ -341,8 +341,8 @@ def cz_markets() -> dict:
         pr = next((i for i, k in enumerate(CZ_PRIORITY) if k in name), 99)
         q = (m.get("quote_asset") or "").upper()
         return (pr, 0 if q == "USDT" else 1 if q == "USD" else 2)
-    mk = sorted([m for m in mk if rank(m)[0] < 99], key=rank)[:16]
-    c = {"saved": time.time(), "symbols": [m["symbol"] for m in mk], "exchanges": sorted({ex.get(m["exchange"], m["exchange"]) for m in mk}, key=lambda n: next((i for i, k in enumerate(CZ_PRIORITY) if k in n.lower()), 99))}
+    mk = sorted([m for m in mk if rank(m)[0] < 99], key=rank)[:12]
+    c = {"saved": time.time(), "symbols": [m["symbol"] for m in mk], "ex_of": {m["symbol"]: ex.get(m["exchange"], m["exchange"]) for m in mk}, "exchanges": sorted({ex.get(m["exchange"], m["exchange"]) for m in mk}, key=lambda n: next((i for i, k in enumerate(CZ_PRIORITY) if k in n.lower()), 99))}
     with open(COINALYZE_CACHE, "w", encoding="utf-8") as f:
         json.dump(c, f, ensure_ascii=False)
     return c
@@ -363,14 +363,52 @@ def coinalyze(cb: dict | None) -> dict:
     series = [[t * 1000, round(v[0]), round(v[1])] for t, v in sorted(agg.items()) if t >= (now - now % 3600) - 23 * 3600]
     out = {"exchanges": mk["exchanges"], "symbols": len(mk["symbols"]), "series": series,
            "h24": {"long": round(sum(x[1] for x in series)), "short": round(sum(x[2] for x in series))}}
-    oi = cz_get("open-interest-history", {"symbols": syms, "interval": "1hour", "from": now - 100 * 3600, "to": now, "convert_to_usd": "true"})
+    oi = cz_get("open-interest-history", {"symbols": syms, "interval": "1hour", "from": now - 170 * 3600, "to": now, "convert_to_usd": "true"})
     tot: dict = {}
     cnt: dict = {}
+    last_oi: dict = {}
     for row in oi:
-        for h in row.get("history", []):
+        hist = row.get("history", [])
+        if hist:
+            last_oi[row.get("symbol")] = float(hist[-1].get("c") or 0)
+        for h in hist:
             tot[int(h["t"])] = tot.get(int(h["t"]), 0.0) + float(h.get("c") or 0)
             cnt[int(h["t"])] = cnt.get(int(h["t"]), 0) + 1
     full = max(cnt.values()) if cnt else 0
+    comp = sorted(t for t in tot if cnt[t] == full)
+    if comp:
+        o_now = tot[comp[-1]]
+        o_7 = next((tot[t] for t in comp if t >= comp[-1] - 7 * 86400), None)
+        out["oi"] = {"usd": round(o_now), "ch7": round((o_now / o_7 - 1) * 100, 2) if o_7 else None,
+                     "series": [[t * 1000, round(tot[t] / 1e9, 3)] for t in comp[::4]]}
+    # Funding gộp: bình quân theo open interest của từng hợp đồng; bỏ sàn tính funding mỗi giờ để cùng thang 8 giờ.
+    try:
+        fr = cz_get("funding-rate-history", {"symbols": syms, "interval": "daily", "from": now - 92 * 86400, "to": now})
+        ex_of = mk.get("ex_of", {})
+        num_: dict = {}
+        den_: dict = {}
+        raw = []
+        for row in fr:
+            sym = row.get("symbol")
+            if any(k in (ex_of.get(sym, "") or "").lower() for k in ("hyperliquid", "dydx")):
+                continue
+            w = last_oi.get(sym) or 0
+            if w <= 0:
+                continue
+            for h in row.get("history", []):
+                v = float(h.get("c") if h.get("c") is not None else h.get("v", 0))
+                raw.append(abs(v))
+                num_[int(h["t"])] = num_.get(int(h["t"]), 0.0) + v * w
+                den_[int(h["t"])] = den_.get(int(h["t"]), 0.0) + w
+        if num_:
+            scale = 0.01 if raw and sorted(raw)[len(raw) // 2] > 0.003 else 1.0   # Coinalyze có thể trả theo %
+            ser = [(t, num_[t] / den_[t] * scale) for t in sorted(num_) if den_[t] > 0]
+            vals = [v for _, v in ser]
+            if len(vals) >= 20:
+                out["funding"] = {"last": vals[-1], "pct": round(pct_rank(vals, vals[-1]), 1), "n": len(vals),
+                                  "series": [[t * 1000, v] for t, v in ser]}
+    except Exception as ex:  # noqa: BLE001
+        out["funding_error"] = str(ex)[:120]
     if cb and full:
         ser = []
         for t in sorted(tot):
@@ -528,8 +566,19 @@ def run(latest: dict, text_history: list) -> dict:
         M["votes"] = vu
         add("votes", "Phiếu cộng đồng CoinGecko", f"{vu:.1f}% tăng", (vu - 40) * 2.5, 10, "40% → 0, 80% → 100", "CoinGecko")
 
+    # Giá theo giờ trên Coinbase và số liệu gộp nhiều sàn (Coinalyze) lấy trước vì phần funding và đà giá cần đến.
+    cb = try_(errs, "coinbase", coinbase_hourly)
+    ca = try_(errs, "coinalyze", coinalyze, cb) if COINALYZE_KEY else None
+    if ca:
+        M["liq_agg"] = ca
+
     fund, fsrc, ferr = None, None, []
-    for name, fn in (("Bybit", funding_bybit), ("OKX", funding_okx), ("Hyperliquid", funding_hyperliquid)):
+    fa = (ca or {}).get("funding")
+    if fa:
+        n_ex = len(ca.get("exchanges", []))
+        M["funding"] = {"src": f"gộp {n_ex} sàn", "last": fa["last"], "pct": fa["pct"], "n": fa["n"], "agg": True}
+        add("funding", "Funding BTC (gộp các sàn)", f"{fa['last'] * 100:+.4f}%", fa["pct"], 20, f"phân vị trong 90 ngày, bình quân theo open interest {n_ex} sàn", "Coinalyze")
+    for name, fn in (() if fa else (("Bybit", funding_bybit), ("OKX", funding_okx), ("Hyperliquid", funding_hyperliquid))):
         try:
             s = sorted(set(fn()))
             s = [x for x in s if x[0] >= (time.time() - 90 * 86400) * 1000]
@@ -544,7 +593,7 @@ def run(latest: dict, text_history: list) -> dict:
         pr = pct_rank(vals, vals[-1])
         M["funding"] = {"src": fsrc, "last": vals[-1], "pct": round(pr, 1), "n": len(vals)}
         add("funding", "Funding BTC", f"{vals[-1] * 100:+.4f}%", pr, 20, f"phân vị trong 90 ngày ({fsrc})", fsrc)
-    else:
+    elif not fa:
         errs["funding"] = "; ".join(ferr)[:200]
 
     ls = try_(errs, "ls", long_short)
@@ -567,7 +616,6 @@ def run(latest: dict, text_history: list) -> dict:
     M["composite"] = {"value": value, "parts": parts, "weight": W}
 
     # Coinbase Premium: Coinbase (người Mỹ, tổ chức) trả giá cao hơn sàn quốc tế bao nhiêu
-    cb = try_(errs, "coinbase", coinbase_hourly)
     ref = try_(errs, "usdt_ref", usdt_hourly)
     if cb and ref:
         common = sorted(set(cb) & set(ref[0]))[-168:]
@@ -578,12 +626,6 @@ def run(latest: dict, text_history: list) -> dict:
                             "avg7d": round(sum(v for _, v in ser) / len(ser), 4), "series": [[t * 1000, round(v, 4)] for t, v in ser]}
         M["btc"] = {"price": cb[max(cb)], "ch24": round((cb[max(cb)] / cb[max(cb) - 86400] - 1) * 100, 2) if max(cb) - 86400 in cb else None}
 
-    if COINALYZE_KEY:
-        ca = try_(errs, "coinalyze", coinalyze, cb)
-        if ca:
-            M["liq_agg"] = {k: v for k, v in ca.items() if k != "oi_btc"}
-            if ca.get("oi_btc"):
-                M["liq_agg"]["oi_btc"] = ca["oi_btc"]
     dv = try_(errs, "drivers", drivers, cb, M, errs)
     if M.get("liq_agg"):
         M["liq_agg"].pop("oi_btc", None)   # đã dùng trong phân tích đà giá, không cần ghi vào latest.json

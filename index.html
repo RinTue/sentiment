@@ -342,7 +342,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <div id="liq-24"><p class="loading">Đang tải…</p></div>
       <h3>Lệnh bị thanh lý lớn (từ 50.000 $)</h3>
       <div class="feed" id="live-feed"><span class="loading">Đang kết nối…</span></div>
-      <p class="note">Phần trực tiếp gộp Bybit, OKX và Binance (nếu mạng của bạn vào được), đếm từ lúc mở trang. Binance chỉ phát lệnh mới nhất mỗi giây nên bị đếm thiếu. Cách đọc: một phe bị thanh lý dồn dập là giá đang chạy bằng lệnh cưỡng bức; đợt thanh lý long rất lớn thường xuất hiện gần đáy ngắn hạn, short rất lớn gần đỉnh ngắn hạn.</p>
+      <p class="note">Phần trực tiếp cộng gộp Bybit, OKX và Binance (nếu mạng của bạn vào được), đếm từ lúc mở trang; phần 24 giờ là tổng các sàn lớn do máy chủ lấy từ Coinalyze. Cách đọc: một phe bị thanh lý dồn dập là giá đang chạy bằng lệnh cưỡng bức; đợt thanh lý long rất lớn thường xuất hiện gần đáy ngắn hạn, short rất lớn gần đỉnh ngắn hạn.</p>
     </section>
     <section class="panel">
       <h2>Đà giá đến từ đâu: spot, đòn bẩy hay short bị ép</h2>
@@ -1047,14 +1047,20 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   function renderPositioning() {
     const c = POS.coin, D = c === "BTC" ? S : S.eth;
     document.querySelectorAll("#pos-tabs button").forEach((b) => b.classList.toggle("on", b.dataset.coin === c));
+    const AG = c === "BTC" && S.mkt && S.mkt.liq_agg ? S.mkt.liq_agg : null;   // số gộp các sàn (chỉ có cho BTC)
     ["pos-etf-title", "pos-fund-title"].forEach((id) => { const el = $(id); el.textContent = el.dataset.tpl.replace("{c}", c === "BTC" ? "Bitcoin" : "Ethereum").replace("{s}", c); });
+    if (AG && AG.funding) $("pos-fund-title").textContent = "Funding BTC, tổng các sàn (bình quân theo open interest), 90 ngày";
     if (!D || D.loading) { $("pos-stats").innerHTML = `<p class="loading">Đang tải dữ liệu ${c}…</p>`; $("c-etf").innerHTML = ""; $("c-fund").innerHTML = ""; if (!D) loadEth(); return; }
     const ef = (...k) => k.filter((x) => (D.err || S.err)[x]).map((x) => SRC_NAME[x].replace("BTC", c) + ": " + (D.err || S.err)[x]).join("; ") || "thiếu dữ liệu";
     const out = [];
-    if (D.funding) { const arr = D.funding.map((x) => x.v); out.push([`Funding ${c} (Bybit)`, pct(arr.at(-1) * 100, 4), `phân vị ${num(pctRank(arr, arr.at(-1)))}% trong 90 ngày`]); }
-    if (D.okxFund != null) out.push([`Funding ${c} (OKX)`, pct(D.okxFund * 100, 4), "mỗi 8 giờ"]);
-    if (D.oi && D.oi.length >= 8) { const o7 = (D.oi.at(-1).v / D.oi.at(-8).v - 1) * 100; out.push(["Open interest 7 ngày", pct(o7), num(D.oi.at(-1).v) + ` ${c} trên Bybit`, cls(o7)]); }
-    if (D.ls) out.push(["Tài khoản đang long", num(D.ls.at(-1).buy * 100) + "%", "Bybit, nhỏ lẻ"]);
+    if (AG && AG.funding) out.push(["Funding (tổng các sàn)", pct(AG.funding.last * 100, 4), `phân vị ${num(AG.funding.pct)}% trong 90 ngày`]);
+    else {
+      if (D.funding) { const arr = D.funding.map((x) => x.v); out.push([`Funding ${c} (Bybit)`, pct(arr.at(-1) * 100, 4), `phân vị ${num(pctRank(arr, arr.at(-1)))}% trong 90 ngày`]); }
+      if (D.okxFund != null) out.push([`Funding ${c} (OKX)`, pct(D.okxFund * 100, 4), "mỗi 8 giờ"]);
+    }
+    if (AG && AG.oi && AG.oi.ch7 != null) out.push(["Open interest 7 ngày (tổng các sàn)", pct(AG.oi.ch7), usd(AG.oi.usd), cls(AG.oi.ch7)]);
+    else if (D.oi && D.oi.length >= 8) { const o7 = (D.oi.at(-1).v / D.oi.at(-8).v - 1) * 100; out.push(["Open interest 7 ngày", pct(o7), num(D.oi.at(-1).v) + ` ${c} trên Bybit`, cls(o7)]); }
+    if (D.ls) out.push(["Tài khoản nhỏ lẻ đang long", num(D.ls.at(-1).buy * 100) + "%", "theo Bybit (chưa có số gộp)"]);
     const etf = etfSeries(D); if (etf && etf.length) out.push([`ETF ${c} phiên gần nhất`, usd(etf.at(-1).flow, true), "ngày " + etf.at(-1).date.split("-").reverse().join("/"), cls(etf.at(-1).flow)]);
     const pc = putCall(D); if (pc != null) out.push(["Put/call quyền chọn", num(pc, 2), "Deribit, theo vị thế mở"]);
     const M = S.mkt;
@@ -1063,7 +1069,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     $("pos-stats").innerHTML = out.length ? statBoxes(out) : `<div class="msg">Không lấy được dữ liệu phái sinh ${c}.</div>`;
     if (etf && etf.length) { const a = etf.slice(-30); lineChart($("c-etf"), { t: a.map((x) => Date.parse(x.date + "T12:00:00Z")), H: 180, bars: true, zero: true, yfmt: (v) => Math.round(v / 1e6) + "tr", series: [{ name: "Dòng tiền", v: a.map((x) => x.flow), fmt: (v) => usd(v, true) }] }); }
     else $("c-etf").innerHTML = `<div class="msg">Không lấy được ETF ${c}: ${esc(ef("etfHist", "etfNow"))}.</div>`;
-    if (D.funding) lineChart($("c-fund"), { t: D.funding.map((x) => x.t), H: 180, bars: true, zero: true, yfmt: (v) => (v * 100).toFixed(3) + "%", series: [{ name: "Funding", v: D.funding.map((x) => x.v), fmt: (v) => pct(v * 100, 4) }] });
+    if (AG && AG.funding && AG.funding.series && AG.funding.series.length > 5) lineChart($("c-fund"), { t: AG.funding.series.map((x) => x[0]), H: 180, bars: true, zero: true, yfmt: (v) => (v * 100).toFixed(3) + "%", series: [{ name: "Funding tổng các sàn", v: AG.funding.series.map((x) => x[1]), fmt: (v) => pct(v * 100, 4) }] });
+    else if (D.funding) lineChart($("c-fund"), { t: D.funding.map((x) => x.t), H: 180, bars: true, zero: true, yfmt: (v) => (v * 100).toFixed(3) + "%", series: [{ name: "Funding", v: D.funding.map((x) => x.v), fmt: (v) => pct(v * 100, 4) }] });
     else $("c-fund").innerHTML = `<div class="msg">Không lấy được funding: ${esc(ef("funding"))}.</div>`;
     const dm = (ts) => new Intl.DateTimeFormat("vi-VN", { timeZone: TZ, day: "2-digit", month: "2-digit" }).format(new Date(ts));
     if (M && M.premium && M.premium.series && M.premium.series.length > 3) {
@@ -1263,7 +1270,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     if (d.perp_usd != null) f.push(`Mua futures ròng ${usd(d.perp_usd, true)}`);
     if (d.prem != null) f.push(`Coinbase Premium ${pct(d.prem, 3)}`);
     const A = S.mkt && S.mkt.liq_agg;
-    if (DRV_VIEW.w === "24" && A && A.h24) f.push(`Thanh lý ${A.exchanges.length} sàn: short ${usd(A.h24.short)}, long ${usd(A.h24.long)}`);
+    if (DRV_VIEW.w === "24" && A && A.h24) f.push(`Thanh lý (tổng các sàn): short ${usd(A.h24.short)}, long ${usd(A.h24.long)}`);
     else if (liq && DRV_VIEW.w === "24" && (liq.long || liq.short)) f.push(`Thanh lý OKX: short ${usd(liq.short)}, long ${usd(liq.long)}`);
     return f;
   }
@@ -1281,7 +1288,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     box.querySelectorAll("button[data-w]").forEach((b) => b.addEventListener("click", () => { DRV_VIEW.w = b.dataset.w; renderDrivers(); }));
     if (!det) return;
     const sr = D.series || {}, dm = (ts) => { const d = new Date(ts + 7 * 3600e3); return `${d.getUTCDate()}/${d.getUTCMonth() + 1} ${String(d.getUTCHours()).padStart(2, "0")}h`; };
-    det.innerHTML = `<p class="note" style="margin-top:0">Cách đọc: giá tăng mà open interest giảm là short bị ép đóng; giá, open interest và funding cùng tăng là long đòn bẩy; giá tăng kèm mua spot ròng và Coinbase Premium dương là tiền thật. Open interest lấy từ ${esc(D.oi_src || "OKX")}; lệnh mua bán chủ động lấy từ OKX (một sàn lớn, đại diện cho thị trường).</p>
+    det.innerHTML = `<p class="note" style="margin-top:0">Cách đọc: giá tăng mà open interest giảm là short bị ép đóng; giá, open interest và funding cùng tăng là long đòn bẩy; giá tăng kèm mua spot ròng và Coinbase Premium dương là tiền thật. ${/Coinalyze/.test(D.oi_src || "") ? "Open interest và thanh lý là tổng các sàn lớn; lệnh mua bán chủ động lấy từ OKX (một sàn lớn, đại diện)." : "Open interest và lệnh mua bán chủ động lấy từ OKX (một sàn lớn, đại diện cho thị trường)."}</p>
       <div class="two"><div><h3>Giá và open interest, 4 ngày (gốc 100)</h3><div class="legend"><span><i style="background:var(--s1)"></i>Giá BTC</span><span><i style="background:var(--s2)"></i>Open interest (BTC)</span></div><div class="chart" id="c-drv-oi"></div></div>
       <div><h3>Mua bán chủ động cộng dồn, 4 ngày</h3><div class="legend"><span><i style="background:var(--s3)"></i>Spot (BTC)</span><span><i style="background:var(--s2)"></i>Futures (triệu $)</span></div><div class="chart" id="c-drv-cvd"></div><p class="note">Đường đi lên nghĩa là bên mua chủ động áp đảo. Hai đường khác đơn vị; xem hướng đi, không so độ lớn.</p></div></div>`;
     if (sr.price && sr.oi && sr.price.length > 3 && sr.oi.length > 3) {
@@ -1497,7 +1504,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const coin = LIQ.coin;
     document.querySelectorAll("#liq-tabs button").forEach((b) => b.classList.toggle("on", b.dataset.coin === coin));
     const stTxt = { open: ["pos", "đang nhận"], connecting: ["", "đang kết nối"], retry: ["warn", "đang thử lại"], fail: ["neg", "không kết nối được"] };
-    $("liq-src").innerHTML = Object.entries(LIQ_EX).map(([k, n]) => { const s = stTxt[LIQ.st[k] || "connecting"]; return `<span><span class="dot ${s[0]}"></span> ${n}: ${s[1]}</span>`; }).join("");
+    const on = Object.keys(LIQ_EX).filter((k) => LIQ.st[k] === "open").length;
+    $("liq-src").innerHTML = `<span><span class="dot ${on >= 2 ? "pos" : on ? "warn" : "neg"}"></span> ${on ? `Đang gộp trực tiếp từ ${on} sàn` : "Chưa kết nối được sàn nào"}</span>`;
     const el = Date.now() - LIQ.since, mins = Math.max(1, Math.round(el / 60e3));
     const win = [["5 phút", 300e3], ["1 giờ", 3600e3], ["Từ lúc mở trang", el + 60e3]];
     $("liq-win").innerHTML = win.map(([lab0, ms]) => {
@@ -1514,12 +1522,12 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const big = []; for (let i = LIQ.ev.length - 1; i >= 0 && big.length < 40; i--) { const e = LIQ.ev[i]; if (e.coin === coin && e.usd >= 50000) big.push(e); }
     big.sort((x, y) => y.t - x.t);
     const any = LIQ.ev.some((e) => e.coin === coin);
-    $("live-feed").innerHTML = big.length ? big.map((r) => `<div><span>${fmtClock(r.t)}</span><span>${LIQ_EX[r.ex]}</span><span class="${r.long ? "down" : "up"}">${r.long ? "Long" : "Short"} ${usd(r.usd)}</span><span>${num(r.px)}</span></div>`).join("")
+    $("live-feed").innerHTML = big.length ? big.map((r) => `<div><span>${fmtClock(r.t)}</span><span class="${r.long ? "down" : "up"}">${r.long ? "Long" : "Short"} ${usd(r.usd)}</span><span>${num(r.px)}</span></div>`).join("")
       : `<span class="loading">${any ? "Chưa có lệnh nào từ 50.000 $ trở lên kể từ lúc mở trang." : `Đang chờ lệnh thanh lý ${coin} đầu tiên (từ ${fmtClock(LIQ.since)}).`}</span>`;
   }
   function renderLiq24() {
     const box = $("liq-24"), A = S.mkt && S.mkt.liq_agg, O = S.mkt && S.mkt.drivers && S.mkt.drivers.liq;
-    const src = A && A.series && A.series.length ? { s: A.series, name: `${A.exchanges.length} sàn lớn qua Coinalyze (${A.exchanges.join(", ")})`, tot: A.h24 }
+    const src = A && A.series && A.series.length ? { s: A.series, name: `tổng các sàn lớn (Coinalyze; gồm ${A.exchanges.join(", ")})`, tot: A.h24 }
       : O && O.series && O.series.length ? { s: O.series, name: `chỉ OKX, ${num(O.hours)} giờ gần nhất`, tot: { long: O.long, short: O.short } } : null;
     if (!src) { box.innerHTML = `<p class="note">${S.sv ? "Bộ thu thập sẽ có số liệu 24 giờ từ lần chạy tới." : "Số liệu 24 giờ do bộ thu thập trên GitHub cung cấp."}</p>`; return; }
     const tot = src.tot.long + src.tot.short, pl = tot ? src.tot.long / tot * 100 : 50;
