@@ -51,5 +51,10 @@ jobs:
             exit 0
           fi
           git commit -m "Cập nhật dữ liệu $(date -u +%Y-%m-%dT%H:%MZ)"
-          git pull --rebase
-          git push
+          # Nếu có lần chạy khác vừa lưu trước, giữ bản dữ liệu mới nhất của lần này (-X theirs khi rebase).
+          for i in 1 2 3; do
+            git pull --rebase -X theirs && git push && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep $((i * 10))
+          done
+          exit 1
