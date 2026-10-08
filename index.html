@@ -102,6 +102,7 @@ td.wrap { white-space: normal; text-align: left; min-width: 180px; }
 .post .meta { color: var(--ink-3); font-size: .76rem; margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; }
 .post .meta a { color: var(--ink-3); }
 .post p { margin: 0; overflow-wrap: anywhere; }
+.post p.orig { color: var(--ink-3); font-size: .78rem; margin-top: 3px; font-style: italic; }
 .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
 .ai-box { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; padding: 10px 12px; border-radius: 10px; border: 1px dashed var(--line); font-size: .86rem; color: var(--ink-2); }
 
@@ -191,6 +192,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
         <h3>Đồng được nhắc nhiều</h3><div class="chips" id="tx-coins"></div>
         <h3>Từ khóa nổi bật</h3><div class="chips" id="tx-kw"></div></div>
     </div>
+    <p class="note" id="tx-trans" style="margin-top:14px"></p>
     <div class="two">
       <div><h3>Bài tích cực nổi bật</h3><div class="posts" id="tx-pos"></div></div>
       <div><h3>Bài tiêu cực nổi bật</h3><div class="posts" id="tx-neg"></div></div>
@@ -581,7 +583,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     } catch (e) { return null; }
   }
   function textFromServer(L) {
-    const a = L.all || {}, post = (p) => ({ src: p.outlet ? p.src + " · " + p.outlet : p.src, t: p.t, s: p.s, text: p.text || "", url: p.url });
+    const a = L.all || {}, post = (p) => ({ src: p.outlet ? p.src + " · " + p.outlet : p.src, t: p.t, s: p.s, text: p.text || "", vi: p.vi || "", url: p.url });
     return { score: a.score ?? null, index: a.index ?? null, n: a.n || 0, pos: a.pos || 0, neg: a.neg || 0, neu: a.neu || 0, trend: L.trend ?? null, spanH: L.window_hours || 24,
       daily: (L.daily || []).map((d) => ({ date: d.date, n: d.n, s: d.score })), coinCount: L.coins || [], keywords: L.keywords || [],
       sources: (L.sources || []).map((s) => ({ src: s.src, n: s.n, s: s.score })), topPos: (L.top_pos || []).map(post), topNeg: (L.top_neg || []).map(post), news: L.news, social: L.social };
@@ -797,7 +799,10 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     $("tx-src").innerHTML = `<table><thead><tr><th>Nguồn</th><th>Bài</th><th>Điểm</th></tr></thead><tbody>${T.sources.map((s) => `<tr><td>${esc(s.src)}</td><td class="num">${s.n}</td><td class="num ${s.s > 0.1 ? "up" : s.s < -0.1 ? "down" : ""}">${num(s.s, 2)}</td></tr>`).join("")}</tbody></table>`;
     $("tx-coins").innerHTML = T.coinCount.map(([c, n]) => `<span>${esc(c)}<b>${n}</b></span>`).join("") || `<span>Không đủ dữ liệu</span>`;
     $("tx-kw").innerHTML = T.keywords.map(([w, n]) => `<span>${esc(w)}<b>${n}</b></span>`).join("") || `<span>Không đủ dữ liệu</span>`;
-    const post = (p) => `<div class="post"><p>${esc(p.text.length > 220 ? p.text.slice(0, 217) + "…" : p.text)}</p><div class="meta"><span class="${p.s > 0 ? "up" : "down"}">${p.s > 0 ? "+" : ""}${num(p.s, 2)}</span><span>${esc(p.src)}</span><span>${fmtTime(p.t)}</span>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">mở bài</a>` : ""}</div></div>`;
+    const cut = (t) => t.length > 220 ? t.slice(0, 217) + "…" : t;
+    const post = (p) => `<div class="post">${p.vi ? `<p>${esc(cut(p.vi))}</p><p class="orig">${esc(cut(p.text))}</p>` : `<p>${esc(cut(p.text))}</p>`}<div class="meta"><span class="${p.s > 0 ? "up" : "down"}">${p.s > 0 ? "+" : ""}${num(p.s, 2)}</span><span>${esc(p.src)}</span><span>${fmtTime(p.t)}</span>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">mở bài</a>` : ""}</div></div>`;
+    const tr = S.mode === "server" ? S.server.L.translation : null;
+    $("tx-trans").textContent = S.mode === "server" ? "Tiêu đề được dịch máy sang tiếng Việt (MyMemory), có sửa thuật ngữ crypto; bản gốc tiếng Anh in nghiêng bên dưới." + (tr && tr !== "ok" ? " Lần cập nhật này: " + tr + ", một số bài giữ tiếng Anh." : "") : "Bài giữ nguyên tiếng Anh khi mở trang từ file trên máy; bản dịch chỉ có khi mở từ đường link GitHub.";
     $("tx-pos").innerHTML = T.topPos.map(post).join("") || `<p class="loading">Không có bài nổi bật.</p>`;
     $("tx-neg").innerHTML = T.topNeg.map(post).join("") || `<p class="loading">Không có bài nổi bật.</p>`;
   }
