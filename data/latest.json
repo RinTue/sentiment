@@ -1,18 +1,18 @@
 {
- "generated_at": "2026-10-08T15:26:38+00:00",
+ "generated_at": "2026-10-08T15:32:04+00:00",
  "scoring": "AI + từ điển (100% số bài có điểm AI)",
  "raw_count": 1384,
- "kept_count": 510,
- "new_count": 97,
- "stored_7d": 468,
+ "kept_count": 476,
+ "new_count": 93,
+ "stored_7d": 470,
  "filter_reasons": {
-  "bot / báo giá tự động": 182,
-  "trùng lặp": 245,
-  "không liên quan crypto": 237,
+  "bot / báo giá tự động": 183,
+  "trùng lặp": 286,
   "không phải tiếng Anh": 128,
+  "không liên quan crypto": 219,
   "quảng cáo / rao bán": 17,
-  "quá ngắn": 14,
-  "cùng tác giả quá nhiều": 51
+  "quá ngắn": 12,
+  "cùng tác giả quá nhiều": 63
  },
  "source_status": {
   "CoinDesk": 25,
@@ -24,10 +24,10 @@
   "NewsBTC": 10,
   "CryptoPotato": 36,
   "r/CryptoCurrency": 50,
-  "r/Bitcoin": 50,
-  "r/ethereum": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/ethereum/n",
-  "r/CryptoMarkets": 50,
-  "r/BitcoinMarkets": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/BitcoinMar",
+  "r/Bitcoin": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/Bitcoin/ne",
+  "r/ethereum": 50,
+  "r/CryptoMarkets": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/CryptoMark",
+  "r/BitcoinMarkets": 50,
   "#bitcoin": 120,
   "#btc": 120,
   "#crypto": 120,
@@ -54,32 +54,32 @@
   "TG @bitcoinmagazinetelegram": 17,
   "TG @wublockchainenglish": 20
  },
- "runtime_sec": 211.7,
+ "runtime_sec": 185.5,
  "all": {
-  "score": 0.0545,
+  "score": 0.0548,
   "index": 53,
-  "n": 209,
-  "pos": 35.4,
-  "neg": 24.9,
-  "neu": 39.7
+  "n": 211,
+  "pos": 35.5,
+  "neg": 24.6,
+  "neu": 39.8
  },
  "news": {
-  "score": 0.0536,
+  "score": 0.053,
   "index": 53,
-  "n": 113,
-  "pos": 32.7,
-  "neg": 22.1,
-  "neu": 45.1
+  "n": 114,
+  "pos": 32.5,
+  "neg": 21.9,
+  "neu": 45.6
  },
  "social": {
-  "score": 0.0558,
+  "score": 0.0572,
   "index": 53,
-  "n": 96,
-  "pos": 38.5,
-  "neg": 28.1,
-  "neu": 33.3
+  "n": 97,
+  "pos": 39.2,
+  "neg": 27.8,
+  "neu": 33.0
  },
- "trend": 0.0096,
+ "trend": 0.0099,
  "window_hours": 24,
  "daily": [
   {
@@ -114,15 +114,15 @@
   },
   {
    "date": "2026-10-08",
-   "n": 192,
-   "score": 0.0485
+   "n": 194,
+   "score": 0.0489
   }
  ],
  "sources": [
   {
    "src": "Tin tức",
-   "n": 113,
-   "score": 0.0536
+   "n": 114,
+   "score": 0.053
   },
   {
    "src": "Telegram",
@@ -131,8 +131,8 @@
   },
   {
    "src": "Reddit",
-   "n": 32,
-   "score": 0.1992
+   "n": 33,
+   "score": 0.1984
   },
   {
    "src": "Mastodon",
@@ -216,7 +216,7 @@
  "coins": [
   [
    "BTC",
-   102
+   103
   ],
   [
    "ETH",
@@ -224,7 +224,7 @@
   ],
   [
    "Stablecoin",
-   23
+   24
   ],
   [
    "SOL",
@@ -1852,7 +1852,7 @@
    "cls": "Greed",
    "d7": -10
   },
-  "votes": 59.59,
+  "votes": 58.76,
   "funding": {
    "src": "OKX",
    "last": -1.6852889759e-06,
@@ -1860,10 +1860,10 @@
    "n": 270
   },
   "ls": {
-   "buy": 0.635,
+   "buy": 0.6371,
    "src": "OKX"
   },
-  "pc": 0.586,
+  "pc": 0.585,
   "wiki": {
    "z": -0.45,
    "last": 2199
@@ -1874,7 +1874,7 @@
     {
      "key": "text",
      "name": "Giọng điệu tin tức và mạng xã hội",
-     "raw": "+0.05 (209 bài)",
+     "raw": "+0.05 (211 bài)",
      "v": 53,
      "w": 25,
      "note": "điểm tuyệt đối",
@@ -1892,8 +1892,8 @@
     {
      "key": "votes",
      "name": "Phiếu cộng đồng CoinGecko",
-     "raw": "59.6% tăng",
-     "v": 49.0,
+     "raw": "58.8% tăng",
+     "v": 46.9,
      "w": 10,
      "note": "40% → 0, 80% → 100",
      "src": "CoinGecko"
@@ -1910,8 +1910,8 @@
     {
      "key": "ls",
      "name": "Tài khoản đang long",
-     "raw": "63%",
-     "v": 67.1,
+     "raw": "64%",
+     "v": 67.8,
      "w": 10,
      "note": "40% → 0, 75% → 100 (OKX)",
      "src": "OKX"
@@ -1919,8 +1919,8 @@
     {
      "key": "pc",
      "name": "Put/call quyền chọn",
-     "raw": "0.59",
-     "v": 69.0,
+     "raw": "0.58",
+     "v": 69.2,
      "w": 10,
      "note": "càng thấp càng chủ quan",
      "src": "Deribit"
@@ -1938,10 +1938,10 @@
    "weight": 110
   },
   "premium": {
-   "last": -0.0861,
-   "avg24": -0.071,
+   "last": 0.0761,
+   "avg24": -0.0642,
    "ref": "OKX",
-   "avg7d": -0.0285,
+   "avg7d": -0.0276,
    "series": [
     [
      1790870400000,
@@ -2613,39 +2613,39 @@
     ],
     [
      1791471600000,
-     -0.0861
+     0.0761
     ]
    ]
   },
   "btc": {
-   "price": 81359.92,
-   "ch24": -2.47
+   "price": 81295.32,
+   "ch24": -2.54
   },
   "drivers": {
    "windows": {
     "24": {
-     "dp": -2.47,
-     "doi": 0.27,
+     "dp": -2.54,
+     "doi": 1.27,
      "spot_net": 0.8,
      "perp_net": -1.9,
      "spot_btc": 63.7,
      "perp_usd": -141532780,
-     "prem": -0.07,
-     "code": "spot_dn",
-     "label": "Bán spot dẫn dắt",
-     "why": "Giá giảm cùng lực bán spot và Coinbase Premium âm: người bán thật đang rút tiền, đáng lo hơn xả đòn bẩy."
+     "prem": -0.064,
+     "code": "liq_dn",
+     "label": "Long bị thanh lý, short mới vào",
+     "why": "Long bị thanh lý gấp nhiều lần short, kéo giá xuống; open interest không giảm vì phe short mở thêm vị thế. Spot đang bị bán (Coinbase Premium âm: phía Mỹ bán), áp lực có thể còn kéo dài."
     },
     "72": {
-     "dp": -4.56,
-     "doi": 7.12,
+     "dp": -4.64,
+     "doi": 8.19,
      "spot_net": -1.0,
      "perp_net": -3.7,
      "spot_btc": -205.1,
      "perp_usd": -748334385,
-     "prem": -0.039,
+     "prem": -0.037,
      "code": "lev_dn",
      "label": "Short đòn bẩy dẫn dắt",
-     "why": "Giá giảm trong khi open interest tăng và funding thấp: short mới đang dồn vào; nếu giá bật lên, dễ thành short squeeze."
+     "why": "Giá giảm trong khi open interest tăng và funding thấp: short mới đang dồn vào; nếu giá bật lên, dễ thành short squeeze. Spot đang bị bán (Coinbase Premium âm: phía Mỹ bán), áp lực có thể còn kéo dài."
     }
    },
    "series": {
@@ -3036,7 +3036,7 @@
      ],
      [
       1791471600000,
-      81360
+      81295
      ]
     ],
     "oi": [
@@ -3426,7 +3426,7 @@
      ],
      [
       1791471600000,
-      30752.3
+      31059.5
      ]
     ],
     "cvd_spot": [
@@ -4043,8 +4043,8 @@
     ]
    },
    "liq": {
-    "long": 25753650,
-    "short": 2072387,
+    "long": 27143098,
+    "short": 2054117,
     "hours": 23.9
    },
    "funding_pct": 7.8
@@ -4909,7 +4909,7 @@
    },
    "days": 3167
   },
-  "runtime_sec": 13.4
+  "runtime_sec": 14.8
  },
  "alerts": {
   "configured": true,
@@ -4965,10 +4965,10 @@
    }
   },
   "live": {
-   "n": 209,
+   "n": 210,
    "index_current": 53,
    "index_cryptobert": 63,
-   "agree": 49,
+   "agree": 50,
    "examples": [
     {
      "src": "Telegram",
@@ -4996,7 +4996,7 @@
     }
    ]
   },
-  "updated": "2026-10-08T15:27:28Z",
-  "runtime_sec": 5.3
+  "updated": "2026-10-08T15:32:56Z",
+  "runtime_sec": 4.4
  }
 }
