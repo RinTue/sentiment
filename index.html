@@ -136,6 +136,14 @@ td.wrap { white-space: normal; text-align: left; min-width: 180px; }
 .bar-opts label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
 .tv { min-height: 420px; }
 details.method summary { cursor: pointer; font-weight: 600; }
+.mc-head { font-size: 1.3rem; font-weight: 700; }
+.macro-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 12px; }
+.mcard { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+.mcard h3 { margin: 0 0 4px; display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.pill { font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--neutral-bg); color: var(--ink-2); white-space: nowrap; }
+.pill.pos { background: var(--good-bg); color: var(--good); } .pill.neg { background: var(--bad-bg); color: var(--bad); }
+.mcard .why { color: var(--ink-2); font-size: .86rem; margin: 0 0 8px; }
+.mcard table td { padding: 5px 6px; font-size: .84rem; }
 details.method p, details.method li { color: var(--ink-2); font-size: .88rem; max-width: 76ch; }
 footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height: 1.7; }
 </style>
@@ -239,8 +247,10 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
   </section>
 
   <section class="panel">
-    <h2>Vĩ mô và ETF (TradingView)</h2>
-    <div class="tv" id="tv-macro"></div>
+    <h2><span class="layer">Tầng 1–4</span>Bối cảnh vĩ mô</h2>
+    <div class="row"><div class="mc-head" id="mc-label">–</div><div class="note" id="mc-sub" style="margin:0"></div></div>
+    <div class="macro-grid" id="mc-groups"><p class="loading">Đang tải…</p></div>
+    <p class="note">Nguồn: FRED (Cục Dự trữ Liên bang St. Louis), bộ thu thập cập nhật mỗi giờ; dữ liệu ngày thường trễ một ngày, thanh khoản Fed theo tuần, M2 theo tháng. Vĩ mô hữu ích cho xu hướng vài tuần đến vài tháng, không dùng để vào lệnh trong ngày.</p>
   </section>
 
   <section class="panel">
@@ -674,6 +684,13 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       }
     }
 
+    const MM = S.mode === "server" && S.server.L.macro;
+    if (MM && MM.groups) {
+      const strong = MM.groups.filter((g) => g.score !== 0 && g.notes.length).sort((x, y) => Math.abs(y.score) - Math.abs(x.score)).slice(0, 2);
+      const detail = strong.map((g) => g.name.toLowerCase() + " " + g.label.toLowerCase() + " (" + g.notes[0] + ")").join("; ");
+      pts.push([MM.score > 0 ? "pos" : MM.score < 0 ? "neg" : "", `Bối cảnh vĩ mô ${MM.label.toLowerCase()}` + (detail ? `: ${detail}.` : ": các nhóm thanh khoản, lãi suất, khẩu vị rủi ro và chứng khoán chưa cho tín hiệu rõ.")]);
+    }
+
     if (S.funding || S.ls) {
       const fr = S.funding ? pctRank(S.funding.map((x) => x.v), S.funding.at(-1).v) : null, lb = S.ls ? S.ls.at(-1).buy : null;
       let s, c = "";
@@ -846,6 +863,26 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     $("levels").innerHTML = `<span>Giá <b>${num(c.at(-1))}</b></span><span>7 ngày <b class="${cls(c.at(-1) / c.at(-8) - 1)}">${pct((c.at(-1) / c.at(-8) - 1) * 100)}</b></span><span>Đáy 30 ngày <b>${num(lo(k.l, 30))}</b></span><span>Đỉnh 30 ngày <b>${num(hi(k.h, 30))}</b></span><span>SMA 200 <b>${num(sma(c, 200, c.length - 1))}</b></span>`;
   }
 
+  function renderMacro() {
+    const M = S.mode === "server" && S.server.L.macro;
+    if (!M || !M.groups) { $("mc-label").textContent = "Chưa có dữ liệu"; $("mc-sub").textContent = ""; $("mc-groups").innerHTML = `<div class="msg">${M && M.error ? "Bộ thu thập báo lỗi phần vĩ mô: " + esc(M.error) : "Phần vĩ mô do bộ thu thập trên GitHub cung cấp. Hãy mở trang từ đường link GitHub (ví dụ https://rintue.github.io/sentiment/) để xem."}</div>`; return; }
+    const c = (sc) => sc > 0 ? "pos" : sc < 0 ? "neg" : "";
+    $("mc-label").innerHTML = `Vĩ mô: <span class="pill ${c(M.score)}" style="font-size:.9rem">${esc(M.label)}</span>`;
+    $("mc-sub").textContent = `Tổng điểm ${M.score > 0 ? "+" : ""}${M.score} từ 4 nhóm` + (M.asof ? ` · số liệu ngày ${fmtDate(M.asof)}` : "") + (M.errors && Object.keys(M.errors).length ? ` · thiếu: ${Object.keys(M.errors).join(", ")}` : "");
+    const fmtV = (it) => it.value == null ? "–" : (typeof it.value === "number" ? it.value.toLocaleString("vi-VN", { maximumFractionDigits: Math.abs(it.value) >= 1000 ? 0 : 2 }) : it.value) + (it.unit || "");
+    const fmtC = (v, lab) => v == null ? "" : `<span class="${v > 0 ? "up" : v < 0 ? "down" : ""}">${v > 0 ? "+" : ""}${v.toLocaleString("vi-VN", { maximumFractionDigits: 2 })}${/điểm/.test(lab) ? "" : "%"}</span> <span class="note" style="margin:0">${esc(lab)}</span>`;
+    $("mc-groups").innerHTML = M.groups.map((g) => `<div class="mcard"><h3>${esc(g.name)}<span class="pill ${c(g.score)}">${esc(g.label)}</span></h3><p class="why">${g.notes.length ? esc(g.notes.join("; ")) + "." : "Không có tín hiệu đáng chú ý."}</p><table><tbody>${g.items.map((it) => `<tr><td>${esc(it.name)}</td><td class="num">${fmtV(it)}</td><td class="num">${fmtC(it.ch, it.chLabel || "")}${it.ch2 != null ? "<br>" + fmtC(it.ch2, it.ch2Label || "") : ""}</td></tr>`).join("")}</tbody></table>${g.chart ? `<div class="note" style="margin:8px 0 2px">${esc(g.chart.name)}</div><div class="chart" id="mc-chart-${g.key}"></div>` : ""}</div>`).join("");
+    const dfmt = (ts) => { const d = new Date(ts); return String(d.getUTCMonth() + 1).padStart(2, "0") + "/" + String(d.getUTCFullYear()).slice(2); };
+    M.groups.forEach((g) => {
+      if (!g.chart) return;
+      const el = $("mc-chart-" + g.key); if (!el) return;
+      const t = g.chart.series.map((p) => p[0]), f = (v) => v == null ? "–" : num(v, 2);
+      const series = [{ name: g.key === "equity" ? "Nasdaq" : "Giá trị", v: g.chart.series.map((p) => p[1]), color: "var(--s1)", fmt: f }];
+      if (g.chart.series2) { const m = new Map(g.chart.series2.map((p) => [p[0], p[1]])); series.push({ name: "BTC", v: t.map((x) => { let best = null; for (const [ts, v] of g.chart.series2) { if (ts <= x) best = v; else break; } return best; }), color: "var(--s2)", fmt: f }); }
+      lineChart(el, { t, H: 150, yfmt: (v) => Math.abs(v) >= 1000 ? Math.round(v / 1000) + "k" : num(v, 1), xfmt: dfmt, series });
+    });
+  }
+
   const CAL_VIEW = { level: "h" };
   function renderCal() {
     const box = $("cal-box");
@@ -949,7 +986,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       $("p2").textContent = `giữ ${kept.length}, loại ${col.items.length - kept.length}`;
       S.mode = "lex"; ENGINE.score(S.kept, null);
     }
-    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, afterScore];
+    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, afterScore];
     steps.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
     const failed = keys.filter((k) => S.err[k]).map((k) => SRC_NAME[k]).concat(Object.keys(col.errs || {}));
     $("updated").textContent = `Cập nhật lúc ${fmtTime(Date.now())} (giờ Việt Nam)` + (S.mode === "server" ? ` · văn bản từ máy chủ lúc ${fmtTime(Date.parse(S.server.L.generated_at))}` : "") + (failed.length ? ` · Không tải được: ${failed.join(", ")}` : "");
@@ -985,9 +1022,6 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     s.textContent = JSON.stringify(cfg); box.appendChild(s); host.appendChild(box);
   }
   const theme = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  tvWidget("tv-macro", "market-quotes", { width: "100%", height: 420, colorTheme: theme, isTransparent: true, locale: "vi_VN", showSymbolLogo: true, symbolsGroups: [
-    { name: "Vĩ mô", symbols: [{ name: "TVC:DXY", displayName: "Chỉ số USD" }, { name: "TVC:US10Y", displayName: "Lợi suất Mỹ 10 năm" }, { name: "NASDAQ:NDX", displayName: "Nasdaq 100" }, { name: "TVC:GOLD", displayName: "Vàng" }] },
-    { name: "ETF Bitcoin", symbols: [{ name: "NASDAQ:IBIT", displayName: "BlackRock IBIT" }, { name: "AMEX:FBTC", displayName: "Fidelity FBTC" }] }] });
   tvWidget("tv-news", "timeline", { feedMode: "market", market: "crypto", width: "100%", height: 460, colorTheme: theme, isTransparent: true, displayMode: "regular", locale: "vi_VN" });
 
   renderAiBox();
