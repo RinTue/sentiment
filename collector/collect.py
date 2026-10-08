@@ -109,10 +109,14 @@ def lex_score(text: str) -> float:
 
 
 # ---------------------------------------------------------------- tầng 1: thu thập
+BOILER = re.compile(r"(the post .{0,200}? appeared first on .{0,80}?\.?$|continue reading.*$|read more.*$|\[…\]|\[\.\.\.\])", re.I)
+
+
 def strip(markup: str) -> str:
     t = re.sub(r"<br\s*/?>|</p>", " ", markup or "", flags=re.I)
     t = re.sub(r"<[^>]+>", " ", t)
-    return re.sub(r"\s+", " ", html.unescape(t)).strip()
+    t = re.sub(r"\s+", " ", html.unescape(t)).strip()
+    return BOILER.sub("", t).strip()
 
 
 def get_json(url: str, **kw):
@@ -144,25 +148,17 @@ def fetch_rss() -> tuple[list, dict]:
 
 
 def fetch_reddit() -> tuple[list, dict]:
+    """Reddit chặn API JSON từ máy chủ đám mây, nên đọc RSS và nghỉ giữa các lần gọi."""
     items, status = [], {}
-    for sub in SUBREDDITS:
-        try:
-            j = get_json(f"https://www.reddit.com/r/{sub}/new.json?limit=100&raw_json=1")
-            n = 0
-            for c in j.get("data", {}).get("children", []):
-                d = c.get("data", {})
-                if d.get("stickied"):
-                    continue
-                items.append({"src": "Reddit", "outlet": "r/" + sub, "id": "rd:" + d.get("id", ""), "t": d.get("created_utc", NOW),
-                              "text": (d.get("title", "") + ". " + (d.get("selftext") or "")[:600]).strip(), "title": d.get("title", ""),
-                              "url": "https://www.reddit.com" + d.get("permalink", ""), "author": d.get("author"),
-                              "eng": (d.get("score") or 0) + (d.get("num_comments") or 0), "lang": "en", "bot": False, "kind": "social"})
-                n += 1
-            status["r/" + sub] = n
-        except Exception as ex:  # noqa: BLE001
-            # Reddit hay chặn máy chủ đám mây; thử nguồn RSS của chính Reddit
+    for k, sub in enumerate(SUBREDDITS):
+        if k:
+            time.sleep(6)
+        for attempt in range(2):
             try:
-                r = requests.get(f"https://www.reddit.com/r/{sub}/new/.rss", headers={"User-Agent": UA}, timeout=20)
+                r = requests.get(f"https://www.reddit.com/r/{sub}/new/.rss?limit=50", headers={"User-Agent": UA}, timeout=20)
+                if r.status_code == 429 and attempt == 0:
+                    time.sleep(20)
+                    continue
                 r.raise_for_status()
                 feed = feedparser.parse(r.content)
                 for e in feed.entries:
@@ -171,9 +167,11 @@ def fetch_reddit() -> tuple[list, dict]:
                                   "t": calendar.timegm(ts) if ts else NOW, "text": strip(e.get("title", "")) + ". " + strip(e.get("summary", ""))[:600],
                                   "title": strip(e.get("title", "")), "url": e.get("link"), "author": (e.get("author") or ""),
                                   "eng": 0, "lang": "en", "bot": False, "kind": "social"})
-                status["r/" + sub] = f"{len(feed.entries)} (qua RSS)"
-            except Exception as ex2:  # noqa: BLE001
-                status["r/" + sub] = "lỗi: " + str(ex)[:60] + " / " + str(ex2)[:60]
+                status["r/" + sub] = len(feed.entries)
+                break
+            except Exception as ex:  # noqa: BLE001
+                status["r/" + sub] = "lỗi: " + str(ex)[:80]
+                break
     return items, status
 
 
@@ -240,6 +238,14 @@ ADS = re.compile(r"(for sale|in stock|open-box|ready to ship|we accept|paid in b
 PRICE_BOT = re.compile(r"(price\s*[:：]|market cap\s*[:：]|【.*レポート】|\b24h\b.*%|▲|▼|🔼|🔽)", re.I)
 
 
+FOREIGN = re.compile(r"\b(und|der|die|das|nicht|mit|auf|von|über|zu|ist|ein|eine|les|des|pour|avec|est|una|los|las|para|con|que|del|por|het|een|niet)\b", re.I)
+
+
+def looks_foreign(s: str) -> bool:
+    words = re.findall(r"[A-Za-zÀ-ÿ]+", s)
+    return len(words) >= 6 and len(FOREIGN.findall(s)) / len(words) > 0.08
+
+
 def ascii_ratio(s: str) -> float:
     return sum(1 for ch in s if ord(ch) < 128) / max(1, len(s))
 
@@ -267,7 +273,7 @@ def clean(items: list) -> tuple[list, dict]:
         if ADS.search(text):
             reasons["quảng cáo / rao bán"] += 1
             continue
-        if (it.get("lang") and it["lang"] != "en") or ascii_ratio(core) < 0.9:
+        if (it.get("lang") and it["lang"] != "en") or ascii_ratio(core) < 0.9 or looks_foreign(core):
             reasons["không phải tiếng Anh"] += 1
             continue
         if len(core) < 25:
@@ -330,7 +336,7 @@ def hybrid(ai: float | None, lx: float) -> float:
 
 
 # ---------------------------------------------------------------- tầng 4: tổng hợp
-STOP = set("the a an and or but if then than that this these those there their they them is are was were be been being have has had do does did of to in on for with as at by from about into over after before under between out up down off so not no yes it its it's i you your we our us my me he she his her him what which who whom when where why how all any some more most other such only own same too very can will just should now also like get got one two new would could may might much many even back still well way make made think know see go going said says say really people time year years day days thing things lot good don't im i'm thats that's there's dont doesnt isnt via amp https http www com html week today amid".split())
+STOP = set("the a an and or but if then than that this these those there their they them is are was were be been being have has had do does did of to in on for with as at by from about into over after before under between out up down off so not no yes it its it's i you your we our us my me he she his her him what which who whom when where why how all any some more most other such only own same too very can will just should now also like get got one two new would could may might much many even back still well way make made think know see go going said says say really people time year years day days thing things lot good don't im i'm thats that's there's dont doesnt isnt via amp https http www com html week today amid while first post appeared million billion thousand percent according reported report latest since around across continue read october november december january february march april june july august september monday tuesday wednesday thursday friday saturday sunday".split())
 GENERIC = set("bitcoin btc crypto cryptocurrency cryptocurrencies ethereum eth coin coins blockchain price prices market markets news token tokens".split())
 COINS = [("BTC", r"\b(bitcoin|btc|sats?|satoshi)\b"), ("ETH", r"\b(ethereum|eth|ether)\b"), ("SOL", r"\b(solana|sol)\b"), ("XRP", r"\b(xrp|ripple)\b"),
          ("DOGE", r"\b(dogecoin|doge)\b"), ("BNB", r"\b(bnb)\b"), ("ADA", r"\b(cardano|ada)\b"), ("Stablecoin", r"\b(stablecoins?|usdt|usdc|tether)\b")]
