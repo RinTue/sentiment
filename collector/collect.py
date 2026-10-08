@@ -457,6 +457,188 @@ def translate_posts(posts: list) -> str:
     return status
 
 
+# ---------------------------------------------------------------- vĩ mô (FRED, miễn phí)
+FRED = {
+    "WALCL": "Bảng cân đối Fed", "WTREGEN": "Tài khoản Kho bạc (TGA)", "RRPONTSYD": "Repo ngược (RRP)", "M2SL": "Cung tiền M2",
+    "DGS2": "Lợi suất 2 năm", "DGS10": "Lợi suất 10 năm", "DFII10": "Lợi suất thực 10 năm", "DTWEXBGS": "Chỉ số USD (rổ rộng)",
+    "VIXCLS": "VIX", "BAMLH0A0HYM2": "Chênh lệch trái phiếu rủi ro cao", "NASDAQ100": "Nasdaq 100", "DEXJPUS": "USD/JPY",
+    "CBBTCUSD": "Bitcoin (Coinbase)",
+}
+
+
+def fred(series_id: str, days: int = 420) -> list:
+    start = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+    r = requests.get("https://fred.stlouisfed.org/graph/fredgraph.csv", params={"id": series_id, "cosd": start}, headers={"User-Agent": UA}, timeout=30)
+    r.raise_for_status()
+    out = []
+    for row in list(csv.reader(r.text.splitlines()))[1:]:
+        if len(row) < 2 or row[1] in (".", ""):
+            continue
+        try:
+            out.append((datetime.strptime(row[0], "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp(), float(row[1])))
+        except ValueError:
+            continue
+    if not out:
+        raise ValueError("không có dữ liệu")
+    return out
+
+
+def at_or_before(series: list, t: float):
+    best = None
+    for ts, v in series:
+        if ts <= t:
+            best = v
+        else:
+            break
+    return best
+
+
+def change(series: list, days: int, pct: bool = True):
+    if not series:
+        return None
+    t, v = series[-1]
+    old = at_or_before(series, t - days * 86400)
+    if old in (None, 0):
+        return None
+    return (v / old - 1) * 100 if pct else v - old
+
+
+def thin(series: list, n: int = 90) -> list:
+    step = max(1, math.ceil(len(series) / n))
+    pts = series[::step]
+    if pts[-1] != series[-1]:
+        pts.append(series[-1])
+    return [[int(t * 1000), round(v, 4)] for t, v in pts]
+
+
+def corr(a: list, b: list, days: int = 30):
+    da, db = dict(a), dict(b)
+    common = sorted(set(da) & set(db))
+    common = [t for t in common if t >= common[-1] - days * 86400] if common else []
+    if len(common) < 12:
+        return None
+    ra = [da[common[i]] / da[common[i - 1]] - 1 for i in range(1, len(common))]
+    rb = [db[common[i]] / db[common[i - 1]] - 1 for i in range(1, len(common))]
+    ma, mb = sum(ra) / len(ra), sum(rb) / len(rb)
+    cov = sum((x - ma) * (y - mb) for x, y in zip(ra, rb))
+    va, vb = math.sqrt(sum((x - ma) ** 2 for x in ra)), math.sqrt(sum((y - mb) ** 2 for y in rb))
+    return cov / (va * vb) if va and vb else None
+
+
+def label_of(score: int) -> str:
+    return "Thuận lợi" if score > 0 else "Bất lợi" if score < 0 else "Trung tính"
+
+
+def macro() -> dict:
+    data, errs = {}, {}
+    for sid in FRED:
+        try:
+            data[sid] = fred(sid, 900 if sid == "M2SL" else 420)
+        except Exception as ex:  # noqa: BLE001
+            errs[sid] = str(ex)[:80]
+        time.sleep(0.5)
+    groups = []
+    f1 = lambda v, d=1: None if v is None else round(v, d)  # noqa: E731
+
+    # 1) Thanh khoản
+    items, score, notes, chart = [], 0, [], None
+    if all(k in data for k in ("WALCL", "WTREGEN", "RRPONTSYD")):
+        net = []
+        for t, w in data["WALCL"]:
+            tga, rrp = at_or_before(data["WTREGEN"], t), at_or_before(data["RRPONTSYD"], t)
+            if tga is not None and rrp is not None:
+                net.append((t, w / 1000 - tga / 1000 - rrp))
+        c4, c13 = change(net, 28), change(net, 91)
+        items.append({"name": "Thanh khoản ròng của Fed", "value": round(net[-1][1]), "unit": " tỷ $", "ch": f1(c4, 2), "chLabel": "4 tuần", "ch2": f1(c13, 2), "ch2Label": "13 tuần"})
+        if c4 is not None:
+            score += 1 if c4 > 1 else -1 if c4 < -1 else 0
+            notes.append(f"thanh khoản ròng {'tăng' if c4 > 0 else 'giảm'} {abs(c4):.1f}% trong 4 tuần")
+        chart = {"name": "Thanh khoản ròng (tỷ $)", "series": thin(net)}
+    if "M2SL" in data:
+        y = change(data["M2SL"], 365)
+        items.append({"name": "Cung tiền M2", "value": round(data["M2SL"][-1][1]), "unit": " tỷ $", "ch": f1(y), "chLabel": "1 năm", "asof": int(data["M2SL"][-1][0] * 1000)})
+        if y is not None:
+            score += 1 if y > 5 else -1 if y < 0 else 0
+            notes.append(f"M2 {'tăng' if y >= 0 else 'giảm'} {abs(y):.1f}% so với cùng kỳ")
+    groups.append({"key": "liquidity", "name": "Thanh khoản", "score": max(-2, min(2, score)), "items": items, "chart": chart, "notes": notes})
+
+    # 2) Giá của tiền
+    items, score, notes, chart = [], 0, [], None
+    for sid, nm in (("DGS2", "Lợi suất 2 năm"), ("DGS10", "Lợi suất 10 năm"), ("DFII10", "Lợi suất thực 10 năm")):
+        if sid in data:
+            bp = change(data[sid], 30, pct=False)
+            items.append({"name": nm, "value": data[sid][-1][1], "unit": "%", "ch": None if bp is None else round(bp * 100), "chLabel": "điểm cơ bản, 1 tháng"})
+    if "DFII10" in data:
+        bp = change(data["DFII10"], 30, pct=False)
+        if bp is not None:
+            score += -1 if bp > 0.2 else 1 if bp < -0.2 else 0
+            notes.append(f"lợi suất thực {'tăng' if bp > 0 else 'giảm'} {abs(bp) * 100:.0f} điểm cơ bản trong tháng")
+        chart = {"name": "Lợi suất thực 10 năm (%)", "series": thin(data["DFII10"])}
+    if "DTWEXBGS" in data:
+        c = change(data["DTWEXBGS"], 30)
+        items.append({"name": "Chỉ số USD (rổ rộng)", "value": data["DTWEXBGS"][-1][1], "unit": "", "ch": f1(c, 2), "chLabel": "1 tháng"})
+        if c is not None:
+            score += -1 if c > 1.5 else 1 if c < -1.5 else 0
+            notes.append(f"USD {'mạnh lên' if c > 0 else 'yếu đi'} {abs(c):.1f}% trong tháng")
+    groups.append({"key": "rates", "name": "Lãi suất và USD", "score": max(-2, min(2, score)), "items": items, "chart": chart, "notes": notes})
+
+    # 3) Khẩu vị rủi ro
+    items, score, notes, chart = [], 0, [], None
+    if "VIXCLS" in data:
+        v = data["VIXCLS"][-1][1]
+        items.append({"name": "VIX", "value": v, "unit": "", "ch": f1(change(data["VIXCLS"], 30, pct=False)), "chLabel": "điểm, 1 tháng"})
+        score += -2 if v >= 30 else -1 if v >= 22 else 1 if v < 15 else 0
+        notes.append(f"VIX ở {v:.1f}" + (" (căng thẳng)" if v >= 22 else " (bình yên)" if v < 15 else ""))
+        chart = {"name": "VIX", "series": thin(data["VIXCLS"])}
+    if "BAMLH0A0HYM2" in data:
+        hy = data["BAMLH0A0HYM2"][-1][1]
+        d = change(data["BAMLH0A0HYM2"], 30, pct=False)
+        items.append({"name": "Chênh lệch trái phiếu rủi ro cao", "value": hy, "unit": "%", "ch": None if d is None else round(d * 100), "chLabel": "điểm cơ bản, 1 tháng"})
+        if d is not None and d > 0.5:
+            score -= 1
+            notes.append("chênh lệch tín dụng giãn rộng nhanh")
+    if "DEXJPUS" in data:
+        c = change(data["DEXJPUS"], 30)
+        items.append({"name": "USD/JPY", "value": data["DEXJPUS"][-1][1], "unit": "", "ch": f1(c, 2), "chLabel": "1 tháng"})
+        if c is not None and c < -4:
+            score -= 1
+            notes.append(f"yên Nhật tăng mạnh {abs(c):.1f}% trong tháng: nguy cơ tháo vốn vay rẻ bằng yên")
+    groups.append({"key": "risk", "name": "Khẩu vị rủi ro", "score": max(-2, min(2, score)), "items": items, "chart": chart, "notes": notes})
+
+    # 4) Chứng khoán và tương quan
+    items, score, notes, chart = [], 0, [], None
+    if "NASDAQ100" in data and "CBBTCUSD" in data:
+        n7, b7 = change(data["NASDAQ100"], 7), change(data["CBBTCUSD"], 7)
+        n30, b30 = change(data["NASDAQ100"], 30), change(data["CBBTCUSD"], 30)
+        rho = corr(data["NASDAQ100"], data["CBBTCUSD"], 45)
+        items += [{"name": "Nasdaq 100", "value": data["NASDAQ100"][-1][1], "unit": "", "ch": f1(n30, 1), "chLabel": "1 tháng", "ch2": f1(n7, 1), "ch2Label": "1 tuần"},
+                  {"name": "Bitcoin", "value": data["CBBTCUSD"][-1][1], "unit": " $", "ch": f1(b30, 1), "chLabel": "1 tháng", "ch2": f1(b7, 1), "ch2Label": "1 tuần"},
+                  {"name": "Tương quan BTC–Nasdaq (45 ngày)", "value": None if rho is None else round(rho, 2), "unit": "", "ch": None, "chLabel": ""}]
+        if n30 is not None:
+            score += 1 if n30 > 3 else -1 if n30 < -5 else 0
+        if n30 is not None and b30 is not None and n30 - b30 > 6:
+            score -= 1
+            notes.append(f"Nasdaq {n30:+.1f}% nhưng BTC {b30:+.1f}% trong tháng: tiền vào crypto yếu")
+        elif n30 is not None and b30 is not None and b30 - n30 > 6:
+            notes.append(f"BTC mạnh hơn Nasdaq ({b30:+.1f}% so với {n30:+.1f}% trong tháng)")
+        if rho is not None:
+            notes.append(f"tương quan với Nasdaq {'cao' if rho > 0.5 else 'thấp' if rho < 0.2 else 'vừa'} ({rho:.2f})")
+        nb = [(t, v) for t, v in data["NASDAQ100"] if t >= data["NASDAQ100"][-1][0] - 180 * 86400]
+        bb = [(t, v) for t, v in data["CBBTCUSD"] if t >= data["CBBTCUSD"][-1][0] - 180 * 86400]
+        chart = {"name": "BTC và Nasdaq, 180 ngày (gốc = 100)",
+                 "series": [[ms, round(v / nb[0][1] * 100, 2)] for ms, v in thin(nb)],
+                 "series2": [[ms, round(v / bb[0][1] * 100, 2)] for ms, v in thin(bb)]}
+    groups.append({"key": "equity", "name": "Chứng khoán và tương quan", "score": max(-2, min(2, score)), "items": items, "chart": chart, "notes": notes})
+
+    for g in groups:
+        g["label"] = label_of(g["score"])
+        g["notes"] = [re.sub(r"(\d)\.(\d)", r"\1,\2", n) for n in g["notes"]]
+    total = sum(g["score"] for g in groups if g["items"])
+    asof = max((v[-1][0] for k, v in data.items() if k not in ("M2SL", "WALCL", "WTREGEN")), default=None)
+    return {"score": total, "label": "Thuận lợi" if total >= 2 else "Bất lợi" if total <= -2 else "Trung tính",
+            "groups": groups, "errors": errs, "asof": int(asof * 1000) if asof else None}
+
+
 # ---------------------------------------------------------------- chạy
 def load_items() -> dict:
     out = {}
@@ -514,6 +696,10 @@ def main() -> int:
         model_status = f"AI + từ điển ({round(100 * with_ai / len(store))}% số bài có điểm AI)" + ("" if not model_status.startswith("từ điển (AI lỗi") else "; lần chạy này AI lỗi")
     agg = aggregate(list(store.values()))
     agg["translation"] = translate_posts(agg["top_pos"] + agg["top_neg"])
+    try:
+        agg["macro"] = macro()
+    except Exception as ex:  # noqa: BLE001
+        agg["macro"] = {"error": str(ex)[:200]}
     stamp = datetime.now(timezone.utc)
     latest = {"generated_at": stamp.isoformat(timespec="seconds"), "scoring": model_status, "raw_count": len(raw), "kept_count": len(kept),
               "new_count": len(new), "stored_7d": len(store), "filter_reasons": reasons, "source_status": status,
