@@ -147,6 +147,9 @@ def summary_lines(latest: dict) -> list:
         L.append(f"• Coinbase Premium 24h: {vn(M['premium']['avg24'], 3, True)}%")
     if M.get("stable") and M["stable"].get("ch30") is not None:
         L.append(f"• Stablecoin 30 ngày: {vn(M['stable']['ch30'], 1, True)}% ({vn(M['stable']['total'])} tỷ $)")
+    dv = ((M.get("drivers") or {}).get("windows") or {}).get("24")
+    if dv:
+        L.append(f"• Đà giá 24h: {dv['label']} (giá {vn(dv['dp'], 1, True)}%, open interest {vn(dv['doi'], 1, True)}%)")
     mac = latest.get("macro") or {}
     if mac.get("label") and mac.get("have", 1):
         L.append(f"• Vĩ mô: {mac['label']} (điểm {mac.get('score', 0):+d})")
@@ -204,6 +207,14 @@ def run(latest: dict) -> dict:
         if ref and abs(ci - ref[-1]) >= 15 and not recently("move", 12):
             d = ci - ref[-1]
             msgs.append(("market:move", f"{'📈' if d > 0 else '📉'} Tâm lý {'tăng' if d > 0 else 'giảm'} mạnh: {ref[-1]:.0f} → {ci} trong 24 giờ\n\n" + "\n".join(summary_lines(latest))))
+
+    # 2b) giá BTC chạy mạnh: nói rõ đà đến từ đâu
+    dv = ((M.get("drivers") or {}).get("windows") or {}).get("24")
+    if dv and abs(dv["dp"]) >= 5 and not recently("drivers", 12):
+        liq = (M.get("drivers") or {}).get("liq") or {}
+        extra = f"\nThanh lý trên OKX ({liq.get('hours', 24):.0f} giờ): short {vn(liq.get('short', 0) / 1e6, 1)} triệu $, long {vn(liq.get('long', 0) / 1e6, 1)} triệu $." if liq else ""
+        msgs.append(("market:drivers", f"{'🚀' if dv['dp'] > 0 else '🔻'} BTC {vn(dv['dp'], 1, True)}% trong 24 giờ: <b>{html.escape(dv['label'])}</b>\n\n{html.escape(dv['why'])}\n"
+                     f"Open interest {vn(dv['doi'], 1, True)}% · mua spot ròng {vn(dv['spot_btc'], 0, True) if dv.get('spot_btc') is not None else '–'} BTC (OKX) · Coinbase Premium {vn(dv['prem'], 3, True) if dv.get('prem') is not None else '–'}%{extra}"))
 
     # 3) funding bất thường
     fd = M.get("funding")

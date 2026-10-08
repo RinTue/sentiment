@@ -251,6 +251,147 @@ def backtest(today: str) -> dict:
     return out
 
 
+# ---------------------------------------------------------------- đà giá đến từ đâu
+DRIVERS_FILE = os.path.join(DATA, "drivers.csv")
+
+
+def okx_rows(path: str, params: dict) -> list:
+    j = get("https://www.okx.com" + path, params, 12)
+    if j.get("code") != "0":
+        raise ValueError("OKX: " + str(j.get("msg")))
+    return j["data"]
+
+
+def okx_oi_hourly() -> list:
+    """Open interest của hợp đồng BTC-USDT-SWAP trên OKX theo giờ, tính bằng BTC (không bị giá làm méo)."""
+    rows = okx_rows("/api/v5/rubik/stat/contracts/open-interest-history", {"instId": "BTC-USDT-SWAP", "period": "1H", "limit": 100})
+    return sorted((int(r[0]) // 1000, float(r[2])) for r in rows)
+
+
+def okx_taker_hourly(inst_type: str) -> list:
+    """Khối lượng mua/bán chủ động theo giờ: SPOT tính bằng BTC, CONTRACTS tính bằng USD."""
+    begin = int((time.time() - 80 * 3600) * 1000)
+    rows = okx_rows("/api/v5/rubik/stat/taker-volume", {"ccy": "BTC", "instType": inst_type, "period": "1H", "begin": begin})
+    return sorted((int(r[0]) // 1000, float(r[1]), float(r[2])) for r in rows)   # (giờ, bán, mua)
+
+
+def okx_liquidations(hours: int = 24, max_pages: int = 30) -> dict:
+    """Lệnh bị thanh lý trên OKX (BTC-USDT-SWAP, mỗi hợp đồng 0,01 BTC). Chỉ là một sàn, dùng để thấy phe nào bị ép."""
+    cutoff = (time.time() - hours * 3600) * 1000
+    long_usd = short_usd = 0.0
+    oldest, after = None, None
+    for _ in range(max_pages):
+        p = {"instType": "SWAP", "uly": "BTC-USDT", "state": "filled", "limit": 100}
+        if after:
+            p["after"] = after
+        data = okx_rows("/api/v5/public/liquidation-orders", p)
+        det = [d for x in data for d in x.get("details", []) if (x.get("instId") or "BTC-USDT-SWAP") == "BTC-USDT-SWAP"]
+        if not det:
+            break
+        for d in det:
+            t = float(d["ts"])
+            if t < cutoff:
+                continue
+            usd = float(d["sz"]) * 0.01 * float(d["bkPx"])
+            if (d.get("posSide") or ("short" if d.get("side") == "buy" else "long")) == "short":
+                short_usd += usd
+            else:
+                long_usd += usd
+        oldest = min(float(d["ts"]) for d in det)
+        if oldest < cutoff:
+            break
+        after = int(oldest)
+        time.sleep(0.15)
+    covered = min(hours, (time.time() * 1000 - (oldest or time.time() * 1000)) / 3600e3)
+    return {"long": round(long_usd), "short": round(short_usd), "hours": round(covered, 1)}
+
+
+def classify_move(dp: float, doi: float, fpct: float | None, spot_net: float | None, prem: float | None, thr_p: float, thr_oi: float) -> tuple[str, str, str]:
+    """Trả về (mã, nhãn, giải thích). Ý tưởng: giá tăng mà OI giảm là short bị ép đóng; giá tăng kèm OI và funding cùng tăng là long đòn bẩy;
+    giá tăng mà OI đứng yên, có mua spot và Coinbase Premium dương là tiền thật."""
+    spot_up = (spot_net is not None and spot_net > 0.02) or (prem is not None and prem > 0.03)
+    spot_dn = (spot_net is not None and spot_net < -0.02) or (prem is not None and prem < -0.03)
+    if abs(dp) < thr_p:
+        if doi > thr_oi * 1.5:
+            return "build", "Đòn bẩy đang tích tụ", "Giá đi ngang nhưng open interest tăng: vị thế mới đang dồn vào, dễ có cú quét mạnh ở một trong hai phía."
+        return "flat", "Chưa có đà rõ", "Giá và open interest đều ít thay đổi."
+    if dp > 0:
+        if doi <= -thr_oi:
+            return ("squeeze_up", "Short bị ép đóng (short squeeze)",
+                    "Giá tăng trong khi open interest giảm: phần lớn lực mua đến từ phe short phải đóng lệnh."
+                    + (" Có lực mua spot đi kèm nên đà tăng có nền." if spot_up else " Chưa thấy lực mua spot rõ, đà tăng dễ hụt hơi khi việc đóng short kết thúc."))
+        if doi >= thr_oi and (fpct or 0) >= 70:
+            return "lev_up", "Long đòn bẩy dẫn dắt", "Giá, open interest và funding cùng tăng: người mua chủ yếu dùng đòn bẩy, dễ bị đảo chiều và thanh lý dây chuyền."
+        if spot_up:
+            return "spot_up", "Mua spot dẫn dắt", "Giá tăng mà đòn bẩy không tăng tương ứng, lực mua spot và Coinbase Premium dương: đà tăng lành mạnh hơn."
+        return "mixed_up", "Tăng do nhiều lực cùng lúc", "Không có dấu hiệu nào áp đảo giữa đóng short, long đòn bẩy và mua spot."
+    if doi <= -thr_oi:
+        return ("squeeze_dn", "Long bị thanh lý (xả đòn bẩy)",
+                "Giá giảm trong khi open interest giảm: phần lớn lực bán đến từ long bị thanh lý hoặc tự đóng lệnh."
+                + (" Spot vẫn đang bị bán, áp lực có thể còn." if spot_dn else " Spot không bị bán mạnh, đợt giảm có thể chủ yếu là xả đòn bẩy."))
+    if doi >= thr_oi and (fpct if fpct is not None else 50) <= 30:
+        return "lev_dn", "Short đòn bẩy dẫn dắt", "Giá giảm trong khi open interest tăng và funding thấp: short mới đang dồn vào; nếu giá bật lên, dễ thành short squeeze."
+    if spot_dn:
+        return "spot_dn", "Bán spot dẫn dắt", "Giá giảm cùng lực bán spot và Coinbase Premium âm: người bán thật đang rút tiền, đáng lo hơn xả đòn bẩy."
+    return "mixed_dn", "Giảm do nhiều lực cùng lúc", "Không có dấu hiệu nào áp đảo giữa thanh lý long, short mới và bán spot."
+
+
+def drivers(cb: dict | None, M: dict, errs: dict) -> dict | None:
+    oi = try_(errs, "oi_okx", okx_oi_hourly)
+    if not oi or len(oi) < 30:
+        return None
+    spot = try_(errs, "taker_spot", okx_taker_hourly, "SPOT") or []
+    perp = try_(errs, "taker_perp", okx_taker_hourly, "CONTRACTS") or []
+    liq = try_(errs, "liq_okx", okx_liquidations, 24)
+    price = cb or {}
+    if not price:
+        return None
+    t_end = max(price)
+    fpct = (M.get("funding") or {}).get("pct")
+    prem_series = (M.get("premium") or {}).get("series") or []
+    out = {"windows": {}, "series": {}}
+    for hours, thr_p, thr_oi in ((24, 2.0, 2.0), (72, 4.0, 4.0)):
+        t0 = t_end - hours * 3600
+        p_now, p_then = price[t_end], next((price[t] for t in sorted(price) if t >= t0), None)
+        oi_then = next((v for t, v in oi if t >= t0), None)
+        if not p_then or not oi_then:
+            continue
+        dp = (p_now / p_then - 1) * 100
+        doi = (oi[-1][1] / oi_then - 1) * 100
+        sp = [x for x in spot if x[0] >= t0]
+        pp = [x for x in perp if x[0] >= t0]
+        spot_net = (sum(b - s for _, s, b in sp) / sum(b + s for _, s, b in sp)) if sp and sum(b + s for _, s, b in sp) else None
+        perp_net = (sum(b - s for _, s, b in pp) / sum(b + s for _, s, b in pp)) if pp and sum(b + s for _, s, b in pp) else None
+        pr = [v for t, v in prem_series if t >= t0 * 1000]
+        prem = sum(pr) / len(pr) if pr else None
+        code, label, why = classify_move(dp, doi, fpct, spot_net, prem, thr_p, thr_oi)
+        out["windows"][str(hours)] = {"dp": round(dp, 2), "doi": round(doi, 2), "spot_net": None if spot_net is None else round(spot_net * 100, 1),
+                                     "perp_net": None if perp_net is None else round(perp_net * 100, 1), "spot_btc": round(sum(b - s for _, s, b in sp), 1) if sp else None,
+                                     "perp_usd": round(sum(b - s for _, s, b in pp)) if pp else None, "prem": None if prem is None else round(prem, 3),
+                                     "code": code, "label": label, "why": why}
+    if not out["windows"]:
+        return None
+    out["liq"] = liq
+    out["funding_pct"] = fpct
+    # chuỗi theo giờ cho biểu đồ (4 ngày): giá, OI, CVD spot (BTC), CVD futures (USD)
+    t_min = t_end - 96 * 3600
+    out["series"]["price"] = [[t * 1000, round(v)] for t, v in sorted(price.items()) if t >= t_min]
+    out["series"]["oi"] = [[t * 1000, round(v, 1)] for t, v in oi if t >= t_min]
+    c = 0.0
+    out["series"]["cvd_spot"] = [[t * 1000, round(c := c + (b - s), 1)] for t, s, b in spot if t >= t_min]
+    c = 0.0
+    out["series"]["cvd_perp"] = [[t * 1000, round((c := c + (b - s)) / 1e6, 1)] for t, s, b in perp if t >= t_min]
+    w = out["windows"].get("24") or out["windows"].get("72")
+    new = not os.path.exists(DRIVERS_FILE)
+    with open(DRIVERS_FILE, "a", newline="", encoding="utf-8") as fh:
+        wr = csv.writer(fh)
+        if new:
+            wr.writerow(["time_utc", "price", "oi_btc", "dp24", "doi24", "spot_net24", "perp_net24", "prem24", "code24", "liq_long24", "liq_short24"])
+        wr.writerow([datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), round(price[t_end]), round(oi[-1][1], 1), w["dp"], w["doi"], w["spot_net"],
+                     w["perp_net"], w["prem"], w["code"], (liq or {}).get("long", ""), (liq or {}).get("short", "")])
+    return out
+
+
 # ---------------------------------------------------------------- chỉ số tổng hợp
 def try_(errs: dict, key: str, fn, *a):
     try:
@@ -339,6 +480,10 @@ def run(latest: dict, text_history: list) -> dict:
             M["premium"] = {"last": round(ser[-1][1], 4), "avg24": round(sum(last24) / 24, 4), "ref": ref[1],
                             "avg7d": round(sum(v for _, v in ser) / len(ser), 4), "series": [[t * 1000, round(v, 4)] for t, v in ser]}
         M["btc"] = {"price": cb[max(cb)], "ch24": round((cb[max(cb)] / cb[max(cb) - 86400] - 1) * 100, 2) if max(cb) - 86400 in cb else None}
+
+    dv = try_(errs, "drivers", drivers, cb, M, errs)
+    if dv:
+        M["drivers"] = dv
 
     st = try_(errs, "stable", stablecoins)
     if st:
