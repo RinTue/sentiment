@@ -27,6 +27,8 @@ DATA = os.path.join(ROOT, "data")
 ITEMS_FILE = os.path.join(DATA, "items.jsonl")
 LATEST_FILE = os.path.join(DATA, "latest.json")
 HISTORY_FILE = os.path.join(DATA, "history.csv")
+TRANS_FILE = os.path.join(DATA, "translations.json")
+DAILY_CHAR_BUDGET = 4500  # MyMemory miễn phí: 5.000 ký tự/ngày khi không đăng ký
 KEEP_DAYS = 7
 VN = timezone(timedelta(hours=7))
 UA = "Mozilla/5.0 (compatible; crypto-sentiment-collector/1.0; personal research)"
@@ -399,6 +401,62 @@ def aggregate(kept: list) -> dict:
     }
 
 
+# ---------------------------------------------------------------- dịch sang tiếng Việt
+# Sửa các thuật ngữ crypto mà dịch máy hay dịch sai
+VI_FIX = [
+    (r"cuộc biểu tình", "đà tăng"), (r"biểu tình", "đà tăng"), (r"cuộc tăng giá", "đà tăng"),
+    (r"\bgiá thầu\b", "lệnh mua"), (r"thanh lý tài sản", "thanh lý vị thế"), (r"đồng xu", "đồng coin"),
+    (r"\bcá voi\b", "cá voi (nhà đầu tư lớn)"), (r"bò tót", "phe tăng giá"), (r"\bnhững con bò\b", "phe tăng giá"),
+    (r"\bnhững con gấu\b", "phe giảm giá"), (r"dòng chảy ra", "dòng tiền rút ra"), (r"dòng chảy vào", "dòng tiền vào"),
+    (r"\bsàn giao dịch trao đổi\b", "sàn giao dịch"), (r"\bmã thông báo\b", "token"), (r"tiền điện tử ổn định", "stablecoin"),
+]
+
+
+def fix_vi(t: str) -> str:
+    for pat, rep_ in VI_FIX:
+        t = re.sub(pat, rep_, t, flags=re.I)
+    return t
+
+
+def translate_posts(posts: list) -> str:
+    """Dịch tiêu đề các bài nổi bật bằng MyMemory (miễn phí), có bộ nhớ đệm và hạn mức ngày."""
+    try:
+        cache = json.load(open(TRANS_FILE, encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        cache = {}
+    day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    meta = cache.get("_meta", {})
+    used = meta.get("chars", 0) if meta.get("day") == day else 0
+    texts = cache.get("texts", {})
+    status = "ok"
+    for p in posts:
+        src = (p.get("text") or "")[:220]
+        if not src:
+            continue
+        if src in texts:
+            p["vi"] = texts[src]
+            continue
+        if used + len(src) > DAILY_CHAR_BUDGET:
+            status = "hết hạn mức dịch hôm nay"
+            continue
+        try:
+            j = get_json("https://api.mymemory.translated.net/get", params={"q": src, "langpair": "en|vi"})
+            vi = (j.get("responseData") or {}).get("translatedText") or ""
+            used += len(src)
+            if j.get("quotaFinished") or j.get("responseStatus") not in (200, "200") or not vi or vi.upper().startswith("MYMEMORY WARNING"):
+                status = "dịch vụ dịch từ chối: " + str(j.get("responseDetails") or j.get("responseStatus"))[:60]
+                continue
+            p["vi"] = texts[src] = fix_vi(html.unescape(vi))
+            time.sleep(1)
+        except Exception as ex:  # noqa: BLE001
+            status = "lỗi dịch: " + str(ex)[:60]
+    if len(texts) > 400:
+        texts = dict(list(texts.items())[-400:])
+    with open(TRANS_FILE, "w", encoding="utf-8") as f:
+        json.dump({"_meta": {"day": day, "chars": used}, "texts": texts}, f, ensure_ascii=False)
+    return status
+
+
 # ---------------------------------------------------------------- chạy
 def load_items() -> dict:
     out = {}
@@ -455,6 +513,7 @@ def main() -> int:
     if store and with_ai:
         model_status = f"AI + từ điển ({round(100 * with_ai / len(store))}% số bài có điểm AI)" + ("" if not model_status.startswith("từ điển (AI lỗi") else "; lần chạy này AI lỗi")
     agg = aggregate(list(store.values()))
+    agg["translation"] = translate_posts(agg["top_pos"] + agg["top_neg"])
     stamp = datetime.now(timezone.utc)
     latest = {"generated_at": stamp.isoformat(timespec="seconds"), "scoring": model_status, "raw_count": len(raw), "kept_count": len(kept),
               "new_count": len(new), "stored_7d": len(store), "filter_reasons": reasons, "source_status": status,
