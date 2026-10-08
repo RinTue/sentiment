@@ -281,7 +281,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
         <li><b>Thu thập:</b> mỗi giờ, bộ thu thập trên GitHub đọc 8 báo crypto, Reddit, tiêu đề video của 11 kênh YouTube crypto lớn, 4 kênh tin Telegram, Mastodon, Lemmy và Hacker News; cùng dữ liệu thị trường (Fear &amp; Greed, CoinGecko, funding và tỷ lệ long/short của OKX/Hyperliquid, quyền chọn Deribit, Wikipedia, Coinbase, DefiLlama) và số liệu vĩ mô (FRED, Bộ Tài chính Mỹ, Fed New York, Yahoo). Khi bạn mở trang, trình duyệt lấy thêm số liệu trực tiếp từ Bybit, OKX, Deribit, SoSoValue và lịch Investing.com.</li>
         <li><b>Lọc:</b> bỏ bài trùng, bot báo giá, quảng cáo, bài không phải tiếng Anh, bài không nói về crypto, và giới hạn số bài của mỗi tác giả.</li>
         <li><b>Chấm điểm:</b> mỗi bài nhận điểm từ −1 đến +1, kết hợp mô hình AI Twitter RoBERTa với từ điển thuật ngữ crypto (hiểu "rekt", "ATH", "outflows", phủ định…).</li>
-        <li><b>Chỉ số:</b> điểm văn bản (so với lịch sử) kết hợp với Fear &amp; Greed, phiếu cộng đồng, funding, tỷ lệ long/short, quyền chọn và mức chú ý thành chỉ số 0–100. Máy chủ lưu chỉ số mỗi giờ; con số trên đồng hồ được trình duyệt tính lại bằng dữ liệu trực tiếp nên có thể lệch vài điểm so với máy chủ.</li>
+        <li><b>Chỉ số:</b> điểm văn bản (so với lịch sử) kết hợp với Fear &amp; Greed, phiếu cộng đồng, funding, tỷ lệ long/short, quyền chọn và mức chú ý thành chỉ số 0–100. Máy chủ tính và lưu chỉ số mỗi giờ; trang dùng đúng con số đó (cùng số với tin Telegram). Chỉ khi máy chủ chưa cập nhật quá 2 giờ, trang mới tự tính lại bằng dữ liệu trực tiếp.</li>
         <li><b>Nhận định và cảnh báo:</b> các quy tắc cố định chuyển số liệu thành câu chữ. Nếu đã cài Telegram, máy chủ gửi bản tin mỗi sáng, cảnh báo khi tâm lý vào vùng cực đoan, funding bất thường và nhắc trước số liệu vĩ mô cấp 1 (tối đa 3 cảnh báo thị trường mỗi ngày).</li>
       </ol>
       <p>Giới hạn: chưa đọc được X (Twitter) và các nhóm chat Telegram, nơi phần lớn đám đông crypto lên tiếng (kênh Telegram và YouTube mới phản ánh giọng điệu của người có ảnh hưởng); trọng số và ngưỡng do con người đặt, chưa được kiểm chứng bằng dữ liệu của chính chỉ số này (mới kiểm chứng Fear &amp; Greed); nguồn miễn phí có thể đổi hoặc chặn bất cứ lúc nào. Đây là công cụ tham khảo, không phải lời khuyên đầu tư.</p>
@@ -646,6 +646,12 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     return { z: (last.reduce((a, b) => a + b, 0) / 3 - m) / sd, last: v.at(-1), mean: m };
   }
   function composite() {
+    // Ưu tiên số của máy chủ khi còn mới (dưới 2 giờ) để trang và tin Telegram luôn cùng một con số.
+    const sc = S.mkt && S.mkt.composite;
+    if (sc && sc.value != null && sc.parts && sc.parts.length >= 4 && S.svAge != null && S.svAge < 2 * 3600e3) {
+      return { value: sc.value, weight: sc.weight, server: true, at: Date.parse(S.sv.L.generated_at),
+        parts: sc.parts.map((p) => Object.assign({}, p, { raw: String(p.raw).replace(/(\d)\.(\d)/g, "$1,$2"), note: p.note })) };
+    }
     const C = [];
     const add = (name, raw, v, w, note) => { if (v != null && isFinite(v)) C.push({ name, raw, v: clamp(v), w, note }); };
     const hist = store.get("tamly-history", []);
@@ -1098,7 +1104,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     }
     renderIndex(ci); renderText(); renderVerdict(ci); renderHistory();
     const ref = refPoint(), last = S.sv && S.sv.comp && S.sv.comp.at(-1);
-    $("ci-change").textContent = [ref && ci.value != null ? `${ci.value - ref.c >= 0 ? "+" : ""}${ci.value - ref.c} điểm so với ${fmtTime(ref.t)}` : "", last ? `máy chủ tính ${last.value} lúc ${fmtTime(last.t)}` : ""].filter(Boolean).join(" · ");
+    $("ci-change").textContent = [ref && ci.value != null ? `${ci.value - ref.c >= 0 ? "+" : ""}${ci.value - ref.c} điểm so với ${fmtTime(ref.t)}` : "",
+      ci.server ? `máy chủ tính lúc ${fmtTime(ci.at)}, cùng số với tin Telegram` : last ? `tính trực tiếp trên trình duyệt; máy chủ tính ${last.value} lúc ${fmtTime(last.t)}` : "tính trực tiếp trên trình duyệt"].filter(Boolean).join(" · ");
   }
 
   let busy = false;

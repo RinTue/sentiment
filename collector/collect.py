@@ -60,7 +60,9 @@ TELEGRAM = ["WatcherGuru", "cointelegraph", "bitcoinmagazinetelegram", "wublockc
 PHRASES = [("to the moon", 2), ("all-time high", 2), ("all time high", 2), ("new high", 1.5), ("record high", 1.6),
            ("buy the dip", 1.2), ("short squeeze", 1), ("long squeeze", -1), ("below support", -1.2), ("above resistance", 1.2),
            ("lost everything", -2.4), ("sell-off", -1.8), ("sell off", -1.8), ("rug pull", -2.2), ("hot cpi", -1),
-           ("going up", 1), ("going down", -1)]
+           ("going up", 1), ("going down", -1), ("bull trap", -2.2), ("bear trap", 1.8), ("dead cat bounce", -1.8),
+           ("short liquidations", 1.2), ("shorts liquidated", 1.2), ("shorts got liquidated", 1.2), ("long liquidations", -1.2),
+           ("longs liquidated", -1.2), ("longs got liquidated", -1.2), ("we're so back", 2), ("so back", 1.5), ("it's so over", -2), ("so over", -1.5)]
 WORDS = {
     "bullish": 2, "bull": 1.2, "bulls": 1.2, "moon": 1.8, "mooning": 2, "pump": 1.2, "pumping": 1.5, "pumped": 1.2, "rally": 1.5,
     "rallies": 1.5, "rallying": 1.5, "surge": 1.8, "surges": 1.8, "surging": 1.8, "soar": 1.8, "soars": 1.8, "soaring": 1.8,
@@ -96,26 +98,39 @@ NEG = {"not", "no", "never", "isn't", "wasn't", "aren't", "don't", "doesn't", "d
        "without", "nor", "isnt", "dont", "doesnt", "didnt", "wont", "cant"}
 
 
+NOT_NEGATORS = re.compile(r"\b(no doubt|no wonder|not only|no matter|not just|nothing but|never been better|can't wait|cannot wait)\b")
+
+
+def _neg_before(clause: str, pos: int) -> bool:
+    """Có từ phủ định trong 4 từ đứng trước vị trí pos, cùng một vế câu (không vượt dấu phẩy, chấm)."""
+    before = [b.replace("’", "'") for b in re.split(r"[^a-z'’-]+", clause[:pos]) if b][-4:]
+    return any(b in NEG for b in before)
+
+
 def lex_score(text: str) -> float:
-    s = (text or "").lower()[:700]
+    s = NOT_NEGATORS.sub(" ", (text or "").lower()[:700])
+    s = re.sub(r"https?://\S+", " ", s)
     total = 0.0
-    for p, w in PHRASES:
-        if p in s:
-            total += w
-            s = s.replace(p, " ")
     for e, w in EMOJI:
         if e in s:
             total += w
-    toks = [t for t in re.split(r"[^a-z'’-]+", re.sub(r"https?://\S+", " ", s)) if t]
     used = set()
-    for i, tk in enumerate(toks):
-        key = tk.replace("’", "'")
-        w = WORDS.get(key)
-        if not w or key in used:
-            continue
-        used.add(key)
-        neg = any(toks[k].replace("’", "'") in NEG for k in range(max(0, i - 3), i))
-        total += -0.7 * w if neg else w
+    for clause in re.split(r"[,.;:!?\n]+|\bbut\b", s):
+        for p, w in PHRASES:
+            i = clause.find(p)
+            if i >= 0 and p not in used:
+                used.add(p)
+                total += -0.7 * w if _neg_before(clause, i) else w   # "never hits a new ATH" là tiêu cực
+                clause = clause.replace(p, " ")
+        toks = [t for t in re.split(r"[^a-z'’-]+", clause) if t]
+        for i, tk in enumerate(toks):
+            key = tk.replace("’", "'")
+            w = WORDS.get(key)
+            if not w or key in used:
+                continue
+            used.add(key)
+            neg = any(toks[k].replace("’", "'") in NEG for k in range(max(0, i - 4), i))
+            total += -0.7 * w if neg else w
     return math.tanh(total / 2.5)
 
 
@@ -412,7 +427,7 @@ def hybrid(ai: float | None, lx: float) -> float:
 
 
 # ---------------------------------------------------------------- tầng 4: tổng hợp
-STOP = set("the a an and or but if then than that this these those there their they them is are was were be been being have has had do does did of to in on for with as at by from about into over after before under between out up down off so not no yes it its it's i you your we our us my me he she his her him what which who whom when where why how all any some more most other such only own same too very can will just should now also like get got one two new would could may might much many even back still well way make made think know see go going said says say really people time year years day days thing things lot good don't im i'm thats that's there's dont doesnt isnt via amp https http www com html week today amid while first post appeared submitted link comments reddit million billion thousand percent according reported report latest since around across continue read october november december january february march april june july august september monday tuesday wednesday thursday friday saturday sunday".split())
+STOP = set("the a an and or but if then than that this these those there their they them is are was were be been being have has had do does did of to in on for with as at by from about into over after before under between out up down off so not no yes it its it's i you your we our us my me he she his her him what which who whom when where why how all any some more most other such only own same too very can will just should now also like get got one two new would could may might much many even back still well way make made think know see go going said says say really people time year years day days thing things lot good don't im i'm thats that's there's dont doesnt isnt via amp https http www com html week today amid while first post appeared submitted link comments reddit magazine next months here just watcher guru breaking video million billion thousand percent according reported report latest since around across continue read october november december january february march april june july august september monday tuesday wednesday thursday friday saturday sunday".split())
 GENERIC = set("bitcoin btc crypto cryptocurrency cryptocurrencies ethereum eth coin coins blockchain price prices market markets news token tokens".split())
 COINS = [("BTC", r"\b(bitcoin|btc|sats?|satoshi)\b"), ("ETH", r"\b(ethereum|eth|ether)\b"), ("SOL", r"\b(solana|sol)\b"), ("XRP", r"\b(xrp|ripple)\b"),
          ("DOGE", r"\b(dogecoin|doge)\b"), ("BNB", r"\b(bnb)\b"), ("ADA", r"\b(cardano|ada)\b"), ("Stablecoin", r"\b(stablecoins?|usdt|usdc|tether)\b")]
@@ -887,6 +902,17 @@ def macro() -> dict:
 
 
 # ---------------------------------------------------------------- chạy
+def stored_ok(x: dict) -> bool:
+    """Áp lại bộ lọc hiện tại cho bài đã lưu từ trước (bộ lọc có thể đã chặt hơn)."""
+    text = x.get("text") or ""
+    if x.get("kind") == "news":
+        return bool(NEWS_CRYPTO.search(text))
+    plain = EMOJI_RE.sub("", re.sub(r"https?://\S+|[#@][\w.]+", "", text))
+    if ascii_ratio(plain) < 0.9 or looks_foreign(plain):
+        return False
+    return bool(RELEVANT.search(text)) and not (NOT_CRYPTO.search(text) and not re.search(r"\b(bitcoin|btc|ethereum|eth|cryptocurrenc)", text, re.I))
+
+
 def load_items() -> dict:
     out = {}
     if os.path.exists(ITEMS_FILE):
@@ -895,8 +921,11 @@ def load_items() -> dict:
                 try:
                     x = json.loads(line)
                     x["text"] = re.sub(r"\s{2,}", " ", BOILER.sub("", x.get("text") or "")).strip()   # dọn bài cũ lưu trước khi có bộ lọc mới
-                    if x.get("kind") == "news" and not NEWS_CRYPTO.search(x["text"]):
+                    if not stored_ok(x):
                         continue
+                    if x.get("s") is not None:   # chấm lại phần từ điển để mọi bài dùng bộ quy tắc mới nhất
+                        x["lex"] = round(lex_score(x["text"]), 4)
+                        x["s"] = round(hybrid(x.get("ai"), x["lex"]), 4)
                     out[x["id"]] = x
                 except json.JSONDecodeError:
                     continue
