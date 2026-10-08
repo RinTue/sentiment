@@ -1,18 +1,18 @@
 {
- "generated_at": "2026-10-08T15:42:14+00:00",
+ "generated_at": "2026-10-08T15:52:34+00:00",
  "scoring": "AI + từ điển (100% số bài có điểm AI)",
- "raw_count": 1435,
- "kept_count": 514,
- "new_count": 95,
- "stored_7d": 472,
+ "raw_count": 1385,
+ "kept_count": 487,
+ "new_count": 102,
+ "stored_7d": 478,
  "filter_reasons": {
-  "không liên quan crypto": 226,
+  "không liên quan crypto": 238,
   "bot / báo giá tự động": 183,
-  "trùng lặp": 288,
+  "trùng lặp": 269,
   "không phải tiếng Anh": 128,
   "quảng cáo / rao bán": 17,
-  "quá ngắn": 15,
-  "cùng tác giả quá nhiều": 64
+  "quá ngắn": 12,
+  "cùng tác giả quá nhiều": 51
  },
  "source_status": {
   "CoinDesk": 25,
@@ -24,10 +24,10 @@
   "NewsBTC": 10,
   "CryptoPotato": 36,
   "r/CryptoCurrency": 50,
-  "r/Bitcoin": 50,
+  "r/Bitcoin": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/Bitcoin/ne",
   "r/ethereum": 50,
-  "r/CryptoMarkets": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/CryptoMark",
-  "r/BitcoinMarkets": 50,
+  "r/CryptoMarkets": 50,
+  "r/BitcoinMarkets": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/BitcoinMar",
   "#bitcoin": 120,
   "#btc": 120,
   "#crypto": 120,
@@ -54,32 +54,32 @@
   "TG @bitcoinmagazinetelegram": 18,
   "TG @wublockchainenglish": 20
  },
- "runtime_sec": 220.7,
+ "runtime_sec": 225.1,
  "all": {
-  "score": 0.0468,
+  "score": 0.0342,
   "index": 52,
-  "n": 212,
-  "pos": 34.9,
-  "neg": 25.5,
-  "neu": 39.6
+  "n": 218,
+  "pos": 33.9,
+  "neg": 26.6,
+  "neu": 39.4
  },
  "news": {
-  "score": 0.0511,
-  "index": 53,
-  "n": 113,
-  "pos": 31.9,
-  "neg": 22.1,
-  "neu": 46.0
+  "score": 0.0399,
+  "index": 52,
+  "n": 117,
+  "pos": 30.8,
+  "neg": 23.1,
+  "neu": 46.2
  },
  "social": {
-  "score": 0.041,
-  "index": 52,
-  "n": 99,
-  "pos": 38.4,
-  "neg": 29.3,
-  "neu": 32.3
+  "score": 0.0265,
+  "index": 51,
+  "n": 101,
+  "pos": 37.6,
+  "neg": 30.7,
+  "neu": 31.7
  },
- "trend": -0.0015,
+ "trend": -0.0141,
  "window_hours": 24,
  "daily": [
   {
@@ -114,20 +114,20 @@
   },
   {
    "date": "2026-10-08",
-   "n": 198,
-   "score": 0.0433
+   "n": 204,
+   "score": 0.03
   }
  ],
  "sources": [
   {
    "src": "Tin tức",
-   "n": 113,
-   "score": 0.0511
+   "n": 117,
+   "score": 0.0399
   },
   {
    "src": "Telegram",
-   "n": 34,
-   "score": 0.0844
+   "n": 36,
+   "score": 0.0382
   },
   {
    "src": "Reddit",
@@ -162,22 +162,30 @@
   ],
   [
    "digital",
-   19
+   20
   ],
   [
    "bank",
-   16
+   17
   ],
   [
    "wallet",
-   15
+   16
   ],
   [
    "trading",
-   14
+   15
   ],
   [
    "asset",
+   14
+  ],
+  [
+   "money",
+   13
+  ],
+  [
+   "funds",
    13
   ],
   [
@@ -185,42 +193,34 @@
    13
   ],
   [
+   "custody",
+   12
+  ],
+  [
    "stablecoin",
    12
   ],
   [
-   "money",
+   "data",
    12
-  ],
-  [
-   "funds",
-   12
-  ],
-  [
-   "custody",
-   11
-  ],
-  [
-   "quantum",
-   11
-  ],
-  [
-   "addresses",
-   11
   ],
   [
    "solana",
+   12
+  ],
+  [
+   "quantum",
    11
   ]
  ],
  "coins": [
   [
    "BTC",
-   105
+   110
   ],
   [
    "ETH",
-   33
+   35
   ],
   [
    "Stablecoin",
@@ -228,7 +228,7 @@
   ],
   [
    "SOL",
-   13
+   15
   ],
   [
    "XRP",
@@ -310,6 +310,24 @@
    "vi": "Một làn sóng rủi ro bất ngờ đã xóa sạch hàng chục tỷ đô la định giá tài sản kỹ thuật số vào thứ ba, với token Uni của Uniswap giảm hai con số ngay cả khi các dự án liên kết với Solana bất chấp sự trượt giá. # Crypto # Bitcoin https://www. loopwir"
   },
   {
+   "src": "Tin tức",
+   "outlet": "CryptoSlate",
+   "t": 1791474034000,
+   "s": -0.742,
+   "text": "Bitcoin ETFs suffer biggest exodus since June as Ethereum withdrawals hit nine-month high",
+   "url": "https://cryptoslate.com/bitcoin-etfs-suffer-biggest-exodus-since-june-as-ethereum-withdrawals-hit-nine-month-high/",
+   "vi": "Các quỹ ETF Bitcoin phải chịu cuộc di cư lớn nhất kể từ tháng 6 khi việc rút tiền Ethereum đạt mức cao nhất trong chín tháng"
+  },
+  {
+   "src": "Telegram",
+   "outlet": "@wublockchainenglish",
+   "t": 1791474686000,
+   "s": -0.797,
+   "text": "ETH Falls Below $2,500 as Global 24-Hour Liquidations Reach $759 Million According to Binance market data, ETH fell below $2,500 at 15:18 on October 8 and is currently trading at $2,467.88, representing a 24-hour decline of 3.64%. BTC is cu",
+   "url": "https://t.me/wublockchainenglish/26332",
+   "vi": "ETH giảm xuống dưới $ 2.500 khi Thanh khoản 24 giờ toàn cầu đạt $ 759 triệu Theo dữ liệu thị trường Binance, ETH giảm xuống dưới $ 2.500 vào lúc 15:18 ngày 8 tháng 10 và hiện đang giao dịch ở mức $ 2.467,88, thể hiện mức giảm 24 giờ"
+  },
+  {
    "src": "YouTube",
    "outlet": "The Moon Show",
    "t": 1791473850000,
@@ -317,24 +335,6 @@
    "text": "BITCOIN: THIS IS SCARY! [CRASH IS COMING]",
    "url": "https://www.youtube.com/watch?v=4ueYVbSvkx0",
    "vi": "BITCOIN: ĐIỀU NÀY THẬT ĐÁNG SỢ! [CRASH IS COMING]"
-  },
-  {
-   "src": "Tin tức",
-   "outlet": "CoinDesk",
-   "t": 1791419724000,
-   "s": -0.614,
-   "text": "Crypto news site Cointelegraph seeks buyer after web traffic plunges",
-   "url": "https://www.coindesk.com/business/2026/10/07/crypto-news-site-cointelegraph-seeks-buyer-after-web-traffic-plunges",
-   "vi": "Trang web tin tức tiền điện tử Cointelegraph tìm kiếm người mua sau khi lưu lượng truy cập web giảm mạnh"
-  },
-  {
-   "src": "Tin tức",
-   "outlet": "CryptoSlate",
-   "t": 1791448815000,
-   "s": -0.609,
-   "text": "Vitalik Buterin urges calm as AI raises new fears over Bitcoin and Ethereum cryptography security",
-   "url": "https://cryptoslate.com/vitalik-buterin-urges-calm-as-ai-raises-new-fears-over-bitcoin-and-ethereum-cryptography-security/",
-   "vi": "Vitalik Buterin kêu gọi bình tĩnh khi AI làm dấy lên những lo ngại mới về bảo mật mật mã hóa Bitcoin và Ethereum"
   }
  ],
  "translation": "ok",
@@ -1852,7 +1852,7 @@
    "cls": "Greed",
    "d7": -10
   },
-  "votes": 59.3,
+  "votes": 60.29,
   "funding": {
    "src": "OKX",
    "last": -1.6852889759e-06,
@@ -1860,10 +1860,10 @@
    "n": 270
   },
   "ls": {
-   "buy": 0.6364,
+   "buy": 0.6401,
    "src": "OKX"
   },
-  "pc": 0.584,
+  "pc": 0.586,
   "wiki": {
    "z": -0.45,
    "last": 2199
@@ -1874,7 +1874,7 @@
     {
      "key": "text",
      "name": "Giọng điệu tin tức và mạng xã hội",
-     "raw": "+0.05 (212 bài)",
+     "raw": "+0.03 (218 bài)",
      "v": 52,
      "w": 25,
      "note": "điểm tuyệt đối",
@@ -1892,8 +1892,8 @@
     {
      "key": "votes",
      "name": "Phiếu cộng đồng CoinGecko",
-     "raw": "59.3% tăng",
-     "v": 48.2,
+     "raw": "60.3% tăng",
+     "v": 50.7,
      "w": 10,
      "note": "40% → 0, 80% → 100",
      "src": "CoinGecko"
@@ -1911,7 +1911,7 @@
      "key": "ls",
      "name": "Tài khoản đang long",
      "raw": "64%",
-     "v": 67.5,
+     "v": 68.6,
      "w": 10,
      "note": "40% → 0, 75% → 100 (OKX)",
      "src": "OKX"
@@ -1938,10 +1938,10 @@
    "weight": 110
   },
   "premium": {
-   "last": 0.0197,
-   "avg24": -0.0666,
+   "last": -0.0329,
+   "avg24": -0.0688,
    "ref": "OKX",
-   "avg7d": -0.0279,
+   "avg7d": -0.0282,
    "series": [
     [
      1790870400000,
@@ -2613,31 +2613,31 @@
     ],
     [
      1791471600000,
-     0.0197
+     -0.0329
     ]
    ]
   },
   "btc": {
-   "price": 81243.32,
-   "ch24": -2.61
+   "price": 81373.23,
+   "ch24": -2.45
   },
   "drivers": {
    "windows": {
     "24": {
-     "dp": -2.61,
-     "doi": 0.63,
+     "dp": -2.45,
+     "doi": 0.29,
      "spot_net": 0.8,
      "perp_net": -1.9,
      "spot_btc": 63.7,
      "perp_usd": -141532780,
-     "prem": -0.066,
+     "prem": -0.068,
      "code": "liq_dn",
      "label": "Long bị thanh lý, short mới vào",
      "why": "Long bị thanh lý gấp nhiều lần short, kéo giá xuống; open interest không giảm vì phe short mở thêm vị thế. Spot: trên OKX gần như cân bằng, phía Mỹ đang bán (Coinbase Premium âm)."
     },
     "72": {
-     "dp": -4.7,
-     "doi": 7.51,
+     "dp": -4.55,
+     "doi": 7.15,
      "spot_net": -1.0,
      "perp_net": -3.7,
      "spot_btc": -205.1,
@@ -3036,7 +3036,7 @@
      ],
      [
       1791471600000,
-      81243
+      81373
      ]
     ],
     "oi": [
@@ -3426,7 +3426,7 @@
      ],
      [
       1791471600000,
-      30862.2
+      30758.6
      ]
     ],
     "cvd_spot": [
@@ -4043,10 +4043,119 @@
     ]
    },
    "liq": {
-    "long": 30875588,
-    "short": 2063488,
-    "hours": 24.0
+    "long": 30179855,
+    "short": 1986303,
+    "hours": 23.9,
+    "series": [
+     [
+      1791385200000,
+      0,
+      8200
+     ],
+     [
+      1791388800000,
+      0,
+      296810
+     ],
+     [
+      1791392400000,
+      447548,
+      5579
+     ],
+     [
+      1791399600000,
+      0,
+      142
+     ],
+     [
+      1791403200000,
+      2999,
+      325255
+     ],
+     [
+      1791406800000,
+      7852,
+      0
+     ],
+     [
+      1791421200000,
+      7135,
+      0
+     ],
+     [
+      1791424800000,
+      598813,
+      0
+     ],
+     [
+      1791428400000,
+      928456,
+      0
+     ],
+     [
+      1791432000000,
+      2139029,
+      32771
+     ],
+     [
+      1791435600000,
+      0,
+      31188
+     ],
+     [
+      1791439200000,
+      46188,
+      0
+     ],
+     [
+      1791442800000,
+      0,
+      558494
+     ],
+     [
+      1791446400000,
+      54337,
+      0
+     ],
+     [
+      1791450000000,
+      1367,
+      265
+     ],
+     [
+      1791453600000,
+      394098,
+      0
+     ],
+     [
+      1791457200000,
+      10000164,
+      13021
+     ],
+     [
+      1791460800000,
+      710875,
+      0
+     ],
+     [
+      1791464400000,
+      1507328,
+      90444
+     ],
+     [
+      1791468000000,
+      0,
+      541190
+     ],
+     [
+      1791471600000,
+      13333668,
+      82944
+     ]
+    ]
    },
+   "liq_src": "okx",
+   "oi_src": "OKX",
    "funding_pct": 7.8
   },
   "stable": {
@@ -4909,7 +5018,7 @@
    },
    "days": 3167
   },
-  "runtime_sec": 13.5
+  "runtime_sec": 16.8
  },
  "alerts": {
   "configured": true,
@@ -4965,9 +5074,9 @@
    }
   },
   "live": {
-   "n": 212,
-   "index_current": 53,
-   "index_cryptobert": 63,
+   "n": 218,
+   "index_current": 52,
+   "index_cryptobert": 62,
    "agree": 50,
    "examples": [
     {
@@ -4996,7 +5105,7 @@
     }
    ]
   },
-  "updated": "2026-10-08T15:43:05Z",
-  "runtime_sec": 4.7
+  "updated": "2026-10-08T15:53:32Z",
+  "runtime_sec": 6.4
  }
 }
