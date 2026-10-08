@@ -1,18 +1,18 @@
 {
- "generated_at": "2026-10-08T14:17:41+00:00",
+ "generated_at": "2026-10-08T14:29:26+00:00",
  "scoring": "AI + từ điển (100% số bài có điểm AI)",
- "raw_count": 1150,
- "kept_count": 364,
- "new_count": 54,
- "stored_7d": 383,
+ "raw_count": 1384,
+ "kept_count": 493,
+ "new_count": 176,
+ "stored_7d": 456,
  "filter_reasons": {
-  "không liên quan crypto": 111,
-  "bot / báo giá tự động": 181,
-  "không phải tiếng Anh": 124,
-  "quảng cáo / rao bán": 16,
-  "trùng lặp": 284,
-  "quá ngắn": 5,
-  "cùng tác giả quá nhiều": 65
+  "không phải tiếng Anh": 126,
+  "trùng lặp": 264,
+  "không liên quan crypto": 216,
+  "bot / báo giá tự động": 180,
+  "quảng cáo / rao bán": 17,
+  "quá ngắn": 15,
+  "cùng tác giả quá nhiều": 73
  },
  "source_status": {
   "CoinDesk": 25,
@@ -24,10 +24,10 @@
   "NewsBTC": 10,
   "CryptoPotato": 36,
   "r/BitcoinMarkets": 50,
-  "r/CryptoCurrency": 50,
-  "r/Bitcoin": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/Bitcoin/ne",
-  "r/ethereum": 50,
-  "r/CryptoMarkets": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/CryptoMark",
+  "r/CryptoCurrency": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/CryptoCurr",
+  "r/Bitcoin": 50,
+  "r/ethereum": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/ethereum/n",
+  "r/CryptoMarkets": 50,
   "#bitcoin": 120,
   "#btc": 120,
   "#crypto": 120,
@@ -37,82 +37,102 @@
   "Lemmy crypto": 100,
   "HN bitcoin": 17,
   "HN cryptocurrency": 5,
-  "HN ethereum": 2
+  "HN ethereum": 2,
+  "YT Coin Bureau": 15,
+  "YT Altcoin Daily": 15,
+  "YT Benjamin Cowen": 15,
+  "YT Crypto Banter": 15,
+  "YT Lark Davis": 15,
+  "YT InvestAnswers": 15,
+  "YT DataDash": 15,
+  "YT Bankless": 15,
+  "YT The Moon Show": 15,
+  "YT Crypto Zombie": 15,
+  "YT Paul Barron Network": 15,
+  "TG @WatcherGuru": 17,
+  "TG @cointelegraph": 15,
+  "TG @bitcoinmagazinetelegram": 17,
+  "TG @wublockchainenglish": 20
  },
- "runtime_sec": 206.4,
+ "runtime_sec": 193.9,
  "all": {
-  "score": 0.0323,
-  "index": 52,
-  "n": 176,
-  "pos": 36.4,
-  "neg": 27.3,
-  "neu": 36.4
+  "score": 0.062,
+  "index": 53,
+  "n": 209,
+  "pos": 37.8,
+  "neg": 24.4,
+  "neu": 37.8
  },
  "news": {
-  "score": 0.0497,
-  "index": 52,
-  "n": 120,
-  "pos": 35.8,
-  "neg": 25.0,
-  "neu": 39.2
+  "score": 0.0566,
+  "index": 53,
+  "n": 113,
+  "pos": 34.5,
+  "neg": 23.0,
+  "neu": 42.5
  },
  "social": {
-  "score": -0.0053,
-  "index": 50,
-  "n": 56,
-  "pos": 37.5,
-  "neg": 32.1,
-  "neu": 30.4
+  "score": 0.0693,
+  "index": 53,
+  "n": 96,
+  "pos": 41.7,
+  "neg": 26.0,
+  "neu": 32.3
  },
- "trend": 0.0563,
+ "trend": 0.034,
  "window_hours": 24,
  "daily": [
   {
    "date": "2026-10-02",
-   "n": 15,
-   "score": 0.0319
+   "n": 20,
+   "score": 0.0345
   },
   {
    "date": "2026-10-03",
-   "n": 18,
-   "score": -0.0816
+   "n": 20,
+   "score": -0.0561
   },
   {
    "date": "2026-10-04",
-   "n": 11,
-   "score": 0.0338
+   "n": 12,
+   "score": 0.0604
   },
   {
    "date": "2026-10-05",
-   "n": 14,
-   "score": -0.0309
+   "n": 18,
+   "score": 0.0154
   },
   {
    "date": "2026-10-06",
-   "n": 53,
-   "score": 0.0336
+   "n": 61,
+   "score": 0.0809
   },
   {
    "date": "2026-10-07",
-   "n": 118,
-   "score": -0.0161
+   "n": 140,
+   "score": 0.0377
   },
   {
    "date": "2026-10-08",
-   "n": 151,
-   "score": 0.0136
+   "n": 180,
+   "score": 0.0404
   }
  ],
  "sources": [
   {
    "src": "Tin tức",
-   "n": 120,
-   "score": 0.0497
+   "n": 113,
+   "score": 0.0566
   },
   {
    "src": "Reddit",
-   "n": 31,
-   "score": 0.2554
+   "n": 33,
+   "score": 0.2517
+  },
+  {
+   "src": "Telegram",
+   "n": 32,
+   "score": 0.1378
   },
   {
    "src": "Mastodon",
@@ -128,86 +148,91 @@
    "src": "Hacker News",
    "n": 6,
    "score": -0.2231
+  },
+  {
+   "src": "YouTube",
+   "n": 6,
+   "score": 0.2235
   }
  ],
  "keywords": [
   [
-   "assets",
-   18
-  ],
-  [
-   "wallet",
-   13
-  ],
-  [
-   "stablecoin",
-   12
-  ],
-  [
-   "next",
-   12
-  ],
-  [
    "magazine",
-   12
+   23
+  ],
+  [
+   "assets",
+   23
   ],
   [
    "digital",
-   12
-  ],
-  [
-   "institutional",
-   11
+   18
   ],
   [
    "bank",
-   11
+   16
   ],
   [
-   "money",
-   11
+   "next",
+   14
   ],
   [
-   "investors",
-   10
+   "institutional",
+   14
   ],
   [
-   "quantum",
-   10
+   "wallet",
+   14
   ],
   [
-   "here",
-   10
+   "stablecoin",
+   13
+  ],
+  [
+   "months",
+   13
+  ],
+  [
+   "asset",
+   13
+  ],
+  [
+   "trading",
+   12
   ],
   [
    "funds",
-   10
+   12
   ],
   [
-   "solana",
-   9
+   "supply",
+   11
+  ],
+  [
+   "treasury",
+   11
   ]
  ],
  "coins": [
   [
    "BTC",
-   80
+   101
   ],
   [
    "ETH",
-   26
+   32
   ],
   [
    "Stablecoin",
-   22
+   24
   ],
   [
    "SOL",
-   10
+   11
   ],
   [
    "XRP",
-   5
+   6
   ],
   [
    "BNB",
@@ -215,7 +240,7 @@
   ],
   [
    "ADA",
-   1
+   2
   ]
  ],
  "top_pos": [
@@ -285,15 +310,6 @@
    "vi": "Nhà nghiên cứu Ethereum Justin Drake kêu gọi chuyển dần sang các địa chỉ ví mới, cảnh báo toán học hỗ trợ AI có thể đe dọa ECDSA sớm hơn dự kiến. Buterin đồng ý về rủi ro, thận trọng trước sự hoảng loạn. Chưa có cuộc tấn công nào"
   },
   {
-   "src": "Lemmy",
-   "outlet": "lemmy.world",
-   "t": 1791400259557,
-   "s": -0.807,
-   "text": "Also, crypto and blockchain has an ENORMOUS negative ecological and energetic impact; I think that AIs are worse on that, but I'd still say that if AIs are the number one, cryptos are the number two. And then you have the worst part: incel ",
-   "url": "https://scribe.disroot.org/comment/13471973",
-   "vi": "Ngoài ra, tiền điện tử và blockchain có tác động tiêu cực RẤT LỚN đến sinh thái và năng lượng; Tôi nghĩ rằng AI còn tệ hơn thế, nhưng tôi vẫn nói rằng nếu AI là số một, tiền điện tử là số hai. Và sau đó bạn có"
-  },
-  {
    "src": "Mastodon",
    "outlet": "#bitcoin",
    "t": 1791400312735,
@@ -303,13 +319,22 @@
    "vi": "Một làn sóng rủi ro bất ngờ đã xóa sạch hàng chục tỷ đô la định giá tài sản kỹ thuật số vào thứ ba, với token Uni của Uniswap giảm hai con số ngay cả khi các dự án liên kết với Solana bất chấp sự trượt giá. # Crypto # Bitcoin https://www. loopwir"
   },
   {
-   "src": "Lemmy",
-   "outlet": "lemmy.world",
-   "t": 1791400504031,
-   "s": -0.919,
-   "text": "The investors that pissed their money away on these scams owe a duty of care to their clients. That doesn’t mean I feel any pity for the stupid fuckers that fell for the scams. And this whole Generative AI scam was a scam, just like NFTs an",
-   "url": "https://aussie.zone/comment/25341987",
-   "vi": "Các nhà đầu tư đã bỏ tiền của họ vào những trò gian lận này có nghĩa vụ chăm sóc khách hàng của họ. Điều đó không có nghĩa là tôi cảm thấy thương hại cho những kẻ ngu ngốc đã rơi vào những trò gian lận. Và toàn bộ trò lừa đảo Generative AI này là một trò lừa đảo"
+   "src": "Tin tức",
+   "outlet": "CoinDesk",
+   "t": 1791419724000,
+   "s": -0.614,
+   "text": "Crypto news site Cointelegraph seeks buyer after web traffic plunges",
+   "url": "https://www.coindesk.com/business/2026/10/07/crypto-news-site-cointelegraph-seeks-buyer-after-web-traffic-plunges",
+   "vi": "Trang web tin tức tiền điện tử Cointelegraph tìm kiếm người mua sau khi lưu lượng truy cập web giảm mạnh"
+  },
+  {
+   "src": "Tin tức",
+   "outlet": "CryptoSlate",
+   "t": 1791448815000,
+   "s": -0.609,
+   "text": "Vitalik Buterin urges calm as AI raises new fears over Bitcoin and Ethereum cryptography security",
+   "url": "https://cryptoslate.com/vitalik-buterin-urges-calm-as-ai-raises-new-fears-over-bitcoin-and-ethereum-cryptography-security/",
+   "vi": "Vitalik Buterin kêu gọi bình tĩnh khi AI làm dấy lên những lo ngại mới về bảo mật mật mã hóa Bitcoin và Ethereum"
   }
  ],
  "translation": "ok",
@@ -675,9 +700,9 @@
      },
      {
       "name": "Chỉ số USD (DXY)",
-      "value": 102.2509994506836,
+      "value": 102.2040023803711,
       "unit": "",
-      "ch": 3.45,
+      "ch": 3.4,
       "chLabel": "1 tháng",
       "src": "Yahoo (DXY)"
      }
@@ -1049,7 +1074,7 @@
     },
     "notes": [
      "lợi suất thực tăng 49 điểm cơ bản trong tháng",
-     "USD mạnh lên 3,5% trong tháng"
+     "USD mạnh lên 3,4% trong tháng"
     ],
     "label": "Bất lợi"
    },
@@ -1060,25 +1085,25 @@
     "items": [
      {
       "name": "VIX",
-      "value": 15.470000267028809,
+      "value": 15.380000114440918,
       "unit": "",
-      "ch": -0.2,
+      "ch": -0.3,
       "chLabel": "điểm, 1 tháng",
       "src": "Yahoo"
      },
      {
       "name": "Quỹ trái phiếu rủi ro cao (HYG)",
-      "value": 77.13999938964844,
+      "value": 77.125,
       "unit": " $",
-      "ch": -2.5,
+      "ch": -2.52,
       "chLabel": "1 tháng",
       "src": "Yahoo"
      },
      {
       "name": "USD/JPY",
-      "value": 158.10499572753906,
+      "value": 158.06300354003906,
       "unit": "",
-      "ch": 3.01,
+      "ch": 2.99,
       "chLabel": "1 tháng",
       "src": "Yahoo"
      }
@@ -1424,12 +1449,12 @@
       ],
       [
        1791417600000,
-       15.47
+       15.38
       ]
      ]
     },
     "notes": [
-     "VIX ở 15,5",
+     "VIX ở 15,4",
      "trái phiếu rủi ro cao bị bán, HYG giảm 2,5% trong tháng"
     ],
     "label": "Bất lợi"
@@ -1441,21 +1466,21 @@
     "items": [
      {
       "name": "Nasdaq 100",
-      "value": 31024.849609375,
+      "value": 31118.599609375,
       "unit": "",
-      "ch": 5.1,
+      "ch": 5.5,
       "chLabel": "1 tháng",
-      "ch2": 1.7,
+      "ch2": 2.0,
       "ch2Label": "1 tuần",
       "src": "Yahoo"
      },
      {
       "name": "Bitcoin",
-      "value": 82406.890625,
+      "value": 82683.1796875,
       "unit": " $",
-      "ch": 5.1,
+      "ch": 5.4,
       "chLabel": "1 tháng",
-      "ch2": -2.9,
+      "ch2": -2.6,
       "ch2Label": "1 tuần",
       "src": "Yahoo"
      },
@@ -1720,7 +1745,7 @@
       ],
       [
        1791417600000,
-       122.22
+       122.59
       ]
      ],
      "series2": [
@@ -1966,7 +1991,7 @@
       ],
       [
        1791417600000,
-       112.8
+       113.18
       ]
      ]
     },
@@ -1990,7 +2015,7 @@
    "cls": "Greed",
    "d7": -10
   },
-  "votes": 59.18,
+  "votes": 59.8,
   "funding": {
    "src": "OKX",
    "last": -1.6852889759e-06,
@@ -1998,10 +2023,10 @@
    "n": 270
   },
   "ls": {
-   "buy": 0.6376,
+   "buy": 0.6362,
    "src": "OKX"
   },
-  "pc": 0.585,
+  "pc": 0.586,
   "wiki": {
    "z": -0.45,
    "last": 2199
@@ -2012,8 +2037,8 @@
     {
      "key": "text",
      "name": "Giọng điệu tin tức và mạng xã hội",
-     "raw": "+0.03 (176 bài)",
-     "v": 52,
+     "raw": "+0.06 (209 bài)",
+     "v": 53,
      "w": 25,
      "note": "điểm tuyệt đối",
      "src": "máy chủ"
@@ -2030,8 +2055,8 @@
     {
      "key": "votes",
      "name": "Phiếu cộng đồng CoinGecko",
-     "raw": "59.2% tăng",
-     "v": 48.0,
+     "raw": "59.8% tăng",
+     "v": 49.5,
      "w": 10,
      "note": "40% → 0, 80% → 100",
      "src": "CoinGecko"
@@ -2049,7 +2074,7 @@
      "key": "ls",
      "name": "Tài khoản đang long",
      "raw": "64%",
-     "v": 67.9,
+     "v": 67.5,
      "w": 10,
      "note": "40% → 0, 75% → 100 (OKX)",
      "src": "OKX"
@@ -2058,7 +2083,7 @@
      "key": "pc",
      "name": "Put/call quyền chọn",
      "raw": "0.59",
-     "v": 69.1,
+     "v": 69.0,
      "w": 10,
      "note": "càng thấp càng chủ quan",
      "src": "Deribit"
@@ -2076,10 +2101,10 @@
    "weight": 110
   },
   "premium": {
-   "last": 0.0076,
-   "avg24": -0.0661,
+   "last": -0.2222,
+   "avg24": -0.0757,
    "ref": "OKX",
-   "avg7d": -0.0278,
+   "avg7d": -0.0292,
    "series": [
     [
      1790866800000,
@@ -2751,13 +2776,13 @@
     ],
     [
      1791468000000,
-     0.0076
+     -0.2222
     ]
    ]
   },
   "btc": {
-   "price": 82491.58,
-   "ch24": -0.58
+   "price": 82562.22,
+   "ch24": -0.49
   },
   "stable": {
    "total": 312.3,
@@ -3619,14 +3644,94 @@
    },
    "days": 3167
   },
-  "runtime_sec": 2.4
+  "runtime_sec": 2.6
  },
  "alerts": {
   "configured": true,
-  "sent": [
-   "welcome",
-   "brief"
-  ],
+  "sent": [],
   "skipped": []
+ },
+ "model_compare": {
+  "eval_hash": "fe0269ec11b6",
+  "eval": {
+   "Từ điển": {
+    "acc": 79,
+    "dir_ok": 70,
+    "wrong_dir": 3,
+    "n": 75,
+    "by": {
+     "pos": 60,
+     "neg": 80,
+     "neu": 96
+    }
+   },
+   "Đang dùng: Twitter RoBERTa + từ điển": {
+    "acc": 87,
+    "dir_ok": 90,
+    "wrong_dir": 1,
+    "n": 75,
+    "by": {
+     "pos": 84,
+     "neg": 96,
+     "neu": 80
+    }
+   },
+   "CryptoBERT": {
+    "acc": 59,
+    "dir_ok": 72,
+    "wrong_dir": 2,
+    "n": 75,
+    "by": {
+     "pos": 88,
+     "neg": 56,
+     "neu": 32
+    }
+   },
+   "CryptoBERT + từ điển": {
+    "acc": 76,
+    "dir_ok": 92,
+    "wrong_dir": 0,
+    "n": 75,
+    "by": {
+     "pos": 92,
+     "neg": 92,
+     "neu": 44
+    }
+   }
+  },
+  "live": {
+   "n": 208,
+   "index_current": 54,
+   "index_cryptobert": 63,
+   "agree": 52,
+   "examples": [
+    {
+     "src": "Telegram",
+     "text": "Ethereum Researcher Warns AI Could Break Crypto Wallet Security Before Quantum Computers Do Ethereum Foundation researcher Justin Drake urged the crypto industry to prepare for \"bunker mode,\" warning that advances in AI ",
+     "current": -0.74,
+     "cryptobert": 0.23
+    },
+    {
+     "src": "Telegram",
+     "text": "✖️ Bitcoin Magazine JUST IN: The supply of Bitcoin available on exchanges has declined to its lowest level in 7 months. 👀 BTC is becoming more scarce, plan accordingly! 🚀",
+     "current": -0.26,
+     "cryptobert": 0.68
+    },
+    {
+     "src": "Hacker News",
+     "text": "I am mad about payment processors censoring transactions. they displace neutral forms of money like cash or cryptocurrency",
+     "current": -0.62,
+     "cryptobert": 0.3
+    },
+    {
+     "src": "Tin tức",
+     "text": "Crypto industry split over Justin Drake’s AI warning. Crypto players disagree over Justin Drake’s AI cryptography warning, with some dismissing it while others urge proactive preparation.",
+     "current": -0.47,
+     "cryptobert": 0.43
+    }
+   ]
+  },
+  "updated": "2026-10-08T14:31:27Z",
+  "runtime_sec": 83.2
  }
 }

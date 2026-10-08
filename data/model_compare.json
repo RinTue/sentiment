@@ -1,0 +1,83 @@
+{
+ "eval_hash": "fe0269ec11b6",
+ "eval": {
+  "Từ điển": {
+   "acc": 79,
+   "dir_ok": 70,
+   "wrong_dir": 3,
+   "n": 75,
+   "by": {
+    "pos": 60,
+    "neg": 80,
+    "neu": 96
+   }
+  },
+  "Đang dùng: Twitter RoBERTa + từ điển": {
+   "acc": 87,
+   "dir_ok": 90,
+   "wrong_dir": 1,
+   "n": 75,
+   "by": {
+    "pos": 84,
+    "neg": 96,
+    "neu": 80
+   }
+  },
+  "CryptoBERT": {
+   "acc": 59,
+   "dir_ok": 72,
+   "wrong_dir": 2,
+   "n": 75,
+   "by": {
+    "pos": 88,
+    "neg": 56,
+    "neu": 32
+   }
+  },
+  "CryptoBERT + từ điển": {
+   "acc": 76,
+   "dir_ok": 92,
+   "wrong_dir": 0,
+   "n": 75,
+   "by": {
+    "pos": 92,
+    "neg": 92,
+    "neu": 44
+   }
+  }
+ },
+ "live": {
+  "n": 208,
+  "index_current": 54,
+  "index_cryptobert": 63,
+  "agree": 52,
+  "examples": [
+   {
+    "src": "Telegram",
+    "text": "Ethereum Researcher Warns AI Could Break Crypto Wallet Security Before Quantum Computers Do Ethereum Foundation researcher Justin Drake urged the crypto industry to prepare for \"bunker mode,\" warning that advances in AI ",
+    "current": -0.74,
+    "cryptobert": 0.23
+   },
+   {
+    "src": "Telegram",
+    "text": "✖️ Bitcoin Magazine JUST IN: The supply of Bitcoin available on exchanges has declined to its lowest level in 7 months. 👀 BTC is becoming more scarce, plan accordingly! 🚀",
+    "current": -0.26,
+    "cryptobert": 0.68
+   },
+   {
+    "src": "Hacker News",
+    "text": "I am mad about payment processors censoring transactions. they displace neutral forms of money like cash or cryptocurrency",
+    "current": -0.62,
+    "cryptobert": 0.3
+   },
+   {
+    "src": "Tin tức",
+    "text": "Crypto industry split over Justin Drake’s AI warning. Crypto players disagree over Justin Drake’s AI cryptography warning, with some dismissing it while others urge proactive preparation.",
+    "current": -0.47,
+    "cryptobert": 0.43
+   }
+  ]
+ },
+ "updated": "2026-10-08T14:31:27Z",
+ "runtime_sec": 83.2
+}
