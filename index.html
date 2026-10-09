@@ -188,6 +188,10 @@ details.method summary { cursor: pointer; font-weight: 600; }
 .chips.liq-src span.dot { padding: 0; width: 9px; height: 9px; border-radius: 50%; }
 #liq-win .kpi .l { font-weight: 600; }
 .feed div span:nth-child(2) { color: var(--ink-3); }
+.evlist { display: grid; gap: 0; }
+.evrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); align-items: start; }
+.evx { text-align: right; font-family: var(--mono); font-size: .9rem; white-space: nowrap; }
+.evtbl td { vertical-align: top; }
 .nextev { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; font-size: .92rem; }
 .nextev.soon { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
 .nextev svg { width: 20px; height: 20px; flex: none; color: var(--ink-3); }
@@ -229,6 +233,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
     <button type="button" role="tab" data-tab="crowd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg><span>Đám đông</span></button>
     <button type="button" role="tab" data-tab="money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6 -6l4 4l8 -8"/><path d="M14 7l7 0l0 7"/></svg><span>Dòng tiền</span></button>
     <button type="button" role="tab" data-tab="macro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/></svg><span>Vĩ mô và lịch</span></button>
+    <button type="button" role="tab" data-tab="events"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/></svg><span>Sự kiện</span></button>
     <button type="button" role="tab" data-tab="method"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9h.01"/><path d="M11 12h1v4h1"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/></svg><span>Cách tính</span></button>
   </nav>
 
@@ -370,6 +375,15 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <div class="legend"><span><span class="tier t1">CẤP 1</span>Có thể làm BTC biến động mạnh trong vài phút</span><span><span class="imp high">Cao</span><span class="imp medium">Vừa</span>Mức quan trọng theo Investing.com</span></div>
       <div id="cal-box"><p class="loading">Đang tải lịch…</p></div>
       <p class="note">"Tốt cho USD" nghĩa là số liệu khiến USD mạnh lên (lạm phát cao, việc làm mạnh…), thường bất lợi cho crypto trong ngắn hạn. Xem thêm: <a href="https://www.investing.com/economic-calendar/" target="_blank" rel="noopener">Investing.com</a>, <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener">Forex Factory</a>.</p>
+    </section>
+  </div>
+
+  <!-- ================= SỰ KIỆN ================= -->
+  <div class="tabpanel" data-panel="events" role="tabpanel" hidden>
+    <section class="panel">
+      <h2>Số liệu vĩ mô Mỹ tác động BTC ra sao</h2>
+      <p class="note" style="margin:0 0 12px">Với mỗi lần công bố CPI, NFP, lãi suất Fed, PCE, PPI, bán lẻ, GDP từ 2022: lấy giá BTC (Coinbase) ngay trước giờ công bố, so với sau 15 phút, 1 giờ, 24 giờ, và so với mức dao động bình thường. Lịch công bố lấy từ FRED; kết quả "tốt hay xấu cho USD" so với dự báo lấy từ Investing.com.</p>
+      <div id="ev-box"><p class="loading">Đang tải…</p></div>
     </section>
   </div>
 
@@ -1305,8 +1319,89 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     }
   }
 
+  /* ---------- Tab Sự kiện: số liệu vĩ mô tác động BTC ra sao ---------- */
+  // Máy chủ đo phản ứng giá; trình duyệt lấy kết quả thực tế/dự báo từ Investing.com (máy chủ bị chặn) rồi ghép theo nhóm + ngày.
+  const EV_RE = { cpi: [/^Core CPI \(MoM\)/, /^CPI \(MoM\)/], nfp: [/^Nonfarm Payrolls/], pce: [/^Core PCE Price Index \(MoM\)/, /^PCE Price index \(MoM\)/i], ppi: [/^PPI \(MoM\)/, /^Core PPI \(MoM\)/],
+    retail: [/^Retail Sales \(MoM\)/, /^Core Retail Sales \(MoM\)/], gdp: [/^GDP \(QoQ\)/], fed: [/^Fed Interest Rate Decision/] };
+  const EVH = { map: null, loading: false, err: null };
+  function evKeyOf(name, iso) {
+    for (const [g, res] of Object.entries(EV_RE)) for (let i = 0; i < res.length; i++) if (res[i].test(name)) return [g + "|" + iso.slice(0, 10), i];
+    return null;
+  }
+  async function loadEvHistory() {
+    if (EVH.loading || EVH.map) return; EVH.loading = true;
+    const base = "https://endpoints.investing.com/pd-instruments/v1/calendars/economic/events/occurrences?domain_id=1&limit=200&country_ids=5&importance=high";
+    const map = {}, now = Date.now();
+    try {
+      for (let q = Date.UTC(2022, 0, 1); q < now; ) {
+        const d = new Date(q), e = Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 3, 1), key = "tamly-evq-" + new Date(q).toISOString().slice(0, 7);
+        let rows = e < now - 45 * 864e5 ? store.get(key, null) : null;
+        if (!rows) {
+          const j = await getJSON(`${base}&start_date=${new Date(q).toISOString().slice(0, 19)}Z&end_date=${new Date(Math.min(e, now + 30 * 864e5)).toISOString().slice(0, 19)}Z`);
+          const names = {}; (j.events || []).forEach((x) => { names[x.event_id] = x.event_translated || x.short_name || ""; });
+          rows = (j.occurrences || []).map((o) => ({ n: names[o.event_id] || "", t: o.occurrence_time, a: o.actual, f: o.forecast, p: o.previous, atf: o.actual_to_forecast })).filter((o) => evKeyOf(o.n, o.t));
+          if (e < now - 45 * 864e5) store.set(key, rows);
+        }
+        rows.forEach((o) => { const k = evKeyOf(o.n, o.t); if (!k) return; const cur = map[k[0]]; if (!cur || k[1] < cur.rank) map[k[0]] = { rank: k[1], name: o.n, actual: o.a, forecast: o.f, previous: o.p, atf: o.a == null ? null : o.atf }; });
+        q = e;
+      }
+      EVH.map = map;
+    } catch (e) { EVH.err = e.message || "lỗi"; }
+    EVH.loading = false;
+    try { renderEvents(); } catch (e) { console.error(e); }
+  }
+  function renderEvents() {
+    const E = S.sv && S.sv.L.events, box = $("ev-box");
+    if (!E || E.error || !E.groups) { box.innerHTML = `<div class="msg">${E && E.error ? "Bộ thu thập báo lỗi phần sự kiện: " + esc(E.error) : S.sv ? "Bộ thu thập sẽ tính phần này từ lần chạy tới." : "Phần này do bộ thu thập trên GitHub tính."}</div>`; return; }
+    if (!EVH.map && !EVH.loading && !EVH.err) loadEvHistory();
+    const M = EVH.map || {};
+    const sgn = (v, d = 2) => v == null ? "–" : `<span class="${v > 0 ? "up" : v < 0 ? "down" : ""}">${pct(v, d)}</span>`;
+    const dt = (iso) => fmtEvent(Date.parse(iso));
+    const surprise = (a) => a === "positive" ? `<span class="res neg">Tốt cho USD</span>` : a === "negative" ? `<span class="res pos">Xấu cho USD</span>` : a === "neutral" ? `<span class="res">Sát dự báo</span>` : `<span class="note" style="margin:0">–</span>`;
+    const af = (x) => !x ? "" : x.actual != null ? `${x.actual}${x.forecast != null ? ` (dự báo ${x.forecast})` : ""}` : x.forecast != null ? `dự báo ${x.forecast}` : "";
+    const rows = (E.all || []).map(([key, r15, r60, r24, xn]) => { const [g, t] = key.split("|"); return { key, g, t, r15, r60, r24, xn, inv: M[g + "|" + t.slice(0, 10)] || null }; });
+    const gname = Object.fromEntries(E.groups.map((g) => [g.g, g.name]));
+    // thống kê theo chiều bất ngờ
+    const dir = (g, side) => {
+      const sel = rows.filter((r) => r.g === g && r.inv && r.inv.atf === side && r.r60 != null);
+      if (!sel.length) return null;
+      const want = side === "positive" ? (v) => v < 0 : (v) => v > 0;
+      const avg = (a) => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+      const s24 = sel.filter((r) => r.r24 != null);
+      return { n: sel.length, avg60: avg(sel.map((r) => r.r60)), hit60: Math.round(100 * sel.filter((r) => want(r.r60)).length / sel.length), avg24: avg(s24.map((r) => r.r24)), hit24: s24.length ? Math.round(100 * s24.filter((r) => want(r.r24)).length / s24.length) : null };
+    };
+    let h = "";
+    if (E.pending > 0) h += `<p class="note" style="margin:0 0 10px">Đang bổ sung dữ liệu từ 2022: đã đo ${E.n_events} lần công bố, còn khoảng ${E.pending} lần sẽ được thêm dần mỗi giờ.</p>`;
+    if (EVH.loading) h += `<p class="note" style="margin:0 0 10px">Đang lấy kết quả thực tế và dự báo từ Investing.com…</p>`;
+    if (EVH.err) h += `<div class="msg" style="margin-bottom:10px">Không lấy được kết quả thực tế/dự báo từ Investing.com (${esc(EVH.err)}); bảng chỉ có mức biến động, chưa tách theo chiều bất ngờ.</div>`;
+    // Sắp tới
+    const cal = S.cal || [];
+    h += `<h3 style="margin-top:0">Sắp tới, 14 ngày</h3>`;
+    h += E.upcoming && E.upcoming.length ? `<div class="evlist">${E.upcoming.map((u) => {
+        const live = cal.find((e) => e.t && Math.abs(e.t - Date.parse(u.t)) < 3 * 3600e3 && evKeyOf(e.en || "", u.t) && evKeyOf(e.en || "", u.t)[0].startsWith(u.g + "|"));
+        const t = live ? live.t : Date.parse(u.t);
+        return `<div class="evrow"><div><b>${esc(u.name)}</b><div class="note" style="margin:2px 0 0">${esc(fmtEvent(t))}${live && live.forecast != null ? ` · dự báo ${esc(fv(live.forecast, live.unit))}` : ""}${live ? "" : " (giờ dự kiến)"}</div></div><div class="evx">${u.abs60 != null ? `thường ±${num(u.abs60, 1)}%<br><span class="note" style="margin:0">trong 1 giờ (${u.n} lần)</span>` : `<span class="note" style="margin:0">chưa đủ dữ liệu</span>`}</div></div>`;
+      }).join("")}</div>` : `<p class="note">Không có số liệu lớn nào trong 14 ngày tới.</p>`;
+    // Bảng thống kê
+    const cell = (o, word) => o ? `${sgn(o.avg60)}<br><span class="note" style="margin:0">${word} ${o.hit60}% số lần · ${o.n} lần</span>` : `<span class="note" style="margin:0">${EVH.map ? "chưa có" : "–"}</span>`;
+    h += `<h3>Mỗi loại số liệu thường làm BTC biến động bao nhiêu</h3><div class="tbl-wrap"><table class="evtbl"><thead><tr><th>Loại</th><th>Số lần</th><th>Biến động<br>1 giờ</th><th>Biến động<br>24 giờ</th><th>Gấp mức<br>bình thường</th><th>Tốt cho USD:<br>BTC sau 1 giờ</th><th>Xấu cho USD:<br>BTC sau 1 giờ</th></tr></thead><tbody>` +
+      E.groups.map((g) => `<tr><td>${esc(g.name)}</td><td class="num">${g.n}</td><td class="num">±${num(g.abs60, 2)}%</td><td class="num">±${num(g.abs24, 1)}%</td><td class="num">${g.x_normal != null ? num(g.x_normal, 1) + " lần" : "–"}</td><td class="num">${cell(dir(g.g, "positive"), "giảm")}</td><td class="num">${cell(dir(g.g, "negative"), "tăng")}</td></tr>`).join("") + `</tbody></table></div>`;
+    h += `<p class="note">Biến động là trung vị của mức thay đổi (bỏ dấu) sau 1 giờ và 24 giờ. "Gấp mức bình thường": biến động giờ đầu so với biến động 1 giờ điển hình trong 24 giờ trước đó; trên 1,5 lần là số liệu đó thật sự làm thị trường giật. "Tốt cho USD" (lạm phát, việc làm cao hơn dự báo…) thường bất lợi cho crypto: cột cho biết BTC trung bình đi thế nào và bao nhiêu % số lần giảm; cột "Xấu cho USD" là bao nhiêu % số lần tăng. Dưới khoảng 15 lần thì chưa nên tin; 50% nghĩa là không có quy luật.</p>`;
+    // Gần đây
+    const recent = rows.slice(-30).reverse();
+    h += `<h3>Các lần công bố gần đây</h3><div class="tbl-wrap"><table class="evtbl"><thead><tr><th>Thời gian</th><th>Số liệu</th><th>Kết quả</th><th>15 phút</th><th>1 giờ</th><th>24 giờ</th></tr></thead><tbody>` +
+      recent.map((r) => `<tr><td>${esc(dt(r.t))}</td><td class="wrap" style="min-width:150px">${esc(gname[r.g] || r.g)}<div class="note" style="margin:0">${esc(r.inv ? r.inv.name + ": " + af(r.inv) : "")}</div></td><td>${surprise(r.inv && r.inv.atf)}</td><td class="num">${sgn(r.r15)}</td><td class="num">${sgn(r.r60)}${r.xn != null ? `<div class="note" style="margin:0">${num(r.xn, 1)}× bình thường</div>` : ""}</td><td class="num">${sgn(r.r24)}</td></tr>`).join("") + `</tbody></table></div>`;
+    // Ngày biến động lớn
+    h += `<h3>Những ngày BTC chạy từ 5%, 12 tháng qua</h3>`;
+    h += E.big_days && E.big_days.length ? `<div class="evlist">${E.big_days.map((b) => `<div class="evrow"><div><b>${b.day.split("-").reverse().join("/")}</b> ${sgn(b.ch, 1)}${b.close ? ` <span class="note" style="margin:0">đóng cửa ${num(b.close)} $</span>` : ""}
+        <div class="note" style="margin:2px 0 0">${b.macro.length ? "Số liệu vĩ mô trong ngày: " + esc(b.macro.join("; ")) : "Không có số liệu vĩ mô lớn trong ngày."}</div>
+        ${b.log ? `<div style="font-size:.86rem;margin-top:3px">${b.log.label ? `Đà giá: <b>${esc(b.log.label)}</b>. ` : ""}${b.log.headline ? `Tin nổi bật: ${b.log.headline.url ? `<a href="${esc(b.log.headline.url)}" target="_blank" rel="noopener">${esc(b.log.headline.text)}</a>` : esc(b.log.headline.text)} (${esc(b.log.headline.src)})` : ""}</div>` : ""}</div></div>`).join("")}</div>` : `<p class="note">Không có ngày nào BTC chạy từ 5% trong 12 tháng qua.</p>`;
+    h += `<p class="note">Từ nay, mỗi khi BTC chạy từ 5% trong 24 giờ, máy chủ ghi lại ngay tin nổi bật và nguyên nhân đà giá lúc đó (không phải gắn nhãn sau khi đã biết kết quả). Ngày không có số liệu vĩ mô nghĩa là nguyên nhân nằm ở chỗ khác: tin riêng của crypto, đòn bẩy, hay chứng khoán.</p>`;
+    box.innerHTML = h;
+  }
+
   /* ---------- Tab ---------- */
-  const TABS = ["overview", "crowd", "money", "macro", "method"];
+  const TABS = ["overview", "crowd", "money", "macro", "events", "method"];
   function showTab(t, scroll) {
     if (!TABS.includes(t)) t = "overview";
     document.querySelectorAll("#tabs button").forEach((b) => { const on = b.dataset.tab === t; b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false"); });
@@ -1409,7 +1504,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       $("p2").textContent = `giữ ${kept.length}, loại ${col.items.length - kept.length}`;
       S.mode = "lex"; ENGINE.score(S.kept, null);
     }
-    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, afterScore];
+    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, renderEvents, afterScore];
     steps.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
     const failed = keys.filter((k) => S.err[k]).map((k) => SRC_NAME[k]).concat(Object.keys(col.errs || {}));
     $("updated").textContent = failed.length ? `Không tải được: ${failed.join(", ")}` : "";

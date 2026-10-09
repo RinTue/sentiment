@@ -1,6 +1,6 @@
 """Nghiên cứu sự kiện: số liệu vĩ mô lớn của Mỹ tác động lên giá BTC ra sao.
 
-- Lịch sử sự kiện (giờ công bố, thực tế, dự báo) lấy từ Investing.com, lưu dần vào data/events_calendar.json.
+- Lịch công bố lấy từ FRED (cần FRED_API_KEY), lưu vào data/events_calendar.json; Fed theo lịch họp FOMC.
 - Với mỗi lần công bố: giá BTC (Coinbase, nến 15 phút) trước và sau 15 phút, 1 giờ, 24 giờ; so với dao động bình thường
   trong 24 giờ trước đó. Kết quả lưu vào data/events.json để không phải tính lại.
 - Nhật ký biến động lớn: ngày BTC đi từ 5% trở lên, kèm sự kiện vĩ mô trong ngày và (từ khi hệ thống chạy) tin nổi bật, nguyên nhân đà giá.
@@ -16,6 +16,7 @@ import time
 from datetime import datetime, timedelta, timezone
 
 import requests
+from zoneinfo import ZoneInfo
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
@@ -26,18 +27,23 @@ UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like 
 START = datetime(2022, 1, 1, tzinfo=timezone.utc)
 MAX_NEW_PER_RUN = 60
 
-# Nhóm sự kiện: (mã, tên tiếng Việt, mẫu tên tiếng Anh, độ ưu tiên khi nhiều tin cùng giờ — số nhỏ là tin chính)
-GROUPS = [
-    ("cpi", "CPI (lạm phát)", r"^Core CPI \(MoM\)|^CPI \(MoM\)|^CPI \(YoY\)|^Core CPI \(YoY\)", 1),
-    ("nfp", "Bảng lương phi nông nghiệp (NFP)", r"^Nonfarm Payrolls|^Unemployment Rate", 1),
-    ("fed", "Fed công bố lãi suất", r"^Fed Interest Rate Decision", 1),
-    ("pce", "PCE (lạm phát Fed theo dõi)", r"^Core PCE Price Index \(MoM\)|^PCE Price index \(MoM\)", 2),
-    ("ppi", "PPI (giá sản xuất)", r"^PPI \(MoM\)|^Core PPI \(MoM\)", 2),
-    ("retail", "Doanh số bán lẻ", r"^Retail Sales \(MoM\)|^Core Retail Sales \(MoM\)", 2),
-    ("gdp", "GDP", r"^GDP \(QoQ\)", 2),
+# Lịch công bố lấy từ FRED (máy chủ GitHub bị Investing.com chặn). Giờ công bố theo thông lệ: 8:30 sáng giờ New York,
+# riêng Fed công bố lãi suất lúc 14:00. Chiều bất ngờ (tốt hay xấu cho USD so với dự báo) do trang web lấy từ Investing.com.
+NY = ZoneInfo("America/New_York")
+GROUPS = [   # (mã, tên tiếng Việt, mã bản tin trên FRED, từ khóa kiểm tra tên bản tin)
+    ("cpi", "CPI (lạm phát)", 10, "consumer price"),
+    ("nfp", "Bảng lương phi nông nghiệp (NFP)", 50, "employment situation"),
+    ("pce", "PCE (lạm phát Fed theo dõi)", 54, "personal income"),
+    ("ppi", "PPI (giá sản xuất)", 46, "producer price"),
+    ("retail", "Doanh số bán lẻ", 9, "retail"),
+    ("gdp", "GDP", 53, "gross domestic product"),
+    ("fed", "Fed công bố lãi suất", None, None),
 ]
-PRIMARY = {"cpi": r"^Core CPI \(MoM\)", "nfp": r"^Nonfarm Payrolls", "fed": r"^Fed Interest Rate", "pce": r"^Core PCE", "ppi": r"^PPI \(MoM\)",
-           "retail": r"^Retail Sales \(MoM\)", "gdp": r"^GDP \(QoQ\)"}
+FOMC = ["2022-01-26", "2022-03-16", "2022-05-04", "2022-06-15", "2022-07-27", "2022-09-21", "2022-11-02", "2022-12-14",
+        "2023-02-01", "2023-03-22", "2023-05-03", "2023-06-14", "2023-07-26", "2023-09-20", "2023-11-01", "2023-12-13",
+        "2024-01-31", "2024-03-20", "2024-05-01", "2024-06-12", "2024-07-31", "2024-09-18", "2024-11-07", "2024-12-18",
+        "2025-01-29", "2025-03-19", "2025-05-07", "2025-06-18", "2025-07-30", "2025-09-17", "2025-10-29", "2025-12-10",
+        "2026-01-28", "2026-03-18", "2026-04-29", "2026-06-17", "2026-07-29", "2026-09-16", "2026-10-28", "2026-12-09"]
 
 
 def _load(path: str, default):
@@ -53,76 +59,53 @@ def _save(path: str, obj) -> None:
         json.dump(obj, f, ensure_ascii=False, separators=(",", ":"))
 
 
-def investing(start: datetime, end: datetime) -> list:
-    """Các lần công bố mức quan trọng cao của Mỹ trong khoảng thời gian, kèm tên sự kiện."""
-    base = "https://endpoints.investing.com/pd-instruments/v1/calendars/economic/events/occurrences"
-    out, cursor = [], None
-    for _ in range(10):
-        params = {"domain_id": 1, "limit": 200, "country_ids": 5, "importance": "high",
-                  "start_date": start.strftime("%Y-%m-%dT%H:%M:%SZ"), "end_date": end.strftime("%Y-%m-%dT%H:%M:%SZ")}
-        if cursor:
-            params["cursor"] = cursor
-        r = requests.get(base, params=params, headers={"User-Agent": UA, "Accept": "application/json", "Origin": "https://www.investing.com",
-                                                       "Referer": "https://www.investing.com/"}, timeout=20)
-        r.raise_for_status()
-        j = r.json()
-        names = {e["event_id"]: (e.get("event_translated") or e.get("short_name") or "") for e in j.get("events", [])}
-        for o in j.get("occurrences", []):
-            out.append({"id": o.get("occurrence_id"), "t": o["occurrence_time"], "name": names.get(o["event_id"], ""), "actual": o.get("actual"),
-                        "forecast": o.get("forecast"), "previous": o.get("previous"), "atf": o.get("actual_to_forecast")})
-        cursor = j.get("next_page_cursor")
-        if not cursor or not j.get("occurrences"):
-            break
-        time.sleep(0.5)
-    return out
+def _utc(day: str, hh: int, mm: int) -> str:
+    d = datetime.strptime(day, "%Y-%m-%d").replace(hour=hh, minute=mm, tzinfo=NY)
+    return d.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def update_calendar(errs: dict) -> list:
-    """Lần đầu tải dần từ 2022 theo từng quý (tối đa 8 quý mỗi lần chạy); lần nào cũng tải lại 45 ngày qua và 30 ngày tới."""
-    cal = _load(CAL_FILE, {"items": {}, "backfilled_to": None})
-    items = cal["items"]
-    now = datetime.now(timezone.utc)
-    edge = now - timedelta(days=45)
-    bf = datetime.fromisoformat(cal["backfilled_to"]) if cal.get("backfilled_to") else START
-    for _ in range(8):
-        if bf >= edge:
-            break
-        b = min(bf + timedelta(days=92), edge)
-        try:
-            for o in investing(bf, b):
-                items[str(o["id"])] = o
-        except Exception as ex:  # noqa: BLE001
-            errs["calendar"] = str(ex)[:120]
-            break
-        bf = b
-        cal["backfilled_to"] = bf.isoformat()
-        time.sleep(0.5)
-    try:
-        for o in investing(edge, now + timedelta(days=30)):
-            items[str(o["id"])] = o
-    except Exception as ex:  # noqa: BLE001
-        errs["calendar"] = str(ex)[:120]
-    _save(CAL_FILE, cal)
-    return list(items.values())
+def fred_release_dates(rid: int, key: str) -> tuple[str, list]:
+    meta = requests.get("https://api.stlouisfed.org/fred/release", params={"release_id": rid, "api_key": key, "file_type": "json"}, timeout=20)
+    meta.raise_for_status()
+    name = (meta.json().get("releases") or [{}])[0].get("name", "")
+    r = requests.get("https://api.stlouisfed.org/fred/release/dates",
+                     params={"release_id": rid, "api_key": key, "file_type": "json", "realtime_start": START.strftime("%Y-%m-%d"),
+                             "realtime_end": "9999-12-31", "include_release_dates_with_no_data": "true", "limit": 1000}, timeout=20)
+    r.raise_for_status()
+    return name, [x["date"] for x in r.json().get("release_dates", [])]
 
 
-def releases(cal: list) -> list:
-    """Gộp các tin cùng nhóm, cùng giờ thành một lần công bố; lấy chiều bất ngờ theo tin chính."""
-    by_key: dict = {}
-    for o in cal:
-        g = next((g for g in GROUPS if re.search(g[2], o["name"] or "")), None)
-        if not g:
-            continue
-        key = f"{g[0]}|{o['t']}"
-        by_key.setdefault(key, {"g": g[0], "name": g[1], "t": o["t"], "items": []})["items"].append(o)
-    out = []
-    for r in by_key.values():
-        prim = next((o for o in r["items"] if re.search(PRIMARY[r["g"]], o["name"])), r["items"][0])
-        r["atf"] = prim.get("atf") if prim.get("actual") is not None else None
-        r["detail"] = [{"name": o["name"], "actual": o.get("actual"), "forecast": o.get("forecast"), "previous": o.get("previous")} for o in r["items"]]
-        r["key"] = f"{r['g']}|{r['t']}"
-        out.append(r)
-    return sorted(out, key=lambda r: r["t"])
+def schedule(errs: dict) -> list:
+    """Danh sách các lần công bố (quá khứ và sắp tới), lưu lại để lần sau không phải hỏi FRED nếu FRED lỗi."""
+    cal = _load(CAL_FILE, {"items": [], "saved": 0})
+    key = os.environ.get("FRED_API_KEY", "").strip()
+    if key and time.time() - cal.get("saved", 0) > 6 * 3600:
+        items = []
+        for code, name, rid, kw in GROUPS:
+            if rid is None:
+                items += [{"g": code, "name": name, "t": _utc(d, 14, 0)} for d in FOMC]
+                continue
+            try:
+                rname, dates = fred_release_dates(rid, key)
+                if kw not in rname.lower():
+                    errs["fred_" + code] = f"mã {rid} là '{rname}'"
+                    continue
+                items += [{"g": code, "name": name, "t": _utc(d, 8, 30)} for d in dates if d >= START.strftime("%Y-%m-%d")]
+            except Exception as ex:  # noqa: BLE001
+                errs["fred_" + code] = str(ex)[:100]
+            time.sleep(0.3)
+        if items:
+            cal = {"items": items, "saved": time.time()}
+            _save(CAL_FILE, cal)
+    elif not cal["items"]:
+        cal["items"] = [{"g": "fed", "name": "Fed công bố lãi suất", "t": _utc(d, 14, 0)} for d in FOMC]
+    seen, out = set(), []
+    for x in cal["items"]:
+        k = f"{x['g']}|{x['t']}"
+        if k not in seen:
+            seen.add(k)
+            out.append(dict(x, key=k))
+    return sorted(out, key=lambda x: x["t"])
 
 
 def coinbase_15m(t0: int, t1: int) -> list:
@@ -161,26 +144,12 @@ def reaction(t: int) -> dict | None:
 
 
 def stats(rows: list) -> dict:
-    def avg(v):
-        v = [x for x in v if x is not None]
-        return round(sum(v) / len(v), 2) if v else None
     def med(v):
         v = [x for x in v if x is not None]
         return round(statistics.median(v), 2) if v else None
-    out = {"n": len(rows), "abs60": med([abs(r["re"]["r60"]) for r in rows if r["re"]["r60"] is not None]),
-           "range60": med([r["re"]["range60"] for r in rows]), "x_normal": med([r["re"]["x_normal"] for r in rows])}
-    for side, lab in (("positive", "usd_up"), ("negative", "usd_dn")):
-        sel = [r for r in rows if r.get("atf") == side and r["re"]["r60"] is not None]
-        if not sel:
-            out[lab] = {"n": 0}
-            continue
-        # "positive" = tốt cho USD, thường bất lợi cho crypto: đếm số lần BTC giảm; "negative" thì đếm số lần tăng.
-        hit60 = sum(1 for r in sel if (r["re"]["r60"] < 0) == (side == "positive"))
-        hit24 = sum(1 for r in sel if r["re"]["r24"] is not None and (r["re"]["r24"] < 0) == (side == "positive"))
-        n24 = sum(1 for r in sel if r["re"]["r24"] is not None)
-        out[lab] = {"n": len(sel), "avg60": avg([r["re"]["r60"] for r in sel]), "avg24": avg([r["re"]["r24"] for r in sel]),
-                    "hit60": round(100 * hit60 / len(sel)), "hit24": round(100 * hit24 / n24) if n24 else None}
-    return out
+    return {"n": len(rows), "abs60": med([abs(r["re"]["r60"]) for r in rows if r["re"]["r60"] is not None]),
+            "abs24": med([abs(r["re"]["r24"]) for r in rows if r["re"]["r24"] is not None]),
+            "range60": med([r["re"]["range60"] for r in rows]), "x_normal": med([r["re"]["x_normal"] for r in rows])}
 
 
 def log_big_move(latest: dict, store: dict | None) -> None:
@@ -216,7 +185,7 @@ def big_days(rels: list, store_log: dict) -> list:
     by_day = {}
     for r in rels:
         d = r["t"][:10]
-        by_day.setdefault(d, []).append(r["name"] + (" (tốt cho USD)" if r.get("atf") == "positive" else " (xấu cho USD)" if r.get("atf") == "negative" else ""))
+        by_day.setdefault(d, []).append(r["name"])
     logged = {x["day"]: x for x in store_log.get("items", [])}
     out = []
     cutoff = time.time() - 365 * 86400
@@ -236,23 +205,20 @@ def big_days(rels: list, store_log: dict) -> list:
 
 def run(latest: dict, store: dict | None = None) -> dict:
     t0, errs = time.time(), {}
-    cal = update_calendar(errs)
-    rels = releases(cal)
+    rels = schedule(errs)
     done = _load(EV_FILE, {"items": {}})
     items = done["items"]
     now = time.time()
-    todo = [r for r in rels if r["key"] not in items and r.get("atf") is not None
-            and datetime.fromisoformat(r["t"].replace("Z", "+00:00")).timestamp() < now - 25 * 3600]
-    todo.sort(key=lambda r: r["t"], reverse=True)      # tính các lần gần đây trước, phần cũ bổ sung dần mỗi giờ
+    ts_of = lambda r: datetime.fromisoformat(r["t"].replace("Z", "+00:00")).timestamp()  # noqa: E731
+    todo = sorted([r for r in rels if r["key"] not in items and ts_of(r) < now - 25 * 3600], key=lambda r: r["t"], reverse=True)
     n_new = 0
     for r in todo[:MAX_NEW_PER_RUN]:
-        t = int(datetime.fromisoformat(r["t"].replace("Z", "+00:00")).timestamp())
         try:
-            re_ = reaction(t)
+            re_ = reaction(int(ts_of(r)))
         except Exception as ex:  # noqa: BLE001
             errs["coinbase"] = str(ex)[:120]
             break
-        items[r["key"]] = {"g": r["g"], "name": r["name"], "t": r["t"], "atf": r["atf"], "detail": r["detail"], "re": re_}
+        items[r["key"]] = {"key": r["key"], "g": r["g"], "name": r["name"], "t": r["t"], "re": re_}
         n_new += 1
         time.sleep(0.25)
     _save(EV_FILE, done)
@@ -261,24 +227,18 @@ def run(latest: dict, store: dict | None = None) -> dict:
     except Exception as ex:  # noqa: BLE001
         errs["big_move"] = str(ex)[:120]
     ok = [x for x in items.values() if x.get("re")]
-    by_g = {}
-    for x in ok:
-        by_g.setdefault(x["g"], []).append(x)
     groups = []
     for code, name, _, _ in GROUPS:
-        if code in by_g:
-            groups.append({"g": code, "name": name, **stats(by_g[code])})
-    upcoming = []
-    for r in rels:
-        ts = datetime.fromisoformat(r["t"].replace("Z", "+00:00")).timestamp()
-        if now < ts <= now + 14 * 86400:
-            g = next((x for x in groups if x["g"] == r["g"]), None)
-            upcoming.append({"t": r["t"], "g": r["g"], "name": r["name"], "detail": r["detail"],
-                             "abs60": g and g["abs60"], "range60": g and g["range60"], "n": g and g["n"]})
-    recent = sorted(ok, key=lambda x: x["t"], reverse=True)[:30]
-    pending = len([r for r in rels if r["key"] not in items and r.get("atf") is not None])
-    out = {"groups": groups, "upcoming": upcoming[:12], "recent": recent, "big_days": big_days(rels, _load(MOVES_FILE, {"items": []}))[:40],
-           "n_events": len(ok), "pending": pending, "since": min((x["t"] for x in ok), default=None), "errors": errs,
-           "runtime_sec": round(time.time() - t0, 1)}
+        rows = [x for x in ok if x["g"] == code]
+        if rows:
+            groups.append({"g": code, "name": name, **stats(rows)})
+    gmap = {g["g"]: g for g in groups}
+    upcoming = [{"t": r["t"], "g": r["g"], "name": r["name"], "abs60": (gmap.get(r["g"]) or {}).get("abs60"), "n": (gmap.get(r["g"]) or {}).get("n")}
+                for r in rels if now < ts_of(r) <= now + 14 * 86400]
+    # Toàn bộ phản ứng (gọn) để trang ghép với kết quả thực tế/dự báo của Investing.com và tính thống kê theo chiều bất ngờ.
+    all_re = [[x["key"], x["re"]["r15"], x["re"]["r60"], x["re"]["r24"], x["re"]["x_normal"]] for x in sorted(ok, key=lambda x: x["t"])]
+    pending = len([r for r in rels if r["key"] not in items and ts_of(r) < now - 25 * 3600])
+    out = {"groups": groups, "upcoming": upcoming[:12], "all": all_re, "big_days": big_days(rels, _load(MOVES_FILE, {"items": []}))[:40],
+           "n_events": len(ok), "pending": pending, "since": min((x["t"] for x in ok), default=None), "errors": errs, "runtime_sec": round(time.time() - t0, 1)}
     print(f"Sự kiện: {len(ok)} lần công bố đã đo, thêm {n_new}, còn {pending}, lỗi: {list(errs)}, {out['runtime_sec']} giây")
     return out
