@@ -25,7 +25,7 @@ EV_FILE = os.path.join(DATA, "events.json")
 MOVES_FILE = os.path.join(DATA, "big_moves.json")
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 START = datetime(2022, 1, 1, tzinfo=timezone.utc)
-MAX_NEW_PER_RUN = 60
+MAX_NEW_PER_RUN = 400
 
 # Lịch công bố lấy từ FRED (máy chủ GitHub bị Investing.com chặn). Giờ công bố theo thông lệ: 8:30 sáng giờ New York,
 # riêng Fed công bố lãi suất lúc 14:00. Chiều bất ngờ (tốt hay xấu cho USD so với dự báo) do trang web lấy từ Investing.com.
