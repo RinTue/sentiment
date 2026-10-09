@@ -403,6 +403,10 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       </div>
     </section>
     <section class="panel">
+      <h2>Kiểm chứng bằng lịch sử từ 2022: chỉ báo nào thật sự báo trước giá</h2>
+      <div id="ht-box"><p class="loading">Đang tải…</p></div>
+    </section>
+    <section class="panel">
       <h2>Độ tin cậy: Fear &amp; Greed đã báo trước giá BTC ra sao</h2>
       <div id="rel-box"><p class="loading">Đang tải…</p></div>
     </section>
@@ -1293,6 +1297,13 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     else if (liq && DRV_VIEW.w === "24" && (liq.long || liq.short)) f.push(`Thanh lý OKX: short ${usd(liq.short)}, long ${usd(liq.long)}`);
     return f;
   }
+  // Lịch sử từ 2022 của kiểu đà giá này (tính theo ngày ở máy chủ)
+  function drvHist(code) {
+    const H = S.sv && S.sv.L.history_test, x = H && H.drivers ? H.drivers.find((r) => r.code === code) : null;
+    if (!x || x.n < 8 || code === "flat") return "";
+    const B = H.base || {};
+    return `<div class="why" style="margin-top:6px"><b>Lịch sử từ 2022 (${x.n} ngày như vậy):</b> BTC 7 ngày sau tăng ở ${x.up7}% số lần, trung vị ${pct(x.med7, 1)} (mọi ngày: ${B.up7}%, ${pct(B.med7, 1)})${x.cont7 != null ? `; đà ${x.cont7 >= 55 ? "thường tiếp diễn" : x.cont7 <= 45 ? "thường đảo chiều" : "lúc tiếp diễn lúc đảo chiều"} (${x.cont7}% tiếp diễn)` : ""}.${x.n < 20 ? " Mẫu còn nhỏ." : ""}</div>`;
+  }
   function renderDrivers() {
     const D = S.mkt && S.mkt.drivers, box = $("drv-card"), det = $("drv-detail");
     if (!D || !D.windows) {
@@ -1303,7 +1314,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const seg = `<div class="seg" style="margin:0"><button type="button" data-w="24" class="${DRV_VIEW.w === "24" ? "on" : ""}">24 giờ</button><button type="button" data-w="72" class="${DRV_VIEW.w === "72" ? "on" : ""}">3 ngày</button></div>`;
     const facts = drvFacts(d, D.liq).map((x) => `<span>${esc(x)}</span>`).join("");
     box.innerHTML = `<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div class="l"><span class="dot ${DRV_CLS[d.code] || ""}"></span>Đà giá đến từ đâu</div>${seg}</div>
-      <div class="v txt" style="margin-top:4px">${esc(d.label)}</div><div class="why">${esc(d.why)}</div><div class="chips" style="margin-top:8px">${facts}</div>`;
+      <div class="v txt" style="margin-top:4px">${esc(d.label)}</div><div class="why">${esc(d.why)}</div>${drvHist(d.code)}<div class="chips" style="margin-top:8px">${facts}</div>`;
     box.querySelectorAll("button[data-w]").forEach((b) => b.addEventListener("click", () => { DRV_VIEW.w = b.dataset.w; renderDrivers(); }));
     if (!det) return;
     const sr = D.series || {}, dm = (ts) => { const d = new Date(ts + 7 * 3600e3); return `${d.getUTCDate()}/${d.getUTCMonth() + 1} ${String(d.getUTCHours()).padStart(2, "0")}h`; };
@@ -1403,6 +1414,39 @@ if (typeof module !== "undefined") module.exports = ENGINE;
         <div class="note" style="margin:2px 0 0">${b.macro.length ? "Số liệu vĩ mô trong ngày: " + esc(b.macro.join("; ")) : "Không có số liệu vĩ mô lớn trong ngày."}</div>
         ${b.log ? `<div style="font-size:.86rem;margin-top:3px">${b.log.label ? `Đà giá: <b>${esc(b.log.label)}</b>. ` : ""}${b.log.headline ? `Tin nổi bật: ${b.log.headline.url ? `<a href="${esc(b.log.headline.url)}" target="_blank" rel="noopener">${esc(b.log.headline.text)}</a>` : esc(b.log.headline.text)} (${esc(b.log.headline.src)})` : ""}</div>` : ""}</div></div>`).join("")}</div>` : `<p class="note">Không có ngày nào BTC chạy từ 5% trong 12 tháng qua.</p>`;
     h += `<p class="note">Từ nay, mỗi khi BTC chạy từ 5% trong 24 giờ, máy chủ ghi lại ngay tin nổi bật và nguyên nhân đà giá lúc đó (không phải gắn nhãn sau khi đã biết kết quả). Ngày không có số liệu vĩ mô nghĩa là nguyên nhân nằm ở chỗ khác: tin riêng của crypto, đòn bẩy, hay chứng khoán.</p>`;
+    box.innerHTML = h;
+  }
+
+  /* ---------- Kiểm chứng bằng lịch sử ---------- */
+  function renderHistTest() {
+    const H = S.sv && S.sv.L.history_test, box = $("ht-box");
+    if (!box) return;
+    if (!H || H.error || !H.factors) { box.innerHTML = `<div class="msg">${H && H.error ? "Bộ thu thập báo lỗi: " + esc(H.error) : "Bộ thu thập sẽ tính phần này ở lần chạy tới (mỗi ngày một lần)."}</div>`; return; }
+    const B = H.base || {};
+    const sgn = (v, d = 1) => v == null ? "–" : `<span class="${v > 0 ? "up" : v < 0 ? "down" : ""}">${pct(v, d)}</span>`;
+    const verdict = (f) => {
+      // So nhóm thấp nhất và cao nhất với mốc mọi ngày (chênh từ 5 điểm % mới tính); mẫu dưới 30 ngày ghi rõ.
+      const side = (b, word) => {
+        if (!b || !b.n || b.up30 == null) return null;
+        const d = b.up30 - B.up30, small = b.n < 30 ? " (mẫu nhỏ)" : "";
+        return d >= 5 ? `${word} thường đi trước giá tăng${small}` : d <= -5 ? `${word} thường đi trước giá yếu${small}` : null;
+      };
+      const out = [side(f.bins[0], "mức thấp"), side(f.bins[4], "mức cao")].filter(Boolean);
+      return out.length ? out.join("; ") : "gần như không báo trước được giá";
+    };
+    const bin = (b) => b && b.n ? `${b.up30}% tăng · ${sgn(b.med30)}<div class="evsub">${b.n} ngày</div>` : "–";
+    let h = `<p style="margin:0 0 10px">Từ ${H.start.split("-").reverse().join("/")}, mốc so sánh: BTC tăng sau 30 ngày ở <b>${B.up30}%</b> số ngày, trung vị ${sgn(B.med30)}. Một chỉ báo có ích khi nhóm thấp và nhóm cao của nó khác hẳn mốc này.</p>`;
+    h += `<div class="tbl-wrap"><table class="evtbl"><thead><tr><th>Chỉ báo</th><th>Tương quan với<br>BTC 30 ngày sau</th><th>Nhóm thấp nhất<br>(0–20)</th><th>Nhóm cao nhất<br>(80–100)</th><th>Kết luận</th></tr></thead><tbody>` +
+      H.factors.map((f) => `<tr${f.key === "composite" ? ' style="background:var(--accent-bg)"' : ""}><td class="wrap" style="min-width:170px">${esc(f.name)}</td><td class="num">${f.rho30 == null ? "–" : num(f.rho30, 2)}</td><td class="num">${bin(f.bins[0])}</td><td class="num">${bin(f.bins[4])}</td><td class="wrap" style="min-width:160px">${esc(verdict(f))}</td></tr>`).join("") + `</tbody></table></div>`;
+    h += `<details class="more" style="margin-top:10px"><summary>Xem đủ 5 nhóm của từng chỉ báo</summary>` + H.factors.map((f) => `<h3>${esc(f.name)}</h3><div class="tbl-wrap"><table class="evtbl"><thead><tr><th>Mức</th><th>Số ngày</th><th>Tăng sau 7 ngày</th><th>Trung vị 7 ngày</th><th>Tăng sau 30 ngày</th><th>Trung vị 30 ngày</th></tr></thead><tbody>` +
+      f.bins.map((b) => `<tr><td>${b.lo}–${b.hi}</td><td class="num">${b.n}</td><td class="num">${b.up7 == null ? "–" : b.up7 + "%"}</td><td class="num">${sgn(b.med7)}</td><td class="num">${b.up30 == null ? "–" : b.up30 + "%"}</td><td class="num">${sgn(b.med30)}</td></tr>`).join("") + `</tbody></table></div>`).join("") + `</details>`;
+    h += `<p class="note">Mỗi chỉ báo được đổi về thang 0–100 chỉ bằng dữ liệu trước ngày đó (không nhìn trước tương lai). Tương quan từ −1 đến 1; dưới ±0,05 coi như không có quan hệ. Các ngày liền nhau cho kết quả giống nhau nên con số trông chắc hơn thực tế; thị trường 2022–2026 cũng chỉ là một giai đoạn. Chưa kiểm chứng được giọng điệu văn bản, phiếu CoinGecko, Stocktwits vì không có lịch sử miễn phí.</p>`;
+    if (H.drivers && H.drivers.length) {
+      h += `<h3>Các kiểu đà giá, tính lại cho từng ngày từ 2022</h3><div class="tbl-wrap"><table class="evtbl"><thead><tr><th>Kiểu</th><th>Số ngày</th><th>BTC ngày hôm sau</th><th>BTC 7 ngày sau</th><th>Tăng sau 7 ngày</th><th>Đà tiếp diễn<br>sau 7 ngày</th></tr></thead><tbody>` +
+        H.drivers.map((d) => `<tr><td class="wrap" style="min-width:170px">${esc(d.label)}</td><td class="num">${d.n}</td><td class="num">${sgn(d.med1, 2)}</td><td class="num">${sgn(d.med7)}</td><td class="num">${d.up7}%</td><td class="num">${d.cont7 == null ? "–" : d.cont7 + "%"}</td></tr>`).join("") +
+        `<tr style="border-top:2px solid var(--line)"><td>Mọi ngày (mốc)</td><td class="num">${B.n}</td><td class="num">–</td><td class="num">${sgn(B.med7)}</td><td class="num">${B.up7}%</td><td class="num">–</td></tr></tbody></table></div>`;
+      h += `<p class="note">Theo ngày: giá đổi từ 3% và open interest tổng (Binance, Bybit, OKX) đổi từ 2% mới được xếp kiểu. "Đà tiếp diễn" là tỷ lệ BTC 7 ngày sau vẫn đi cùng chiều ngày hôm đó; dưới 50% nghĩa là kiểu này thường đảo chiều. Chưa có số liệu mua bán chủ động spot theo lịch sử nên kiểu "mua spot dẫn dắt" chỉ dựa vào Coinbase Premium.</p>`;
+    }
     box.innerHTML = h;
   }
 
@@ -1510,7 +1554,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       $("p2").textContent = `giữ ${kept.length}, loại ${col.items.length - kept.length}`;
       S.mode = "lex"; ENGINE.score(S.kept, null);
     }
-    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, renderEvents, afterScore];
+    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, renderEvents, renderHistTest, afterScore];
     steps.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
     const failed = keys.filter((k) => S.err[k]).map((k) => SRC_NAME[k]).concat(Object.keys(col.errs || {}));
     $("updated").textContent = failed.length ? `Không tải được: ${failed.join(", ")}` : "";
