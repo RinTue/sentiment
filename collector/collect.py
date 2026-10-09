@@ -1095,6 +1095,12 @@ def main() -> int:
         latest["market"] = {"error": str(ex)[:200]}
         print("Lỗi chỉ số tổng hợp:", ex, file=sys.stderr)
     try:
+        import events
+        latest["events"] = events.run(latest, store)
+    except Exception as ex:  # noqa: BLE001
+        latest["events"] = {"error": str(ex)[:200]}
+        print("Lỗi phần sự kiện:", ex, file=sys.stderr)
+    try:
         import alerts
         latest["alerts"] = alerts.run(latest)
     except Exception as ex:  # noqa: BLE001
