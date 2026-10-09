@@ -179,6 +179,15 @@ details.method summary { cursor: pointer; font-weight: 600; }
 .kpi .v { font-family: var(--mono); font-size: 1.45rem; font-weight: 500; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .kpi .v.txt { font-family: var(--font); font-weight: 700; font-size: 1.2rem; }
 .kpi .s { font-size: .8rem; color: var(--ink-3); }
+.kpi.fav .row { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 3px; }
+.kpi.fav .big { font-family: var(--mono); font-size: 1.9rem; font-weight: 500; }
+.kpi.fav .big small { font-size: .9rem; color: var(--ink-3); }
+.kpi.fav .zl { padding: 1px 10px; border-radius: 8px; font-weight: 700; font-size: .9rem; }
+.kpi.fav .zl.pos { background: var(--good-bg); color: var(--good); } .kpi.fav .zl.neg { background: var(--bad-bg); color: var(--bad); } .kpi.fav .zl.mid { background: var(--neutral-bg); color: var(--ink-2); }
+.kpi.fav .why { font-size: .9rem; color: var(--ink-2); margin-top: 4px; }
+.kpi.fav .trust { margin-top: 8px; font-size: .85rem; padding: 6px 10px; border-radius: 8px; }
+.kpi.fav .trust.ok { background: var(--good-bg); color: var(--good); } .kpi.fav .trust.no { background: var(--warn-bg); color: var(--warn); }
+.kpi.fav .chips span { font-size: .78rem; }
 .kpi.drv .why { font-size: .9rem; color: var(--ink-2); margin-top: 2px; }
 .kpi.drv .chips span { font-family: var(--mono); font-size: .76rem; }
 .kpi.drv .seg button { padding: 4px 10px; font-size: .78rem; }
@@ -258,6 +267,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
     </section>
     <div class="msg" id="ov-liq-alert" hidden style="font-weight:600"></div>
     <div class="kpis" id="kpis"></div>
+    <div class="kpi fav" id="fav-card"><div class="l"><span class="dot"></span>Điểm thuận lợi (theo lịch sử)</div><div class="s">Đang tải…</div></div>
     <div class="kpi drv" id="drv-card"><div class="l"><span class="dot"></span>Đà giá đến từ đâu</div><div class="s">Đang tải…</div></div>
     <div class="nextev" id="next-ev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/></svg><span>Đang tải lịch kinh tế…</span></div>
     <section class="panel">
@@ -1418,6 +1428,56 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   }
 
   /* ---------- Kiểm chứng bằng lịch sử ---------- */
+  /* ---------- Điểm thuận lợi: học 2022–2024, kiểm tra 2025–nay ---------- */
+  // Đánh giá trung thực: chỉ coi là "đứng vững" nếu trên giai đoạn kiểm tra (quy tắc chưa từng thấy) nhóm Thuận lợi tăng nhiều hơn nhóm Bất lợi rõ rệt.
+  function favorCheck(F) {
+    const t = F && F.test; if (!t) return null;
+    const lo = t[0], hi = t[2], all = t[3];
+    if (!lo || !hi || !all || lo.up30 == null || hi.up30 == null || lo.n < 30 || hi.n < 30) return { ok: false, gap: null, msg: "Giai đoạn kiểm tra còn quá ít ngày để đánh giá." };
+    const gap = hi.up30 - lo.up30, ok = gap >= 10 && hi.up30 >= all.up30 + 3 && (hi.med30 ?? 0) > (lo.med30 ?? 0);
+    return { ok, gap, msg: ok
+      ? `Đã kiểm tra trên dữ liệu ${F.split.slice(0, 4)}–nay (quy tắc chưa từng thấy): ngày Thuận lợi BTC tăng sau 30 ngày ${hi.up30}% số lần, ngày Bất lợi ${lo.up30}%.`
+      : `Chưa đứng vững trên dữ liệu ${F.split.slice(0, 4)}–nay: ngày Thuận lợi tăng sau 30 ngày ${hi.up30}% số lần, ngày Bất lợi ${lo.up30}% (mọi ngày ${all.up30}%). Chỉ nên xem để tham khảo.` };
+  }
+  function renderFavor() {
+    const box = $("fav-card"); if (!box) return;
+    const H = S.sv && S.sv.L.history_test, F = H && H.favor;
+    const head = (cls) => `<div class="l"><span class="dot ${cls || ""}"></span>Điểm thuận lợi (theo lịch sử)</div>`;
+    if (!F) { box.innerHTML = head() + `<div class="s">${S.sv ? "Bộ thu thập sẽ tính điểm này ở lần chạy tới (mỗi ngày một lần)." : "Phần này do bộ thu thập trên GitHub tính."}</div>`; return; }
+    const cls = F.zone === "Thuận lợi" ? "pos" : F.zone === "Bất lợi" ? "neg" : "mid", chk = favorCheck(F);
+    const z = (F.train || []).find((r) => r.name.startsWith(F.zone)), all = (F.train || [])[3];
+    const parts = (F.parts || []).filter((p) => Math.abs(p.edge) >= 0.5).slice(0, 4)
+      .map((p) => `<span>${esc(p.name.replace(/ \(.*\)$/, ""))}<b class="${p.edge > 0 ? "up" : "down"}">${p.edge > 0 ? "+" : "−"}${num(Math.abs(p.edge), 1)}</b></span>`).join("");
+    box.innerHTML = head(cls === "mid" ? "" : cls) +
+      `<div class="row"><span class="big">${F.value}<small>/100</small></span><span class="zl ${cls}">${esc(F.zone)}</span><span class="s">số liệu ngày ${F.asof.split("-").reverse().join("/")}</span></div>
+      <div class="why">So với các ngày từ 2022 có tín hiệu giống hôm nay${z && all ? `: những ngày ${F.zone.toLowerCase()} như vậy, BTC tăng sau 30 ngày ở ${z.up30}% số lần (mọi ngày ${all.up30}%)` : ""}. Đây là xác suất nghiêng, không phải dự báo.</div>
+      ${parts ? `<div class="chips" style="margin-top:8px">${parts}</div>` : ""}
+      ${chk ? `<div class="trust ${chk.ok ? "ok" : "no"}">${esc(chk.msg)}</div>` : ""}
+      <div class="s" style="margin-top:6px"><a href="#method" data-go="method">Cách tính và bảng kiểm tra</a></div>`;
+    const a = box.querySelector("a[data-go]"); if (a) a.addEventListener("click", (e) => { e.preventDefault(); showTab("method", false); const el = $("fav-detail"); if (el) el.scrollIntoView({ behavior: "smooth" }); });
+  }
+  function favorDetail(F) {
+    if (!F) return "";
+    const sgn = (v) => v == null ? "–" : `<span class="${v > 0 ? "up" : v < 0 ? "down" : ""}">${pct(v, 1)}</span>`;
+    const tbl = (rows) => `<div class="tbl-wrap"><table class="evtbl"><thead><tr><th>Nhóm điểm</th><th>Ngày</th><th>Tăng sau<br>30 ngày</th><th>Trung vị<br>30 ngày</th></tr></thead><tbody>` +
+      rows.map((r) => `<tr${r.name === "Mọi ngày" ? ' style="border-top:2px solid var(--line)"' : ""}><td>${esc(r.name.replace(" (", "<br>(")).replace("&lt;br&gt;", "<br>")}</td><td class="num">${r.n}</td><td class="num">${r.up30 == null ? "–" : r.up30 + "%"}</td><td class="num">${sgn(r.med30)}</td></tr>`).join("") + `</tbody></table></div>`;
+    const chk = favorCheck(F), y = F.split.slice(0, 4);
+    return `<div id="fav-detail"><h3>Điểm thuận lợi</h3>
+      <p style="margin:0 0 8px">Điểm hôm nay <b>${F.value}/100 (${esc(F.zone)})</b>. Cách làm: với từng chỉ báo, máy chủ xem trong giai đoạn 2022–${+y - 1} mỗi mức của nó đi trước BTC tăng 30 ngày nhiều hơn hay ít hơn bình thường bao nhiêu điểm %, rồi cộng các mức chênh của hôm nay lại (nhóm ít ngày bị co về 0 cho khỏi thổi phồng; kiểu đà giá hôm qua tính nửa trọng số). Tổng được đổi ra thang 0–100 theo các ngày 2022–${+y - 1}: từ 70 là Thuận lợi, đến 30 là Bất lợi.</p>
+      <div class="two"><div><h3 style="font-size:.95rem">Giai đoạn học (2022–${+y - 1})</h3>${tbl(F.train)}<p class="note">Quy tắc được xây từ chính những ngày này nên kết quả ở đây luôn đẹp; không dùng để tin.</p></div>
+      <div><h3 style="font-size:.95rem">Giai đoạn kiểm tra (${y}–nay)</h3>${tbl(F.test)}<p class="note">Quy tắc chưa từng thấy những ngày này. Đây mới là bảng đáng tin.</p></div></div>
+      ${chk ? `<div class="msg" style="margin:8px 0">${esc(chk.msg)}</div>` : ""}
+      <h3 style="font-size:.95rem">Phần đóng góp hôm nay (điểm % chênh so với bình thường)</h3>
+      <div class="chips">${(F.parts || []).map((p) => `<span>${esc(p.name)}${p.level != null ? ` (mức ${p.level})` : ""}<b class="${p.edge > 0 ? "up" : p.edge < 0 ? "down" : ""}">${p.edge > 0 ? "+" : ""}${num(p.edge, 1)}</b></span>`).join("")}</div>
+      <h3 style="font-size:.95rem;margin-top:12px">Điểm thuận lợi 365 ngày qua</h3><div class="chart" id="c-favor"></div>
+      <p class="note">Vùng xám là Trung tính (30–70). Các ngày liền nhau gần như giống nhau, nên ${F.test && F.test[3] ? F.test[3].n : "vài trăm"} ngày kiểm tra thực chất chỉ là vài chục giai đoạn độc lập. Thị trường đổi tính thì quy tắc cũ có thể hết đúng.</p></div>`;
+  }
+  function drawFavorChart(F) {
+    const el = $("c-favor"); if (!el || !F || !F.series || F.series.length < 5) return;
+    const t = F.series.map((p) => p[0]);
+    lineChart(el, { t, H: 180, band: [30, 70], yfmt: (v) => num(v, 0), series: [{ name: "Điểm thuận lợi", v: F.series.map((p) => p[1]), color: "var(--s1)", fmt: (v) => v == null ? "–" : num(v, 0) }] });
+  }
+
   function renderHistTest() {
     const H = S.sv && S.sv.L.history_test, box = $("ht-box");
     if (!box) return;
@@ -1447,7 +1507,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
         `<tr style="border-top:2px solid var(--line)"><td>Mọi ngày (mốc)</td><td class="num">${B.n}</td><td class="num">–</td><td class="num">${sgn(B.med7)}</td><td class="num">${B.up7}%</td><td class="num">–</td></tr></tbody></table></div>`;
       h += `<p class="note">Theo ngày: giá đổi từ 3% và open interest tổng (Binance, Bybit, OKX) đổi từ 2% mới được xếp kiểu. "Đà tiếp diễn" là tỷ lệ BTC 7 ngày sau vẫn đi cùng chiều ngày hôm đó; dưới 50% nghĩa là kiểu này thường đảo chiều. Chưa có số liệu mua bán chủ động spot theo lịch sử nên kiểu "mua spot dẫn dắt" chỉ dựa vào Coinbase Premium.</p>`;
     }
-    box.innerHTML = h;
+    box.innerHTML = favorDetail(H.favor) + (H.favor ? `<h3 style="margin-top:16px">Từng chỉ báo riêng lẻ</h3>` : "") + h;
+    drawFavorChart(H.favor);
   }
 
   /* ---------- Tab ---------- */
@@ -1554,7 +1615,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       $("p2").textContent = `giữ ${kept.length}, loại ${col.items.length - kept.length}`;
       S.mode = "lex"; ENGINE.score(S.kept, null);
     }
-    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, renderEvents, renderHistTest, afterScore];
+    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, renderEvents, renderHistTest, renderFavor, afterScore];
     steps.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
     const failed = keys.filter((k) => S.err[k]).map((k) => SRC_NAME[k]).concat(Object.keys(col.errs || {}));
     $("updated").textContent = failed.length ? `Không tải được: ${failed.join(", ")}` : "";
