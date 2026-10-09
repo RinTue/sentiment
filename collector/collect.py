@@ -1101,6 +1101,12 @@ def main() -> int:
         latest["events"] = {"error": str(ex)[:200]}
         print("Lỗi phần sự kiện:", ex, file=sys.stderr)
     try:
+        import history_test
+        latest["history_test"] = history_test.run()
+    except Exception as ex:  # noqa: BLE001
+        latest["history_test"] = {"error": str(ex)[:200]}
+        print("Lỗi kiểm chứng lịch sử:", ex, file=sys.stderr)
+    try:
         import alerts
         latest["alerts"] = alerts.run(latest)
     except Exception as ex:  # noqa: BLE001
