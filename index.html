@@ -300,7 +300,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
         <div class="ai-box" id="ai-box"></div>
         <h3>Đã lọc bỏ</h3>
         <div class="chips" id="tx-filter"></div>
-        <p class="note" id="tx-note">Khi mở từ đường link GitHub, văn bản đến từ bộ thu thập chạy mỗi giờ: 8 báo crypto, Reddit, YouTube, Telegram, Mastodon, Lemmy, Hacker News. Khi mở file trên máy, trang tự đọc Mastodon, Lemmy và Hacker News, là cộng đồng thiên về công nghệ và thường hoài nghi crypto, nên hãy chú ý mức thay đổi hơn con số tuyệt đối.</p>
+        <p class="note" id="tx-note">Khi mở từ đường link GitHub, văn bản đến từ bộ thu thập chạy mỗi giờ: 8 báo crypto, Reddit, Stocktwits, Bluesky, YouTube, Telegram, Mastodon, Lemmy, Hacker News. Khi mở file trên máy, trang tự đọc Mastodon, Lemmy và Hacker News, là cộng đồng thiên về công nghệ và thường hoài nghi crypto, nên hãy chú ý mức thay đổi hơn con số tuyệt đối.</p>
       </details>
     </section>
     <section class="panel">
@@ -310,7 +310,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <div class="chart" id="c-wiki"></div>
       <h3>Đang thịnh hành trên CoinGecko</h3>
       <div class="chips" id="trending"></div>
-      <p class="note">Người mới thường tra Wikipedia khi giá gây chú ý; lượt xem tăng đột biến hay đi kèm giai đoạn hưng phấn.</p>
+      <p class="note">Người mới thường tra Wikipedia khi giá gây chú ý; lượt xem tăng đột biến hay đi kèm giai đoạn hưng phấn. Trên Stocktwits, người đăng tự gắn nhãn Bullish hoặc Bearish; tỷ lệ Bullish thường cao (nhỏ lẻ hay lạc quan), nên chú ý mức thay đổi so với hôm trước hơn là con số tuyệt đối.</p>
     </section>
   </div>
 
@@ -397,13 +397,13 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <h2>Cách hệ thống hoạt động và giới hạn</h2>
       <div class="method">
       <ol>
-        <li><b>Thu thập:</b> mỗi giờ, bộ thu thập trên GitHub đọc 8 báo crypto, Reddit, tiêu đề video của 11 kênh YouTube crypto lớn, 4 kênh tin Telegram, Mastodon, Lemmy và Hacker News; cùng dữ liệu thị trường (Fear &amp; Greed, CoinGecko, funding và tỷ lệ long/short của OKX/Hyperliquid, quyền chọn Deribit, Wikipedia, Coinbase, DefiLlama) và số liệu vĩ mô (FRED, Bộ Tài chính Mỹ, Fed New York, Yahoo). Khi bạn mở trang, trình duyệt lấy thêm số liệu trực tiếp từ Bybit, OKX, Deribit, SoSoValue và lịch Investing.com.</li>
+        <li><b>Thu thập:</b> mỗi giờ, bộ thu thập trên GitHub đọc 8 báo crypto, Reddit, Stocktwits, Bluesky, tiêu đề video của 11 kênh YouTube crypto lớn, 4 kênh tin Telegram, Mastodon, Lemmy và Hacker News; cùng dữ liệu thị trường (Fear &amp; Greed, CoinGecko, funding và tỷ lệ long/short của OKX/Hyperliquid, quyền chọn Deribit, Wikipedia, Coinbase, DefiLlama) và số liệu vĩ mô (FRED, Bộ Tài chính Mỹ, Fed New York, Yahoo). Khi bạn mở trang, trình duyệt lấy thêm số liệu trực tiếp từ Bybit, OKX, Deribit, SoSoValue và lịch Investing.com.</li>
         <li><b>Lọc:</b> bỏ bài trùng, bot báo giá, quảng cáo, bài không phải tiếng Anh, bài không nói về crypto, và giới hạn số bài của mỗi tác giả.</li>
         <li><b>Chấm điểm:</b> mỗi bài nhận điểm từ −1 đến +1, kết hợp mô hình AI Twitter RoBERTa với từ điển thuật ngữ crypto (hiểu "rekt", "ATH", "outflows", phủ định…).</li>
         <li><b>Chỉ số:</b> điểm văn bản (so với lịch sử) kết hợp với Fear &amp; Greed, phiếu cộng đồng, funding, tỷ lệ long/short, quyền chọn và mức chú ý thành chỉ số 0–100. Máy chủ tính và lưu chỉ số mỗi giờ; trang dùng đúng con số đó (cùng số với tin Telegram). Chỉ khi máy chủ chưa cập nhật quá 2 giờ, trang mới tự tính lại bằng dữ liệu trực tiếp.</li>
         <li><b>Nhận định và cảnh báo:</b> các quy tắc cố định chuyển số liệu thành câu chữ. Nếu đã cài Telegram, máy chủ gửi bản tin mỗi sáng, cảnh báo khi tâm lý vào vùng cực đoan, funding bất thường và nhắc trước số liệu vĩ mô cấp 1 (tối đa 3 cảnh báo thị trường mỗi ngày).</li>
       </ol>
-      <p>Giới hạn: chưa đọc được X (Twitter) và các nhóm chat Telegram, nơi phần lớn đám đông crypto lên tiếng (kênh Telegram và YouTube mới phản ánh giọng điệu của người có ảnh hưởng); trọng số và ngưỡng do con người đặt, chưa được kiểm chứng bằng dữ liệu của chính chỉ số này (mới kiểm chứng Fear &amp; Greed); nguồn miễn phí có thể đổi hoặc chặn bất cứ lúc nào. Đây là công cụ tham khảo, không phải lời khuyên đầu tư.</p>
+      <p>Giới hạn: chưa đọc được X (Twitter, API đã tính phí từ 2/2026) và các nhóm chat Telegram, nơi phần lớn đám đông crypto lên tiếng (kênh Telegram và YouTube mới phản ánh giọng điệu của người có ảnh hưởng); trọng số và ngưỡng do con người đặt, chưa được kiểm chứng bằng dữ liệu của chính chỉ số này (mới kiểm chứng Fear &amp; Greed); nguồn miễn phí có thể đổi hoặc chặn bất cứ lúc nào. Đây là công cụ tham khảo, không phải lời khuyên đầu tư.</p>
       </div>
     </section>
   </div>
@@ -1028,6 +1028,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     if (S.votes && S.votes.up != null) out.push(["Phiếu cộng đồng CoinGecko", num(S.votes.up, 1) + "% tăng", num(S.votes.down, 1) + "% giảm"]);
     const wz = wikiZ(); if (wz) out.push(["Lượt xem Wikipedia hôm qua", num(wz.last), `${wz.z >= 0 ? "+" : ""}${num(wz.z, 1)} độ lệch chuẩn so với 60 ngày`, wz.z > 1 ? "up" : wz.z < -1 ? "down" : ""]);
     if (S.fng) out.push(["Fear & Greed", String(S.fng.at(-1).v), S.fng.at(-1).cls + (S.fng.length > 8 ? `, 7 ngày trước ${S.fng.at(-8).v}` : "")]);
+    const st = S.sv && S.sv.L.stocktwits;
+    if (st && st.bull_pct != null) out.push(["Stocktwits tự nhận Bullish", num(st.bull_pct) + "%", `${st.bull + st.bear} bài gắn nhãn trong 24 giờ` + (st.prev_bull_pct != null ? ` · hôm trước ${num(st.prev_bull_pct)}%` : ""), st.bull_pct >= 75 ? "up" : st.bull_pct <= 45 ? "down" : ""]);
     $("att-stats").innerHTML = out.length ? statBoxes(out) : `<div class="msg">Không lấy được: ${esc(errFor("votes", "wiki", "fng"))}.</div>`;
     if (S.wiki) lineChart($("c-wiki"), { t: S.wiki.map((x) => x.t), H: 170, yfmt: (v) => Math.round(v / 1000) + "k", series: [{ name: "Lượt xem", v: S.wiki.map((x) => x.v), color: "var(--s1)", fmt: (v) => num(v) }] });
     else $("c-wiki").innerHTML = `<div class="msg">Không lấy được Wikipedia: ${esc(errFor("wiki"))}.</div>`;

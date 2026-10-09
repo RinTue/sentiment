@@ -517,6 +517,18 @@ def wmean(arr):
     return sum(x["s"] * x["w"] for x in arr) / w if w else None
 
 
+def diverse(arr: list, post, n: int = 5, per_src: int = 2) -> list:
+    """Chọn bài nổi bật nhưng tối đa 2 bài mỗi nguồn, để một nguồn đông bài (như Stocktwits) không lấn hết."""
+    out, cnt = [], {}
+    for x in arr:
+        if cnt.get(x["src"], 0) < per_src:
+            cnt[x["src"]] = cnt.get(x["src"], 0) + 1
+            out.append(post(x))
+        if len(out) >= n:
+            break
+    return out
+
+
 def aggregate(kept: list) -> dict:
     for x in kept:
         x["w"] = (1 + math.log1p(max(0, x.get("eng") or 0))) * SRC_WEIGHT.get(x["src"], 1)
@@ -563,8 +575,8 @@ def aggregate(kept: list) -> dict:
         "sources": [{"src": k, "n": len(a), "score": round(wmean(a), 4)} for k, a in sorted(by_src.items(), key=lambda t: -len(t[1]))],
         "keywords": [[w, n] for w, n in wc.most_common(14) if n >= 3],
         "coins": [[c, n] for c, n in coins if n],
-        "top_pos": [post(x) for x in ranked if x["label"] == "pos"][:5],
-        "top_neg": [post(x) for x in reversed(ranked) if x["label"] == "neg"][:5],
+        "top_pos": diverse([x for x in ranked if x["label"] == "pos"], post),
+        "top_neg": diverse([x for x in reversed(ranked) if x["label"] == "neg"], post),
     }
 
 
