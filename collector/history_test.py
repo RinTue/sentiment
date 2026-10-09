@@ -187,6 +187,79 @@ def bucket_table(score: dict, f7: dict, f30: dict) -> dict:
     return {"bins": rows, "rho30": rho, "spread30": spread, "days": len(common)}
 
 
+SPLIT = datetime(2025, 1, 1, tzinfo=timezone.utc).timestamp()
+
+
+def favor_score(F: dict, codes: dict, f7: dict, f30: dict, names: dict) -> dict | None:
+    """Điểm thuận lợi: học từ 2022–2024 xem mỗi mức của mỗi chỉ báo thường đi trước BTC tăng hay giảm (30 ngày),
+    rồi kiểm tra lại trên 2025–nay, giai đoạn mà quy tắc chưa từng thấy."""
+    keys = [k for k in ("stable30", "liq7", "prem7", "wiki", "fng", "funding", "oi7") if k in F]
+    if len(keys) < 3:
+        return None
+    def bin_of(v):
+        return min(4, int(v // 20))
+    train_days = [d for d in f30 if d < SPLIT]
+    base_up = sum(1 for d in train_days if f30[d] > 0) / len(train_days)
+    edges = {}
+    for k in keys:
+        e = {}
+        for b in range(5):
+            sel = [d for d in train_days if d in F[k] and bin_of(F[k][d]) == b]
+            if len(sel) >= 15:
+                up = sum(1 for d in sel if f30[d] > 0) / len(sel)
+                e[b] = (up - base_up) * len(sel) / (len(sel) + 60)     # co lại khi ít ngày
+        edges[k] = e
+    # kiểu đà giá theo ngày (7 ngày sau), cộng với trọng số một nửa
+    ce = {}
+    base7 = sum(1 for d in f7 if d < SPLIT and f7[d] > 0) / max(1, sum(1 for d in f7 if d < SPLIT))
+    for c in {v[0] for v in codes.values()}:
+        sel = [d for d, v in codes.items() if v[0] == c and d < SPLIT and d in f7]
+        if len(sel) >= 10 and c != "flat":
+            up = sum(1 for d in sel if f7[d] > 0) / len(sel)
+            ce[c] = 0.5 * (up - base7) * len(sel) / (len(sel) + 30)
+    days = sorted(set().union(*[set(F[k]) for k in keys]))
+    raw = {}
+    for d in days:
+        if sum(1 for k in keys if d in F[k]) < len(keys) - 1:
+            continue
+        r = sum(edges[k].get(bin_of(F[k][d]), 0) for k in keys if d in F[k])
+        last_code = codes.get(d, ("flat", ""))[0]
+        r += ce.get(last_code, 0)
+        raw[d] = r
+    train_raw = sorted(v for d, v in raw.items() if d < SPLIT)
+    if len(train_raw) < 200:
+        return None
+    score = {d: 100 * sum(1 for x in train_raw if x <= v) / len(train_raw) for d, v in raw.items()}
+    def zone(v):
+        return "Thuận lợi" if v >= 70 else "Bất lợi" if v <= 30 else "Trung tính"
+    def table(sel):
+        out = []
+        for lo, hi, name in ((0, 30.0001, "Bất lợi (0–30)"), (30.0001, 70, "Trung tính (30–70)"), (70, 101, "Thuận lợi (70–100)")):
+            d30 = [f30[d] for d in sel if lo <= score[d] < hi and d in f30]
+            d7 = [f7[d] for d in sel if lo <= score[d] < hi and d in f7]
+            out.append({"name": name, "n": len(d30), "up30": round(100 * sum(1 for x in d30 if x > 0) / len(d30)) if d30 else None,
+                        "med30": round(statistics.median(d30), 1) if d30 else None, "up7": round(100 * sum(1 for x in d7 if x > 0) / len(d7)) if d7 else None})
+        allv = [f30[d] for d in sel if d in f30]
+        out.append({"name": "Mọi ngày", "n": len(allv), "up30": round(100 * sum(1 for x in allv if x > 0) / len(allv)) if allv else None,
+                    "med30": round(statistics.median(allv), 1) if allv else None, "up7": None})
+        return out
+    tr = [d for d in score if d < SPLIT]
+    te = [d for d in score if d >= SPLIT]
+    last = max(score)
+    parts = []
+    for k in keys:
+        if last in F[k]:
+            b = bin_of(F[k][last])
+            parts.append({"key": k, "name": names.get(k, k), "level": round(F[k][last]), "edge": round(100 * edges[k].get(b, 0), 1)})
+    lc = codes.get(last)
+    if lc and lc[0] in ce:
+        parts.append({"key": "drv", "name": "Kiểu đà giá hôm qua: " + lc[1], "level": None, "edge": round(100 * ce[lc[0]], 1)})
+    parts.sort(key=lambda x: -abs(x["edge"]))
+    return {"value": round(score[last]), "zone": zone(score[last]), "asof": datetime.fromtimestamp(last, timezone.utc).strftime("%Y-%m-%d"),
+            "parts": parts, "train": table(tr), "test": table(te), "split": "2025-01-01",
+            "series": [[int(d * 1000), round(score[d])] for d in sorted(score) if d >= last - 365 * DAY]}
+
+
 def run(force: bool = False) -> dict | None:
     old = None
     try:
@@ -194,7 +267,7 @@ def run(force: bool = False) -> dict | None:
     except (OSError, json.JSONDecodeError):
         pass
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    if old and old.get("day") == today and not force:
+    if old and old.get("day") == today and "favor" in old and not force:
         return old
     t0, errs = time.time(), {}
     def safe(name, fn):
@@ -263,18 +336,22 @@ def run(force: bool = False) -> dict | None:
 
     # Phân loại đà giá theo ngày
     drv = []
+    codes: dict = {}
     if oi_btc and cz.get("funding"):
         fpct = trailing_pct(cz["funding"], 90)
         f1, f7d = fwd(px, 1), f7
         by: dict = {}
         for d in sorted(oi_btc):
-            if d < start or d - DAY not in px or d - DAY not in oi_btc or d not in f7d:
+            if d < start or d - DAY not in px or d - DAY not in oi_btc or d not in px:
                 continue
             dp = (px[d] / px[d - DAY] - 1) * 100
             doi = (oi_btc[d] / oi_btc[d - DAY] - 1) * 100
             l, s = (cz.get("liq") or {}).get(d, (0.0, 0.0))
             pr = prem.get(d)
             code, label, _ = market.classify_move(dp, doi, fpct.get(d), None, None, pr, {"long": l / 5, "short": s / 5}, 3.0, 2.0)
+            codes[d] = (code, label)
+            if d not in f7d:
+                continue        # ngày gần đây chưa có kết quả 7 ngày sau: chỉ dùng để chấm điểm hôm nay
             by.setdefault(code, {"label": label, "r1": [], "r7": [], "cont": []})
             g = by[code]
             if d in f1:
@@ -290,7 +367,12 @@ def run(force: bool = False) -> dict | None:
                         "up7": round(100 * sum(1 for x in g["r7"] if x > 0) / len(g["r7"])),
                         "cont7": round(100 * sum(g["cont"]) / len(g["cont"])) if g["cont"] else None})
         drv.sort(key=lambda x: -x["n"])
-    out = {"day": today, "start": START.strftime("%Y-%m-%d"), "base": base, "factors": factors, "drivers": drv,
+    favor = None
+    try:
+        favor = favor_score(F, codes, f7, f30, NAMES)
+    except Exception as ex:  # noqa: BLE001
+        errs["favor"] = str(ex)[:120]
+    out = {"day": today, "start": START.strftime("%Y-%m-%d"), "base": base, "factors": factors, "drivers": drv, "favor": favor,
            "symbols": cz.get("symbols"), "errors": errs, "runtime_sec": round(time.time() - t0, 1)}
     with open(OUT_FILE, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
