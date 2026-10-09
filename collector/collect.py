@@ -248,6 +248,84 @@ def fetch_youtube() -> tuple[list, dict]:
     return items, status
 
 
+def fetch_stocktwits() -> tuple[list, dict]:
+    """Stocktwits: mạng xã hội của trader; người đăng tự gắn nhãn Bullish/Bearish (đo tâm lý trực tiếp, không cần AI đoán)."""
+    items, status = [], {}
+    for sym in ("BTC.X", "ETH.X"):
+        try:
+            out, max_id = [], None
+            for _ in range(3):
+                params = {"max": max_id} if max_id else None
+                r = requests.get(f"https://api.stocktwits.com/api/2/streams/symbol/{sym}.json", params=params,
+                                 headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+                                          "Accept": "application/json"}, timeout=15)
+                r.raise_for_status()
+                msgs = r.json().get("messages") or []
+                if not msgs:
+                    break
+                out += msgs
+                max_id = msgs[-1]["id"] - 1
+                time.sleep(1)
+            for m in out:
+                sent = (((m.get("entities") or {}).get("sentiment") or {}) or {}).get("basic")
+                user = m.get("user") or {}
+                items.append({"src": "Stocktwits", "outlet": "$" + sym.split(".")[0], "id": f"st:{m['id']}",
+                              "t": datetime.fromisoformat(m["created_at"].replace("Z", "+00:00")).timestamp(),
+                              "text": strip(m.get("body") or "")[:700], "title": None, "url": f"https://stocktwits.com/message/{m['id']}",
+                              "author": user.get("username"), "eng": ((m.get("likes") or {}).get("total") or 0), "lang": None, "bot": False,
+                              "kind": "social", "tag": "bull" if sent == "Bullish" else "bear" if sent == "Bearish" else None})
+            status["Stocktwits $" + sym.split(".")[0]] = len(out)
+        except Exception as ex:  # noqa: BLE001
+            status["Stocktwits $" + sym.split(".")[0]] = "lỗi: " + str(ex)[:80]
+    return items, status
+
+
+def fetch_bluesky() -> tuple[list, dict]:
+    """Bluesky: tìm bài mới nhất theo từ khóa qua API công khai (không cần tài khoản)."""
+    items, status = [], {}
+    for q in ("bitcoin", "crypto", "ethereum"):
+        last = None
+        for host in ("https://public.api.bsky.app", "https://api.bsky.app"):
+            try:
+                r = requests.get(f"{host}/xrpc/app.bsky.feed.searchPosts", params={"q": q, "limit": 100, "sort": "latest"},
+                                 headers={"User-Agent": UA, "Accept": "application/json"}, timeout=15)
+                r.raise_for_status()
+                posts = r.json().get("posts") or []
+                for p_ in posts:
+                    rec = p_.get("record") or {}
+                    au = p_.get("author") or {}
+                    langs = rec.get("langs") or []
+                    items.append({"src": "Bluesky", "outlet": q, "id": "bs:" + p_.get("uri", ""),
+                                  "t": datetime.fromisoformat(rec.get("createdAt", "1970-01-01T00:00:00Z").replace("Z", "+00:00")).timestamp(),
+                                  "text": strip(rec.get("text") or "")[:700], "title": None,
+                                  "url": "https://bsky.app/profile/" + au.get("handle", "") + "/post/" + p_.get("uri", "").rsplit("/", 1)[-1],
+                                  "author": au.get("handle"), "eng": (p_.get("likeCount") or 0) + (p_.get("repostCount") or 0) + (p_.get("replyCount") or 0),
+                                  "lang": langs[0][:2] if langs else None, "bot": False, "kind": "social"})
+                status["Bluesky " + q] = len(posts)
+                last = None
+                break
+            except Exception as ex:  # noqa: BLE001
+                last = ex
+        if last is not None:
+            status["Bluesky " + q] = "lỗi: " + str(last)[:80]
+        time.sleep(0.5)
+    return items, status
+
+
+def stocktwits_summary(store: dict) -> dict | None:
+    """Tỷ lệ bài tự gắn Bullish trong số bài có gắn nhãn, 24 giờ qua và 24 giờ trước đó."""
+    now = time.time()
+    def part(lo, hi):
+        tags = [x.get("tag") for x in store.values() if x.get("src") == "Stocktwits" and lo <= now - x["t"] < hi]
+        b, e = tags.count("bull"), tags.count("bear")
+        return {"n": len(tags), "bull": b, "bear": e, "bull_pct": round(100 * b / (b + e), 1) if b + e >= 10 else None}
+    cur, prev = part(0, 86400), part(86400, 2 * 86400)
+    if not cur["n"]:
+        return None
+    cur["prev_bull_pct"] = prev["bull_pct"]
+    return cur
+
+
 def fetch_telegram() -> tuple[list, dict]:
     items, status = [], {}
     for ch in TELEGRAM:
@@ -431,7 +509,7 @@ STOP = set("the a an and or but if then than that this these those there their t
 GENERIC = set("bitcoin btc crypto cryptocurrency cryptocurrencies ethereum eth coin coins blockchain price prices market markets news token tokens".split())
 COINS = [("BTC", r"\b(bitcoin|btc|sats?|satoshi)\b"), ("ETH", r"\b(ethereum|eth|ether)\b"), ("SOL", r"\b(solana|sol)\b"), ("XRP", r"\b(xrp|ripple)\b"),
          ("DOGE", r"\b(dogecoin|doge)\b"), ("BNB", r"\b(bnb)\b"), ("ADA", r"\b(cardano|ada)\b"), ("Stablecoin", r"\b(stablecoins?|usdt|usdc|tether)\b")]
-SRC_WEIGHT = {"Tin tức": 1.0, "Reddit": 1.0, "YouTube": 0.8, "Telegram": 0.8, "Mastodon": 0.8, "Hacker News": 0.7, "Lemmy": 0.3}
+SRC_WEIGHT = {"Tin tức": 1.0, "Reddit": 1.0, "Stocktwits": 0.9, "YouTube": 0.8, "Telegram": 0.8, "Bluesky": 0.8, "Mastodon": 0.8, "Hacker News": 0.7, "Lemmy": 0.3}
 
 
 def wmean(arr):
@@ -936,7 +1014,7 @@ def main() -> int:
     os.makedirs(DATA, exist_ok=True)
     started = time.time()
     raw, status = [], {}
-    for fn in (fetch_rss, fetch_reddit, fetch_mastodon, fetch_lemmy_hn, fetch_youtube, fetch_telegram):
+    for fn in (fetch_rss, fetch_reddit, fetch_mastodon, fetch_lemmy_hn, fetch_youtube, fetch_telegram, fetch_stocktwits, fetch_bluesky):
         a, st = fn()
         raw += a
         status.update(st)
@@ -962,7 +1040,7 @@ def main() -> int:
         x["lex"] = round(lx, 4)
         x["ai"] = None if a is None else round(a, 4)
         x["s"] = round(hybrid(a, lx), 4)
-        store[x["id"]] = {k: x.get(k) for k in ("id", "src", "outlet", "t", "text", "title", "url", "author", "eng", "kind", "lex", "ai", "s")}
+        store[x["id"]] = {k: x.get(k) for k in ("id", "src", "outlet", "t", "text", "title", "url", "author", "eng", "kind", "lex", "ai", "s", "tag")}
 
     cutoff = NOW - KEEP_DAYS * 86400
     store = {k: v for k, v in store.items() if v["t"] >= cutoff}
@@ -975,6 +1053,7 @@ def main() -> int:
         model_status = f"AI + từ điển ({round(100 * with_ai / len(store))}% số bài có điểm AI)" + ("" if not model_status.startswith("từ điển (AI lỗi") else "; lần chạy này AI lỗi")
     agg = aggregate(list(store.values()))
     agg["translation"] = translate_posts(agg["top_pos"] + agg["top_neg"])
+    agg["stocktwits"] = stocktwits_summary(store)
     try:
         agg["macro"] = macro()
     except Exception as ex:  # noqa: BLE001
