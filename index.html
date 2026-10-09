@@ -191,7 +191,9 @@ details.method summary { cursor: pointer; font-weight: 600; }
 .evlist { display: grid; gap: 0; }
 .evrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); align-items: start; }
 .evx { text-align: right; font-family: var(--mono); font-size: .9rem; white-space: nowrap; }
-.evtbl td { vertical-align: top; }
+.evtbl td { vertical-align: top; white-space: normal; }
+.evtbl th { white-space: normal; }
+.evsub { font-size: .74rem; color: var(--ink-3); font-family: var(--font); margin-top: 2px; }
 .nextev { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; font-size: .92rem; }
 .nextev.soon { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
 .nextev svg { width: 20px; height: 20px; flex: none; color: var(--ink-3); }
@@ -207,7 +209,8 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 @media (max-width: 640px) {
   .wrap { padding-bottom: 96px; }
   .tabs { position: fixed; top: auto; bottom: 0; left: 0; right: 0; border-radius: 14px 14px 0 0; border-width: 1px 0 0; padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); gap: 2px; }
-  .tabs button { flex: 1 1 0; flex-direction: column; gap: 2px; font-size: .68rem; padding: 6px 2px; }
+  .tabs button { flex: 1 1 0; min-width: 0; flex-direction: column; gap: 2px; font-size: .6rem; padding: 6px 1px; white-space: normal; line-height: 1.15; text-align: center; }
+  .evtbl { min-width: 640px; }
   .kpi .v { font-size: 1.2rem; }
   h1 { font-size: 1.35rem; }
   .hero .g svg { max-width: 190px; }
@@ -1383,14 +1386,17 @@ if (typeof module !== "undefined") module.exports = ENGINE;
         return `<div class="evrow"><div><b>${esc(u.name)}</b><div class="note" style="margin:2px 0 0">${esc(fmtEvent(t))}${live && live.forecast != null ? ` · dự báo ${esc(fv(live.forecast, live.unit))}` : ""}${live ? "" : " (giờ dự kiến)"}</div></div><div class="evx">${u.abs60 != null ? `thường ±${num(u.abs60, 1)}%<br><span class="note" style="margin:0">trong 1 giờ (${u.n} lần)</span>` : `<span class="note" style="margin:0">chưa đủ dữ liệu</span>`}</div></div>`;
       }).join("")}</div>` : `<p class="note">Không có số liệu lớn nào trong 14 ngày tới.</p>`;
     // Bảng thống kê
-    const cell = (o, word) => o ? `${sgn(o.avg60)}<br><span class="note" style="margin:0">${word} ${o.hit60}% số lần · ${o.n} lần</span>` : `<span class="note" style="margin:0">${EVH.map ? "chưa có" : "–"}</span>`;
+    const cell = (o, word) => o ? `${sgn(o.avg60)}<div class="evsub">${word} ${o.hit60}% · ${o.n} lần</div>` : `<span class="note" style="margin:0">${EVH.map ? "chưa có" : "–"}</span>`;
+    // Khi đã có dữ liệu Investing.com: chỉ giữ những lần công bố được xác nhận có thật (lịch FRED đôi khi có ngày sửa số liệu).
+    const med = (v) => { v = v.filter((x) => x != null).sort((x, y) => x - y); return v.length ? (v.length % 2 ? v[(v.length - 1) / 2] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2) : null; };
+    const groups = EVH.map ? E.groups.map((g) => { const rr = rows.filter((r) => r.g === g.g && r.inv); return rr.length ? Object.assign({}, g, { n: rr.length, abs60: med(rr.map((r) => r.r60 == null ? null : Math.abs(r.r60))), abs24: med(rr.map((r) => r.r24 == null ? null : Math.abs(r.r24))), x_normal: med(rr.map((r) => r.xn)) }) : null; }).filter(Boolean) : E.groups;
     h += `<h3>Mỗi loại số liệu thường làm BTC biến động bao nhiêu</h3><div class="tbl-wrap"><table class="evtbl"><thead><tr><th>Loại</th><th>Số lần</th><th>Biến động<br>1 giờ</th><th>Biến động<br>24 giờ</th><th>Gấp mức<br>bình thường</th><th>Tốt cho USD:<br>BTC sau 1 giờ</th><th>Xấu cho USD:<br>BTC sau 1 giờ</th></tr></thead><tbody>` +
-      E.groups.map((g) => `<tr><td>${esc(g.name)}</td><td class="num">${g.n}</td><td class="num">±${num(g.abs60, 2)}%</td><td class="num">±${num(g.abs24, 1)}%</td><td class="num">${g.x_normal != null ? num(g.x_normal, 1) + " lần" : "–"}</td><td class="num">${cell(dir(g.g, "positive"), "giảm")}</td><td class="num">${cell(dir(g.g, "negative"), "tăng")}</td></tr>`).join("") + `</tbody></table></div>`;
+      groups.map((g) => `<tr><td>${esc(g.name)}</td><td class="num">${g.n}</td><td class="num">±${num(g.abs60, 2)}%</td><td class="num">±${num(g.abs24, 1)}%</td><td class="num">${g.x_normal != null ? num(g.x_normal, 1) + " lần" : "–"}</td><td class="num">${cell(dir(g.g, "positive"), "giảm")}</td><td class="num">${cell(dir(g.g, "negative"), "tăng")}</td></tr>`).join("") + `</tbody></table></div>`;
     h += `<p class="note">Biến động là trung vị của mức thay đổi (bỏ dấu) sau 1 giờ và 24 giờ. "Gấp mức bình thường": biến động giờ đầu so với biến động 1 giờ điển hình trong 24 giờ trước đó; trên 1,5 lần là số liệu đó thật sự làm thị trường giật. "Tốt cho USD" (lạm phát, việc làm cao hơn dự báo…) thường bất lợi cho crypto: cột cho biết BTC trung bình đi thế nào và bao nhiêu % số lần giảm; cột "Xấu cho USD" là bao nhiêu % số lần tăng. Dưới khoảng 15 lần thì chưa nên tin; 50% nghĩa là không có quy luật.</p>`;
     // Gần đây
-    const recent = rows.slice(-30).reverse();
-    h += `<h3>Các lần công bố gần đây</h3><div class="tbl-wrap"><table class="evtbl"><thead><tr><th>Thời gian</th><th>Số liệu</th><th>Kết quả</th><th>15 phút</th><th>1 giờ</th><th>24 giờ</th></tr></thead><tbody>` +
-      recent.map((r) => `<tr><td>${esc(dt(r.t))}</td><td class="wrap" style="min-width:150px">${esc(gname[r.g] || r.g)}<div class="note" style="margin:0">${esc(r.inv ? r.inv.name + ": " + af(r.inv) : "")}</div></td><td>${surprise(r.inv && r.inv.atf)}</td><td class="num">${sgn(r.r15)}</td><td class="num">${sgn(r.r60)}${r.xn != null ? `<div class="note" style="margin:0">${num(r.xn, 1)}× bình thường</div>` : ""}</td><td class="num">${sgn(r.r24)}</td></tr>`).join("") + `</tbody></table></div>`;
+    const recent = (EVH.map ? rows.filter((r) => r.inv) : rows).slice(-30).reverse();
+    h += `<h3>Các lần công bố gần đây</h3><div class="evlist">` + recent.map((r) => `<div class="evrow"><div><b>${esc(gname[r.g] || r.g)}</b> ${surprise(r.inv && r.inv.atf)}<div class="note" style="margin:2px 0 0">${esc(dt(r.t))}${r.inv ? " · " + esc(r.inv.name + ": " + af(r.inv)) : ""}</div></div>
+      <div class="evx">1 giờ ${sgn(r.r60)}${r.xn != null ? `<div class="evsub">${num(r.xn, 1)}× bình thường</div>` : ""}<div class="evsub">15 phút ${sgn(r.r15)} · 24 giờ ${sgn(r.r24)}</div></div></div>`).join("") + `</div>`;
     // Ngày biến động lớn
     h += `<h3>Những ngày BTC chạy từ 5%, 12 tháng qua</h3>`;
     h += E.big_days && E.big_days.length ? `<div class="evlist">${E.big_days.map((b) => `<div class="evrow"><div><b>${b.day.split("-").reverse().join("/")}</b> ${sgn(b.ch, 1)}${b.close ? ` <span class="note" style="margin:0">đóng cửa ${num(b.close)} $</span>` : ""}
