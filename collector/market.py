@@ -359,7 +359,7 @@ def coinalyze(cb: dict | None) -> dict:
     mk = cz_markets()
     syms = ",".join(mk["symbols"])
     now = int(time.time())
-    liq = cz_get("liquidation-history", {"symbols": syms, "interval": "1hour", "from": now - 25 * 3600, "to": now, "convert_to_usd": "true"})
+    liq = cz_get("liquidation-history", {"symbols": syms, "interval": "1hour", "from": now - 73 * 3600, "to": now, "convert_to_usd": "true"})
     agg: dict = {}
     for row in liq:
         for h in row.get("history", []):
@@ -367,8 +367,10 @@ def coinalyze(cb: dict | None) -> dict:
             a[0] += float(h.get("l") or 0)
             a[1] += float(h.get("s") or 0)
     series = [[t * 1000, round(v[0]), round(v[1])] for t, v in sorted(agg.items()) if t >= (now - now % 3600) - 23 * 3600]
+    s72 = [v for t, v in agg.items() if t >= (now - now % 3600) - 71 * 3600]
     out = {"exchanges": mk["exchanges"], "symbols": len(mk["symbols"]), "series": series,
-           "h24": {"long": round(sum(x[1] for x in series)), "short": round(sum(x[2] for x in series))}}
+           "h24": {"long": round(sum(x[1] for x in series)), "short": round(sum(x[2] for x in series))},
+           "h72": {"long": round(sum(v[0] for v in s72)), "short": round(sum(v[1] for v in s72))} if len(s72) >= 60 else None}
     oi = cz_get("open-interest-history", {"symbols": syms, "interval": "1hour", "from": now - 170 * 3600, "to": now, "convert_to_usd": "true"})
     tot: dict = {}
     cnt: dict = {}
@@ -472,6 +474,171 @@ def classify_move(dp: float, doi: float, fpct: float | None, spot_net: float | N
     return "mixed_dn", "Giảm do nhiều lực cùng lúc", "Không có dấu hiệu nào áp đảo giữa thanh lý long, short mới và bán spot." + spot_txt
 
 
+# ---------------------------------------------------------------- kết luận tự động cho "Đà giá đến từ đâu"
+def _f1(x: float, sign: bool = False) -> str:
+    return (f"{x:+.1f}" if sign else f"{x:.1f}").replace(".", ",")
+
+
+def _usd(v: float) -> str:
+    v = abs(v)
+    return f"{_f1(v / 1e9)} tỷ $" if v >= 1e9 else f"{_f1(v / 1e6)} triệu $" if v >= 1e6 else f"{round(v / 1e3)} nghìn $"
+
+
+def _btc(v: float) -> str:
+    v = abs(v)
+    return f"{round(v):,}".replace(",", ".") if v >= 100 else _f1(v)
+
+
+def _px(v: float) -> str:
+    return "$" + f"{round(v):,}".replace(",", ".")
+
+
+def analyze_move(w: dict, hours: int, liq: dict | None, fpct: float | None, prices: list) -> dict:
+    """Đọc các lực mua/bán của một khung thời gian rồi đưa ra một kết luận cụ thể: nguyên nhân chính, độ bền của đà, điều cần theo dõi.
+    w: một khung của drivers() (spot_net/perp_net tính bằng % khối lượng, prem bằng %)."""
+    dp, doi = w["dp"], w["doi"]
+    sn, pn, prem = w.get("spot_net"), w.get("perp_net"), w.get("prem")
+    small, thr = (1.0, 2.0) if hours == 24 else (2.0, 4.0)       # ngưỡng giá: dưới small là đi ngang
+    thr_oi = 1.5 if hours == 24 else 2.5
+    win = "24 giờ" if hours == 24 else "3 ngày"
+    forces = []      # (tên, chiều: +1 đẩy giá lên / -1 kéo xuống / 0, mô tả)
+
+    s_side = 0
+    if sn is not None:
+        s_side = 1 if sn >= 1 else -1 if sn <= -1 else 0
+        b = w.get("spot_btc")
+        forces.append(("Spot", s_side, ("mua ròng" if s_side > 0 else "bán ròng" if s_side < 0 else "cân bằng") + (f" {_btc(b)} BTC trên OKX" if b and s_side else "") + f" ({_f1(sn, True)}% khối lượng)"))
+    p_side = 0
+    if prem is not None:
+        p_side = 1 if prem >= 0.03 else -1 if prem <= -0.03 else 0
+        forces.append(("Người mua Mỹ", p_side, ("mua mạnh hơn" if p_side > 0 else "bán, đứng ngoài" if p_side < 0 else "trung tính") + " (Coinbase Premium " + f"{prem:+.2f}".replace(".", ",") + "%)"))
+    f_side = 0
+    if pn is not None:
+        f_side = 1 if pn >= 1.5 else -1 if pn <= -1.5 else 0
+        u = w.get("perp_usd")
+        forces.append(("Futures", f_side, ("mua chủ động" if f_side > 0 else "bán chủ động" if f_side < 0 else "cân bằng") + (f" {_usd(u)} ròng" if u and f_side else "") + f" ({_f1(pn, True)}%)"))
+    l_side, L, S = 0, 0.0, 0.0
+    if liq:
+        L, S = float(liq.get("long") or 0), float(liq.get("short") or 0)
+        floor = 3e6 if hours == 24 else 6e6
+        if S >= 2 * L and S >= floor:
+            l_side = 1
+        elif L >= 2 * S and L >= floor:
+            l_side = -1
+        ratio = (S / L if l_side > 0 else L / S if l_side < 0 and S else 0) if (L and S) else 0
+        txt = ("short bị thanh lý" if l_side > 0 else "long bị thanh lý" if l_side < 0 else "không phía nào áp đảo") + f": long {_usd(L)}, short {_usd(S)}"
+        if ratio >= 2:
+            txt += f" (gấp {_f1(ratio)} lần)"
+        forces.append(("Thanh lý", l_side, txt))
+    o_side = 1 if doi >= thr_oi else -1 if doi <= -thr_oi else 0
+    forces.append(("Open interest", 0, ("vị thế mới mở thêm" if o_side > 0 else "vị thế đang đóng bớt" if o_side < 0 else "ít đổi") + f" ({_f1(doi, True)}%)"))
+    if fpct is not None:
+        forces.append(("Funding", 0, ("phe long trả phí cao" if fpct >= 80 else "phe short đông" if fpct <= 20 else "bình thường") + f" (phân vị {round(fpct)} trên 90 ngày)"))
+
+    rm = s_side + p_side          # tiền thật: spot toàn cầu + người mua Mỹ
+    up, down = dp >= small, dp <= -small
+    mag = "mạnh" if abs(dp) >= 2 * thr else "" if abs(dp) >= thr else "nhẹ"
+    move = f"{'Tăng' if dp > 0 else 'Giảm'}{' ' + mag if mag else ''} {_f1(abs(dp))}%"
+    causes = []   # (độ mạnh, câu ngắn, câu đầy đủ)
+    if up:
+        if rm >= 1:
+            causes.append((2 + rm, "tiền thật mua vào", "tiền thật mua vào (" + ", ".join(x for x in ["spot mua ròng" if s_side > 0 else "", "Premium dương" if p_side > 0 else ""] if x) + ")"))
+        if o_side < 0:
+            causes.append((2.5, "short bị ép đóng", f"short đóng lệnh hoặc bị ép (open interest {_f1(doi, True)}%)"))
+        if l_side > 0:
+            causes.append((2, "short bị thanh lý", f"short bị thanh lý {_usd(S)}"))
+        if o_side > 0:
+            causes.append((2.2 if (fpct or 0) >= 70 else 1.5, "long đòn bẩy", f"long đòn bẩy mở thêm (open interest {_f1(doi, True)}%{', funding cao' if (fpct or 0) >= 70 else ''})"))
+        if f_side > 0 and rm <= 0:
+            causes.append((1.8, "mua futures", "lệnh mua chủ động dồn ở futures"))
+    elif down:
+        if rm <= -1:
+            causes.append((2 - rm, "bán thật", "bán thật (" + ", ".join(x for x in ["spot bán ròng" if s_side < 0 else "", "Premium âm" if p_side < 0 else ""] if x) + ")"))
+        if f_side < 0:
+            causes.append((1.8, "bán futures", "bán chủ động trên futures"))
+        if l_side < 0:
+            causes.append((2, "long bị thanh lý", f"long bị thanh lý {_usd(L)}" + (f", gấp {_f1(L / S)} lần short" if S and L / S >= 2 else "")))
+        if o_side < 0:
+            causes.append((2.5, "xả đòn bẩy", f"long đóng lệnh, xả đòn bẩy (open interest {_f1(doi, True)}%)"))
+        if o_side > 0:
+            causes.append((2.2 if (fpct if fpct is not None else 50) <= 30 else 1.5, "short mới dồn vào", f"short mới mở thêm (open interest {_f1(doi, True)}%)"))
+    causes.sort(key=lambda c: -c[0])
+
+    # Độ bền của đà và giọng kết luận
+    if up:
+        if rm >= 1 and o_side <= 0:
+            tone, ass = "pos", "Đà tăng có tiền thật đỡ phía sau và đòn bẩy chưa nóng: loại đà tăng bền hơn."
+        elif rm >= 1:
+            tone, ass = "warn", "Có tiền thật mua, nhưng đòn bẩy cũng đang tăng theo" + (" và funding cao" if (fpct or 0) >= 70 else "") + ": đà còn tốt, cẩn thận nếu đòn bẩy tăng nhanh hơn spot."
+        elif o_side < 0 or l_side > 0:
+            tone, ass = "warn", "Đà tăng chủ yếu nhờ short bị ép, tiền thật chưa theo. Khi short đã đóng xong mà spot không mua tiếp, đà thường hụt hơi."
+        elif o_side > 0:
+            tone, ass = "neg", "Tăng bằng đòn bẩy, thiếu tiền thật: dễ bị đảo chiều và quét long."
+        else:
+            tone, ass = "neutral", "Chưa thấy lực nào áp đảo đứng sau đà tăng."
+    elif down:
+        if rm <= -1 and o_side > 0:
+            tone, ass = "neg", "Có người bán thật, cộng thêm short mới dồn vào: áp lực giảm còn nặng. Nhưng short càng đông thì càng dễ bật ngược mạnh nếu giá giữ được."
+        elif rm <= -1:
+            tone, ass = "neg", "Có người bán thật, không chỉ là xả đòn bẩy: loại giảm đáng lo hơn và thường cần thời gian để tạo đáy."
+        elif (o_side < 0 or l_side < 0) and rm >= 0:
+            tone, ass = "pos", "Chủ yếu là xả đòn bẩy, tiền thật không bán theo: kiểu giảm này thường làm sạch thị trường và hay ở gần đáy ngắn hạn."
+        elif o_side > 0 and (fpct if fpct is not None else 50) <= 30:
+            tone, ass = "warn", "Short đòn bẩy đang dồn vào khi funding thấp: nếu giá không giảm thêm, dễ thành short squeeze."
+        else:
+            tone, ass = "neutral", "Chưa thấy lực nào áp đảo đứng sau đà giảm."
+    else:
+        if doi >= 1.5 * thr_oi:
+            tone, ass = "warn", f"Giá đứng yên nhưng open interest tăng {_f1(doi)}%: đòn bẩy đang tích tụ, sắp có cú quét mạnh về một phía."
+        elif rm + f_side + l_side <= -3:
+            tone, ass = "warn", "Lực bán chủ động áp đảo (spot, futures, thanh lý long) mà giá không giảm: đang có bên mua đặt lệnh chờ đỡ giá. Lực đỡ này mất thì giá dễ rơi nhanh; giữ được thì phe bán sẽ đuối."
+        elif rm + f_side + l_side >= 3:
+            tone, ass = "warn", "Lực mua chủ động áp đảo mà giá không tăng: đang có bên bán đặt lệnh chờ chặn giá. Vượt qua được thì giá dễ bật nhanh; không qua được thì phe mua sẽ đuối."
+        elif rm <= -1:
+            tone, ass = "neutral", "Giá đứng yên nhưng tiền thật đang nghiêng về bán; chưa đủ để thành xu hướng."
+        elif rm >= 1:
+            tone, ass = "neutral", "Giá đứng yên nhưng tiền thật đang nghiêng về mua; chưa đủ để thành xu hướng."
+        else:
+            tone, ass = "neutral", "Thị trường đang chờ: không phe nào chiếm ưu thế."
+
+    if up or down:
+        grp = {"short bị ép đóng": 1, "short bị thanh lý": 1, "xả đòn bẩy": 2, "long bị thanh lý": 2}
+        second = next((c for c in causes[1:] if not (grp.get(c[1]) and grp.get(c[1]) == grp.get(causes[0][1]))), None) if causes else None
+        title = move + (": " + causes[0][1] + (" + " + second[1] if second else "") if causes else "")
+        verdict = f"{win} qua BTC {move.lower()}" + (", chủ yếu do " + "; ".join(c[2] for c in causes[:3]) if causes else "") + "."
+    else:
+        title = f"Đi ngang ({_f1(dp, True)}%)"
+        verdict = f"{win} qua BTC gần như đi ngang ({_f1(dp, True)}%)."
+
+    # Mốc giá và điều kiện xác nhận / vô hiệu
+    watch = []
+    pw = [v for _, v in prices]
+    if len(pw) >= 6:
+        lo, hi = min(pw), max(pw)
+        if down:
+            watch.append(f"Thủng {_px(lo)} (đáy {win}) là đà giảm còn tiếp; vượt lại {_px(hi)} (đỉnh {win}) mới coi như phe mua lấy lại thế.")
+        elif up:
+            watch.append(f"Giữ trên {_px(lo)} (đáy {win}) thì đà tăng còn nguyên; vượt {_px(hi)} là đi tiếp, rơi lại dưới đáy là hỏng.")
+        else:
+            watch.append(f"Giá đang trong vùng {_px(lo)}–{_px(hi)}; thoát ra khỏi vùng này theo hướng nào thì đà mới rõ.")
+    if p_side < 0:
+        watch.append("Coinbase Premium quay về dương: dấu hiệu người mua Mỹ trở lại.")
+    elif p_side > 0 and up:
+        watch.append("Coinbase Premium tụt xuống âm: đà tăng mất chỗ dựa từ người mua Mỹ.")
+    if down and o_side > 0:
+        watch.append("Open interest tiếp tục tăng mà giá không giảm thêm: short bị kẹt, dễ bật lên mạnh.")
+    elif up and o_side > 0 and (fpct or 0) >= 70:
+        watch.append("Open interest và funding tăng tiếp khi giá chững lại: rủi ro long bị quét.")
+    elif up and rm <= 0:
+        watch.append("Spot chuyển sang mua ròng: lúc đó đà tăng mới có nền tiền thật.")
+    elif down and s_side < 0:
+        watch.append("Spot chuyển sang mua ròng: lực bán thật đã cạn.")
+    elif not (up or down) and doi >= 1.5 * thr_oi:
+        watch.append("Funding lệch hẳn về một phía cho biết phe nào đang đông hơn, phe đó dễ bị quét.")
+    return {"title": title, "verdict": verdict, "tone": tone, "assess": ass,
+            "forces": [{"name": n, "side": sd, "text": t} for n, sd, t in forces], "watch": watch[:3]}
+
+
 def drivers(cb: dict | None, M: dict, errs: dict) -> dict | None:
     agg = M.get("liq_agg") or {}
     oi = agg.get("oi_btc") or try_(errs, "oi_okx", okx_oi_hourly)
@@ -510,6 +677,13 @@ def drivers(cb: dict | None, M: dict, errs: dict) -> dict | None:
                                      "code": code, "label": label, "why": why}
     if not out["windows"]:
         return None
+    for key, w in out["windows"].items():
+        h = int(key)
+        lq = liq_cls if h == 24 else (agg.get("h72") if agg.get("h72") else None)
+        try:
+            w["analysis"] = analyze_move(w, h, lq, fpct, [(t, v) for t, v in sorted(price.items()) if t >= t_end - h * 3600])
+        except Exception as ex:  # noqa: BLE001
+            errs["drv_analysis"] = str(ex)[:120]
     out["liq"] = liq
     out["liq_src"] = "agg" if agg.get("h24") else "okx"
     out["oi_src"] = oi_src

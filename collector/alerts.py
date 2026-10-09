@@ -149,7 +149,8 @@ def summary_lines(latest: dict) -> list:
         L.append(f"• Stablecoin 30 ngày: {vn(M['stable']['ch30'], 1, True)}% ({vn(M['stable']['total'])} tỷ $)")
     dv = ((M.get("drivers") or {}).get("windows") or {}).get("24")
     if dv:
-        L.append(f"• Đà giá 24h: {dv['label']} (giá {vn(dv['dp'], 1, True)}%, open interest {vn(dv['doi'], 1, True)}%)")
+        an = dv.get("analysis")
+        L.append(f"• Đà giá 24h: {an['title']}. {an['assess']}" if an else f"• Đà giá 24h: {dv['label']} (giá {vn(dv['dp'], 1, True)}%, open interest {vn(dv['doi'], 1, True)}%)")
     mac = latest.get("macro") or {}
     if mac.get("label") and mac.get("have", 1):
         L.append(f"• Vĩ mô: {mac['label']} (điểm {mac.get('score', 0):+d})")
@@ -213,8 +214,14 @@ def run(latest: dict) -> dict:
     if dv and abs(dv["dp"]) >= 5 and not recently("drivers", 12):
         liq = (M.get("drivers") or {}).get("liq") or {}
         extra = f"\nThanh lý trên OKX ({liq.get('hours', 24):.0f} giờ): short {vn(liq.get('short', 0) / 1e6, 1)} triệu $, long {vn(liq.get('long', 0) / 1e6, 1)} triệu $." if liq else ""
-        msgs.append(("market:drivers", f"{'🚀' if dv['dp'] > 0 else '🔻'} BTC {vn(dv['dp'], 1, True)}% trong 24 giờ: <b>{html.escape(dv['label'])}</b>\n\n{html.escape(dv['why'])}\n"
-                     f"Open interest {vn(dv['doi'], 1, True)}% · mua spot ròng {vn(dv['spot_btc'], 0, True) if dv.get('spot_btc') is not None else '–'} BTC (OKX) · Coinbase Premium {vn(dv['prem'], 3, True) if dv.get('prem') is not None else '–'}%{extra}"))
+        an = dv.get("analysis")
+        if an:
+            body = (f"{'🚀' if dv['dp'] > 0 else '🔻'} <b>{html.escape(an['title'])}</b> (24 giờ)\n\n{html.escape(an['verdict'])}\n\n<b>Kết luận:</b> {html.escape(an['assess'])}"
+                    + ("\n\n<b>Theo dõi:</b>\n" + "\n".join("• " + html.escape(x) for x in an["watch"]) if an.get("watch") else ""))
+            msgs.append(("market:drivers", body))
+        else:
+            msgs.append(("market:drivers", f"{'🚀' if dv['dp'] > 0 else '🔻'} BTC {vn(dv['dp'], 1, True)}% trong 24 giờ: <b>{html.escape(dv['label'])}</b>\n\n{html.escape(dv['why'])}\n"
+                         f"Open interest {vn(dv['doi'], 1, True)}% · mua spot ròng {vn(dv['spot_btc'], 0, True) if dv.get('spot_btc') is not None else '–'} BTC (OKX) · Coinbase Premium {vn(dv['prem'], 3, True) if dv.get('prem') is not None else '–'}%{extra}"))
 
     # 3) funding bất thường
     fd = M.get("funding")
