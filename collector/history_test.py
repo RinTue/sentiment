@@ -188,6 +188,7 @@ def bucket_table(score: dict, f7: dict, f30: dict) -> dict:
 
 
 SPLIT = datetime(2025, 1, 1, tzinfo=timezone.utc).timestamp()
+FAVOR_V = 2   # đổi số này để buộc tính lại trong ngày
 
 
 def favor_score(F: dict, codes: dict, f7: dict, f30: dict, names: dict) -> dict | None:
@@ -199,15 +200,19 @@ def favor_score(F: dict, codes: dict, f7: dict, f30: dict, names: dict) -> dict 
     def bin_of(v):
         return min(4, int(v // 20))
     train_days = [d for d in f30 if d < SPLIT]
-    base_up = sum(1 for d in train_days if f30[d] > 0) / len(train_days)
     edges = {}
     for k in keys:
         e = {}
+        own = [d for d in train_days if d in F[k]]          # mốc riêng: chỉ những ngày chỉ báo này có số liệu
+        if len(own) < 150:
+            edges[k] = e
+            continue
+        base_k = sum(1 for d in own if f30[d] > 0) / len(own)
         for b in range(5):
-            sel = [d for d in train_days if d in F[k] and bin_of(F[k][d]) == b]
+            sel = [d for d in own if bin_of(F[k][d]) == b]
             if len(sel) >= 15:
                 up = sum(1 for d in sel if f30[d] > 0) / len(sel)
-                e[b] = (up - base_up) * len(sel) / (len(sel) + 60)     # co lại khi ít ngày
+                e[b] = (up - base_k) * len(sel) / (len(sel) + 60)     # co lại khi ít ngày
         edges[k] = e
     # kiểu đà giá theo ngày (7 ngày sau), cộng với trọng số một nửa
     ce = {}
@@ -255,7 +260,8 @@ def favor_score(F: dict, codes: dict, f7: dict, f30: dict, names: dict) -> dict 
     if lc and lc[0] in ce:
         parts.append({"key": "drv", "name": "Kiểu đà giá hôm qua: " + lc[1], "level": None, "edge": round(100 * ce[lc[0]], 1)})
     parts.sort(key=lambda x: -abs(x["edge"]))
-    return {"value": round(score[last]), "zone": zone(score[last]), "asof": datetime.fromtimestamp(last, timezone.utc).strftime("%Y-%m-%d"),
+    return {"v": FAVOR_V, "raw": round(100 * raw[last], 1), "raw_p50": round(100 * train_raw[len(train_raw) // 2], 1), "train_from": datetime.fromtimestamp(min(d for d in raw if d < SPLIT), timezone.utc).strftime("%Y-%m-%d"),
+            "value": round(score[last]), "zone": zone(score[last]), "asof": datetime.fromtimestamp(last, timezone.utc).strftime("%Y-%m-%d"),
             "parts": parts, "train": table(tr), "test": table(te), "split": "2025-01-01",
             "series": [[int(d * 1000), round(score[d])] for d in sorted(score) if d >= last - 365 * DAY]}
 
@@ -267,7 +273,7 @@ def run(force: bool = False) -> dict | None:
     except (OSError, json.JSONDecodeError):
         pass
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    if old and old.get("day") == today and "favor" in old and not force:
+    if old and old.get("day") == today and (old.get("favor") or {}).get("v") == FAVOR_V and not force:
         return old
     t0, errs = time.time(), {}
     def safe(name, fn):
