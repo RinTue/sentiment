@@ -184,6 +184,7 @@ details.method summary { cursor: pointer; font-weight: 600; }
 .kpi.fav .big small { font-size: .9rem; color: var(--ink-3); }
 .kpi.fav .zl { padding: 1px 10px; border-radius: 8px; font-weight: 700; font-size: .9rem; }
 .kpi.fav .zl.pos { background: var(--good-bg); color: var(--good); } .kpi.fav .zl.neg { background: var(--bad-bg); color: var(--bad); } .kpi.fav .zl.mid { background: var(--neutral-bg); color: var(--ink-2); }
+.kpi.fav.weak .big { color: var(--ink-3); } .kpi.fav.weak .zl { background: var(--neutral-bg); color: var(--ink-3); }
 .kpi.fav .why { font-size: .9rem; color: var(--ink-2); margin-top: 4px; }
 .kpi.fav .trust { margin-top: 8px; font-size: .85rem; padding: 6px 10px; border-radius: 8px; }
 .kpi.fav .trust.ok { background: var(--good-bg); color: var(--good); } .kpi.fav .trust.no { background: var(--warn-bg); color: var(--warn); }
@@ -1448,9 +1449,11 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const z = (F.train || []).find((r) => r.name.startsWith(F.zone)), all = (F.train || [])[3];
     const parts = (F.parts || []).filter((p) => Math.abs(p.edge) >= 0.5).slice(0, 4)
       .map((p) => `<span>${esc(p.name.replace(/ \(.*\)$/, ""))}<b class="${p.edge > 0 ? "up" : "down"}">${p.edge > 0 ? "+" : "−"}${num(Math.abs(p.edge), 1)}</b></span>`).join("");
-    box.innerHTML = head(cls === "mid" ? "" : cls) +
+    const weak = chk && !chk.ok;   // chưa qua kiểm tra: làm mờ con số để không bị đọc như tín hiệu
+    box.classList.toggle("weak", !!weak);
+    box.innerHTML = head(weak || cls === "mid" ? "" : cls) +
       `<div class="row"><span class="big">${F.value}<small>/100</small></span><span class="zl ${cls}">${esc(F.zone)}</span><span class="s">số liệu ngày ${F.asof.split("-").reverse().join("/")}</span></div>
-      <div class="why">So với các ngày từ 2022 có tín hiệu giống hôm nay${z && all ? `: những ngày ${F.zone.toLowerCase()} như vậy, BTC tăng sau 30 ngày ở ${z.up30}% số lần (mọi ngày ${all.up30}%)` : ""}. Đây là xác suất nghiêng, không phải dự báo.</div>
+      <div class="why">${weak ? "Đây là điểm theo quy tắc học từ 2022–2024. Quy tắc này chưa dự báo đúng giai đoạn sau đó, nên đừng dựa vào con số này để vào lệnh." : `So với các ngày 2022–2024 có tín hiệu giống hôm nay${z && all ? `: những ngày ${F.zone.toLowerCase()} như vậy, BTC tăng sau 30 ngày ở ${z.up30}% số lần (mọi ngày ${all.up30}%)` : ""}. Đây là xác suất nghiêng, không phải dự báo.`}</div>
       ${parts ? `<div class="chips" style="margin-top:8px">${parts}</div>` : ""}
       ${chk ? `<div class="trust ${chk.ok ? "ok" : "no"}">${esc(chk.msg)}</div>` : ""}
       <div class="s" style="margin-top:6px"><a href="#method" data-go="method">Cách tính và bảng kiểm tra</a></div>`;
