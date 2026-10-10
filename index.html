@@ -436,7 +436,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <h2>Cách hệ thống hoạt động và giới hạn</h2>
       <div class="method">
       <ol>
-        <li><b>Thu thập:</b> mỗi giờ, bộ thu thập trên GitHub đọc 8 báo crypto, Reddit, Stocktwits, Bluesky, tiêu đề video của 11 kênh YouTube crypto lớn, 4 kênh tin Telegram, Mastodon, Lemmy và Hacker News; cùng dữ liệu thị trường (Fear &amp; Greed, CoinGecko, funding và tỷ lệ long/short của OKX/Hyperliquid, quyền chọn Deribit, Wikipedia, Coinbase, DefiLlama) và số liệu vĩ mô (FRED, Bộ Tài chính Mỹ, Fed New York, Yahoo). Khi bạn mở trang, trình duyệt lấy thêm số liệu trực tiếp từ Bybit, OKX, Deribit, SoSoValue và lịch Investing.com.</li>
+        <li><b>Thu thập:</b> mỗi giờ, bộ thu thập trên GitHub đọc 8 báo crypto, Reddit, Stocktwits, Bluesky, tiêu đề video của 11 kênh YouTube crypto lớn, 4 kênh tin Telegram, Mastodon, Lemmy và Hacker News; cùng dữ liệu thị trường (Fear &amp; Greed, CoinGecko, funding và tỷ lệ long/short của OKX/Hyperliquid, quyền chọn Deribit, Wikipedia, Coinbase, DefiLlama, dòng tiền ETF từ SoSoValue/Farside) và số liệu vĩ mô (FRED, Bộ Tài chính Mỹ, Fed New York, Yahoo). Khi bạn mở trang, trình duyệt lấy thêm số liệu trực tiếp từ Bybit, OKX, Deribit và lịch Investing.com.</li>
         <li><b>Lọc:</b> bỏ bài trùng, bot báo giá, quảng cáo, bài không phải tiếng Anh, bài không nói về crypto, và giới hạn số bài của mỗi tác giả.</li>
         <li><b>Chấm điểm:</b> mỗi bài nhận điểm từ −1 đến +1, kết hợp mô hình AI Twitter RoBERTa với từ điển thuật ngữ crypto (hiểu "rekt", "ATH", "outflows", phủ định…).</li>
         <li><b>Chỉ số:</b> điểm văn bản (so với lịch sử) kết hợp với Fear &amp; Greed, phiếu cộng đồng, funding, tỷ lệ long/short, quyền chọn và mức chú ý thành chỉ số 0–100. Máy chủ tính và lưu chỉ số mỗi giờ; trang dùng đúng con số đó (cùng số với tin Telegram). Chỉ khi máy chủ chưa cập nhật quá 2 giờ, trang mới tự tính lại bằng dữ liệu trực tiếp.</li>
@@ -699,7 +699,6 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   const bybit = (p) => getJSON("https://api.bybit.com" + p).then((j) => { if (j.retCode !== 0) throw new Error("Bybit: " + j.retMsg); return j.result; });
   const okx = (p) => getJSON("https://www.okx.com" + p).then((j) => { if (j.code !== "0") throw new Error("OKX: " + j.msg); return j.data; });
   const deribit = (p) => getJSON("https://www.deribit.com/api/v2" + p).then((j) => j.result);
-  const soso = (p, b) => getJSON("https://api.sosovalue.xyz/openapi/v2/etf/" + p, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(b) }).then((j) => { if (j.code !== 0) throw new Error("SoSoValue: " + (j.msg || j.code)); return j.data; });
   const kl = (list) => { const a = list.slice().reverse(); return { t: a.map((r) => +r[0]), h: a.map((r) => +r[2]), l: a.map((r) => +r[3]), c: a.map((r) => +r[4]) }; };
   const ymd = (d) => d.toISOString().slice(0, 10).replace(/-/g, "");
 
@@ -715,8 +714,6 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     oi: () => bybit(`/v5/market/open-interest?category=linear&symbol=${c}USDT&intervalTime=1d&limit=30`).then((r) => r.list.map((d) => ({ t: +d.timestamp, v: +d.openInterest })).sort((x, y) => x.t - y.t)),
     ls: () => bybit(`/v5/market/account-ratio?category=linear&symbol=${c}USDT&period=1d&limit=30`).then((r) => r.list.map((d) => ({ t: +d.timestamp, buy: +d.buyRatio })).sort((x, y) => x.t - y.t)),
     okxFund: () => okx(`/api/v5/public/funding-rate?instId=${c}-USDT-SWAP`).then((d) => +d[0].fundingRate),
-    etfNow: () => soso("currentEtfDataMetrics", { type: `us-${c.toLowerCase()}-spot` }),
-    etfHist: () => soso("historicalInflowChart", { type: `us-${c.toLowerCase()}-spot` }).then((a) => a.map((d) => ({ date: d.date, flow: +d.totalNetInflow, assets: +d.totalNetAssets })).sort((x, y) => x.date < y.date ? -1 : 1)),
     options: () => deribit(`/public/get_book_summary_by_currency?currency=${c}&kind=option`)
   });
   const SOURCES = {
@@ -728,7 +725,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     wiki: () => { const end = new Date(Date.now() - 864e5), start = new Date(Date.now() - 91 * 864e5); return getJSON(`https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Bitcoin/daily/${ymd(start)}/${ymd(end)}`).then((j) => j.items.map((d) => ({ t: Date.UTC(+d.timestamp.slice(0, 4), +d.timestamp.slice(4, 6) - 1, +d.timestamp.slice(6, 8), 12), v: d.views }))); },
     cal: () => loadCal()
   };
-  const SRC_NAME = { klines: "Bybit nến BTC", funding: "Bybit funding", oi: "Bybit OI", ls: "Bybit long/short", okxFund: "OKX funding", etfNow: "SoSoValue ETF", etfHist: "SoSoValue lịch sử ETF", options: "Deribit", fng: "Fear & Greed", votes: "CoinGecko phiếu bầu", trending: "CoinGecko thịnh hành", wiki: "Wikipedia", cal: "Investing.com lịch" };
+  const SRC_NAME = { klines: "Bybit nến BTC", funding: "Bybit funding", oi: "Bybit OI", ls: "Bybit long/short", okxFund: "OKX funding", options: "Deribit", fng: "Fear & Greed", votes: "CoinGecko phiếu bầu", trending: "CoinGecko thịnh hành", wiki: "Wikipedia", cal: "Investing.com lịch" };
 
   /* ---------- lịch kinh tế (Investing.com) ---------- */
   const NAME_VI = [
@@ -787,11 +784,13 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   /* ---------- Tầng 4: chỉ số tổng hợp ---------- */
   const ZONES = [[20, "Sợ hãi cực độ", "--z0"], [40, "Sợ hãi", "--z1"], [60, "Trung tính", "--z2"], [80, "Tham lam", "--z3"], [101, "Tham lam cực độ", "--z4"]];
   const zoneOf = (v) => ZONES.find((z) => v < z[0]);
+  // Dòng tiền ETF do máy chủ lấy (SoSoValue có khóa, hoặc Farside); trình duyệt không gọi trực tiếp nữa.
+  function etfInfo(D = S) {
+    const E = S.mkt && S.mkt.etf; return E ? E[D === S ? "BTC" : "ETH"] || null : null;
+  }
   function etfSeries(D = S) {
-    if (!D.etfHist) return null;
-    const a = D.etfHist.slice(), now = D.etfNow && D.etfNow.dailyNetInflow;
-    if (now && now.value != null && now.lastUpdateDate && (!a.length || now.lastUpdateDate > a.at(-1).date)) a.push({ date: now.lastUpdateDate, flow: +now.value });
-    return a;
+    const e = etfInfo(D);
+    return e && e.hist && e.hist.length ? e.hist.map((r) => ({ date: r[0], flow: r[1], assets: r[2] })) : null;
   }
   function putCall(D = S) {
     if (!D.options) return null; let p = 0, c = 0;
@@ -1102,14 +1101,14 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     if (AG && AG.oi && AG.oi.ch7 != null) out.push(["Open interest 7 ngày (tổng các sàn)", pct(AG.oi.ch7), usd(AG.oi.usd), cls(AG.oi.ch7)]);
     else if (D.oi && D.oi.length >= 8) { const o7 = (D.oi.at(-1).v / D.oi.at(-8).v - 1) * 100; out.push(["Open interest 7 ngày", pct(o7), num(D.oi.at(-1).v) + ` ${c} trên Bybit`, cls(o7)]); }
     if (D.ls) out.push(["Tài khoản nhỏ lẻ đang long", num(D.ls.at(-1).buy * 100) + "%", "theo Bybit (chưa có số gộp)"]);
-    const etf = etfSeries(D); if (etf && etf.length) out.push([`ETF ${c} phiên gần nhất`, usd(etf.at(-1).flow, true), "ngày " + etf.at(-1).date.split("-").reverse().join("/"), cls(etf.at(-1).flow)]);
+    const etf = etfSeries(D), ei = etfInfo(D); if (etf && etf.length) out.push([`ETF ${c} phiên gần nhất`, usd(etf.at(-1).flow, true), "ngày " + etf.at(-1).date.split("-").reverse().join("/") + " · " + ei.src + (ei.stale ? " (số cũ)" : ""), cls(etf.at(-1).flow)]);
     const pc = putCall(D); if (pc != null) out.push(["Put/call quyền chọn", num(pc, 2), "Deribit, theo vị thế mở"]);
     const M = S.mkt;
     if (c === "BTC" && M && M.premium) { const p = M.premium.avg24; out.push(["Coinbase Premium 24h", pct(p, 3), p >= 0.05 ? "người mua Mỹ đang trả giá cao hơn" : p <= -0.05 ? "người Mỹ đang bán mạnh hơn" : "cân bằng giữa Mỹ và quốc tế", p >= 0.05 ? "up" : p <= -0.05 ? "down" : ""]); }
     if (M && M.stable) out.push(["Tổng stablecoin", usd(M.stable.total * 1e9), M.stable.ch30 != null ? `${pct(M.stable.ch30, 1)} trong 30 ngày` : "", cls(M.stable.ch30)]);
     $("pos-stats").innerHTML = out.length ? statBoxes(out) : `<div class="msg">Không lấy được dữ liệu phái sinh ${c}.</div>`;
     if (etf && etf.length) { const a = etf.slice(-30); lineChart($("c-etf"), { t: a.map((x) => Date.parse(x.date + "T12:00:00Z")), H: 180, bars: true, zero: true, yfmt: (v) => Math.round(v / 1e6) + "tr", series: [{ name: "Dòng tiền", v: a.map((x) => x.flow), fmt: (v) => usd(v, true) }] }); }
-    else $("c-etf").innerHTML = `<div class="msg">Không lấy được ETF ${c}: ${esc(ef("etfHist", "etfNow"))}.</div>`;
+    else $("c-etf").innerHTML = `<div class="msg">${S.mkt ? `Máy chủ chưa lấy được dòng tiền ETF ${c}${S.mkt.errors && (S.mkt.errors["etf_farside_" + c] || S.mkt.errors["etf_soso_" + c]) ? " (" + esc(S.mkt.errors["etf_soso_" + c] || S.mkt.errors["etf_farside_" + c]) + ")" : ""}; sẽ thử lại ở lần chạy tới.` : "Dòng tiền ETF do bộ thu thập trên GitHub lấy; chưa có số mới."}</div>`;
     if (AG && AG.funding && AG.funding.series && AG.funding.series.length > 5) lineChart($("c-fund"), { t: AG.funding.series.map((x) => x[0]), H: 180, bars: true, zero: true, yfmt: (v) => (v * 100).toFixed(3) + "%", series: [{ name: "Funding tổng các sàn", v: AG.funding.series.map((x) => x[1]), fmt: (v) => pct(v * 100, 4) }] });
     else if (D.funding) lineChart($("c-fund"), { t: D.funding.map((x) => x.t), H: 180, bars: true, zero: true, yfmt: (v) => (v * 100).toFixed(3) + "%", series: [{ name: "Funding", v: D.funding.map((x) => x.v), fmt: (v) => pct(v * 100, 4) }] });
     else $("c-fund").innerHTML = `<div class="msg">Không lấy được funding: ${esc(ef("funding"))}.</div>`;

@@ -707,6 +707,91 @@ def drivers(cb: dict | None, M: dict, errs: dict) -> dict | None:
     return out
 
 
+# ---------------------------------------------------------------- dòng tiền ETF giao ngay (Mỹ)
+# API cũ của SoSoValue (api.sosovalue.xyz) đã ngừng. Ưu tiên API mới của SoSoValue (cần khóa miễn phí SOSOVALUE_API_KEY),
+# không có khóa hoặc lỗi thì đọc bảng của Farside. Kết quả được lưu lại để một lần lỗi không làm trống biểu đồ.
+SOSO_KEY = os.environ.get("SOSOVALUE_API_KEY", "").strip()
+ETF_CACHE = os.path.join(DATA, "etf_cache.json")
+FARSIDE = {"BTC": "https://farside.co.uk/bitcoin-etf-flow-all-data/", "ETH": "https://farside.co.uk/ethereum-etf-flow-all-data/"}
+MON = {m: i for i, m in enumerate(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], 1)}
+
+
+def etf_soso(coin: str) -> list:
+    r = requests.get("https://openapi.sosovalue.com/openapi/v1/etfs/summary-history", params={"symbol": coin, "country_code": "US", "limit": 300},
+                     headers={"x-soso-api-key": SOSO_KEY, "User-Agent": UA, "Accept": "application/json"}, timeout=20)
+    if r.status_code != 200:
+        raise RuntimeError(f"HTTP {r.status_code}")
+    j = r.json()
+    rows = j.get("data") if isinstance(j, dict) else j
+    if isinstance(j, dict) and j.get("code") not in (0, None):
+        raise RuntimeError(f"mã {j.get('code')}")
+    out = [[d["date"], float(d["total_net_inflow"]), float(d["total_net_assets"]) if d.get("total_net_assets") is not None else None]
+           for d in rows or [] if d.get("date") and d.get("total_net_inflow") is not None]
+    if not out:
+        raise RuntimeError("không có dòng dữ liệu")
+    return sorted(out)
+
+
+def etf_farside(coin: str) -> list:
+    import html as _html
+    import re
+    r = requests.get(FARSIDE[coin], headers={"User-Agent": UA, "Accept": "text/html"}, timeout=25)
+    if r.status_code != 200:
+        raise RuntimeError(f"HTTP {r.status_code}")
+    out = []
+    for tr in re.findall(r"<tr[^>]*>(.*?)</tr>", r.text, re.S | re.I):
+        cells = [_html.unescape(re.sub(r"<[^>]+>", "", c)).strip() for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", tr, re.S | re.I)]
+        if len(cells) < 3:
+            continue
+        m = re.fullmatch(r"(\d{1,2}) ([A-Z][a-z]{2}) (\d{4})", cells[0])
+        if not m or m.group(2) not in MON:
+            continue
+        tot = cells[-1].replace(",", "").replace("\xa0", "").strip()
+        if tot in ("", "-"):
+            continue
+        neg = tot.startswith("(") and tot.endswith(")")
+        try:
+            v = float(tot.strip("()")) * (-1 if neg else 1) * 1e6
+        except ValueError:
+            continue
+        out.append([f"{m.group(3)}-{MON[m.group(2)]:02d}-{int(m.group(1)):02d}", v, None])
+    if len(out) < 20:
+        raise RuntimeError(f"chỉ đọc được {len(out)} dòng")
+    # Farside ghi 0,0 cho ngày đã qua nhưng chưa có số: bỏ các ngày 0 ở cuối bảng
+    out = sorted({d: [d, v, a] for d, v, a in out}.values())
+    while out and out[-1][1] == 0:
+        out.pop()
+    return out
+
+
+def etf_flows(errs: dict) -> dict | None:
+    try:
+        cache = json.load(open(ETF_CACHE, encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        cache = {}
+    res = {}
+    for coin in ("BTC", "ETH"):
+        rows, src = None, None
+        if SOSO_KEY:
+            try:
+                rows, src = etf_soso(coin), "SoSoValue"
+            except Exception as ex:  # noqa: BLE001
+                errs[f"etf_soso_{coin}"] = str(ex)[:120]
+        if rows is None:
+            try:
+                rows, src = etf_farside(coin), "Farside"
+            except Exception as ex:  # noqa: BLE001
+                errs[f"etf_farside_{coin}"] = str(ex)[:120]
+        if rows:
+            cache[coin] = {"src": src, "saved": time.time(), "hist": rows[-300:]}
+        c = cache.get(coin)
+        if c:
+            res[coin] = {"src": c["src"], "stale": rows is None, "age_h": round((time.time() - c["saved"]) / 3600, 1), "hist": c["hist"][-120:]}
+    with open(ETF_CACHE, "w", encoding="utf-8") as f:
+        json.dump(cache, f)
+    return res or None
+
+
 # ---------------------------------------------------------------- chỉ số tổng hợp
 def try_(errs: dict, key: str, fn, *a):
     try:
@@ -823,6 +908,10 @@ def run(latest: dict, text_history: list) -> dict:
                        "ch30": round((last[1] / s30 - 1) * 100, 2) if s30 else None,
                        "d30": round((last[1] - s30) / 1e9, 1) if s30 else None,
                        "series": [[t * 1000, round(v / 1e9, 1)] for t, v in st[-180:]]}
+
+    ef = try_(errs, "etf", etf_flows, errs)
+    if ef:
+        M["etf"] = ef
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     bt = try_(errs, "backtest", backtest, today)
