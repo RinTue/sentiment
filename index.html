@@ -346,9 +346,6 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <h2>Tiền thật đang làm gì</h2>
       <div class="seg" id="pos-tabs" role="tablist"><button type="button" data-coin="BTC" class="on">BTC</button><button type="button" data-coin="ETH">ETH</button></div>
       <div class="stats" id="pos-stats"><p class="loading">Đang tải…</p></div>
-      <h3 id="pos-etf-title" data-tpl="Dòng tiền ETF {c}, 30 phiên">Dòng tiền ETF Bitcoin, 30 phiên</h3>
-      <div class="legend"><span><i class="sq" style="background:var(--good)"></i>Tiền vào</span><span><i class="sq" style="background:var(--bad)"></i>Tiền ra</span></div>
-      <div class="chart" id="c-etf"></div>
       <h3 id="pos-fund-title" data-tpl="Funding {s} (Bybit), khoảng 90 ngày">Funding BTC (Bybit), khoảng 90 ngày</h3><div class="chart" id="c-fund"></div>
       <div class="two">
         <div><h3>Coinbase Premium BTC, 7 ngày</h3><div class="chart" id="c-prem"></div><p class="note" id="prem-note"></p></div>
@@ -436,7 +433,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <h2>Cách hệ thống hoạt động và giới hạn</h2>
       <div class="method">
       <ol>
-        <li><b>Thu thập:</b> mỗi giờ, bộ thu thập trên GitHub đọc 8 báo crypto, Reddit, Stocktwits, Bluesky, tiêu đề video của 11 kênh YouTube crypto lớn, 4 kênh tin Telegram, Mastodon, Lemmy và Hacker News; cùng dữ liệu thị trường (Fear &amp; Greed, CoinGecko, funding và tỷ lệ long/short của OKX/Hyperliquid, quyền chọn Deribit, Wikipedia, Coinbase, DefiLlama, dòng tiền ETF từ SoSoValue) và số liệu vĩ mô (FRED, Bộ Tài chính Mỹ, Fed New York, Yahoo). Khi bạn mở trang, trình duyệt lấy thêm số liệu trực tiếp từ Bybit, OKX, Deribit và lịch Investing.com.</li>
+        <li><b>Thu thập:</b> mỗi giờ, bộ thu thập trên GitHub đọc 8 báo crypto, Reddit, Stocktwits, Bluesky, tiêu đề video của 11 kênh YouTube crypto lớn, 4 kênh tin Telegram, Mastodon, Lemmy và Hacker News; cùng dữ liệu thị trường (Fear &amp; Greed, CoinGecko, funding và tỷ lệ long/short của OKX/Hyperliquid, quyền chọn Deribit, Wikipedia, Coinbase, DefiLlama) và số liệu vĩ mô (FRED, Bộ Tài chính Mỹ, Fed New York, Yahoo). Khi bạn mở trang, trình duyệt lấy thêm số liệu trực tiếp từ Bybit, OKX, Deribit và lịch Investing.com.</li>
         <li><b>Lọc:</b> bỏ bài trùng, bot báo giá, quảng cáo, bài không phải tiếng Anh, bài không nói về crypto, và giới hạn số bài của mỗi tác giả.</li>
         <li><b>Chấm điểm:</b> mỗi bài nhận điểm từ −1 đến +1, kết hợp mô hình AI Twitter RoBERTa với từ điển thuật ngữ crypto (hiểu "rekt", "ATH", "outflows", phủ định…).</li>
         <li><b>Chỉ số:</b> điểm văn bản (so với lịch sử) kết hợp với Fear &amp; Greed, phiếu cộng đồng, funding, tỷ lệ long/short, quyền chọn và mức chú ý thành chỉ số 0–100. Máy chủ tính và lưu chỉ số mỗi giờ; trang dùng đúng con số đó (cùng số với tin Telegram). Chỉ khi máy chủ chưa cập nhật quá 2 giờ, trang mới tự tính lại bằng dữ liệu trực tiếp.</li>
@@ -703,7 +700,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   const ymd = (d) => d.toISOString().slice(0, 10).replace(/-/g, "");
 
   /* ---------- Tầng 1: dữ liệu thị trường, chú ý, lịch ---------- */
-  // Dữ liệu vị thế phái sinh và ETF cho một đồng (BTC hoặc ETH).
+  // Dữ liệu vị thế phái sinh cho một đồng (BTC hoặc ETH).
   const posSources = (c) => ({
     funding: async () => {
       const a = await bybit(`/v5/market/funding/history?category=linear&symbol=${c}USDT&limit=200`);
@@ -784,14 +781,6 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   /* ---------- Tầng 4: chỉ số tổng hợp ---------- */
   const ZONES = [[20, "Sợ hãi cực độ", "--z0"], [40, "Sợ hãi", "--z1"], [60, "Trung tính", "--z2"], [80, "Tham lam", "--z3"], [101, "Tham lam cực độ", "--z4"]];
   const zoneOf = (v) => ZONES.find((z) => v < z[0]);
-  // Dòng tiền ETF do máy chủ lấy (SoSoValue có khóa, hoặc Farside); trình duyệt không gọi trực tiếp nữa.
-  function etfInfo(D = S) {
-    const E = S.mkt && S.mkt.etf; return E ? E[D === S ? "BTC" : "ETH"] || null : null;
-  }
-  function etfSeries(D = S) {
-    const e = etfInfo(D);
-    return e && e.hist && e.hist.length ? e.hist.map((r) => ({ date: r[0], flow: r[1], assets: r[2] })) : null;
-  }
   function putCall(D = S) {
     if (!D.options) return null; let p = 0, c = 0;
     D.options.forEach((o) => { if (/-P$/.test(o.instrument_name)) p += +o.open_interest || 0; else c += +o.open_interest || 0; });
@@ -899,15 +888,6 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       s += ": " + bits.join(", ") + ".";
       if (c) s += s.startsWith("Phe long") ? " Nếu giá giảm, các vị thế này dễ bị thanh lý dây chuyền." : " Nếu giá tăng, phe short có thể bị ép mua lại.";
       pts.push([c, s]);
-    }
-
-    const etf = etfSeries();
-    if (etf && etf.length) {
-      const last = etf.at(-1), dir = Math.sign(last.flow); let k = 0;
-      for (let i = etf.length - 1; i >= 0 && Math.sign(etf[i].flow) === dir && dir !== 0; i--) k++;
-      const sum5 = etf.slice(-5).reduce((a, x) => a + x.flow, 0);
-      pts.push([dir > 0 ? "pos" : dir < 0 ? "neg" : "", `Tổ chức: ETF Bitcoin ${dir > 0 ? "hút ròng" : "bị rút ròng"} ${usd(Math.abs(last.flow))} phiên gần nhất, ${k} phiên liên tiếp cùng chiều; tổng 5 phiên ${usd(sum5, true)}.`]);
-      if (k >= 3) watch.push(`Chuỗi ${k} phiên ETF ${dir > 0 ? "tiền vào" : "tiền ra"}: một phiên đảo chiều sẽ là tín hiệu thay đổi.`);
     }
 
     const MK = S.mkt;
@@ -1088,9 +1068,9 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const c = POS.coin, D = c === "BTC" ? S : S.eth;
     document.querySelectorAll("#pos-tabs button").forEach((b) => b.classList.toggle("on", b.dataset.coin === c));
     const AG = c === "BTC" && S.mkt && S.mkt.liq_agg ? S.mkt.liq_agg : null;   // số gộp các sàn (chỉ có cho BTC)
-    ["pos-etf-title", "pos-fund-title"].forEach((id) => { const el = $(id); el.textContent = el.dataset.tpl.replace("{c}", c === "BTC" ? "Bitcoin" : "Ethereum").replace("{s}", c); });
+    ["pos-fund-title"].forEach((id) => { const el = $(id); el.textContent = el.dataset.tpl.replace("{c}", c === "BTC" ? "Bitcoin" : "Ethereum").replace("{s}", c); });
     if (AG && AG.funding) $("pos-fund-title").textContent = "Funding BTC, tổng các sàn (bình quân theo open interest), 90 ngày";
-    if (!D || D.loading) { $("pos-stats").innerHTML = `<p class="loading">Đang tải dữ liệu ${c}…</p>`; $("c-etf").innerHTML = ""; $("c-fund").innerHTML = ""; if (!D) loadEth(); return; }
+    if (!D || D.loading) { $("pos-stats").innerHTML = `<p class="loading">Đang tải dữ liệu ${c}…</p>`; $("c-fund").innerHTML = ""; if (!D) loadEth(); return; }
     const ef = (...k) => k.filter((x) => (D.err || S.err)[x]).map((x) => SRC_NAME[x].replace("BTC", c) + ": " + (D.err || S.err)[x]).join("; ") || "thiếu dữ liệu";
     const out = [];
     if (AG && AG.funding) out.push(["Funding (tổng các sàn)", pct(AG.funding.last * 100, 4), `phân vị ${num(AG.funding.pct)}% trong 90 ngày`]);
@@ -1101,14 +1081,11 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     if (AG && AG.oi && AG.oi.ch7 != null) out.push(["Open interest 7 ngày (tổng các sàn)", pct(AG.oi.ch7), usd(AG.oi.usd), cls(AG.oi.ch7)]);
     else if (D.oi && D.oi.length >= 8) { const o7 = (D.oi.at(-1).v / D.oi.at(-8).v - 1) * 100; out.push(["Open interest 7 ngày", pct(o7), num(D.oi.at(-1).v) + ` ${c} trên Bybit`, cls(o7)]); }
     if (D.ls) out.push(["Tài khoản nhỏ lẻ đang long", num(D.ls.at(-1).buy * 100) + "%", "theo Bybit (chưa có số gộp)"]);
-    const etf = etfSeries(D), ei = etfInfo(D); if (etf && etf.length) out.push([`ETF ${c} phiên gần nhất`, usd(etf.at(-1).flow, true), "ngày " + etf.at(-1).date.split("-").reverse().join("/") + " · " + ei.src + (ei.stale ? " (số cũ)" : ""), cls(etf.at(-1).flow)]);
     const pc = putCall(D); if (pc != null) out.push(["Put/call quyền chọn", num(pc, 2), "Deribit, theo vị thế mở"]);
     const M = S.mkt;
     if (c === "BTC" && M && M.premium) { const p = M.premium.avg24; out.push(["Coinbase Premium 24h", pct(p, 3), p >= 0.05 ? "người mua Mỹ đang trả giá cao hơn" : p <= -0.05 ? "người Mỹ đang bán mạnh hơn" : "cân bằng giữa Mỹ và quốc tế", p >= 0.05 ? "up" : p <= -0.05 ? "down" : ""]); }
     if (M && M.stable) out.push(["Tổng stablecoin", usd(M.stable.total * 1e9), M.stable.ch30 != null ? `${pct(M.stable.ch30, 1)} trong 30 ngày` : "", cls(M.stable.ch30)]);
     $("pos-stats").innerHTML = out.length ? statBoxes(out) : `<div class="msg">Không lấy được dữ liệu phái sinh ${c}.</div>`;
-    if (etf && etf.length) { const a = etf.slice(-30); lineChart($("c-etf"), { t: a.map((x) => Date.parse(x.date + "T12:00:00Z")), H: 180, bars: true, zero: true, yfmt: (v) => Math.round(v / 1e6) + "tr", series: [{ name: "Dòng tiền", v: a.map((x) => x.flow), fmt: (v) => usd(v, true) }] }); }
-    else $("c-etf").innerHTML = `<div class="msg">${S.mkt ? `Máy chủ chưa lấy được dòng tiền ETF ${c}${S.mkt.errors && (S.mkt.errors["etf_soso_" + c] || S.mkt.errors["etf_defillama_" + c]) ? " (" + esc(S.mkt.errors["etf_soso_" + c] || S.mkt.errors["etf_farside_" + c]) + ")" : ""}; sẽ thử lại ở lần chạy tới.` : "Dòng tiền ETF do bộ thu thập trên GitHub lấy; chưa có số mới."}</div>`;
     if (AG && AG.funding && AG.funding.series && AG.funding.series.length > 5) lineChart($("c-fund"), { t: AG.funding.series.map((x) => x[0]), H: 180, bars: true, zero: true, yfmt: (v) => (v * 100).toFixed(3) + "%", series: [{ name: "Funding tổng các sàn", v: AG.funding.series.map((x) => x[1]), fmt: (v) => pct(v * 100, 4) }] });
     else if (D.funding) lineChart($("c-fund"), { t: D.funding.map((x) => x.t), H: 180, bars: true, zero: true, yfmt: (v) => (v * 100).toFixed(3) + "%", series: [{ name: "Funding", v: D.funding.map((x) => x.v), fmt: (v) => pct(v * 100, 4) }] });
     else $("c-fund").innerHTML = `<div class="msg">Không lấy được funding: ${esc(ef("funding"))}.</div>`;
@@ -1246,8 +1223,6 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const fpct = M && M.funding ? M.funding.pct : (S.funding ? pctRank(S.funding.map((x) => x.v), S.funding.at(-1).v) : null);
     if (fpct != null && fpct >= 85) sig.push(["warn", `Funding cao (phân vị ${num(fpct)}%): phe long khá đông, dễ bị thanh lý nếu giá giảm`, "phe long đang đông"]);
     else if (fpct != null && fpct <= 15) sig.push(["warn", `Funding thấp (phân vị ${num(fpct)}%): phe short khá đông`, "phe short đang đông"]);
-    const etf = etfSeries();
-    if (etf && etf.length) { const dir = Math.sign(etf.at(-1).flow); let k = 0; for (let i = etf.length - 1; i >= 0 && Math.sign(etf[i].flow) === dir && dir !== 0; i--) k++; if (k >= 3) sig.push([dir > 0 ? "pos" : "neg", `ETF Bitcoin ${dir > 0 ? "hút ròng" : "bị rút ròng"} ${k} phiên liên tiếp`, dir > 0 ? "ETF hút tiền liên tục" : "ETF bị rút tiền liên tục"]); }
     const dv = drvWin("24");
     if (dv && DRV_SHORT[dv.code]) sig.push([DRV_CLS[dv.code] || "warn", `Đà giá 24 giờ: ${dv.label.toLowerCase()} (giá ${pct(dv.dp, 1)}, open interest ${pct(dv.doi, 1)})`, DRV_SHORT[dv.code]]);
     const nx = S.cal ? S.cal.filter((e) => e.tier === 1 && e.t > Date.now()).sort((a, b) => a.t - b.t)[0] : null;
