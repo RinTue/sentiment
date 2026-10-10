@@ -1,0 +1,12 @@
+name: probe
+on: workflow_dispatch
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for u in https://farside.co.uk/btc/ https://farside.co.uk/eth/ https://farside.co.uk/bitcoin-etf-flow-all-data/; do
+            for ua in "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36" "curl/8"; do
+              code=$(curl -s -o /tmp/p.html -w "%{http_code}" -A "$ua" -H "Accept: text/html" -m 20 "$u"); echo "$u [$ua] -> $code $(wc -c </tmp/p.html) bytes $(grep -c 'Total' /tmp/p.html) Total-mentions $(grep -ci 'cloudflare\|just a moment' /tmp/p.html) cf"
+            done
+          done
