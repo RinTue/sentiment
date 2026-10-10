@@ -764,6 +764,34 @@ def etf_farside(coin: str) -> list:
     return out
 
 
+def etf_llama(coin: str) -> list:
+    """DefiLlama (trang ETF của họ): không cần khóa. Đọc mềm dẻo vì định dạng không có tài liệu chính thức."""
+    r = requests.get("https://etfs.llama.fi/flows", headers={"User-Agent": UA, "Accept": "application/json"}, timeout=25)
+    if r.status_code != 200:
+        raise RuntimeError(f"HTTP {r.status_code}")
+    j = r.json()
+    rows = j if isinstance(j, list) else next((v for v in j.values() if isinstance(v, list)), []) if isinstance(j, dict) else []
+    if not rows or not isinstance(rows[0], dict):
+        raise RuntimeError("định dạng lạ: " + (str(list(j.keys()))[:80] if isinstance(j, dict) else type(j).__name__))
+    k0 = rows[0].keys()
+    dk = next((k for k in ("day", "date", "timestamp") if k in k0), None)
+    ck = next((k for k in ("gecko_id", "asset", "coin", "symbol") if k in k0), None)
+    fk = next((k for k in k0 if "flow" in k.lower()), None)
+    if not (dk and ck and fk):
+        raise RuntimeError("thiếu cột: " + ",".join(list(k0))[:90])
+    want = {"BTC": ("bitcoin", "btc"), "ETH": ("ethereum", "eth")}[coin]
+    agg: dict = {}
+    for d in rows:
+        if str(d.get(ck, "")).lower() not in want or d.get(fk) is None:
+            continue
+        day = d[dk]
+        day = datetime.fromtimestamp(day if day < 1e11 else day / 1000, timezone.utc).strftime("%Y-%m-%d") if isinstance(day, (int, float)) else str(day)[:10]
+        agg[day] = agg.get(day, 0.0) + float(d[fk])
+    if len(agg) < 20:
+        raise RuntimeError(f"chỉ có {len(agg)} ngày")
+    return [[d, v, None] for d, v in sorted(agg.items())]
+
+
 def etf_flows(errs: dict) -> dict | None:
     try:
         cache = json.load(open(ETF_CACHE, encoding="utf-8"))
@@ -777,11 +805,13 @@ def etf_flows(errs: dict) -> dict | None:
                 rows, src = etf_soso(coin), "SoSoValue"
             except Exception as ex:  # noqa: BLE001
                 errs[f"etf_soso_{coin}"] = str(ex)[:120]
-        if rows is None:
+        for name, fn in (("DefiLlama", etf_llama), ("Farside", etf_farside)):
+            if rows is not None:
+                break
             try:
-                rows, src = etf_farside(coin), "Farside"
+                rows, src = fn(coin), name
             except Exception as ex:  # noqa: BLE001
-                errs[f"etf_farside_{coin}"] = str(ex)[:120]
+                errs[f"etf_{name.lower()}_{coin}"] = str(ex)[:120]
         if rows:
             cache[coin] = {"src": src, "saved": time.time(), "hist": rows[-300:]}
         c = cache.get(coin)
