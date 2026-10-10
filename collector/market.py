@@ -800,18 +800,15 @@ def etf_flows(errs: dict) -> dict | None:
     res = {}
     for coin in ("BTC", "ETH"):
         rows, src = None, None
-        if SOSO_KEY:
+        # Đã thử (10/2026): Farside chặn máy chủ GitHub (HTTP 403), DefiLlama chuyển ETF sang gói trả phí (HTTP 402).
+        # Hai hàm etf_farside/etf_llama giữ lại phòng khi họ mở lại; hiện chỉ dùng SoSoValue.
+        if not SOSO_KEY:
+            errs[f"etf_soso_{coin}"] = "chưa có khóa SOSOVALUE_API_KEY trong Secrets"
+        else:
             try:
                 rows, src = etf_soso(coin), "SoSoValue"
             except Exception as ex:  # noqa: BLE001
                 errs[f"etf_soso_{coin}"] = str(ex)[:120]
-        for name, fn in (("DefiLlama", etf_llama), ("Farside", etf_farside)):
-            if rows is not None:
-                break
-            try:
-                rows, src = fn(coin), name
-            except Exception as ex:  # noqa: BLE001
-                errs[f"etf_{name.lower()}_{coin}"] = str(ex)[:120]
         if rows:
             cache[coin] = {"src": src, "saved": time.time(), "hist": rows[-300:]}
         c = cache.get(coin)
