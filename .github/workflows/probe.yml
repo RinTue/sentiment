@@ -6,24 +6,13 @@ jobs:
     steps:
       - shell: python
         run: |
-          import json, urllib.request, traceback, sys
-          sys.excepthook = lambda t, v, tb: print("::notice::ERR " + "".join(traceback.format_exception(t, v, tb))[-800:].replace("\n", " | "))
-          UA = {"User-Agent": "SentimentResearch research@users.noreply.github.com", "Accept-Encoding": "identity", "Host": "data.sec.gov", "Accept": "application/json"}
-          def get(u):
-              return json.load(urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=30))
-          base = "https://data.sec.gov/submissions/"
-          j = get(base + "CIK0001050446.json")
-          blocks = [j["filings"]["recent"]] + [get(base + f["name"]) for f in j["filings"].get("files", [])]
-          rows = []
-          for b in blocks:
-              for f, d, a, it in zip(b["form"], b["filingDate"], b["acceptanceDateTime"], b["items"]):
-                  if f == "8-K" and d >= "2020-08-01":
-                      rows.append(f"{a[:16].replace('T',' ')}|{it}")
-          rows.sort()
-          print(f"::notice::N={len(rows)}")
-          chunk = ""
-          for r in rows:
-              if len(chunk) + len(r) > 3500:
-                  print("::notice::" + chunk); chunk = ""
-              chunk += r + ";"
-          if chunk: print("::notice::" + chunk)
+          import re, urllib.request
+          UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36", "Accept": "text/html,application/json"}
+          for u in ["https://www.strategy.com/purchases", "https://www.strategy.com/api/bitcoin/purchases", "https://bitbo.io/treasuries/microstrategy/"]:
+              try:
+                  r = urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=30)
+                  t = r.read().decode("utf-8", "replace")
+                  dates = re.findall(r"20\d\d-\d\d-\d\d|\b\d{1,2}/\d{1,2}/20\d\d\b|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{1,2},? 20\d\d", t)
+                  print(f"::notice::{u} -> {r.status} {len(t)}B dates={len(dates)} sample={dates[:6]} nextdata={'__NEXT_DATA__' in t}")
+              except Exception as ex:
+                  print(f"::notice::{u} -> ERR {str(ex)[:150]}")
