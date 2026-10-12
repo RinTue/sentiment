@@ -211,7 +211,7 @@ def bucket_table(score: dict, f7: dict, f30: dict) -> dict:
 
 
 SPLIT = datetime(2025, 1, 1, tzinfo=timezone.utc).timestamp()
-FAVOR_V = 3   # đổi số này để buộc tính lại trong ngày
+FAVOR_V = 4   # đổi số này để buộc tính lại trong ngày
 
 
 def favor_score(F: dict, codes: dict, f7: dict, f30: dict, names: dict) -> dict | None:

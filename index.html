@@ -1095,8 +1095,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const yb = y5("global", 0); if (yb) out.push([`Google: "buy bitcoin"`, `phân vị ${yb.pct}%`, `${lvl(yb.pct)} (tuần gần nhất)`]);
     const yv = y5("vn", 0); if (yv) out.push([`Google VN: "mua bitcoin"`, `phân vị ${yv.pct}%`, `${lvl(yv.pct)} (tuần gần nhất)`]);
     const appRow = (cc, app) => AP && AP.rows.find((r) => r.cc === cc && r.app === app);
-    const cb = appRow("us", "Coinbase"); if (cb) out.push(["Coinbase, App Store Mỹ", cb.overall ? `#${cb.overall}` : "ngoài top 200", `mục Tài chính: ${cb.finance ? "#" + cb.finance : "ngoài top 200"}${cb.d7_fin ? ` · 7 ngày trước #${cb.d7_fin}` : ""}`]);
-    const bn = appRow("vn", "Binance"); if (bn) out.push(["Binance, App Store Việt Nam", bn.overall ? `#${bn.overall}` : "ngoài top 200", `mục Tài chính: ${bn.finance ? "#" + bn.finance : "ngoài top 200"}${bn.d7_fin ? ` · 7 ngày trước #${bn.d7_fin}` : ""}`]);
+    const cb = appRow("us", "Coinbase"); if (cb) out.push(["Coinbase, App Store Mỹ", cb.overall ? `#${cb.overall}` : "ngoài top 100", `mục Tài chính: ${cb.finance ? "#" + cb.finance : "ngoài top 100"}${cb.d7_fin ? ` · 7 ngày trước #${cb.d7_fin}` : ""}`]);
+    const bn = appRow("vn", "Binance"); if (bn) out.push(["Binance, App Store Việt Nam", bn.overall ? `#${bn.overall}` : "ngoài top 100", `mục Tài chính: ${bn.finance ? "#" + bn.finance : "ngoài top 100"}${bn.d7_fin ? ` · 7 ngày trước #${bn.d7_fin}` : ""}`]);
     if (WK.meme_pct != null) out.push(["Memecoin so với Bitcoin (Wikipedia)", `phân vị ${WK.meme_pct}%`, WK.meme_pct >= 80 ? "đầu cơ đang nóng" : WK.meme_pct <= 20 ? "đầu cơ nguội" : "bình thường (so với 1 năm)", WK.meme_pct >= 80 ? "down" : ""]);
     if (WK.vi_ch != null) out.push(["Wikipedia tiếng Việt: Bitcoin", `${num(WK.vi_last7)}/ngày`, `${WK.vi_ch >= 0 ? "+" : ""}${WK.vi_ch}% so với 2 tháng trước`, WK.vi_ch >= 30 ? "up" : WK.vi_ch <= -30 ? "down" : ""]);
     $("att-stats").innerHTML = out.length ? statBoxes(out) : `<div class="msg">Không lấy được: ${esc(errFor("votes", "wiki", "fng"))}.</div>`;
@@ -1114,7 +1114,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       $("apps-tbl").innerHTML = `<table class="evtbl"><thead><tr><th>Ứng dụng</th>${Object.entries({ us: "Mỹ", vn: "Việt Nam" }).map(([, n]) => `<th>${n}: Tài chính</th><th>${n}: mọi ứng dụng</th>`).join("")}</tr></thead><tbody>` +
         [...new Set(AP.rows.map((r) => r.app))].map((app) => `<tr><td>${esc(app)}</td>${["us", "vn"].map((cc) => { const r = appRow(cc, app); return r ? `<td class="num">${cell(r.finance, r.d7_fin)}</td><td class="num">${cell(r.overall, r.d7_all)}</td>` : "<td>–</td><td>–</td>"; }).join("")}</tr>`).join("") + `</tbody></table>`;
       const since = AP.rows.map((r) => r.since).filter(Boolean).sort()[0];
-      $("apps-note").textContent = `Hạng ứng dụng miễn phí, top 200 (– là ngoài top 200). Mũi tên là thay đổi so với 7 ngày trước. Apple không cho xem lịch sử nên trang tự ghi lại từ ${since ? since.split("-").reverse().join("/") : "hôm nay"}; Coinbase leo vào top 10 mọi ứng dụng ở Mỹ thường là lúc người mới ồ ạt vào thị trường.`;
+      $("apps-note").textContent = `Hạng ứng dụng miễn phí, top 100 (– là ngoài top 100). Mũi tên là thay đổi so với 7 ngày trước. Apple không cho xem lịch sử nên trang tự ghi lại từ ${since ? since.split("-").reverse().join("/") : "hôm nay"}; Coinbase leo vào top 10 mọi ứng dụng ở Mỹ thường là lúc người mới ồ ạt vào thị trường.`;
     } else $("apps-tbl").innerHTML = `<div class="msg">${AT ? "Chưa lấy được bảng xếp hạng App Store." : "Phần này do bộ thu thập trên GitHub lấy."}</div>`;
     if (WK.meme_series && WK.meme_series.length > 5) {
       lineChart($("c-meme"), { t: WK.meme_series.map((r) => r[0]), H: 170, xfmt: dd, yfmt: (v) => num(v, 2), series: [{ name: "Dogecoin + Meme coin / Bitcoin", v: WK.meme_series.map((r) => r[1]), color: "var(--s2)", fmt: (v) => num(v, 3) }] });

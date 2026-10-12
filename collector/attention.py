@@ -24,7 +24,7 @@ UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like 
 WIKI_UA = "sentiment-dashboard (github.com/RinTue/sentiment)"
 
 TRENDS = {   # tên nhóm: (vùng, từ khóa) — các từ trong một nhóm được so trên cùng một thang 0–100
-    "global": ("", ["buy bitcoin", "buy crypto", "bitcoin"]),
+    "global": ("", ["buy bitcoin", "buy crypto"]),    # không để chung với "bitcoin": từ đó lớn quá, ép hai từ kia về 0
     "vn": ("VN", ["mua bitcoin", "bitcoin", "tiền ảo", "binance"]),
 }
 APPS = ["Coinbase", "Binance", "Crypto.com", "OKX", "Bybit"]
@@ -70,12 +70,16 @@ def trends_fetch(geo: str, kws: list, timeframe: str) -> list:
 
 def trends(cache: dict, errs: dict) -> dict:
     T = cache.setdefault("trends", {})
-    if time.time() - T.get("tried", 0) < 6 * 3600 and T.get("groups"):
+    same = all((T.get("groups") or {}).get(n, {}).get("kw") == kws for n, (_, kws) in TRENDS.items())
+    if time.time() - T.get("tried", 0) < 6 * 3600 and T.get("groups") and same:
         return T
     T["tried"] = time.time()
     groups = T.setdefault("groups", {})
     for name, (geo, kws) in TRENDS.items():
         g = groups.setdefault(name, {"geo": geo, "kw": kws})
+        if g.get("kw") != kws:          # đổi từ khóa thì bỏ số cũ (thang 0–100 khác nhau)
+            g.clear()
+            g.update({"geo": geo, "kw": kws})
         for key, tf in (("d90", "today 3-m"), ("y5", "today 5-y")):
             try:
                 g[key] = trends_fetch(geo, kws, tf)
