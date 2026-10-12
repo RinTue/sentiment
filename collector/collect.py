@@ -1223,6 +1223,12 @@ def main() -> int:
         latest["market"] = {"error": str(ex)[:200]}
         print("Lỗi chỉ số tổng hợp:", ex, file=sys.stderr)
     try:
+        import attention
+        latest["attention"] = attention.run()
+    except Exception as ex:  # noqa: BLE001
+        latest["attention"] = {"error": str(ex)[:200]}
+        print("Lỗi phần chú ý nhỏ lẻ:", ex, file=sys.stderr)
+    try:
         import events
         latest["events"] = events.run(latest, store)
     except Exception as ex:  # noqa: BLE001

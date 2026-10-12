@@ -50,10 +50,33 @@ def fng_hist() -> dict:
     return {day_of(t): float(v) for t, v, _ in market.fng(0)}
 
 
-def wiki_hist() -> dict:
+def wiki_hist(page: str = "Bitcoin") -> dict:
     end = datetime.now(timezone.utc) - timedelta(days=1)
-    j = get(f"https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Bitcoin/daily/20211001/{end:%Y%m%d}")
+    try:
+        j = get(f"https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/{page}/daily/20201001/{end:%Y%m%d}")
+    except requests.HTTPError:
+        if page == "Bitcoin":
+            raise
+        return {}
     return {int(datetime.strptime(d["timestamp"][:8], "%Y%m%d").replace(tzinfo=timezone.utc).timestamp()): float(d["views"]) for d in j["items"]}
+
+
+def trends_daily(group: str, idx: int) -> dict:
+    """Google Trends 5 năm (theo tuần) do attention.py lưu; mỗi ngày lấy giá trị của tuần gần nhất trước đó."""
+    try:
+        c = json.load(open(os.path.join(DATA, "attention_cache.json"), encoding="utf-8"))
+        y5 = c["trends"]["groups"][group]["y5"]
+    except (OSError, KeyError, TypeError, json.JSONDecodeError):
+        return {}
+    wk = sorted((int(r[0] / 1000), r[idx + 1]) for r in y5)
+    out, j = {}, 0
+    d = day_of(wk[0][0]) + 7 * DAY   # tuần của Google tính từ Chủ nhật; chỉ dùng tuần đã kết thúc
+    while d <= wk[-1][0] + 7 * DAY:
+        while j + 1 < len(wk) and wk[j + 1][0] + 7 * DAY <= d:
+            j += 1
+        out[d] = float(wk[j][1])
+        d += DAY
+    return out
 
 
 def stable_hist() -> dict:
@@ -188,7 +211,7 @@ def bucket_table(score: dict, f7: dict, f30: dict) -> dict:
 
 
 SPLIT = datetime(2025, 1, 1, tzinfo=timezone.utc).timestamp()
-FAVOR_V = 2   # đổi số này để buộc tính lại trong ngày
+FAVOR_V = 3   # đổi số này để buộc tính lại trong ngày
 
 
 def favor_score(F: dict, codes: dict, f7: dict, f30: dict, names: dict) -> dict | None:
@@ -319,6 +342,15 @@ def run(force: bool = False) -> dict | None:
         F["prem7"] = keep(trailing_pct(rolling(prem, lambda a: sum(a) / len(a), 7), 365))
     if stab:
         F["stable30"] = keep(trailing_pct(change(stab, 30), 365))
+    # Chú ý của người mới: memecoin so với Bitcoin trên Wikipedia, tìm kiếm Google "buy bitcoin" và "mua bitcoin" (Việt Nam)
+    doge, mc = safe("wiki_doge", lambda: wiki_hist("Dogecoin")), safe("wiki_meme", lambda: wiki_hist("Meme_coin"))
+    if wiki and doge:
+        ratio = {d: (doge.get(d, 0) + mc.get(d, 0)) / wiki[d] for d in wiki if wiki[d] and d in doge}
+        F["meme"] = keep(trailing_pct(rolling(ratio, lambda a: sum(a) / len(a), 7), 365))
+    for key, grp, idx in (("tr_buy", "global", 0), ("tr_vn", "vn", 0)):
+        tr = trends_daily(grp, idx)
+        if len(tr) > 400:
+            F[key] = keep(trailing_pct(tr, 365))
 
     # Chỉ số tổng hợp dựng lại: đúng công thức trang web với các thành phần có lịch sử
     W = {"fng": 20, "funding": 20, "wiki": 15}
@@ -329,7 +361,8 @@ def run(force: bool = False) -> dict | None:
             comp[d] = sum(v * w for v, w in parts) / sum(w for _, w in parts)
     NAMES = {"composite": "Chỉ số tổng hợp (dựng lại: Fear & Greed, funding, Wikipedia)", "fng": "Fear & Greed",
              "funding": "Funding (phân vị 90 ngày)", "wiki": "Chú ý Wikipedia", "oi7": "Open interest thay đổi 7 ngày",
-             "liq7": "Thanh lý 7 ngày (cao = short bị thanh lý nhiều)", "prem7": "Coinbase Premium 7 ngày", "stable30": "Stablecoin thay đổi 30 ngày"}
+             "liq7": "Thanh lý 7 ngày (cao = short bị thanh lý nhiều)", "prem7": "Coinbase Premium 7 ngày", "stable30": "Stablecoin thay đổi 30 ngày",
+             "meme": "Wikipedia: memecoin so với Bitcoin (cao = hưng phấn)", "tr_buy": "Google: tìm \"buy bitcoin\" (toàn cầu)", "tr_vn": "Google: tìm \"mua bitcoin\" (Việt Nam)"}
     factors = []
     for k, series in [("composite", comp)] + list(F.items()):
         if len(series) < 200:

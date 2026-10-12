@@ -14,7 +14,7 @@
   --accent: #0f5f6b; --accent-bg: #e3eff0; --good: #1d7a3e; --good-bg: #e3f2e8; --bad: #b3261e; --bad-bg: #fbe7e5;
   --warn: #8a5a00; --warn-bg: #fbefd6; --neutral-bg: #eceeed; --t1: #b3261e; --t1-bg: #fbe7e5; --t2: #8a5a00; --t2-bg: #fbefd6;
   --z0: #b3261e; --z1: #d9792b; --z2: #9aa09f; --z3: #4f9a5a; --z4: #1d7a3e;
-  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #8a5cd6;
   --font: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
   color-scheme: light;
@@ -25,7 +25,7 @@
     --accent: #5cc0cc; --accent-bg: #15313a; --good: #6fd08f; --good-bg: #173322; --bad: #ff8a80; --bad-bg: #3a1a18;
     --warn: #f0c060; --warn-bg: #3a2c10; --neutral-bg: #262b2e; --t1: #ff8a80; --t1-bg: #3a1a18; --t2: #f0c060; --t2-bg: #3a2c10;
     --z0: #ff8a80; --z1: #f0a35e; --z2: #7d8588; --z3: #7cc489; --z4: #6fd08f;
-    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #a07ff0;
     color-scheme: dark;
   }
 }
@@ -345,11 +345,21 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
     <section class="panel">
       <h2>Mức chú ý của nhỏ lẻ</h2>
       <div class="stats" id="att-stats"><p class="loading">Đang tải…</p></div>
-      <h3>Lượt xem trang Bitcoin trên Wikipedia, 90 ngày</h3>
-      <div class="chart" id="c-wiki"></div>
+      <div class="two">
+        <div><h3>Google: người ta tìm gì (toàn cầu), 90 ngày</h3><div class="legend" id="tr-g-leg"></div><div class="chart" id="c-tr-g"></div></div>
+        <div><h3>Google tại Việt Nam, 90 ngày</h3><div class="legend" id="tr-v-leg"></div><div class="chart" id="c-tr-v"></div></div>
+      </div>
+      <p class="note" id="tr-note"></p>
+      <h3>Ứng dụng sàn trên App Store</h3>
+      <div class="tbl-wrap" id="apps-tbl"></div>
+      <p class="note" id="apps-note"></p>
+      <div class="two">
+        <div><h3>Lượt xem trang Bitcoin trên Wikipedia, 90 ngày</h3><div class="chart" id="c-wiki"></div></div>
+        <div><h3>Memecoin so với Bitcoin trên Wikipedia</h3><div class="chart" id="c-meme"></div><p class="note" id="meme-note"></p></div>
+      </div>
       <h3>Đang thịnh hành trên CoinGecko</h3>
       <div class="chips" id="trending"></div>
-      <p class="note">Người mới thường tra Wikipedia khi giá gây chú ý; lượt xem tăng đột biến hay đi kèm giai đoạn hưng phấn. Trên Stocktwits, người đăng tự gắn nhãn Bullish hoặc Bearish; tỷ lệ Bullish thường cao (nhỏ lẻ hay lạc quan), nên chú ý mức thay đổi so với hôm trước hơn là con số tuyệt đối.</p>
+      <p class="note">Người mới thường lên Google tìm "mua bitcoin", tải ứng dụng sàn và tra Wikipedia khi giá gây chú ý; các con số này tăng vọt thường đi kèm giai đoạn hưng phấn. Khi người ta tra memecoin (Dogecoin…) nhiều hơn hẳn so với Bitcoin, thị trường thường đang ở pha đầu cơ nóng. Google chỉ cho số tương đối (0–100, 100 là mức cao nhất của khoảng thời gian), nên so các từ khóa trong cùng một biểu đồ với nhau. Trên Stocktwits, người đăng tự gắn nhãn Bullish hoặc Bearish; tỷ lệ Bullish thường cao (nhỏ lẻ hay lạc quan), nên chú ý mức thay đổi so với hôm trước hơn là con số tuyệt đối.</p>
     </section>
   </div>
 
@@ -1078,8 +1088,41 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     if (S.fng) out.push(["Fear & Greed", String(S.fng.at(-1).v), S.fng.at(-1).cls + (S.fng.length > 8 ? `, 7 ngày trước ${S.fng.at(-8).v}` : "")]);
     const st = S.sv && S.sv.L.stocktwits;
     if (st && st.bull_pct != null) out.push(["Stocktwits tự nhận Bullish", num(st.bull_pct) + "%", `${st.bull + st.bear} bài gắn nhãn trong 24 giờ` + (st.prev_bull_pct != null ? ` · hôm trước ${num(st.prev_bull_pct)}%` : ""), st.bull_pct >= 75 ? "up" : st.bull_pct <= 45 ? "down" : ""]);
+    const AT = S.sv && S.sv.L.attention && !S.sv.L.attention.error ? S.sv.L.attention : null;
+    const TR = AT && AT.trends || {}, AP = AT && AT.apps, WK = AT && AT.wiki || {};
+    const lvl = (p) => p >= 80 ? "rất cao so với 5 năm" : p >= 60 ? "khá cao" : p <= 20 ? "rất thấp so với 5 năm" : p <= 40 ? "thấp" : "trung bình";
+    const y5 = (g, i) => TR[g] && TR[g].y5 && TR[g].y5[i];
+    const yb = y5("global", 0); if (yb) out.push([`Google: "buy bitcoin"`, `phân vị ${yb.pct}%`, `${lvl(yb.pct)} (tuần gần nhất)`]);
+    const yv = y5("vn", 0); if (yv) out.push([`Google VN: "mua bitcoin"`, `phân vị ${yv.pct}%`, `${lvl(yv.pct)} (tuần gần nhất)`]);
+    const appRow = (cc, app) => AP && AP.rows.find((r) => r.cc === cc && r.app === app);
+    const cb = appRow("us", "Coinbase"); if (cb) out.push(["Coinbase, App Store Mỹ", cb.overall ? `#${cb.overall}` : "ngoài top 200", `mục Tài chính: ${cb.finance ? "#" + cb.finance : "ngoài top 200"}${cb.d7_fin ? ` · 7 ngày trước #${cb.d7_fin}` : ""}`]);
+    const bn = appRow("vn", "Binance"); if (bn) out.push(["Binance, App Store Việt Nam", bn.overall ? `#${bn.overall}` : "ngoài top 200", `mục Tài chính: ${bn.finance ? "#" + bn.finance : "ngoài top 200"}${bn.d7_fin ? ` · 7 ngày trước #${bn.d7_fin}` : ""}`]);
+    if (WK.meme_pct != null) out.push(["Memecoin so với Bitcoin (Wikipedia)", `phân vị ${WK.meme_pct}%`, WK.meme_pct >= 80 ? "đầu cơ đang nóng" : WK.meme_pct <= 20 ? "đầu cơ nguội" : "bình thường (so với 1 năm)", WK.meme_pct >= 80 ? "down" : ""]);
+    if (WK.vi_ch != null) out.push(["Wikipedia tiếng Việt: Bitcoin", `${num(WK.vi_last7)}/ngày`, `${WK.vi_ch >= 0 ? "+" : ""}${WK.vi_ch}% so với 2 tháng trước`, WK.vi_ch >= 30 ? "up" : WK.vi_ch <= -30 ? "down" : ""]);
     $("att-stats").innerHTML = out.length ? statBoxes(out) : `<div class="msg">Không lấy được: ${esc(errFor("votes", "wiki", "fng"))}.</div>`;
-    if (S.wiki) lineChart($("c-wiki"), { t: S.wiki.map((x) => x.t), H: 170, yfmt: (v) => Math.round(v / 1000) + "k", series: [{ name: "Lượt xem", v: S.wiki.map((x) => x.v), color: "var(--s1)", fmt: (v) => num(v) }] });
+    const COL = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"], dd = (ts) => new Intl.DateTimeFormat("vi-VN", { timeZone: TZ, day: "2-digit", month: "2-digit" }).format(new Date(ts));
+    [["global", "c-tr-g", "tr-g-leg"], ["vn", "c-tr-v", "tr-v-leg"]].forEach(([g, cid, lid]) => {
+      const G = TR[g];
+      if (!G || !G.series || G.series.length < 5) { $(cid).innerHTML = `<div class="msg">${AT ? "Chưa lấy được số liệu Google Trends (Google hay chặn máy chủ đám mây); bộ thu thập thử lại 6 giờ một lần." : "Phần này do bộ thu thập trên GitHub lấy."}</div>`; $(lid).innerHTML = ""; return; }
+      $(lid).innerHTML = G.kw.map((k, i) => `<span><i style="background:${COL[i]}"></i>${esc(k)}</span>`).join("");
+      lineChart($(cid), { t: G.series.map((r) => r[0]), H: 170, xfmt: dd, yfmt: (v) => Math.round(v), series: G.kw.map((k, i) => ({ name: k, v: G.series.map((r) => r[i + 1]), color: COL[i], fmt: (v) => v == null ? "–" : v })) });
+    });
+    const trErr = AT && Object.keys(AT.errors || {}).filter((k) => k.startsWith("trends_"));
+    $("tr-note").textContent = AT ? (TR.global || TR.vn ? `Số liệu Google cập nhật ${Math.round(Math.min(...Object.values(TR).map((g) => g.age_h)))} giờ trước. Phân vị so mức tuần gần nhất với 5 năm qua.` : "") + (trErr && trErr.length ? ` Lần thử gần nhất bị lỗi: ${trErr.map((k) => AT.errors[k]).slice(0, 1).join("")}.` : "") : "";
+    if (AP && AP.rows.length) {
+      const cell = (now, old) => (now ? "#" + now : "–") + (now && old && old !== now ? ` <span class="${old > now ? "up" : "down"}">${old > now ? "▲" : "▼"}${Math.abs(old - now)}</span>` : "");
+      $("apps-tbl").innerHTML = `<table class="evtbl"><thead><tr><th>Ứng dụng</th>${Object.entries({ us: "Mỹ", vn: "Việt Nam" }).map(([, n]) => `<th>${n}: Tài chính</th><th>${n}: mọi ứng dụng</th>`).join("")}</tr></thead><tbody>` +
+        [...new Set(AP.rows.map((r) => r.app))].map((app) => `<tr><td>${esc(app)}</td>${["us", "vn"].map((cc) => { const r = appRow(cc, app); return r ? `<td class="num">${cell(r.finance, r.d7_fin)}</td><td class="num">${cell(r.overall, r.d7_all)}</td>` : "<td>–</td><td>–</td>"; }).join("")}</tr>`).join("") + `</tbody></table>`;
+      const since = AP.rows.map((r) => r.since).filter(Boolean).sort()[0];
+      $("apps-note").textContent = `Hạng ứng dụng miễn phí, top 200 (– là ngoài top 200). Mũi tên là thay đổi so với 7 ngày trước. Apple không cho xem lịch sử nên trang tự ghi lại từ ${since ? since.split("-").reverse().join("/") : "hôm nay"}; Coinbase leo vào top 10 mọi ứng dụng ở Mỹ thường là lúc người mới ồ ạt vào thị trường.`;
+    } else $("apps-tbl").innerHTML = `<div class="msg">${AT ? "Chưa lấy được bảng xếp hạng App Store." : "Phần này do bộ thu thập trên GitHub lấy."}</div>`;
+    if (WK.meme_series && WK.meme_series.length > 5) {
+      lineChart($("c-meme"), { t: WK.meme_series.map((r) => r[0]), H: 170, xfmt: dd, yfmt: (v) => num(v, 2), series: [{ name: "Dogecoin + Meme coin / Bitcoin", v: WK.meme_series.map((r) => r[1]), color: "var(--s2)", fmt: (v) => num(v, 3) }] });
+      $("meme-note").textContent = "Lượt xem trang Dogecoin và Meme coin chia cho trang Bitcoin, trung bình 7 ngày. Càng cao càng nhiều người đang săn memecoin.";
+    } else $("c-meme").innerHTML = `<div class="msg">${AT ? "Chưa có số liệu." : "Phần này do bộ thu thập trên GitHub lấy."}</div>`;
+    const wks = WK.series && WK.series["en:Bitcoin"];
+    if (!S.wiki && wks && wks.length > 5) lineChart($("c-wiki"), { t: wks.map((r) => r[0]), H: 170, yfmt: (v) => Math.round(v / 1000) + "k", series: [{ name: "Lượt xem", v: wks.map((r) => r[1]), color: "var(--s1)", fmt: (v) => num(v) }] });
+    else if (S.wiki) lineChart($("c-wiki"), { t: S.wiki.map((x) => x.t), H: 170, yfmt: (v) => Math.round(v / 1000) + "k", series: [{ name: "Lượt xem", v: S.wiki.map((x) => x.v), color: "var(--s1)", fmt: (v) => num(v) }] });
     else $("c-wiki").innerHTML = `<div class="msg">Không lấy được Wikipedia: ${esc(errFor("wiki"))}.</div>`;
     $("trending").innerHTML = S.trending ? S.trending.slice(0, 10).map((c) => `<span>${esc(c.name)} (${esc(c.sym)})${c.ch != null ? `<b class="${cls(c.ch)}">${pct(c.ch)}</b>` : ""}</span>`).join("") : `<span>${esc(errFor("trending"))}</span>`;
   }
