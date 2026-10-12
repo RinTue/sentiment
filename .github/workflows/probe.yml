@@ -1,0 +1,28 @@
+name: probe
+on: workflow_dispatch
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - shell: python
+        run: |
+          import json, urllib.request
+          UA = {"User-Agent": "RinTue sentiment research github.com/RinTue/sentiment", "Accept": "application/json"}
+          def get(u):
+              return json.load(urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=30))
+          base = "https://data.sec.gov/submissions/"
+          j = get(base + "CIK0001050446.json")
+          blocks = [j["filings"]["recent"]] + [get(base + f["name"]) for f in j["filings"].get("files", [])]
+          rows = []
+          for b in blocks:
+              for f, d, a, it in zip(b["form"], b["filingDate"], b["acceptanceDateTime"], b["items"]):
+                  if f == "8-K" and d >= "2020-08-01":
+                      rows.append(f"{a[:16].replace('T',' ')}|{it}")
+          rows.sort()
+          print(f"::notice::N={len(rows)}")
+          chunk = ""
+          for r in rows:
+              if len(chunk) + len(r) > 3500:
+                  print("::notice::" + chunk); chunk = ""
+              chunk += r + ";"
+          if chunk: print("::notice::" + chunk)
