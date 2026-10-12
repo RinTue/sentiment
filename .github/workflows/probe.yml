@@ -6,7 +6,8 @@ jobs:
     steps:
       - shell: python
         run: |
-          import json, urllib.request
+          import json, urllib.request, traceback, sys
+          sys.excepthook = lambda t, v, tb: print("::notice::ERR " + "".join(traceback.format_exception(t, v, tb))[-800:].replace("\n", " | "))
           UA = {"User-Agent": "RinTue sentiment research github.com/RinTue/sentiment", "Accept": "application/json"}
           def get(u):
               return json.load(urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=30))
