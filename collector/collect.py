@@ -715,7 +715,7 @@ VI_FIX = [
     (r"\bcá voi\b", "cá voi (nhà đầu tư lớn)"), (r"bò tót", "phe tăng giá"), (r"\bnhững con bò\b", "phe tăng giá"),
     (r"\bnhững con gấu\b", "phe giảm giá"), (r"dòng chảy ra", "dòng tiền rút ra"), (r"dòng chảy vào", "dòng tiền vào"),
     (r"\bsàn giao dịch trao đổi\b", "sàn giao dịch"), (r"\bmã thông báo\b", "token"), (r"tiền điện tử ổn định", "stablecoin"),
-    (r"\bsổ cái\b", "Ledger"), (r"\bbẫy tăng giá\b", "bẫy giá tăng (bull trap)"), (r"\$ (BTC|ETH|SOL)\.X", r"$\1.X"),
+    (r"\bsổ cái\b", "Ledger"), (r"\$ ?([A-Z]{2,5})\.X(?=\w)", r"$\1.X "), (r"\$ ([A-Z]{2,5})\.X", r"$\1.X"), (r"\bbẫy tăng giá\b", "bẫy giá tăng (bull trap)"),
 ]
 
 
