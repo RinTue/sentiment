@@ -174,6 +174,10 @@ details.method summary { cursor: pointer; font-weight: 600; }
 .sig li { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 10px; align-items: baseline; font-size: .95rem; }
 .sig li .dot { transform: translateY(1px); }
 .kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+h4.ph { margin: 10px 0 6px; font-size: .9rem; display: flex; align-items: center; gap: 7px; }
+h4.ph::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--z2); }
+h4.ph.pos::before { background: var(--good); } h4.ph.neg::before { background: var(--bad); }
+.post .meta .tagb { font-weight: 600; } .post .meta .nsrc { font-weight: 600; color: var(--ink); }
 .kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 0; }
 .kpi .l { font-size: .8rem; color: var(--ink-2); display: flex; align-items: center; gap: 7px; }
 .kpi .v { font-family: var(--mono); font-size: 1.45rem; font-weight: 500; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -316,10 +320,19 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
         <div><h3>Theo nguồn</h3><div class="tbl-wrap" id="tx-src"></div></div>
       </div>
       <p class="note" id="tx-trans" style="margin-top:14px"></p>
+      <h3 style="margin-bottom:2px">Tin nổi bật</h3>
+      <p class="note" style="margin-top:0">Chỉ lấy từ báo crypto và kênh tin Telegram, xếp theo độ quan trọng: một sự kiện càng nhiều nơi cùng đưa, càng liên quan BTC, ETH, Fed, luật, hack… thì càng lên đầu.</p>
       <div class="two">
-        <div><h3>Bài tích cực nổi bật</h3><div class="posts" id="tx-pos"></div></div>
-        <div><h3>Bài tiêu cực nổi bật</h3><div class="posts" id="tx-neg"></div></div>
+        <div><h4 class="ph pos">Tin tốt cho thị trường</h4><div class="posts" id="tx-pos"></div></div>
+        <div><h4 class="ph neg">Tin xấu cho thị trường</h4><div class="posts" id="tx-neg"></div></div>
       </div>
+      <h3 style="margin-bottom:2px">Đám đông đang nói gì</h3>
+      <p class="note" style="margin-top:0">Reddit, Stocktwits, Bluesky…, đã bỏ bot tín hiệu và bài lạc đề, xếp theo lượt thích. Bài Stocktwits có nhãn Bullish/Bearish do chính người viết gắn thì theo nhãn đó.</p>
+      <div class="two">
+        <div><h4 class="ph pos">Phe lạc quan</h4><div class="posts" id="tx-cpos"></div></div>
+        <div><h4 class="ph neg">Phe bi quan</h4><div class="posts" id="tx-cneg"></div></div>
+      </div>
+      <p class="note" id="tx-check"></p>
       <h3>Đồng được nhắc nhiều</h3><div class="chips" id="tx-coins"></div>
       <h3>Từ khóa nổi bật</h3><div class="chips" id="tx-kw"></div>
       <details class="more" style="margin-top:16px"><summary>Bộ lọc và cách chấm</summary>
@@ -772,10 +785,10 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     } catch (e) { return null; }
   }
   function textFromServer(L) {
-    const a = L.all || {}, post = (p) => ({ src: p.outlet ? p.src + " · " + p.outlet : p.src, t: p.t, s: p.s, text: p.text || "", vi: p.vi || "", url: p.url });
+    const a = L.all || {}, post = (p) => ({ src: p.outlet ? p.src + " · " + p.outlet : p.src, t: p.t, s: p.s, text: p.text || "", vi: p.vi || "", url: p.url, eng: p.eng, tag: p.tag, nsrc: p.n_src, outlet: p.outlet });
     return { score: a.score ?? null, index: a.index ?? null, n: a.n || 0, pos: a.pos || 0, neg: a.neg || 0, neu: a.neu || 0, trend: L.trend ?? null, spanH: L.window_hours || 24,
       daily: (L.daily || []).map((d) => ({ date: d.date, n: d.n, s: d.score })), coinCount: L.coins || [], keywords: L.keywords || [],
-      sources: (L.sources || []).map((s) => ({ src: s.src, n: s.n, s: s.score })), topPos: (L.top_pos || []).map(post), topNeg: (L.top_neg || []).map(post), news: L.news, social: L.social };
+      sources: (L.sources || []).map((s) => ({ src: s.src, n: s.n, s: s.score })), topPos: (L.news_pos || []).map(post), topNeg: (L.news_neg || []).map(post), crowdPos: (L.crowd_pos || []).map(post), crowdNeg: (L.crowd_neg || []).map(post), tagCheck: L.tag_check || null, news: L.news, social: L.social };
   }
 
   /* ---------- Tầng 4: chỉ số tổng hợp ---------- */
@@ -1029,11 +1042,28 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     $("tx-coins").innerHTML = T.coinCount.map(([c, n]) => `<span>${esc(c)}<b>${n}</b></span>`).join("") || `<span>Không đủ dữ liệu</span>`;
     $("tx-kw").innerHTML = T.keywords.map(([w, n]) => `<span>${esc(w)}<b>${n}</b></span>`).join("") || `<span>Không đủ dữ liệu</span>`;
     const cut = (t) => t.length > 220 ? t.slice(0, 217) + "…" : t;
-    const post = (p) => `<div class="post">${p.vi ? `<p>${esc(cut(p.vi))}</p><p class="orig">${esc(cut(p.text))}</p>` : `<p>${esc(cut(p.text))}</p>`}<div class="meta"><span class="${p.s > 0 ? "up" : "down"}">${p.s > 0 ? "+" : ""}${num(p.s, 2)}</span><span>${esc(p.src)}</span><span>${fmtTime(p.t)}</span>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">mở bài</a>` : ""}</div></div>`;
+    const body = (p) => p.vi ? `<p>${esc(cut(p.vi))}</p><p class="orig">${esc(cut(p.text))}</p>` : `<p>${esc(cut(p.text))}</p>`;
+    const link = (p) => p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">mở bài</a>` : "";
+    const post = (p) => `<div class="post">${body(p)}<div class="meta"><span class="${p.s > 0 ? "up" : "down"}">${p.s > 0 ? "+" : ""}${num(p.s, 2)}</span><span>${esc(p.src)}</span><span>${fmtTime(p.t)}</span>${link(p)}</div></div>`;
+    const newsPost = (p) => `<div class="post">${body(p)}<div class="meta">${p.nsrc > 1 ? `<span class="nsrc">${p.nsrc} nguồn cùng đưa</span>` : ""}<span>${esc(p.outlet || p.src)}</span><span>${fmtTime(p.t)}</span>${link(p)}</div></div>`;
+    const crowdPost = (p) => `<div class="post">${body(p)}<div class="meta">${p.tag ? `<span class="tagb ${p.tag === "bull" ? "up" : "down"}">tự gắn ${p.tag === "bull" ? "Bullish" : "Bearish"}</span>` : `<span class="${p.s > 0 ? "up" : "down"}">${p.s > 0 ? "+" : ""}${num(p.s, 2)}</span>`}${p.eng ? `<span>♥ ${p.eng}</span>` : ""}<span>${esc(p.src)}</span><span>${fmtTime(p.t)}</span>${link(p)}</div></div>`;
     const tr = S.mode === "server" ? S.server.L.translation : null;
     $("tx-trans").textContent = S.mode === "server" ? "Tiêu đề được dịch máy sang tiếng Việt (MyMemory), có sửa thuật ngữ crypto; bản gốc tiếng Anh in nghiêng bên dưới." + (tr && tr !== "ok" ? " Lần cập nhật này: " + tr + ", một số bài giữ tiếng Anh." : "") : "Bài giữ nguyên tiếng Anh khi mở trang từ file trên máy; bản dịch chỉ có khi mở từ đường link GitHub.";
-    $("tx-pos").innerHTML = T.topPos.map(post).join("") || `<p class="loading">Không có bài nổi bật.</p>`;
-    $("tx-neg").innerHTML = T.topNeg.map(post).join("") || `<p class="loading">Không có bài nổi bật.</p>`;
+    const none = (m) => `<p class="loading">${m}</p>`;
+    if (S.mode === "server") {
+      $("tx-pos").innerHTML = T.topPos.map(newsPost).join("") || none("Không có tin tốt đáng chú ý trong 24 giờ qua.");
+      $("tx-neg").innerHTML = T.topNeg.map(newsPost).join("") || none("Không có tin xấu đáng chú ý trong 24 giờ qua.");
+      $("tx-cpos").innerHTML = (T.crowdPos || []).map(crowdPost).join("") || none("Không có bài đủ tương tác.");
+      $("tx-cneg").innerHTML = (T.crowdNeg || []).map(crowdPost).join("") || none("Không có bài đủ tương tác.");
+      const C = T.tagCheck;
+      $("tx-check").textContent = C ? `Kiểm tra máy chấm: trong ${C.n} bài Stocktwits có nhãn tự gắn, máy chấm cùng chiều với người viết ở ${C.agree}% số bài${C.agree_bear != null ? ` (bài Bearish: ${C.agree_bear}%)` : ""}. Phần còn lại là bài máy đọc sai giọng (mỉa mai, tiếng lóng).` : "";
+    } else {
+      $("tx-pos").innerHTML = none("Tin nổi bật chỉ có khi mở trang từ đường link GitHub (máy chủ gom và xếp hạng tin).");
+      $("tx-neg").innerHTML = "";
+      $("tx-cpos").innerHTML = T.topPos.map(post).join("") || none("Không có bài nổi bật.");
+      $("tx-cneg").innerHTML = T.topNeg.map(post).join("") || none("Không có bài nổi bật.");
+      $("tx-check").textContent = "";
+    }
   }
 
   function renderFilter() {

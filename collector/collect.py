@@ -107,6 +107,10 @@ def _neg_before(clause: str, pos: int) -> bool:
     return any(b in NEG for b in before)
 
 
+SIDE_PAIN = re.compile(r"\b(bears?|shorts?|short sellers|shorters|bulls?|longs?)\b[^.!?]{0,60}?\b(liquidat\w*|rekt|wrecked|squeezed|burned|burnt|wiped)", re.I)
+PAIN_WORDS = {"bear", "bears", "bull", "bulls", "liquidated", "liquidation", "liquidations", "rekt", "wrecked", "squeezed", "burned", "wiped"}
+
+
 def lex_score(text: str) -> float:
     s = NOT_NEGATORS.sub(" ", (text or "").lower()[:700])
     s = re.sub(r"https?://\S+", " ", s)
@@ -116,6 +120,11 @@ def lex_score(text: str) -> float:
             total += w
     used = set()
     for clause in re.split(r"[,.;:!?\n]+|\bbut\b", s):
+        # Ai bị thanh lý quyết định chiều: "bears got liquidated" là tốt cho giá, "longs rekt" là xấu
+        m = SIDE_PAIN.search(clause)
+        if m:
+            total += 1.4 if re.match(r"bear|short", m.group(1)) else -1.4
+            used.update(PAIN_WORDS)
         for p, w in PHRASES:
             i = clause.find(p)
             if i >= 0 and p not in used:
@@ -517,21 +526,142 @@ def wmean(arr):
     return sum(x["s"] * x["w"] for x in arr) / w if w else None
 
 
-def diverse(arr: list, post, n: int = 5, per_src: int = 2) -> list:
-    """Chọn bài nổi bật nhưng tối đa 2 bài mỗi nguồn, để một nguồn đông bài (như Stocktwits) không lấn hết."""
-    out, cnt = [], {}
-    for x in arr:
-        if cnt.get(x["src"], 0) < per_src:
-            cnt[x["src"]] = cnt.get(x["src"], 0) + 1
-            out.append(post(x))
-        if len(out) >= n:
-            break
-    return out
+# ---------------------------------------------------------------- bài nổi bật: tin quan trọng và tiếng nói đám đông
+# Tin: chỉ từ báo crypto và kênh tin Telegram, xếp theo độ quan trọng (nhiều nơi cùng đưa, chủ đề lớn), không theo độ cảm xúc.
+# Đám đông: Reddit, Stocktwits, Bluesky…, bỏ bot tín hiệu và bài lạc đề, xếp theo tương tác thật; Stocktwits dùng nhãn người viết tự gắn.
+NEWS_SRC = {"Tin tức", "Telegram"}
+CROWD_SRC = {"Reddit", "Stocktwits", "Bluesky", "Mastodon", "Lemmy", "Hacker News"}
+NEWS_JUNK = re.compile(r"price prediction|presale|\btop \d+\b|best (crypto|altcoin|coin)s?\b|which crypto|throwback|sponsored|giveaway|"
+                       r"weekend watch|crypto news today|daily recap|\bquiz\b|how to buy", re.I)
+NEWS_OPINION = re.compile(r"\banalyst(s)? (says|predicts|warns|expects)|could (reach|hit|soar|surge|plunge)|\bmay (reach|hit|plunge|surge)|here'?s why|what'?s next", re.I)
+NEWS_MAJOR = re.compile(r"\bfed\b|fomc|powell|\bcpi\b|inflation|jobs report|payrolls|tariff|trump|\bsec\b|cftc|congress|senate|\bbill\b|regulat|\bban\b|"
+                        r"\betfs?\b|blackrock|strategy|saylor|treasur|hack|exploit|stolen|drain|bankrupt|insolven|liquidat|outflow|inflow|"
+                        r"stablecoin|tether|circle|binance|coinbase|\bbtc\b|bitcoin|ether(eum)?\b|record|all-time high|crash|plunge|surge", re.I)
+CROWD_BOT = re.compile(r"\btp ?\d|\btp\b.{0,12}hit|take[- ]profit|stop[- ]?loss|\bsl\b ?[:@]|\bentry\b ?[:@]|\btargets?\b ?[:\d]|\bsignals?\b|"
+                       r"\d+x leverage|leverage|long position|short position|unrealized|opened a (new )?(wallet|position)|whale alert|giveaway|airdrop|"
+                       r"presale|join (us|our|my)|link in bio|follow (me|us)|\bdm me\b|referral|use code|#ad\b|subscribe", re.I)
+CROWD_MARKET = re.compile(r"price|pump|dump|bull|bear|\blong|\bshort|\bbuy|\bsell|sold|bought|hodl|\bdip\b|rally|crash|moon|\bath\b|all.time|support|resistance|"
+                          r"breakout|break(s|ing)? (above|below)|liquidat|\btop\b|bottom|\$?\d{2,3}(\.\d)?k\b|\betf|\bfed\b|halving|capitulat|fomo|fud|"
+                          r"rekt|correction|recover|bounce|reject|trend|cycle|accumulat|whales?|retail|hedge|crash|rate cut|inflation", re.I)
+TITLE_NOISE = re.compile(r"^(\W|bitcoin magazine|watcher\.?guru|cointelegraph|just in|breaking|update|big|new|latest|highlight clip)+[:\s-]*", re.I)
+PRICE_TICK = re.compile(r"^\$?[\d,.]+k?\s+(bitcoin|btc|ether|eth|ethereum)\b\W*$", re.I)
+OUTLET_NAME = {"bitcoinmagazinetelegram": "Bitcoin Magazine", "wublockchainenglish": "Wu Blockchain", "WatcherGuru": "Watcher.Guru", "cointelegraph": "Cointelegraph"}
+WORD_RE = re.compile(r"[a-z0-9$%.]+")
+CLUSTER_STOP = STOP | GENERIC | set("says said will just after amid over under amid report reports new news today week year first more than".split())
+
+
+def _clean_title(x: dict) -> str:
+    t = (x.get("title") or x.get("text") or "").strip()
+    t = EMOJI_RE.sub("", t)
+    t = TITLE_NOISE.sub("", t).strip()
+    head = t[:40]
+    if len(head) >= 20 and t.find(head, 10) > 0:      # kênh Telegram hay lặp lại dòng đầu
+        t = t[:t.find(head, 10)].strip()
+    return re.split(r"(?<=[.!?])\s", t, maxsplit=1)[0][:220] if not x.get("title") else t[:220]
+
+
+def _toks(t: str) -> set:
+    return {w.strip(".") for w in WORD_RE.findall(t.lower()) if len(w.strip(".")) >= 3 and w.strip(".") not in CLUSTER_STOP}
+
+
+def news_highlights(base: list, n: int = 4) -> tuple[list, list]:
+    pool = []
+    for x in base:
+        if x["src"] not in NEWS_SRC:
+            continue
+        title = _clean_title(x)
+        if len(title) < 25 or NEWS_JUNK.search(title) or PRICE_TICK.match(title):
+            continue
+        pool.append((x, title, _toks(title)))
+    pool.sort(key=lambda p: p[0]["t"])
+    clusters: list = []
+    for x, title, tk in pool:
+        best = None
+        for c in clusters:
+            inter = len(tk & c["toks"])
+            if inter >= 3 and inter / max(1, min(len(tk), len(c["toks"]))) >= 0.4 or inter >= 2 and inter / max(1, min(len(tk), len(c["toks"]))) >= 0.67:
+                best = c
+                break
+        if best:
+            best["items"].append((x, title))
+            best["toks"] |= tk
+        else:
+            clusters.append({"items": [(x, title)], "toks": set(tk)})
+    out = []
+    for c in clusters:
+        items = c["items"]
+        outlets = list(dict.fromkeys(OUTLET_NAME.get((x.get("outlet") or x["src"]).lstrip("@"), (x.get("outlet") or x["src"]).lstrip("@")) for x, _ in items))
+        s = sum(x["s"] for x, _ in items) / len(items)
+        rep_x, rep_t = next(((x, t) for x, t in items if x["src"] == "Tin tức"), items[0])
+        age_h = (NOW - max(x["t"] for x, _ in items)) / 3600
+        imp = len(outlets) + (0.8 if NEWS_MAJOR.search(rep_t) else 0) - (0.6 if NEWS_OPINION.search(rep_t) else 0) + 0.5 * max(0.0, 1 - age_h / 48) + 0.5 * abs(s)
+        out.append({"imp": imp, "s": s, "x": rep_x, "title": rep_t, "outlets": outlets, "t": max(x["t"] for x, _ in items)})
+    out.sort(key=lambda c: -c["imp"])
+    def post(c):
+        return {"src": c["x"]["src"], "outlet": ", ".join(c["outlets"][:3]) + (f" +{len(c['outlets']) - 3}" if len(c["outlets"]) > 3 else ""), "n_src": len(c["outlets"]),
+                "t": int(c["t"] * 1000), "s": round(c["s"], 3), "text": c["title"], "url": c["x"].get("url")}
+    good = [post(c) for c in out if c["s"] >= 0.12][:n]
+    bad = [post(c) for c in out if c["s"] <= -0.12][:n]
+    return good, bad
+
+
+def crowd_highlights(base: list, n: int = 4) -> tuple[list, list]:
+    MIN_ENG = {"Bluesky": 5, "Mastodon": 2, "Lemmy": 3, "Hacker News": 3}
+    cand = []
+    for x in base:
+        if x["src"] not in CROWD_SRC:
+            continue
+        t = x.get("text") or ""
+        if len(t) < 40 or CROWD_BOT.search(t) or not CROWD_MARKET.search(t) or not (NEWS_CRYPTO.search(t) or re.search(r"\$(btc|eth|sol|xrp|doge)\.x", t, re.I)):
+            continue
+        if len(re.findall(r"\$[a-z]{2,6}\b", t, re.I)) > 4 or t.count("#") > 4 or len(EMOJI_RE.findall(t)) >= 6:
+            continue
+        eng = x.get("eng") or 0
+        if eng < MIN_ENG.get(x["src"], 0):
+            continue
+        tag = x.get("tag")
+        if x["src"] == "Stocktwits" and not tag and eng < 2:
+            continue
+        if x["src"] == "Reddit" and (len(x.get("title") or "") < 25 or not CROWD_MARKET.search(x.get("title") or "")):
+            continue      # tiêu đề Reddit phải tự nói được ý, vì trang chỉ hiện tiêu đề
+        side = 1 if tag == "bull" else -1 if tag == "bear" else 1 if x["s"] >= 0.3 else -1 if x["s"] <= -0.3 else 0
+        if not side:
+            continue
+        rank = math.log1p(eng) + (0.5 if x["src"] == "Reddit" else 0) + 0.6 * abs(x["s"]) + (0.3 if tag else 0)
+        cand.append((rank, side, x))
+    cand.sort(key=lambda c: -c[0])
+    def pick(sd):
+        out, per_src, authors = [], {}, set()
+        for _, side, x in cand:
+            if side != sd or per_src.get(x["src"], 0) >= 3 or (x.get("author") and x["author"] in authors):
+                continue
+            per_src[x["src"]] = per_src.get(x["src"], 0) + 1
+            authors.add(x.get("author"))
+            out.append({"src": x["src"], "outlet": x.get("outlet"), "t": int(x["t"] * 1000), "s": round(x["s"], 3), "text": (x.get("title") or x["text"])[:240],
+                        "url": x.get("url"), "eng": x.get("eng") or 0, "tag": x.get("tag")})
+            if len(out) >= n:
+                break
+        return out
+    return pick(1), pick(-1)
+
+
+def tag_check(base: list) -> dict | None:
+    """Dùng nhãn Bullish/Bearish người viết Stocktwits tự gắn làm đáp án để đo máy chấm sai bao nhiêu."""
+    rows = [x for x in base if x["src"] == "Stocktwits" and x.get("tag") and abs(x.get("s_raw", x["s"])) >= 0.15]
+    if len(rows) < 20:
+        return None
+    ok = sum(1 for x in rows if (x.get("s_raw", x["s"]) > 0) == (x["tag"] == "bull"))
+    bears = [x for x in rows if x["tag"] == "bear"]
+    return {"n": len(rows), "agree": round(100 * ok / len(rows)), "n_bear": len(bears),
+            "agree_bear": round(100 * sum(1 for x in bears if x.get("s_raw", x["s"]) < 0) / len(bears)) if len(bears) >= 5 else None}
 
 
 def aggregate(kept: list) -> dict:
     for x in kept:
         x["w"] = (1 + math.log1p(max(0, x.get("eng") or 0))) * SRC_WEIGHT.get(x["src"], 1)
+        if x["src"] == "Stocktwits" and x.get("tag"):    # người viết đã tự gắn Bullish/Bearish: tin nhãn này một nửa
+            x.setdefault("s_raw", x["s"])
+            x["s"] = round(0.5 * x["s_raw"] + 0.5 * (0.6 if x["tag"] == "bull" else -0.6), 4)
         x["label"] = "pos" if x["s"] > 0.15 else "neg" if x["s"] < -0.15 else "neu"
     last24 = [x for x in kept if NOW - x["t"] <= 86400]
     prev = [x for x in kept if 86400 < NOW - x["t"] <= 3 * 86400]
@@ -558,11 +688,8 @@ def aggregate(kept: list) -> dict:
         wc.update(w for w in words if len(w) >= 4 and w not in STOP and w not in GENERIC and not w.isdigit())
     coins = sorted(((c, sum(1 for x in base if re.search(p, x["text"], re.I))) for c, p in COINS), key=lambda t: -t[1])
 
-    def post(x):
-        return {"src": x["src"], "outlet": x.get("outlet"), "t": int(x["t"] * 1000), "s": round(x["s"], 3),
-                "text": (x.get("title") or x["text"])[:240], "url": x.get("url")}
-
-    ranked = sorted([x for x in base if len(x["text"]) >= 40], key=lambda x: x["s"] * x["w"], reverse=True)
+    news_pos, news_neg = news_highlights(base)
+    crowd_pos, crowd_neg = crowd_highlights(base)
     by_src = defaultdict(list)
     for x in base:
         by_src[x["src"]].append(x)
@@ -575,8 +702,8 @@ def aggregate(kept: list) -> dict:
         "sources": [{"src": k, "n": len(a), "score": round(wmean(a), 4)} for k, a in sorted(by_src.items(), key=lambda t: -len(t[1]))],
         "keywords": [[w, n] for w, n in wc.most_common(14) if n >= 3],
         "coins": [[c, n] for c, n in coins if n],
-        "top_pos": diverse([x for x in ranked if x["label"] == "pos"], post),
-        "top_neg": diverse([x for x in reversed(ranked) if x["label"] == "neg"], post),
+        "news_pos": news_pos, "news_neg": news_neg, "crowd_pos": crowd_pos, "crowd_neg": crowd_neg,
+        "tag_check": tag_check(base),
     }
 
 
@@ -1064,7 +1191,7 @@ def main() -> int:
     if store and with_ai:
         model_status = f"AI + từ điển ({round(100 * with_ai / len(store))}% số bài có điểm AI)" + ("" if not model_status.startswith("từ điển (AI lỗi") else "; lần chạy này AI lỗi")
     agg = aggregate(list(store.values()))
-    agg["translation"] = translate_posts(agg["top_pos"] + agg["top_neg"])
+    agg["translation"] = translate_posts(agg["news_pos"] + agg["news_neg"] + agg["crowd_pos"] + agg["crowd_neg"])
     agg["stocktwits"] = stocktwits_summary(store)
     try:
         agg["macro"] = macro()
