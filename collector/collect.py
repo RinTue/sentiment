@@ -715,6 +715,7 @@ VI_FIX = [
     (r"\bcá voi\b", "cá voi (nhà đầu tư lớn)"), (r"bò tót", "phe tăng giá"), (r"\bnhững con bò\b", "phe tăng giá"),
     (r"\bnhững con gấu\b", "phe giảm giá"), (r"dòng chảy ra", "dòng tiền rút ra"), (r"dòng chảy vào", "dòng tiền vào"),
     (r"\bsàn giao dịch trao đổi\b", "sàn giao dịch"), (r"\bmã thông báo\b", "token"), (r"tiền điện tử ổn định", "stablecoin"),
+    (r"\bsổ cái\b", "Ledger"), (r"\bbẫy tăng giá\b", "bẫy giá tăng (bull trap)"), (r"\$ (BTC|ETH|SOL)\.X", r"$\1.X"),
 ]
 
 
@@ -740,7 +741,7 @@ def translate_posts(posts: list) -> str:
         if not src:
             continue
         if src in texts:
-            p["vi"] = texts[src]
+            p["vi"] = fix_vi(texts[src])     # áp cả các quy tắc sửa thuật ngữ mới cho bản dịch đã lưu
             continue
         if used + len(src) > DAILY_CHAR_BUDGET:
             status = "hết hạn mức dịch hôm nay"
