@@ -1,18 +1,18 @@
 {
- "generated_at": "2026-10-14T13:04:37+00:00",
+ "generated_at": "2026-10-14T13:56:24+00:00",
  "scoring": "AI + từ điển (100% số bài có điểm AI)",
  "raw_count": 1892,
- "kept_count": 753,
- "new_count": 229,
- "stored_7d": 10106,
+ "kept_count": 758,
+ "new_count": 209,
+ "stored_7d": 10214,
  "filter_reasons": {
-  "không liên quan crypto": 272,
-  "quảng cáo / rao bán": 18,
-  "trùng lặp": 343,
-  "quá ngắn": 25,
-  "bot / báo giá tự động": 193,
-  "không phải tiếng Anh": 142,
-  "cùng tác giả quá nhiều": 146
+  "không liên quan crypto": 261,
+  "không phải tiếng Anh": 143,
+  "bot / báo giá tự động": 190,
+  "trùng lặp": 336,
+  "quá ngắn": 26,
+  "cùng tác giả quá nhiều": 159,
+  "quảng cáo / rao bán": 19
  },
  "source_status": {
   "CoinDesk": 25,
@@ -24,10 +24,10 @@
   "NewsBTC": 10,
   "CryptoPotato": 36,
   "r/CryptoMarkets": 50,
-  "r/BitcoinMarkets": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/BitcoinMar",
-  "r/CryptoCurrency": 50,
-  "r/Bitcoin": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/Bitcoin/ne",
-  "r/ethereum": 50,
+  "r/BitcoinMarkets": 50,
+  "r/CryptoCurrency": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/CryptoCurr",
+  "r/Bitcoin": 50,
+  "r/ethereum": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/ethereum/n",
   "#bitcoin": 120,
   "#btc": 120,
   "#crypto": 120,
@@ -36,7 +36,7 @@
   "Lemmy bitcoin": 100,
   "Lemmy crypto": 100,
   "HN bitcoin": 39,
-  "HN cryptocurrency": 21,
+  "HN cryptocurrency": 22,
   "HN ethereum": 2,
   "YT Coin Bureau": 15,
   "YT Altcoin Daily": 15,
@@ -50,7 +50,7 @@
   "YT Crypto Zombie": 15,
   "YT Paul Barron Network": 15,
   "TG @WatcherGuru": 16,
-  "TG @cointelegraph": 13,
+  "TG @cointelegraph": 12,
   "TG @bitcoinmagazinetelegram": 19,
   "TG @wublockchainenglish": 20,
   "Stocktwits $BTC": 90,
@@ -59,32 +59,32 @@
   "Bluesky crypto": 100,
   "Bluesky ethereum": 99
  },
- "runtime_sec": 225.9,
+ "runtime_sec": 224.5,
  "all": {
-  "score": 0.0559,
+  "score": 0.0541,
   "index": 53,
-  "n": 1873,
+  "n": 1908,
   "pos": 37.7,
-  "neg": 26.3,
-  "neu": 36.0
+  "neg": 26.5,
+  "neu": 35.8
  },
  "news": {
-  "score": -0.0384,
-  "index": 48,
-  "n": 89,
-  "pos": 30.3,
-  "neg": 32.6,
-  "neu": 37.1
+  "score": -0.0285,
+  "index": 49,
+  "n": 94,
+  "pos": 30.9,
+  "neg": 30.9,
+  "neu": 38.3
  },
  "social": {
-  "score": 0.0604,
+  "score": 0.0582,
   "index": 53,
-  "n": 1784,
-  "pos": 38.1,
-  "neg": 26.0,
-  "neu": 36.0
+  "n": 1814,
+  "pos": 38.0,
+  "neg": 26.3,
+  "neu": 35.7
  },
- "trend": -0.0169,
+ "trend": -0.0164,
  "window_hours": 24,
  "daily": [
   {
@@ -119,45 +119,45 @@
   },
   {
    "date": "2026-10-14",
-   "n": 1484,
-   "score": 0.0525
+   "n": 1598,
+   "score": 0.0468
   }
  ],
  "sources": [
   {
    "src": "Bluesky",
    "n": 1198,
-   "score": 0.0178
+   "score": 0.0205
   },
   {
    "src": "Stocktwits",
-   "n": 446,
-   "score": 0.1614
+   "n": 473,
+   "score": 0.1442
   },
   {
    "src": "Tin tức",
-   "n": 89,
-   "score": -0.0384
+   "n": 94,
+   "score": -0.0285
   },
   {
    "src": "Hacker News",
-   "n": 37,
-   "score": -0.2336
+   "n": 38,
+   "score": -0.2318
   },
   {
    "src": "Telegram",
-   "n": 33,
-   "score": 0.2382
+   "n": 34,
+   "score": 0.2286
   },
   {
    "src": "Reddit",
-   "n": 32,
-   "score": -0.0567
+   "n": 33,
+   "score": -0.0467
   },
   {
    "src": "Mastodon",
    "n": 24,
-   "score": -0.0622
+   "score": -0.0331
   },
   {
    "src": "YouTube",
@@ -173,77 +173,77 @@
  "keywords": [
   [
    "$btc",
-   438
+   462
   ],
   [
    "trading",
-   123
+   124
   ],
   [
    "$eth",
-   93
+   99
   ],
   [
    "live",
-   90
+   95
   ],
   [
    "$spy",
-   83
+   91
   ],
   [
    "bank",
-   74
+   81
   ],
   [
    "data",
-   70
-  ],
-  [
-   "through",
-   69
+   72
   ],
   [
    "exchange",
+   69
+  ],
+  [
+   "through",
    68
   ],
   [
-   "forecast",
-   62
+   "wallet",
+   64
   ],
   [
-   "wallet",
+   "forecast",
+   64
+  ],
+  [
+   "inflation",
    60
+  ],
+  [
+   "treasury",
+   59
   ],
   [
    "crypton",
    57
-  ],
-  [
-   "treasury",
-   57
-  ],
-  [
-   "strive",
-   56
   ]
  ],
  "coins": [
   [
    "BTC",
-   1340
+   1364
   ],
   [
    "ETH",
-   302
+   300
   ],
   [
    "Stablecoin",
-   104
+   107
   ],
   [
    "XRP",
-   70
+   72
   ],
   [
    "SOL",
@@ -259,10 +259,20 @@
   ],
   [
    "BNB",
-   5
+   6
   ]
  ],
  "news_pos": [
+  {
+   "src": "Tin tức",
+   "outlet": "Wu Blockchain, Decrypt, Cointelegraph +1",
+   "n_src": 4,
+   "t": 1791983265000,
+   "s": 0.251,
+   "text": "Kraken Owner Payward to Buy Lithuania's Saldo Bank in EU Push",
+   "url": "https://decrypt.co/380912/kraken-owner-payward-to-buy-lithuanias-saldo-bank-in-eu-push",
+   "vi": "Chủ sở hữu Kraken trả tiền để mua Ngân hàng Saldo của Lithuania trong nỗ lực của EU"
+  },
   {
    "src": "Tin tức",
    "outlet": "CoinDesk, Cointelegraph, Bitcoin Magazine",
@@ -275,33 +285,23 @@
   },
   {
    "src": "Tin tức",
-   "outlet": "Wu Blockchain, Decrypt, Cointelegraph",
+   "outlet": "Watcher.Guru, CoinDesk, The Block",
    "n_src": 3,
-   "t": 1791980765000,
-   "s": 0.278,
-   "text": "Kraken Owner Payward to Buy Lithuania's Saldo Bank in EU Push",
-   "url": "https://decrypt.co/380912/kraken-owner-payward-to-buy-lithuanias-saldo-bank-in-eu-push",
-   "vi": "Chủ sở hữu Kraken trả tiền để mua Ngân hàng Saldo của Lithuania trong nỗ lực của EU"
+   "t": 1791984097000,
+   "s": 0.121,
+   "text": "BNY, Citadel Securities test tokenized U.S. Treasuries to speed up Wall Street financing",
+   "url": "https://www.coindesk.com/business/2026/10/13/bny-citadel-securities-test-tokenized-u-s-treasuries-to-speed-up-wall-street-financing",
+   "vi": "BNY, Citadel Securities test token hóa Kho bạc Hoa Kỳ để tăng tốc độ tài trợ của Phố Wall"
   },
   {
    "src": "Tin tức",
-   "outlet": "The Block, Cointelegraph, CoinDesk",
+   "outlet": "CoinDesk, Wu Blockchain, Cointelegraph",
    "n_src": 3,
-   "t": 1791955452000,
-   "s": 0.197,
-   "text": "Ripple, Stripe-owned Privy partner to bring embedded wallets to XRP Ledger",
-   "url": "https://www.theblock.co/news/business/2026-10-13-stripe-privy-ripple-xrp-ledger-wallets-418463",
-   "vi": "Ripple, đối tác Privy thuộc sở hữu của Stripe để đưa ví nhúng vào XRP Ledger"
-  },
-  {
-   "src": "Telegram",
-   "outlet": "Wu Blockchain, Watcher.Guru",
-   "n_src": 2,
-   "t": 1791970573000,
-   "s": 0.31,
-   "text": "France Considers 31.4% Tax on Crypto-to-MiCA Stablecoin Conversions From 2027 The French parliament is reviewing the 2027 budget and considering a 31.4% capital gains tax on conversions of crypto into MiCA-regulated stab",
-   "url": "https://t.me/wublockchainenglish/26406",
-   "vi": "Pháp xem xét thuế 31,4% đối với chuyển đổi Stablecoin từ tiền điện tử sang MiCA Từ năm 2027 Quốc hội Pháp đang xem xét ngân sách năm 2027 và xem xét thuế lãi vốn 31,4% đối với chuyển đổi tiền điện tử thành STAB do MiCA quy định"
+   "t": 1791982421000,
+   "s": 0.166,
+   "text": "Dutch central bank grants Qivalis e-money license for MiCA-compliant euro token",
+   "url": "https://www.coindesk.com/policy/2026/10/14/dutch-regulator-approves-qivalis-as-electronic-money-institution-under-mica-rules",
+   "vi": "Ngân hàng trung ương Hà Lan cấp giấy phép tiền điện tử Qivalis cho token Euro tuân thủ MiCA"
   }
  ],
  "news_neg": [
@@ -350,17 +350,6 @@
   {
    "src": "Stocktwits",
    "outlet": "$BTC",
-   "t": 1791897364000,
-   "s": 0.566,
-   "text": "$BTC.X sub-60s, gone. Low 70s, gone. Loe 80s, getting gone. Bull, don’t get gone. Get 💎💎💎 in hands",
-   "url": "https://stocktwits.com/message/666358629",
-   "eng": 4,
-   "tag": "bull",
-   "vi": "$BTC.X sub-60s, biến mất. Thấp 70, hết. Loe 80, biến mất. Bull, đừng đi. Hãy nắm 💎💎💎 trong tay"
-  },
-  {
-   "src": "Stocktwits",
-   "outlet": "$BTC",
    "t": 1791965385000,
    "s": 0.839,
    "text": "$BTC.X and back to 84k, Bitcoin come on!! break out, and rally to 95k+ and never look back. 🚀",
@@ -379,6 +368,17 @@
    "eng": 3,
    "tag": "bull",
    "vi": "$BTC.X $COIN Hy vọng bạn đang tải tất cả những gì bạn muốn tải, thời gian đã gần đến! Chúng tôi đã vượt qua sự cố flash ngày tận thế ngày 10 tháng 10 và bây giờ đã đến lúc"
+  },
+  {
+   "src": "Stocktwits",
+   "outlet": "$BTC",
+   "t": 1791919929000,
+   "s": 0.486,
+   "text": "I have an overseas visitor staying with us this week, so we've been going out for sightseeing in the day. Just got back home for a lunch break and will be heading out again soon. The Nasdaq future almost made it to my buy target for today, ",
+   "url": "https://stocktwits.com/message/666409151",
+   "eng": 3,
+   "tag": "bull",
+   "vi": "Tôi có một du khách nước ngoài ở với chúng tôi trong tuần này, vì vậy chúng tôi đã ra ngoài tham quan trong ngày. Vừa trở về nhà để nghỉ trưa và sẽ sớm ra ngoài trở lại. Tương lai của Nasdaq gần như đã đến với tôi"
   },
   {
    "src": "Reddit",
@@ -418,6 +418,17 @@
   {
    "src": "Stocktwits",
    "outlet": "$BTC",
+   "t": 1791983938000,
+   "s": -0.692,
+   "text": "$SPY $BTC.X $GLD $DJT TRUMP: BIDEN DID THIS. PRICES ARE WAY DOWN. EVERYONE IS RICH BECAUSE OF YOUR FAVORITE PRESIDENT (TRUMP!). BAD NEWS IS BIDEN HUSSEIN OBAMA!",
+   "url": "https://stocktwits.com/message/666455593",
+   "eng": 2,
+   "tag": null,
+   "vi": "$SPY $BTC.X$GLD $DJT TRUMP: BIDEN ĐÃ LÀM ĐIỀU NÀY. GIÁ ĐANG GIẢM. MỌI NGƯỜI ĐỀU GIÀU CÓ VÌ TỔNG THỐNG YÊU THÍCH CỦA BẠN (TRUMP!). TIN XẤU LÀ BIDEN HUSSEIN OBAMA!"
+  },
+  {
+   "src": "Stocktwits",
+   "outlet": "$BTC",
    "t": 1791915406000,
    "s": -0.604,
    "text": "$BTC.X $MSTR $MSTY 3 times a week same bullshit",
@@ -425,32 +436,21 @@
    "eng": 2,
    "tag": null,
    "vi": "$BTC.X $ MSTR$ MSTY3 lần một tuần cùng một thứ nhảm nhí"
-  },
-  {
-   "src": "Stocktwits",
-   "outlet": "$BTC",
-   "t": 1791936275000,
-   "s": -0.514,
-   "text": "$QQQ $GLD.X $SPY $BTC.X CPI numbers will be fake again either lower or expected because remember they changed how they calculated them. No way Trump will let inflation numbers keep rising as long as they can manipulate them and stop more ra",
-   "url": "https://stocktwits.com/message/666429142",
-   "eng": 2,
-   "tag": null,
-   "vi": "Số CPI $QQQ $GLD.X $SPY $BTC.X sẽ là giả mạo một lần nữa hoặc thấp hơn hoặc dự kiến vì hãy nhớ rằng họ đã thay đổi cách họ tính toán chúng. Không đời nào Trump sẽ để cho số liệu lạm phát tiếp tục tăng miễn là họ có thể thao túng"
   }
  ],
  "tag_check": {
-  "n": 174,
+  "n": 183,
   "agree": 72,
-  "n_bear": 29,
-  "agree_bear": 76
+  "n_bear": 31,
+  "agree_bear": 77
  },
  "translation": "ok",
  "stocktwits": {
-  "n": 444,
-  "bull": 195,
-  "bear": 43,
-  "bull_pct": 81.9,
-  "prev_bull_pct": 71.8
+  "n": 471,
+  "bull": 202,
+  "bear": 46,
+  "bull_pct": 81.5,
+  "prev_bull_pct": 71.5
  },
  "macro": {
   "sources": [
@@ -1085,7 +1085,7 @@
     "items": [
      {
       "name": "VIX",
-      "value": 15.21,
+      "value": 15.27,
       "unit": "",
       "ch": -0.6,
       "chLabel": "điểm, 1 tháng",
@@ -1408,13 +1408,13 @@
        15.08
       ],
       [
-       1791763200000,
-       15.21
+       1791849600000,
+       15.27
       ]
      ]
     },
     "notes": [
-     "VIX ở 15,2"
+     "VIX ở 15,3"
     ],
     "label": "Trung tính"
    },
@@ -2095,26 +2095,26 @@
     ],
     [
      1791979200000,
-     6055254,
+     6232841,
      1287762
     ],
     [
      1791982800000,
-     109272,
-     99
+     3786705,
+     1703527
     ]
    ],
    "h24": {
-    "long": 13306066,
-    "short": 8915812
+    "long": 17161086,
+    "short": 10619240
    },
    "h72": {
-    "long": 104813732,
-    "short": 63711014
+    "long": 108668752,
+    "short": 65414441
    },
    "oi": {
-    "usd": 23138571818,
-    "ch7": -3.25,
+    "usd": 23177795003,
+    "ch7": -3.08,
     "series": [
      [
       1791374400000,
@@ -2291,393 +2291,393 @@
     ]
    },
    "funding": {
-    "last": 4.3312541956161834e-05,
+    "last": 4.3779199213802344e-05,
     "pct": 41.3,
     "n": 92,
     "series": [
      [
       1784073600000,
-      5.202772649718729e-05
+      5.2026733993704405e-05
      ],
      [
       1784160000000,
-      5.8393914499597374e-05
+      5.8385225188873487e-05
      ],
      [
       1784246400000,
-      4.8798003048334564e-05
+      4.881040355005449e-05
      ],
      [
       1784332800000,
-      2.786199355402907e-05
+      2.7834266127334096e-05
      ],
      [
       1784419200000,
-      4.196928713071669e-05
+      4.198665728715457e-05
      ],
      [
       1784505600000,
-      3.7918407917246786e-05
+      3.7953976753846486e-05
      ],
      [
       1784592000000,
-      2.363155807577863e-05
+      2.3655856326336832e-05
      ],
      [
       1784678400000,
-      1.0748547544769719e-05
+      1.0726020414204952e-05
      ],
      [
       1784764800000,
-      4.827700192928786e-05
+      4.831457401291744e-05
      ],
      [
       1784851200000,
-      4.224841020910531e-05
+      4.223274009087151e-05
      ],
      [
       1784937600000,
-      5.127301497701471e-06
+      5.136072294018247e-06
      ],
      [
       1785024000000,
-      5.105242114629922e-05
+      5.1078251645760675e-05
      ],
      [
       1785110400000,
-      4.779158704716084e-05
+      4.7767984797282986e-05
      ],
      [
       1785196800000,
-      6.404982983191428e-05
+      6.401387019848541e-05
      ],
      [
       1785283200000,
-      7.672322422459927e-05
+      7.658931954897888e-05
      ],
      [
       1785369600000,
-      8.195257108514398e-05
+      8.198896338915365e-05
      ],
      [
       1785456000000,
-      5.065777019048625e-05
+      5.064781615407233e-05
      ],
      [
       1785542400000,
-      4.051474127939567e-05
+      4.0505099034859035e-05
      ],
      [
       1785628800000,
-      5.638686648684855e-05
+      5.637544077312799e-05
      ],
      [
       1785715200000,
-      4.431879672402456e-05
+      4.425422474346467e-05
      ],
      [
       1785801600000,
-      6.41732056400873e-05
+      6.419572766650022e-05
      ],
      [
       1785888000000,
-      4.286555521981114e-05
+      4.284543180092499e-05
      ],
      [
       1785974400000,
-      5.001559697138555e-05
+      5.0025366994893374e-05
      ],
      [
       1786060800000,
-      5.307115579559686e-05
+      5.312286901577623e-05
      ],
      [
       1786147200000,
-      3.6172138422157504e-05
+      3.621213316973487e-05
      ],
      [
       1786233600000,
-      7.138310892360766e-05
+      7.142367370562439e-05
      ],
      [
       1786320000000,
-      5.7654528039457713e-05
+      5.7654373040827016e-05
      ],
      [
       1786406400000,
-      6.578936167214116e-05
+      6.580874048854277e-05
      ],
      [
       1786492800000,
-      7.429895248816024e-05
+      7.425085388650168e-05
      ],
      [
       1786579200000,
-      8.191939062165163e-05
+      8.190038422599957e-05
      ],
      [
       1786665600000,
-      2.992429089980526e-05
+      2.9847011862127932e-05
      ],
      [
       1786752000000,
-      4.2852642950577614e-05
+      4.287445951210325e-05
      ],
      [
       1786838400000,
-      4.4952681232640996e-05
+      4.49989682406572e-05
      ],
      [
       1786924800000,
-      5.006634644741551e-05
+      5.012587378057655e-05
      ],
      [
       1787011200000,
-      3.5582726975042826e-05
+      3.5602228670301826e-05
      ],
      [
       1787097600000,
-      7.65717533488196e-05
+      7.665359252852814e-05
      ],
      [
       1787184000000,
-      3.3026367881791137e-05
+      3.3124054685613524e-05
      ],
      [
       1787270400000,
-      8.587715859297418e-05
+      8.591631153236778e-05
      ],
      [
       1787356800000,
-      9.942058813483502e-05
+      9.942256999657998e-05
      ],
      [
       1787443200000,
-      8.556561624754363e-05
+      8.558878887516042e-05
      ],
      [
       1787529600000,
-      7.395467252261742e-05
+      7.405883360930534e-05
      ],
      [
       1787616000000,
-      6.265584837440564e-05
+      6.277245653783725e-05
      ],
      [
       1787702400000,
-      4.464727731838211e-05
+      4.4714331322941257e-05
      ],
      [
       1787788800000,
-      3.985148270656816e-05
+      3.994007449863649e-05
      ],
      [
       1787875200000,
-      6.998716827447182e-05
+      6.99881146526676e-05
      ],
      [
       1787961600000,
-      6.503520400652661e-05
+      6.511836736455258e-05
      ],
      [
       1788048000000,
-      7.241251550176586e-05
+      7.241719087557344e-05
      ],
      [
       1788134400000,
-      6.669510124937366e-05
+      6.67423065967807e-05
      ],
      [
       1788220800000,
-      5.786930189075935e-05
+      5.7800905706197787e-05
      ],
      [
       1788307200000,
-      4.853692634936936e-05
+      4.8535663273301085e-05
      ],
      [
       1788393600000,
-      6.508079107809467e-05
+      6.518152020461327e-05
      ],
      [
       1788480000000,
-      1.596754867958317e-05
+      1.603706739970385e-05
      ],
      [
       1788566400000,
-      1.0619445113868096e-05
+      1.062009581142207e-05
      ],
      [
       1788652800000,
-      3.197083445165299e-05
+      3.1940558189658506e-05
      ],
      [
       1788739200000,
-      7.757282211528257e-06
+      7.807586783146481e-06
      ],
      [
       1788825600000,
-      6.831999435254596e-05
+      6.83465067404213e-05
      ],
      [
       1788912000000,
-      5.872763630260502e-05
+      5.872007606915173e-05
      ],
      [
       1788998400000,
-      7.60124715258968e-05
+      7.601538290663634e-05
      ],
      [
       1789084800000,
-      4.6025137613696975e-05
+      4.600998320732066e-05
      ],
      [
       1789171200000,
-      5.1315187631207594e-05
+      5.131801458737831e-05
      ],
      [
       1789257600000,
-      5.246730378202823e-05
+      5.249124263707133e-05
      ],
      [
       1789344000000,
-      3.730287985995215e-05
+      3.728732764248688e-05
      ],
      [
       1789430400000,
-      7.363352444201742e-05
+      7.364741635728748e-05
      ],
      [
       1789516800000,
-      6.792961434299228e-05
+      6.788107887465313e-05
      ],
      [
       1789603200000,
-      7.931091621895841e-05
+      7.931365994403829e-05
      ],
      [
       1789689600000,
-      7.179306619144464e-05
+      7.182337498951273e-05
      ],
      [
       1789776000000,
-      0.00010128824715609524
+      0.00010128643631314064
      ],
      [
       1789862400000,
-      7.689494163376025e-05
+      7.68526170525067e-05
      ],
      [
       1789948800000,
-      7.555055793754368e-05
+      7.552152653764204e-05
      ],
      [
       1790035200000,
-      3.271823780414013e-05
+      3.2695704329610935e-05
      ],
      [
       1790121600000,
-      3.1255231075926505e-05
+      3.118205657369738e-05
      ],
      [
       1790208000000,
-      1.9546562517654058e-05
+      1.9506774089715826e-05
      ],
      [
       1790294400000,
-      -7.335386897169768e-06
+      -7.316689403957245e-06
      ],
      [
       1790380800000,
-      -7.71752279604716e-06
+      -7.721518229392912e-06
      ],
      [
       1790467200000,
-      2.790359987032404e-05
+      2.7894533933538934e-05
      ],
      [
       1790553600000,
-      5.264377061981561e-05
+      5.2658932278064924e-05
      ],
      [
       1790640000000,
-      2.3945960447782736e-05
+      2.3926061458032044e-05
      ],
      [
       1790726400000,
-      6.410963575745069e-05
+      6.408591873025158e-05
      ],
      [
       1790812800000,
-      5.3684105019130995e-05
+      5.371095706993155e-05
      ],
      [
       1790899200000,
-      2.9116899545277422e-05
+      2.911594264158008e-05
      ],
      [
       1790985600000,
-      9.187846550396281e-06
+      9.292373358310165e-06
      ],
      [
       1791072000000,
-      4.012881539757565e-05
+      4.014806775354339e-05
      ],
      [
       1791158400000,
-      5.017696725343502e-06
+      4.983859265333586e-06
      ],
      [
       1791244800000,
-      4.572776118049046e-05
+      4.56963579557293e-05
      ],
      [
       1791331200000,
-      2.5411516637397513e-05
+      2.5384336135936047e-05
      ],
      [
       1791417600000,
-      4.8127690380401246e-05
+      4.806187497759943e-05
      ],
      [
       1791504000000,
-      2.4386198821847908e-05
+      2.433773136600344e-05
      ],
      [
       1791590400000,
-      9.558734809540704e-07
+      9.279373095123055e-07
      ],
      [
       1791676800000,
-      1.8296988717910372e-05
+      1.8240866086817544e-05
      ],
      [
       1791763200000,
-      2.9011913778999273e-05
+      2.8967534134303596e-05
      ],
      [
       1791849600000,
-      2.7449465143619064e-05
+      2.743032417631065e-05
      ],
      [
       1791936000000,
-      4.3312541956161834e-05
+      4.3779199213802344e-05
      ]
     ]
    }
   },
   "funding": {
    "src": "gộp 7 sàn",
-   "last": 4.3312541956161834e-05,
+   "last": 4.3779199213802344e-05,
    "pct": 41.3,
    "n": 92,
    "agg": true
   },
   "ls": {
-   "buy": 0.5774,
+   "buy": 0.5792,
    "src": "OKX"
   },
-  "pc": 0.601,
+  "pc": 0.604,
   "wiki": {
    "z": -0.39,
    "last": 2487
@@ -2688,7 +2688,7 @@
     {
      "key": "text",
      "name": "Giọng điệu tin tức và mạng xã hội",
-     "raw": "+0.06 (1873 bài)",
+     "raw": "+0.05 (1908 bài)",
      "v": 68.9,
      "w": 25,
      "note": "so với lịch sử của máy chủ",
@@ -2715,7 +2715,7 @@
     {
      "key": "funding",
      "name": "Funding BTC (gộp các sàn)",
-     "raw": "+0.0043%",
+     "raw": "+0.0044%",
      "v": 41.3,
      "w": 20,
      "note": "phân vị trong 90 ngày, bình quân theo open interest 7 sàn",
@@ -2725,7 +2725,7 @@
      "key": "ls",
      "name": "Tài khoản đang long",
      "raw": "58%",
-     "v": 50.7,
+     "v": 51.2,
      "w": 10,
      "note": "40% → 0, 75% → 100 (OKX)",
      "src": "OKX"
@@ -2734,7 +2734,7 @@
      "key": "pc",
      "name": "Put/call quyền chọn",
      "raw": "0.60",
-     "v": 66.5,
+     "v": 66.0,
      "w": 10,
      "note": "càng thấp càng chủ quan",
      "src": "Deribit"
@@ -2752,10 +2752,10 @@
    "weight": 110
   },
   "premium": {
-   "last": -0.0092,
-   "avg24": -0.1016,
+   "last": 0.1563,
+   "avg24": -0.0947,
    "ref": "OKX",
-   "avg7d": -0.0963,
+   "avg7d": -0.0953,
    "series": [
     [
      1791381600000,
@@ -3427,30 +3427,30 @@
     ],
     [
      1791982800000,
-     -0.0092
+     0.1563
     ]
    ]
   },
   "btc": {
-   "price": 82688.01,
-   "ch24": -0.57
+   "price": 82848.55,
+   "ch24": -0.38
   },
   "drivers": {
    "windows": {
     "24": {
-     "dp": -0.57,
-     "doi": -0.44,
+     "dp": -0.38,
+     "doi": -0.47,
      "spot_net": 2.2,
-     "perp_net": 2.2,
+     "perp_net": 0.7,
      "spot_btc": 122.5,
-     "perp_usd": 106196918,
-     "prem": -0.103,
+     "perp_usd": 43636214,
+     "prem": -0.096,
      "code": "flat",
      "label": "Chưa có đà rõ",
      "why": "Giá và open interest đều ít thay đổi.",
      "analysis": {
-      "title": "Đi ngang (-0,6%)",
-      "verdict": "24 giờ qua BTC gần như đi ngang (-0,6%).",
+      "title": "Đi ngang (-0,4%)",
+      "verdict": "24 giờ qua BTC gần như đi ngang (-0,4%).",
       "tone": "neutral",
       "assess": "Thị trường đang chờ: không phe nào chiếm ưu thế.",
       "forces": [
@@ -3466,18 +3466,18 @@
        },
        {
         "name": "Futures",
-        "side": 1,
-        "text": "mua chủ động 106,2 triệu $ ròng (+2,2%)"
+        "side": 0,
+        "text": "cân bằng (+0,7%)"
        },
        {
         "name": "Thanh lý",
         "side": 0,
-        "text": "không phía nào áp đảo: long 13,3 triệu $, short 8,9 triệu $"
+        "text": "không phía nào áp đảo: long 17,2 triệu $, short 10,6 triệu $"
        },
        {
         "name": "Open interest",
         "side": 0,
-        "text": "ít đổi (-0,4%)"
+        "text": "ít đổi (-0,5%)"
        },
        {
         "name": "Funding",
@@ -3492,19 +3492,19 @@
      }
     },
     "72": {
-     "dp": -0.37,
-     "doi": -0.3,
+     "dp": -0.17,
+     "doi": -0.32,
      "spot_net": -1.0,
-     "perp_net": 0.4,
+     "perp_net": 0.1,
      "spot_btc": -176.4,
-     "perp_usd": 78010950,
-     "prem": -0.112,
+     "perp_usd": 15124112,
+     "prem": -0.109,
      "code": "flat",
      "label": "Chưa có đà rõ",
      "why": "Giá và open interest đều ít thay đổi.",
      "analysis": {
-      "title": "Đi ngang (-0,4%)",
-      "verdict": "3 ngày qua BTC gần như đi ngang (-0,4%).",
+      "title": "Đi ngang (-0,2%)",
+      "verdict": "3 ngày qua BTC gần như đi ngang (-0,2%).",
       "tone": "neutral",
       "assess": "Giá đứng yên nhưng tiền thật đang nghiêng về bán; chưa đủ để thành xu hướng.",
       "forces": [
@@ -3521,12 +3521,12 @@
        {
         "name": "Futures",
         "side": 0,
-        "text": "cân bằng (+0,4%)"
+        "text": "cân bằng (+0,1%)"
        },
        {
         "name": "Thanh lý",
         "side": 0,
-        "text": "không phía nào áp đảo: long 104,8 triệu $, short 63,7 triệu $"
+        "text": "không phía nào áp đảo: long 108,7 triệu $, short 65,4 triệu $"
        },
        {
         "name": "Open interest",
@@ -3934,7 +3934,7 @@
      ],
      [
       1791982800000,
-      82688
+      82849
      ]
     ],
     "oi": [
@@ -4324,7 +4324,7 @@
      ],
      [
       1791982800000,
-      279829.8
+      279761.0
      ]
     ],
     "cvd_spot": [
@@ -4651,304 +4651,304 @@
     ],
     "cvd_perp": [
      [
-      1791723600000,
-      0.3
-     ],
-     [
       1791727200000,
-      8.5
+      8.2
      ],
      [
       1791730800000,
-      14.2
+      13.9
      ],
      [
       1791734400000,
-      125.3
+      125.0
      ],
      [
       1791738000000,
-      108.2
+      107.9
      ],
      [
       1791741600000,
-      123.0
+      122.7
      ],
      [
       1791745200000,
-      121.3
+      121.0
      ],
      [
       1791748800000,
-      115.4
+      115.1
      ],
      [
       1791752400000,
-      112.1
+      111.8
      ],
      [
       1791756000000,
-      75.9
+      75.6
      ],
      [
       1791759600000,
-      75.5
+      75.2
      ],
      [
       1791763200000,
-      100.0
+      99.7
      ],
      [
       1791766800000,
-      126.3
+      126.0
      ],
      [
       1791770400000,
-      91.9
+      91.6
      ],
      [
       1791774000000,
-      88.1
+      87.8
      ],
      [
       1791777600000,
-      92.1
+      91.8
      ],
      [
       1791781200000,
-      144.7
+      144.4
      ],
      [
       1791784800000,
-      153.8
+      153.5
      ],
      [
       1791788400000,
-      192.5
+      192.2
      ],
      [
       1791792000000,
-      133.4
+      133.1
      ],
      [
       1791795600000,
-      108.9
+      108.5
      ],
      [
       1791799200000,
-      118.7
+      118.3
      ],
      [
       1791802800000,
-      135.6
+      135.3
      ],
      [
       1791806400000,
-      81.8
+      81.5
      ],
      [
       1791810000000,
-      -20.4
+      -20.7
      ],
      [
       1791813600000,
-      36.8
+      36.5
      ],
      [
       1791817200000,
-      -10.9
+      -11.2
      ],
      [
       1791820800000,
-      1.7
+      1.4
      ],
      [
       1791824400000,
-      -13.3
+      -13.6
      ],
      [
       1791828000000,
-      9.6
+      9.3
      ],
      [
       1791831600000,
-      -5.3
+      -5.6
      ],
      [
       1791835200000,
-      26.5
+      26.1
      ],
      [
       1791838800000,
-      19.3
+      19.0
      ],
      [
       1791842400000,
-      -34.4
+      -34.7
      ],
      [
       1791846000000,
-      -103.2
+      -103.6
      ],
      [
       1791849600000,
-      -150.4
+      -150.7
      ],
      [
       1791853200000,
-      -209.9
+      -210.2
      ],
      [
       1791856800000,
-      -155.5
+      -155.8
      ],
      [
       1791860400000,
-      -132.9
+      -133.2
      ],
      [
       1791864000000,
-      -78.4
+      -78.8
      ],
      [
       1791867600000,
-      -83.9
+      -84.2
      ],
      [
       1791871200000,
-      -61.1
+      -61.4
      ],
      [
       1791874800000,
-      -54.5
+      -54.8
      ],
      [
       1791878400000,
-      -51.3
+      -51.6
      ],
      [
       1791882000000,
-      -105.5
+      -105.8
      ],
      [
       1791885600000,
-      -64.1
+      -64.4
      ],
      [
       1791889200000,
-      -97.5
+      -97.8
      ],
      [
       1791892800000,
-      -28.2
+      -28.5
      ],
      [
       1791896400000,
-      -54.5
+      -54.8
      ],
      [
       1791900000000,
-      -51.8
+      -52.1
      ],
      [
       1791903600000,
-      -63.6
+      -63.9
      ],
      [
       1791907200000,
-      -98.8
+      -99.1
      ],
      [
       1791910800000,
-      -110.0
+      -110.3
      ],
      [
       1791914400000,
-      -143.2
+      -143.5
      ],
      [
       1791918000000,
-      -81.7
+      -82.0
      ],
      [
       1791921600000,
-      -66.9
+      -67.2
      ],
      [
       1791925200000,
-      -63.5
+      -63.9
      ],
      [
       1791928800000,
-      -48.6
+      -48.9
      ],
      [
       1791932400000,
-      -47.4
+      -47.7
      ],
      [
       1791936000000,
-      -68.7
+      -69.0
      ],
      [
       1791939600000,
-      -25.5
+      -25.8
      ],
      [
       1791943200000,
-      -16.1
+      -16.5
      ],
      [
       1791946800000,
-      -18.8
+      -19.1
      ],
      [
       1791950400000,
-      -5.3
+      -5.6
      ],
      [
       1791954000000,
-      -6.1
+      -6.4
      ],
      [
       1791957600000,
-      12.6
+      12.3
      ],
      [
       1791961200000,
-      24.4
+      24.1
      ],
      [
       1791964800000,
-      38.2
+      37.9
      ],
      [
       1791968400000,
-      107.3
+      107.0
      ],
      [
       1791972000000,
-      80.2
+      79.8
      ],
      [
       1791975600000,
-      86.4
+      86.1
      ],
      [
       1791979200000,
-      78.0
+      77.7
+     ],
+     [
+      1791982800000,
+      15.1
      ]
     ]
    },
    "liq": {
-    "long": 4921595,
-    "short": 2432308,
-    "hours": 23.5,
+    "long": 8458561,
+    "short": 2630240,
+    "hours": 24.0,
     "series": [
      [
       1791896400000,
       1089,
-      188223
+      0
      ],
      [
       1791900000000,
@@ -4967,7 +4967,7 @@
      ],
      [
       1791910800000,
-      1397984,
+      1377607,
       0
      ],
      [
@@ -5008,7 +5008,7 @@
      [
       1791946800000,
       0,
-      238957
+      237933
      ],
      [
       1791954000000,
@@ -5047,13 +5047,13 @@
      ],
      [
       1791979200000,
-      2322004,
+      2824557,
       231809
      ],
      [
       1791982800000,
-      405,
-      99
+      3055194,
+      387279
      ]
     ]
    },
@@ -5062,8 +5062,8 @@
    "funding_pct": 41.3
   },
   "stable": {
-   "total": 308.8,
-   "ch7": -0.57,
+   "total": 308.9,
+   "ch7": -0.56,
    "ch30": 0.81,
    "d30": 2.5,
    "series": [
@@ -5785,7 +5785,7 @@
     ],
     [
      1791936000000,
-     308.8
+     308.9
     ]
    ]
   },
@@ -5921,7 +5921,7 @@
    },
    "days": 3173
   },
-  "runtime_sec": 8.2
+  "runtime_sec": 10.2
  },
  "attention": {
   "trends": {
@@ -6398,7 +6398,7 @@
       8
      ]
     ],
-    "age_h": 2.2,
+    "age_h": 3.0,
     "y5": [
      {
       "kw": "buy bitcoin",
@@ -7073,7 +7073,7 @@
       31
      ]
     ],
-    "age_h": 2.2,
+    "age_h": 3.0,
     "y5": [
      {
       "kw": "mua bitcoin",
@@ -7116,10 +7116,10 @@
      "cc": "us",
      "app": "Binance",
      "overall": null,
-     "finance": 91,
+     "finance": 85,
      "of": 100,
      "fof": 100,
-     "d1_fin": 80,
+     "d1_fin": 76,
      "d1_all": null,
      "since": "2026-10-12"
     },
@@ -7171,10 +7171,10 @@
      "cc": "vn",
      "app": "Binance",
      "overall": null,
-     "finance": 51,
+     "finance": 50,
      "of": 100,
      "fof": 100,
-     "d1_fin": 39,
+     "d1_fin": 43,
      "d1_all": null,
      "since": "2026-10-12"
     },
@@ -7193,10 +7193,10 @@
      "cc": "vn",
      "app": "OKX",
      "overall": null,
-     "finance": 68,
+     "finance": 66,
      "of": 100,
      "fof": 100,
-     "d1_fin": 66,
+     "d1_fin": 67,
      "d1_all": null,
      "since": "2026-10-12"
     },
@@ -9418,7 +9418,7 @@
    "vi_last7": 62
   },
   "errors": {},
-  "runtime_sec": 1.7
+  "runtime_sec": 3.2
  },
  "events": {
   "groups": [
@@ -14736,10 +14736,10 @@
    }
   },
   "live": {
-   "n": 1862,
+   "n": 1904,
    "index_current": 52,
-   "index_cryptobert": 61,
-   "agree": 48,
+   "index_cryptobert": 60,
+   "agree": 49,
    "examples": [
     {
      "src": "Stocktwits",
@@ -14767,7 +14767,7 @@
     }
    ]
   },
-  "updated": "2026-10-14T13:05:42Z",
-  "runtime_sec": 22.9
+  "updated": "2026-10-14T13:57:30Z",
+  "runtime_sec": 21.8
  }
 }
