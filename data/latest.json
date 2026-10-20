@@ -1,18 +1,18 @@
 {
- "generated_at": "2026-10-20T01:07:33+00:00",
+ "generated_at": "2026-10-20T01:53:25+00:00",
  "scoring": "AI + từ điển (100% số bài có điểm AI)",
- "raw_count": 1917,
- "kept_count": 749,
- "new_count": 217,
- "stored_7d": 13327,
+ "raw_count": 1702,
+ "kept_count": 656,
+ "new_count": 120,
+ "stored_7d": 13320,
  "filter_reasons": {
+  "quảng cáo / rao bán": 23,
   "bot / báo giá tự động": 152,
-  "trùng lặp": 319,
-  "quá ngắn": 44,
-  "không liên quan crypto": 294,
   "không phải tiếng Anh": 160,
-  "quảng cáo / rao bán": 24,
-  "cùng tác giả quá nhiều": 175
+  "trùng lặp": 293,
+  "không liên quan crypto": 204,
+  "quá ngắn": 35,
+  "cùng tác giả quá nhiều": 179
  },
  "source_status": {
   "CoinDesk": 25,
@@ -24,7 +24,7 @@
   "NewsBTC": 10,
   "CryptoPotato": 36,
   "r/Bitcoin": 50,
-  "r/ethereum": 50,
+  "r/ethereum": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/ethereum/n",
   "r/CryptoMarkets": 50,
   "r/BitcoinMarkets": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/BitcoinMar",
   "r/CryptoCurrency": 50,
@@ -38,17 +38,17 @@
   "HN bitcoin": 19,
   "HN cryptocurrency": 8,
   "HN ethereum": 2,
-  "YT Coin Bureau": 15,
-  "YT Altcoin Daily": 15,
-  "YT Benjamin Cowen": 15,
-  "YT Crypto Banter": 15,
-  "YT Lark Davis": 15,
-  "YT InvestAnswers": 15,
-  "YT DataDash": 15,
-  "YT Bankless": 15,
-  "YT The Moon Show": 15,
-  "YT Crypto Zombie": 15,
-  "YT Paul Barron Network": 15,
+  "YT Coin Bureau": "lỗi: 404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?ch",
+  "YT Altcoin Daily": "lỗi: 404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?ch",
+  "YT Benjamin Cowen": "lỗi: 404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?ch",
+  "YT Crypto Banter": "lỗi: 500 Server Error: Internal Server Error for url: https://www.youtube.com/feeds/v",
+  "YT Lark Davis": "lỗi: 404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?ch",
+  "YT InvestAnswers": "lỗi: 404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?ch",
+  "YT DataDash": "lỗi: 404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?ch",
+  "YT Bankless": "lỗi: 404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?ch",
+  "YT The Moon": "lỗi: 404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?ch",
+  "YT Crypto Zombie": "lỗi: 404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?ch",
+  "YT Paul Barron Network": "lỗi: 404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?ch",
   "TG @WatcherGuru": 14,
   "TG @cointelegraph": 13,
   "TG @bitcoinmagazinetelegram": 18,
@@ -59,32 +59,32 @@
   "Bluesky crypto": 99,
   "Bluesky ethereum": 100
  },
- "runtime_sec": 320.4,
+ "runtime_sec": 202.4,
  "all": {
-  "score": 0.0664,
+  "score": 0.0578,
   "index": 53,
-  "n": 2102,
-  "pos": 38.5,
-  "neg": 25.1,
-  "neu": 36.4
- },
- "news": {
-  "score": 0.0096,
-  "index": 50,
-  "n": 111,
-  "pos": 36.0,
-  "neg": 30.6,
-  "neu": 33.3
- },
- "social": {
-  "score": 0.0692,
-  "index": 53,
-  "n": 1991,
-  "pos": 38.6,
-  "neg": 24.8,
+  "n": 2116,
+  "pos": 37.9,
+  "neg": 25.5,
   "neu": 36.6
  },
- "trend": 0.0543,
+ "news": {
+  "score": 0.0148,
+  "index": 51,
+  "n": 112,
+  "pos": 36.6,
+  "neg": 30.4,
+  "neu": 33.0
+ },
+ "social": {
+  "score": 0.0599,
+  "index": 53,
+  "n": 2004,
+  "pos": 38.0,
+  "neg": 25.2,
+  "neu": 36.8
+ },
+ "trend": 0.0432,
  "window_hours": 24,
  "daily": [
   {
@@ -119,25 +119,25 @@
   },
   {
    "date": "2026-10-20",
-   "n": 699,
-   "score": 0.0465
+   "n": 767,
+   "score": 0.0317
   }
  ],
  "sources": [
   {
    "src": "Bluesky",
-   "n": 1287,
-   "score": 0.0653
+   "n": 1300,
+   "score": 0.065
   },
   {
    "src": "Stocktwits",
    "n": 591,
-   "score": 0.0775
+   "score": 0.0532
   },
   {
    "src": "Tin tức",
-   "n": 111,
-   "score": 0.0096
+   "n": 112,
+   "score": 0.0148
   },
   {
    "src": "Reddit",
@@ -173,11 +173,11 @@
  "keywords": [
   [
    "$btc",
-   554
+   555
   ],
   [
    "$eth",
-   129
+   130
   ],
   [
    "live",
@@ -185,7 +185,7 @@
   ],
   [
    "trading",
-   113
+   114
   ],
   [
    "institutional",
@@ -205,15 +205,15 @@
   ],
   [
    "$mstr",
-   80
+   81
   ],
   [
    "solana",
-   72
+   73
   ],
   [
    "move",
-   70
+   71
   ],
   [
    "jpmorgan",
@@ -221,7 +221,7 @@
   ],
   [
    "forecast",
-   62
+   63
   ],
   [
    "$qqq",
@@ -231,15 +231,15 @@
  "coins": [
   [
    "BTC",
-   1461
+   1467
   ],
   [
    "ETH",
-   428
+   431
   ],
   [
    "Stablecoin",
-   143
+   144
   ],
   [
    "SOL",
@@ -247,7 +247,7 @@
   ],
   [
    "XRP",
-   75
+   77
   ],
   [
    "DOGE",
@@ -348,6 +348,17 @@
  ],
  "crowd_pos": [
   {
+   "src": "Bluesky",
+   "outlet": "bitcoin",
+   "t": 1792460963421,
+   "s": 0.313,
+   "text": "also I connected to a crypto exchange I haven't used in years and discovered something I hadn't realized: someone sent me 5$ worth of bitcoin 5 years ago! with how much the price has changed since then, it turns out now I have... 7$",
+   "url": "https://bsky.app/profile/alice.averlong.com/post/3mybjfjz7v22i",
+   "eng": 13,
+   "tag": null,
+   "vi": "tôi cũng đã kết nối với một sàn giao dịch tiền điện tử mà tôi đã không sử dụng trong nhiều năm và phát hiện ra điều mà tôi đã không nhận ra: ai đó đã gửi cho tôi bitcoin trị giá 5 $ 5 năm trước! với mức giá đã thay đổi kể từ đó, hóa ra bây giờ"
+  },
+  {
    "src": "Stocktwits",
    "outlet": "$BTC",
    "t": 1792402414000,
@@ -379,17 +390,6 @@
    "eng": 6,
    "tag": "bull",
    "vi": "phe giảm giá tham lam $BTC.X không thoát khỏi thị trường vào thứ Sáu là giả mạo. Hy vọng bạn thích ramen!"
-  },
-  {
-   "src": "Reddit",
-   "outlet": "r/CryptoCurrency",
-   "t": 1792418975000,
-   "s": 0.493,
-   "text": "Moon Lot:Solana coin with a game in beta",
-   "url": "https://www.reddit.com/r/CryptoCurrency/comments/1x9xwo1/moon_lotsolana_coin_with_a_game_in_beta/",
-   "eng": 0,
-   "tag": null,
-   "vi": "Moon Lot: đồng coin Solana với trò chơi đang trong giai đoạn thử nghiệm"
   }
  ],
  "crowd_neg": [
@@ -429,28 +429,28 @@
   {
    "src": "Stocktwits",
    "outlet": "$BTC",
-   "t": 1792434266000,
-   "s": -0.525,
-   "text": "$BTC.X trump stock is in free fall. how much BTC will they dump? $DJT $SPY",
-   "url": "https://stocktwits.com/message/666859046",
-   "eng": 6,
-   "tag": null,
-   "vi": "$BTC.X cổ phiếu trump đang rơi tự do. Họ sẽ đổ bao nhiêu BTC? $DJT $SPY"
+   "t": 1792458791000,
+   "s": -0.662,
+   "text": "$BTC.X $ETH.X lee and saylor are some dump mfs to say the least",
+   "url": "https://stocktwits.com/message/666885978",
+   "eng": 4,
+   "tag": "bear",
+   "vi": "$BTC.X $ETH.X lee và saylor là một số mfs dump để nói rằng ít nhất"
   }
  ],
  "tag_check": {
-  "n": 224,
-  "agree": 69,
+  "n": 212,
+  "agree": 67,
   "n_bear": 52,
   "agree_bear": 81
  },
  "translation": "ok",
  "stocktwits": {
-  "n": 590,
-  "bull": 236,
-  "bear": 83,
-  "bull_pct": 74.0,
-  "prev_bull_pct": 73.7
+  "n": 589,
+  "bull": 220,
+  "bear": 82,
+  "bull_pct": 72.8,
+  "prev_bull_pct": 73.3
  },
  "macro": {
   "sources": [
@@ -1971,7 +1971,7 @@
    "cls": "Greed",
    "d7": -2
   },
-  "votes": 73.85,
+  "votes": 74.44,
   "liq_agg": {
    "exchanges": [
     "Binance",
@@ -2101,21 +2101,21 @@
     ],
     [
      1792458000000,
-     55274,
-     0
+     12881057,
+     124406
     ]
    ],
    "h24": {
-    "long": 9735986,
-    "short": 12339130
+    "long": 22561769,
+    "short": 12463536
    },
    "h72": {
-    "long": 50721757,
-    "short": 30528985
+    "long": 63547540,
+    "short": 30653390
    },
    "oi": {
-    "usd": 23383025442,
-    "ch7": 1.58,
+    "usd": 23473345209,
+    "ch7": 1.97,
     "series": [
      [
       1791849600000,
@@ -2292,390 +2292,390 @@
     ]
    },
    "funding": {
-    "last": 9.236660823892218e-05,
+    "last": 9.200396999034046e-05,
     "pct": 97.8,
     "n": 92,
     "series": [
      [
       1784592000000,
-      2.4043398510601376e-05
+      2.4115322515562585e-05
      ],
      [
       1784678400000,
-      1.1131513614362733e-05
+      1.1063401421415831e-05
      ],
      [
       1784764800000,
-      4.8279756145354626e-05
+      4.8170407336257783e-05
      ],
      [
       1784851200000,
-      4.2150911283922835e-05
+      4.202882236700168e-05
      ],
      [
       1784937600000,
-      4.148061133344102e-06
+      4.069847434570386e-06
      ],
      [
       1785024000000,
-      5.040803566172319e-05
+      5.036375550694065e-05
      ],
      [
       1785110400000,
-      4.77981740016652e-05
+      4.7733099141124054e-05
      ],
      [
       1785196800000,
-      6.383837477405814e-05
+      6.376665339735094e-05
      ],
      [
       1785283200000,
-      7.63101140309202e-05
+      7.632542900783009e-05
      ],
      [
       1785369600000,
-      8.189347237934224e-05
+      8.187085322014397e-05
      ],
      [
       1785456000000,
-      5.048079378304933e-05
+      5.039635973063091e-05
      ],
      [
       1785542400000,
-      4.038526731515669e-05
+      4.035777041634654e-05
      ],
      [
       1785628800000,
-      5.6055092207944484e-05
+      5.594567212384409e-05
      ],
      [
       1785715200000,
-      4.39271130542669e-05
+      4.3915689292361615e-05
      ],
      [
       1785801600000,
-      6.430498988791883e-05
+      6.42651264302454e-05
      ],
      [
       1785888000000,
-      4.2426594823918565e-05
+      4.241627956489422e-05
      ],
      [
       1785974400000,
-      4.9732186563577864e-05
+      4.967654128870323e-05
      ],
      [
       1786060800000,
-      5.333181344435013e-05
+      5.335675036272856e-05
      ],
      [
       1786147200000,
-      3.698335599614272e-05
+      3.697450438063415e-05
      ],
      [
       1786233600000,
-      7.110213722310301e-05
+      7.113060456483516e-05
      ],
      [
       1786320000000,
-      5.733342133551471e-05
+      5.7300992450086376e-05
      ],
      [
       1786406400000,
-      6.577489799070028e-05
+      6.569762040682603e-05
      ],
      [
       1786492800000,
-      7.392595419189193e-05
+      7.387193049018008e-05
      ],
      [
       1786579200000,
-      8.154373243272955e-05
+      8.150666601453774e-05
      ],
      [
       1786665600000,
-      2.9918614497864947e-05
+      2.9884308494388052e-05
      ],
      [
       1786752000000,
-      4.362735261399677e-05
+      4.36102459314044e-05
      ],
      [
       1786838400000,
-      4.485299872081671e-05
+      4.486174407989426e-05
      ],
      [
       1786924800000,
-      5.129920825378354e-05
+      5.126020871568181e-05
      ],
      [
       1787011200000,
-      3.5689833478061366e-05
+      3.569819638350434e-05
      ],
      [
       1787097600000,
-      7.734729723859252e-05
+      7.740107317213372e-05
      ],
      [
       1787184000000,
-      3.4703284937942235e-05
+      3.464778550084997e-05
      ],
      [
       1787270400000,
-      8.688602121450675e-05
+      8.691788423425187e-05
      ],
      [
       1787356800000,
-      9.943053361196449e-05
+      9.943087829125043e-05
      ],
      [
       1787443200000,
-      8.66677020316377e-05
+      8.670374390447707e-05
      ],
      [
       1787529600000,
-      7.460148681071771e-05
+      7.465017447701732e-05
      ],
      [
       1787616000000,
-      6.249227713947555e-05
+      6.247137549599204e-05
      ],
      [
       1787702400000,
-      4.494357252172257e-05
+      4.490795132790407e-05
      ],
      [
       1787788800000,
-      3.984453952051932e-05
+      3.985057333113185e-05
      ],
      [
       1787875200000,
-      6.982467949779467e-05
+      6.982235294272662e-05
      ],
      [
       1787961600000,
-      6.566921801668435e-05
+      6.564548062106608e-05
      ],
      [
       1788048000000,
-      7.22667456193057e-05
+      7.225533998039841e-05
      ],
      [
       1788134400000,
-      6.755109442353316e-05
+      6.751350550889902e-05
      ],
      [
       1788220800000,
-      5.717471850298807e-05
+      5.712353511700458e-05
      ],
      [
       1788307200000,
-      4.8462999151626904e-05
+      4.847513137188775e-05
      ],
      [
       1788393600000,
-      6.506695386077841e-05
+      6.509026784146526e-05
      ],
      [
       1788480000000,
-      1.7322730641702628e-05
+      1.736408013846715e-05
      ],
      [
       1788566400000,
-      1.025869346811184e-05
+      1.0193708292597239e-05
      ],
      [
       1788652800000,
-      3.180502287155034e-05
+      3.178308061846976e-05
      ],
      [
       1788739200000,
-      8.488644611509003e-06
+      8.526601959147992e-06
      ],
      [
       1788825600000,
-      6.865518851986435e-05
+      6.862886863805674e-05
      ],
      [
       1788912000000,
-      5.868571188900198e-05
+      5.869613177542109e-05
      ],
      [
       1788998400000,
-      7.60151023683936e-05
+      7.600723532125302e-05
      ],
      [
       1789084800000,
-      4.581729923432891e-05
+      4.581677223253337e-05
      ],
      [
       1789171200000,
-      5.1056572780982584e-05
+      5.1027046208444444e-05
      ],
      [
       1789257600000,
-      5.262513702121361e-05
+      5.2593174326141267e-05
      ],
      [
       1789344000000,
-      3.81582920626701e-05
+      3.8150001556238956e-05
      ],
      [
       1789430400000,
-      7.351494419549157e-05
+      7.34403101555853e-05
      ],
      [
       1789516800000,
-      6.801989623035528e-05
+      6.8023284400571e-05
      ],
      [
       1789603200000,
-      7.931109661335371e-05
+      7.927251190805895e-05
      ],
      [
       1789689600000,
-      7.237633647175654e-05
+      7.243941948850384e-05
      ],
      [
       1789776000000,
-      0.00010126196474268356
+      0.00010125925348842758
      ],
      [
       1789862400000,
-      7.668959738164306e-05
+      7.66272569354259e-05
      ],
      [
       1789948800000,
-      7.489243880317298e-05
+      7.492890040463163e-05
      ],
      [
       1790035200000,
-      3.268894116285074e-05
+      3.270304110806362e-05
      ],
      [
       1790121600000,
-      3.18864660671332e-05
+      3.1901644188065336e-05
      ],
      [
       1790208000000,
-      1.9561626803303378e-05
+      1.951089288633518e-05
      ],
      [
       1790294400000,
-      -7.108170728548107e-06
+      -7.10309584051377e-06
      ],
      [
       1790380800000,
-      -7.6247544975919005e-06
+      -7.627363403815055e-06
      ],
      [
       1790467200000,
-      2.714376456473545e-05
+      2.7169307911246197e-05
      ],
      [
       1790553600000,
-      5.313233952538058e-05
+      5.3131128163319337e-05
      ],
      [
       1790640000000,
-      2.398890807210814e-05
+      2.397684381197063e-05
      ],
      [
       1790726400000,
-      6.4077889584325e-05
+      6.405925373218966e-05
      ],
      [
       1790812800000,
-      5.377454396218508e-05
+      5.372835005033477e-05
      ],
      [
       1790899200000,
-      2.9648872226378215e-05
+      2.9748812248581898e-05
      ],
      [
       1790985600000,
-      9.391897965604313e-06
+      9.394955627946726e-06
      ],
      [
       1791072000000,
-      4.019364794088932e-05
+      4.02570825583314e-05
      ],
      [
       1791158400000,
-      4.882555609415007e-06
+      4.918970028486096e-06
      ],
      [
       1791244800000,
-      4.520826852249939e-05
+      4.5233494268856406e-05
      ],
      [
       1791331200000,
-      2.5079301876693932e-05
+      2.5087913681894557e-05
      ],
      [
       1791417600000,
-      4.8042979226440465e-05
+      4.8008981047818576e-05
      ],
      [
       1791504000000,
-      2.4933922363813365e-05
+      2.4957476012364486e-05
      ],
      [
       1791590400000,
-      1.2208868721229801e-06
+      1.192232520053897e-06
      ],
      [
       1791676800000,
-      1.8380768619677223e-05
+      1.8364396704114846e-05
      ],
      [
       1791763200000,
-      2.886260589423728e-05
+      2.8858322653325733e-05
      ],
      [
       1791849600000,
-      2.842543906286236e-05
+      2.8408124929060864e-05
      ],
      [
       1791936000000,
-      1.533220409130278e-05
+      1.5326813726934046e-05
      ],
      [
       1792022400000,
-      3.8934414527423844e-05
+      3.895374130877169e-05
      ],
      [
       1792108800000,
-      5.313475052385411e-05
+      5.3081764523991846e-05
      ],
      [
       1792195200000,
-      4.701682581574844e-05
+      4.7055664915215636e-05
      ],
      [
       1792281600000,
-      5.1741235462073137e-05
+      5.1664879423872366e-05
      ],
      [
       1792368000000,
-      7.663658460258049e-05
+      7.659204398919681e-05
      ],
      [
       1792454400000,
-      9.236660823892218e-05
+      9.200396999034046e-05
      ]
     ]
    }
   },
   "funding": {
    "src": "gộp 7 sàn",
-   "last": 9.236660823892218e-05,
+   "last": 9.200396999034046e-05,
    "pct": 97.8,
    "n": 92,
    "agg": true
   },
   "ls": {
-   "buy": 0.6245,
+   "buy": 0.6307,
    "src": "OKX"
   },
   "pc": 0.599,
@@ -2689,7 +2689,7 @@
     {
      "key": "text",
      "name": "Giọng điệu tin tức và mạng xã hội",
-     "raw": "+0.07 (2102 bài)",
+     "raw": "+0.06 (2116 bài)",
      "v": 71.5,
      "w": 25,
      "note": "so với lịch sử của máy chủ",
@@ -2707,8 +2707,8 @@
     {
      "key": "votes",
      "name": "Phiếu cộng đồng CoinGecko",
-     "raw": "73.8% tăng",
-     "v": 84.6,
+     "raw": "74.4% tăng",
+     "v": 86.1,
      "w": 10,
      "note": "40% → 0, 80% → 100",
      "src": "CoinGecko"
@@ -2725,8 +2725,8 @@
     {
      "key": "ls",
      "name": "Tài khoản đang long",
-     "raw": "62%",
-     "v": 64.1,
+     "raw": "63%",
+     "v": 65.9,
      "w": 10,
      "note": "40% → 0, 75% → 100 (OKX)",
      "src": "OKX"
@@ -2753,10 +2753,10 @@
    "weight": 110
   },
   "premium": {
-   "last": -0.0684,
-   "avg24": -0.116,
+   "last": -0.103,
+   "avg24": -0.1174,
    "ref": "OKX",
-   "avg7d": -0.1251,
+   "avg7d": -0.1253,
    "series": [
     [
      1791856800000,
@@ -3428,32 +3428,32 @@
     ],
     [
      1792458000000,
-     -0.0684
+     -0.103
     ]
    ]
   },
   "btc": {
-   "price": 81504.41,
-   "ch24": -1.03
+   "price": 81663.29,
+   "ch24": -0.83
   },
   "drivers": {
    "windows": {
     "24": {
-     "dp": -1.03,
-     "doi": 0.29,
+     "dp": -0.83,
+     "doi": 0.49,
      "spot_net": 0.6,
      "perp_net": 1.5,
      "spot_btc": 31.0,
      "perp_usd": 95270260,
-     "prem": -0.116,
+     "prem": -0.117,
      "code": "flat",
      "label": "Chưa có đà rõ",
      "why": "Giá và open interest đều ít thay đổi.",
      "analysis": {
-      "title": "Giảm nhẹ 1,0%: bán thật",
-      "verdict": "24 giờ qua BTC giảm nhẹ 1,0%, chủ yếu do bán thật (Premium âm).",
-      "tone": "neg",
-      "assess": "Có người bán thật, không chỉ là xả đòn bẩy: loại giảm đáng lo hơn và thường cần thời gian để tạo đáy.",
+      "title": "Đi ngang (-0,8%)",
+      "verdict": "24 giờ qua BTC gần như đi ngang (-0,8%).",
+      "tone": "neutral",
+      "assess": "Giá đứng yên nhưng tiền thật đang nghiêng về bán; chưa đủ để thành xu hướng.",
       "forces": [
        {
         "name": "Spot",
@@ -3473,12 +3473,12 @@
        {
         "name": "Thanh lý",
         "side": 0,
-        "text": "không phía nào áp đảo: long 9,7 triệu $, short 12,3 triệu $"
+        "text": "không phía nào áp đảo: long 22,6 triệu $, short 12,5 triệu $"
        },
        {
         "name": "Open interest",
         "side": 0,
-        "text": "ít đổi (+0,3%)"
+        "text": "ít đổi (+0,5%)"
        },
        {
         "name": "Funding",
@@ -3487,14 +3487,14 @@
        }
       ],
       "watch": [
-       "Thủng $81.504 (đáy 24 giờ) là đà giảm còn tiếp; vượt lại $82.751 (đỉnh 24 giờ) mới coi như phe mua lấy lại thế.",
+       "Giá đang trong vùng $81.633–$82.751; thoát ra khỏi vùng này theo hướng nào thì đà mới rõ.",
        "Coinbase Premium quay về dương: dấu hiệu người mua Mỹ trở lại."
       ]
      }
     },
     "72": {
-     "dp": 0.1,
-     "doi": -0.61,
+     "dp": 0.3,
+     "doi": -0.42,
      "spot_net": 0.6,
      "perp_net": -1.6,
      "spot_btc": 59.1,
@@ -3504,10 +3504,10 @@
      "label": "Chưa có đà rõ",
      "why": "Giá và open interest đều ít thay đổi.",
      "analysis": {
-      "title": "Đi ngang (+0,1%)",
-      "verdict": "3 ngày qua BTC gần như đi ngang (+0,1%).",
-      "tone": "neutral",
-      "assess": "Giá đứng yên nhưng tiền thật đang nghiêng về bán; chưa đủ để thành xu hướng.",
+      "title": "Đi ngang (+0,3%)",
+      "verdict": "3 ngày qua BTC gần như đi ngang (+0,3%).",
+      "tone": "warn",
+      "assess": "Lực bán chủ động áp đảo (spot, futures, thanh lý long) mà giá không giảm: đang có bên mua đặt lệnh chờ đỡ giá. Lực đỡ này mất thì giá dễ rơi nhanh; giữ được thì phe bán sẽ đuối.",
       "forces": [
        {
         "name": "Spot",
@@ -3526,13 +3526,13 @@
        },
        {
         "name": "Thanh lý",
-        "side": 0,
-        "text": "không phía nào áp đảo: long 50,7 triệu $, short 30,5 triệu $"
+        "side": -1,
+        "text": "long bị thanh lý: long 63,5 triệu $, short 30,7 triệu $ (gấp 2,1 lần)"
        },
        {
         "name": "Open interest",
         "side": 0,
-        "text": "ít đổi (-0,6%)"
+        "text": "ít đổi (-0,4%)"
        },
        {
         "name": "Funding",
@@ -3935,7 +3935,7 @@
      ],
      [
       1792458000000,
-      81504
+      81663
      ]
     ],
     "oi": [
@@ -4325,7 +4325,7 @@
      ],
      [
       1792458000000,
-      286892.8
+      287440.6
      ]
     ],
     "cvd_spot": [
@@ -4942,14 +4942,14 @@
     ]
    },
    "liq": {
-    "long": 7527273,
-    "short": 11256440,
+    "long": 8282077,
+    "short": 11254589,
     "hours": 24.0,
     "series": [
      [
       1792371600000,
       0,
-      85498
+      15202
      ],
      [
       1792375200000,
@@ -4969,7 +4969,7 @@
      [
       1792393200000,
       3826,
-      9454108
+      9500350
      ],
      [
       1792396800000,
@@ -4983,7 +4983,7 @@
      ],
      [
       1792404000000,
-      897733,
+      890929,
       0
      ],
      [
@@ -4998,12 +4998,12 @@
      ],
      [
       1792414800000,
-      298170,
+      300213,
       69687
      ],
      [
       1792418400000,
-      1030955,
+      1040349,
       685853
      ],
      [
@@ -5035,6 +5035,11 @@
       1792454400000,
       903253,
       0
+     ],
+     [
+      1792458000000,
+      750170,
+      22203
      ]
     ]
    },
@@ -5043,15 +5048,11 @@
    "funding_pct": 97.8
   },
   "stable": {
-   "total": 304.6,
-   "ch7": -0.55,
-   "ch30": 0.35,
-   "d30": 1.1,
+   "total": 303.8,
+   "ch7": -0.77,
+   "ch30": 0.07,
+   "d30": 0.2,
    "series": [
-    [
-     1776902400000,
-     313.3
-    ],
     [
      1776988800000,
      313.0
@@ -5767,6 +5768,10 @@
     [
      1792368000000,
      304.6
+    ],
+    [
+     1792454400000,
+     303.8
     ]
    ]
   },
@@ -5902,7 +5907,7 @@
    },
    "days": 3179
   },
-  "runtime_sec": 9.3
+  "runtime_sec": 9.1
  },
  "attention": {
   "trends": {
@@ -6379,7 +6384,7 @@
       32
      ]
     ],
-    "age_h": 3.3,
+    "age_h": 4.0,
     "y5": [
      {
       "kw": "buy bitcoin",
@@ -7054,7 +7059,7 @@
       57
      ]
     ],
-    "age_h": 3.2,
+    "age_h": 4.0,
     "y5": [
      {
       "kw": "mua bitcoin",
@@ -7086,10 +7091,10 @@
      "cc": "us",
      "app": "Coinbase",
      "overall": null,
-     "finance": 37,
+     "finance": 38,
      "of": 100,
      "fof": 100,
-     "d1_fin": 49,
+     "d1_fin": 50,
      "d1_all": null,
      "d7_fin": 50,
      "d7_all": null,
@@ -7099,10 +7104,10 @@
      "cc": "us",
      "app": "Binance",
      "overall": null,
-     "finance": 90,
+     "finance": 95,
      "of": 100,
      "fof": 100,
-     "d1_fin": 80,
+     "d1_fin": 83,
      "d1_all": null,
      "d7_fin": 82,
      "d7_all": null,
@@ -7167,7 +7172,7 @@
      "finance": 37,
      "of": 100,
      "fof": 100,
-     "d1_fin": 36,
+     "d1_fin": 35,
      "d1_all": null,
      "d7_fin": 30,
      "d7_all": null,
@@ -7193,7 +7198,7 @@
      "finance": 61,
      "of": 100,
      "fof": 100,
-     "d1_fin": 49,
+     "d1_fin": 47,
      "d1_all": null,
      "d7_fin": 61,
      "d7_all": null,
@@ -9421,7 +9426,7 @@
   "errors": {
    "trends_global_y5": "multiline HTTP 429"
   },
-  "runtime_sec": 4.8
+  "runtime_sec": 3.8
  },
  "events": {
   "groups": [
@@ -14715,9 +14720,7 @@
  },
  "alerts": {
   "configured": true,
-  "sent": [
-   "brief"
-  ],
+  "sent": [],
   "skipped": []
  },
  "model_compare": {
@@ -14769,7 +14772,7 @@
    }
   },
   "live": {
-   "n": 2093,
+   "n": 2111,
    "index_current": 52,
    "index_cryptobert": 61,
    "agree": 49,
@@ -14788,19 +14791,19 @@
     },
     {
      "src": "Stocktwits",
-     "text": "$BTC.X lol this should extend to the next cluster soon at 83300 and that one is bigger",
-     "current": 0.56,
-     "cryptobert": -0.64
+     "text": "$BTC.X Since bulls just throw out random price points here is mine. Lol! GL Dudes EXTREMELY",
+     "current": 0.72,
+     "cryptobert": -0.54
     },
     {
      "src": "Stocktwits",
-     "text": "$BTC.X Short term (coming days) bearish, medium term (coming couple months) to long term bullish!",
-     "current": 0.47,
-     "cryptobert": -0.69
+     "text": "$BTC.X lol this should extend to the next cluster soon at 83300 and that one is bigger",
+     "current": 0.56,
+     "cryptobert": -0.64
     }
    ]
   },
-  "updated": "2026-10-20T01:10:05Z",
-  "runtime_sec": 24.6
+  "updated": "2026-10-20T01:54:19Z",
+  "runtime_sec": 14.4
  }
 }
