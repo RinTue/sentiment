@@ -1,18 +1,18 @@
 {
- "generated_at": "2026-10-21T11:55:26+00:00",
+ "generated_at": "2026-10-21T13:08:38+00:00",
  "scoring": "AI + từ điển (100% số bài có điểm AI)",
- "raw_count": 1924,
- "kept_count": 740,
- "new_count": 193,
- "stored_7d": 13451,
+ "raw_count": 1863,
+ "kept_count": 715,
+ "new_count": 256,
+ "stored_7d": 13473,
  "filter_reasons": {
-  "không phải tiếng Anh": 163,
-  "không liên quan crypto": 295,
-  "quá ngắn": 39,
   "bot / báo giá tự động": 141,
-  "trùng lặp": 315,
-  "quảng cáo / rao bán": 30,
-  "cùng tác giả quá nhiều": 201
+  "quá ngắn": 30,
+  "không liên quan crypto": 276,
+  "trùng lặp": 317,
+  "không phải tiếng Anh": 160,
+  "cùng tác giả quá nhiều": 196,
+  "quảng cáo / rao bán": 28
  },
  "source_status": {
   "CoinDesk": 25,
@@ -23,11 +23,11 @@
   "CryptoSlate": 10,
   "NewsBTC": 10,
   "CryptoPotato": 36,
-  "r/Bitcoin": 50,
-  "r/ethereum": 50,
   "r/CryptoMarkets": 50,
   "r/BitcoinMarkets": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/BitcoinMar",
   "r/CryptoCurrency": 50,
+  "r/Bitcoin": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/Bitcoin/ne",
+  "r/ethereum": 50,
   "#bitcoin": 120,
   "#btc": 120,
   "#crypto": 120,
@@ -35,8 +35,8 @@
   "#ethereum": 120,
   "Lemmy bitcoin": 100,
   "Lemmy crypto": 100,
-  "HN bitcoin": 30,
-  "HN cryptocurrency": 9,
+  "HN bitcoin": 31,
+  "HN cryptocurrency": 8,
   "HN ethereum": 0,
   "YT Coin Bureau": 15,
   "YT Altcoin Daily": 15,
@@ -55,36 +55,36 @@
   "TG @wublockchainenglish": 20,
   "Stocktwits $BTC": 90,
   "Stocktwits $ETH": 90,
-  "Bluesky bitcoin": 99,
+  "Bluesky bitcoin": 87,
   "Bluesky crypto": 99,
-  "Bluesky ethereum": 99
+  "Bluesky ethereum": 100
  },
- "runtime_sec": 260.4,
+ "runtime_sec": 230.3,
  "all": {
-  "score": 0.1147,
+  "score": 0.126,
   "index": 56,
-  "n": 2073,
-  "pos": 44.0,
-  "neg": 22.5,
-  "neu": 33.5
+  "n": 2087,
+  "pos": 44.3,
+  "neg": 21.5,
+  "neu": 34.2
  },
  "news": {
-  "score": 0.0662,
-  "index": 53,
-  "n": 107,
-  "pos": 40.2,
-  "neg": 24.3,
-  "neu": 35.5
+  "score": 0.071,
+  "index": 54,
+  "n": 104,
+  "pos": 39.4,
+  "neg": 22.1,
+  "neu": 38.5
  },
  "social": {
-  "score": 0.117,
+  "score": 0.1286,
   "index": 56,
-  "n": 1966,
-  "pos": 44.3,
-  "neg": 22.4,
-  "neu": 33.4
+  "n": 1983,
+  "pos": 44.6,
+  "neg": 21.4,
+  "neu": 34.0
  },
- "trend": 0.0784,
+ "trend": 0.089,
  "window_hours": 24,
  "daily": [
   {
@@ -119,119 +119,119 @@
   },
   {
    "date": "2026-10-21",
-   "n": 1428,
-   "score": 0.1209
+   "n": 1583,
+   "score": 0.1283
   }
  ],
  "sources": [
   {
    "src": "Bluesky",
-   "n": 1216,
-   "score": 0.0624
+   "n": 1215,
+   "score": 0.0703
   },
   {
    "src": "Stocktwits",
-   "n": 624,
-   "score": 0.1949
+   "n": 642,
+   "score": 0.209
   },
   {
    "src": "Tin tức",
-   "n": 107,
-   "score": 0.0662
+   "n": 104,
+   "score": 0.071
   },
   {
    "src": "Reddit",
-   "n": 36,
-   "score": 0.0167
+   "n": 37,
+   "score": 0.0262
   },
   {
    "src": "Mastodon",
-   "n": 31,
-   "score": 0.2326
+   "n": 33,
+   "score": 0.2506
   },
   {
    "src": "Telegram",
    "n": 26,
-   "score": 0.2845
+   "score": 0.2876
   },
   {
    "src": "Hacker News",
-   "n": 18,
-   "score": -0.1778
+   "n": 17,
+   "score": -0.1832
   },
   {
    "src": "YouTube",
-   "n": 11,
-   "score": 0.1215
+   "n": 10,
+   "score": 0.1321
   },
   {
    "src": "Lemmy",
-   "n": 4,
-   "score": -0.2816
+   "n": 3,
+   "score": -0.1388
   }
  ],
  "keywords": [
   [
    "$btc",
-   607
+   625
   ],
   [
    "$eth",
-   127
+   130
   ],
   [
    "trading",
-   122
+   125
   ],
   [
    "live",
-   101
+   100
   ],
   [
    "wallet",
-   90
+   87
   ],
   [
    "forecast",
-   75
+   77
   ],
   [
-   "retail",
-   70
-  ],
-  [
-   "investors",
+   "$mstr",
    70
   ],
   [
    "$spy",
-   69
+   70
   ],
   [
-   "spot",
-   67
+   "retail",
+   64
   ],
   [
-   "$mstr",
-   66
+   "investors",
+   64
   ],
   [
-   "move",
+   "stablecoin",
    63
   ],
   [
-   "blackrock",
+   "asset",
    61
   ],
   [
-   "money",
-   60
+   "short",
+   61
+  ],
+  [
+   "exchange",
+   61
   ]
  ],
  "coins": [
   [
    "BTC",
-   1507
+   1519
   ],
   [
    "ETH",
@@ -239,23 +239,23 @@
   ],
   [
    "Stablecoin",
-   126
+   132
   ],
   [
    "SOL",
-   100
+   102
   ],
   [
    "XRP",
-   76
+   78
   ],
   [
    "DOGE",
-   17
+   22
   ],
   [
    "BNB",
-   8
+   9
   ],
   [
    "ADA",
@@ -263,16 +263,6 @@
   ]
  ],
  "news_pos": [
-  {
-   "src": "Tin tức",
-   "outlet": "The Block, CryptoPotato, Watcher.Guru +3",
-   "n_src": 6,
-   "t": 1792529612000,
-   "s": 0.462,
-   "text": "Swiss regulator FINMA approves country’s first spot bitcoin ETF for retail investors",
-   "url": "https://www.theblock.co/news/regulation/2026-10-20-swiss-regulator-finma-approves-countrys-first-spot-bitcoin-etf-for-retail-investors-421127",
-   "vi": "Cơ quan quản lý Thụy Sĩ FINMA phê duyệt ETF bitcoin giao ngay đầu tiên của quốc gia cho các nhà đầu tư bán lẻ"
-  },
   {
    "src": "Tin tức",
    "outlet": "Wu Blockchain, The Block, Cointelegraph",
@@ -285,13 +275,13 @@
   },
   {
    "src": "Tin tức",
-   "outlet": "CryptoSlate, NewsBTC",
+   "outlet": "Cointelegraph, Decrypt",
    "n_src": 2,
-   "t": 1792512600000,
-   "s": 0.452,
-   "text": "Super League shareholders approve Metaplanet’s 2,100 BTC investment",
-   "url": "https://cryptoslate.com/metaplanets-3-4-billion-bitcoin-financing-plan-takes-major-step-toward-wall-street/",
-   "vi": "Các cổ đông Super League chấp thuận khoản đầu tư 2.100 BTC của Metaplanet"
+   "t": 1792524664000,
+   "s": 0.406,
+   "text": "Swiss Regulator Approves First Retail Fund That Holds Bitcoin Directly",
+   "url": "https://decrypt.co/381446/swiss-regulator-first-retail-fund-holds-bitcoin-directly",
+   "vi": "Cơ quan quản lý Thụy Sĩ phê duyệt quỹ bán lẻ đầu tiên nắm giữ Bitcoin trực tiếp"
   },
   {
    "src": "Tin tức",
@@ -302,38 +292,28 @@
    "text": "Bitcoin Treasury Strive Debuts New Preferred Stock With 15% Dividend",
    "url": "https://bitcoinmagazine.com/news/strive-debuts-new-preferred-stock",
    "vi": "Kho bạc Bitcoin ra mắt cổ phiếu ưu đãi mới với cổ tức 15%"
+  },
+  {
+   "src": "Telegram",
+   "outlet": "Bitcoin Magazine",
+   "n_src": 1,
+   "t": 1792585580000,
+   "s": 0.811,
+   "text": "Bitcoin is now 25% above its 200-week moving average  Every time Bitcoin has pulled back toward its 200WMA, it has bounced and gone on to new highs",
+   "url": "https://t.me/BitcoinMagazineTelegram/10876",
+   "vi": "Bitcoin hiện cao hơn 25% so với mức trung bình động 200 tuần của nó Mỗi khi Bitcoin quay trở lại 200WMA, nó đã bật lên và tiếp tục đạt mức cao mới"
   }
  ],
  "news_neg": [
   {
    "src": "Tin tức",
-   "outlet": "CoinDesk, The Block, Wu Blockchain",
-   "n_src": 3,
-   "t": 1792581924000,
-   "s": -0.165,
-   "text": "OCC's final rule to start fresh in weighing stablecoin rewards against GENIUS Act ban",
-   "url": "https://www.coindesk.com/policy/2026/10/21/occ-s-final-rule-to-start-fresh-in-weighing-stablecoin-rewards-against-genius-act-ban",
-   "vi": "Quy tắc cuối cùng của OCC để bắt đầu mới trong việc cân nhắc phần thưởng stablecoin chống lại lệnh cấm của Đạo luật GENIUS"
-  },
-  {
-   "src": "Tin tức",
-   "outlet": "Cointelegraph, Decrypt",
+   "outlet": "Decrypt, Cointelegraph",
    "n_src": 2,
    "t": 1792577632000,
-   "s": -0.61,
-   "text": "Drift exploiter sends $61M ETH to Tornado Cash, holds $194M",
-   "url": "https://cointelegraph.com/news/drift-exploiter-eth-tornado-cash?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-   "vi": "Kẻ khai thác trôi dạt gửi $ 61 TRIỆU ETH đến Tornado Cash, nắm giữ $ 194 triệu"
-  },
-  {
-   "src": "Tin tức",
-   "outlet": "CoinDesk, Cointelegraph, Decrypt",
-   "n_src": 3,
-   "t": 1792527364000,
-   "s": -0.262,
-   "text": "Microsoft, Alphabet and Goldman Sachs join objections to OKX-ICE tokenized stock trading",
-   "url": "https://www.coindesk.com/business/2026/10/19/microsoft-alphabet-and-goldman-sachs-join-objections-to-okx-ice-tokenized-stock-trading",
-   "vi": "Microsoft, Alphabet và Goldman Sachs cùng phản đối giao dịch cổ phiếu được mã hóa OKX-ICE"
+   "s": -0.512,
+   "text": "Wallet Linked to Drift Exploit Sends $61 Million in Ethereum to Tornado Cash",
+   "url": "https://decrypt.co/381450/wallet-drift-exploit-sends-61-million-ethereum-tornado-cash",
+   "vi": "Ví liên kết với Drift Exploit gửi 61 triệu $ Ethereum đến Tornado Cash"
   },
   {
    "src": "Tin tức",
@@ -344,20 +324,29 @@
    "text": "Ripple Backs SEC’s Proposed Crypto Regulation, Calls for End to Case-by-Case Enforcement",
    "url": "https://cryptopotato.com/ripple-backs-secs-proposed-crypto-regulation-calls-for-end-to-case-by-case-enforcement/",
    "vi": "Ripple ủng hộ quy định về tiền điện tử được đề xuất của SEC, kêu gọi thực thi từng trường hợp cụ thể"
+  },
+  {
+   "src": "Tin tức",
+   "outlet": "The Block",
+   "n_src": 1,
+   "t": 1792583708000,
+   "s": -0.596,
+   "text": "Bitcoin volatility nears 2026 lows as traders brace for Fed decision and US midterms",
+   "url": "https://www.theblock.co/news/markets/2026-10-21-bitcoin-volatility-nears-2026-lows-as-traders-brace-for-fed-decision-and-us-midterms-421524",
+   "vi": "Biến động của Bitcoin gần mức thấp năm 2026 khi các nhà giao dịch chuẩn bị cho quyết định của Fed và các cuộc bầu cử giữa nhiệm kỳ của Hoa Kỳ"
+  },
+  {
+   "src": "Tin tức",
+   "outlet": "CryptoPotato",
+   "n_src": 1,
+   "t": 1792576105000,
+   "s": -0.431,
+   "text": "XRP ETFs Disappoint Again but XRP Price Rockets 5% to Weekly High",
+   "url": "https://cryptopotato.com/xrp-etfs-disappoint-again-but-xrp-price-rockets-5-to-weekly-high/",
+   "vi": "Các quỹ ETF XRP lại gây thất vọng nhưng giá XRP lại tăng 5% lên mức cao hàng tuần"
   }
  ],
  "crowd_pos": [
-  {
-   "src": "Bluesky",
-   "outlet": "bitcoin",
-   "t": 1792500032440,
-   "s": 0.493,
-   "text": "Switzerland just let retail buy Bitcoin ETFs. First spot approval, effective immediately. Who actually benefits—Swiss banks or the people?",
-   "url": "https://bsky.app/profile/megancarternews.bsky.social/post/3mycnrvh6zw2n",
-   "eng": 98,
-   "tag": null,
-   "vi": "Thụy Sĩ chỉ cho phép bán lẻ mua Bitcoin ETF. Phê duyệt tại chỗ đầu tiên, có hiệu lực ngay lập tức. Ai thực sự có lợi - Ngân hàng Thụy Sĩ hay người dân?"
-  },
   {
    "src": "Stocktwits",
    "outlet": "$BTC",
@@ -372,6 +361,17 @@
   {
    "src": "Stocktwits",
    "outlet": "$BTC",
+   "t": 1792584746000,
+   "s": 0.689,
+   "text": "$BTC.X the best part of waking up is FOMO in your cup!",
+   "url": "https://stocktwits.com/message/666998531",
+   "eng": 10,
+   "tag": "bull",
+   "vi": "$BTC.X phần tuyệt vời nhất khi thức dậy là FOMO trong cốc của bạn!"
+  },
+  {
+   "src": "Stocktwits",
+   "outlet": "$BTC",
    "t": 1792533345000,
    "s": 0.623,
    "text": "$QQQ get ready for the pump of the century $BTC.X",
@@ -381,15 +381,15 @@
    "vi": "$QQQ sẵn sàng cho đợt pump thế kỷ $BTC.X"
   },
   {
-   "src": "Stocktwits",
-   "outlet": "$BTC",
-   "t": 1792546142000,
-   "s": 0.524,
-   "text": "$BTC.X Come on Bitcoinites, the sector needs you to hit $90K+",
-   "url": "https://stocktwits.com/message/666982369",
-   "eng": 6,
-   "tag": "bull",
-   "vi": "$BTC.X Hãy đến với Bitcoinites, lĩnh vực này cần bạn đạt $ 90k+"
+   "src": "Reddit",
+   "outlet": "r/CryptoCurrency",
+   "t": 1792521652000,
+   "s": 0.778,
+   "text": "Bitcoin ETFs Post Their Best Day in Nearly a Month as BlackRock Does All the Buying",
+   "url": "https://www.reddit.com/r/CryptoCurrency/comments/1xb0ed9/bitcoin_etfs_post_their_best_day_in_nearly_a/",
+   "eng": 0,
+   "tag": null,
+   "vi": "Bitcoin ETF đăng ngày tốt nhất trong gần một tháng khi BlackRock thực hiện tất cả các giao dịch mua"
   }
  ],
  "crowd_neg": [
@@ -439,18 +439,18 @@
   }
  ],
  "tag_check": {
-  "n": 267,
-  "agree": 72,
-  "n_bear": 38,
-  "agree_bear": 76
+  "n": 278,
+  "agree": 73,
+  "n_bear": 34,
+  "agree_bear": 82
  },
  "translation": "ok",
  "stocktwits": {
-  "n": 622,
-  "bull": 303,
-  "bear": 58,
-  "bull_pct": 83.9,
-  "prev_bull_pct": 70.5
+  "n": 639,
+  "bull": 326,
+  "bear": 53,
+  "bull_pct": 86.0,
+  "prev_bull_pct": 69.6
  },
  "macro": {
   "sources": [
@@ -1971,7 +1971,7 @@
    "cls": "Greed",
    "d7": 1
   },
-  "votes": 73.95,
+  "votes": 73.28,
   "liq_agg": {
    "exchanges": [
     "Binance",
@@ -1984,16 +1984,6 @@
    ],
    "symbols": 12,
    "series": [
-    [
-     1792497600000,
-     228742,
-     220916
-    ],
-    [
-     1792501200000,
-     147867,
-     1471024
-    ],
     [
      1792504800000,
      274388,
@@ -2102,580 +2092,590 @@
     [
      1792580400000,
      0,
-     120206
+     120163
+    ],
+    [
+     1792584000000,
+     484,
+     180264
+    ],
+    [
+     1792587600000,
+     126,
+     3098001
     ]
    ],
    "h24": {
-    "long": 6720400,
-    "short": 41660368
+    "long": 6344401,
+    "short": 43246650
    },
    "h72": {
-    "long": 57726473,
-    "short": 65031578
+    "long": 54763710,
+    "short": 68307991
    },
    "oi": {
-    "usd": 24489181067,
-    "ch7": 6.12,
+    "usd": 24539604770,
+    "ch7": 6.52,
     "series": [
      [
-      1791972000000,
-      23.104
+      1791979200000,
+      23.114
      ],
      [
-      1791986400000,
-      23.204
+      1791993600000,
+      23.39
      ],
      [
-      1792000800000,
-      23.468
+      1792008000000,
+      23.546
      ],
      [
-      1792015200000,
-      23.618
+      1792022400000,
+      23.702
      ],
      [
-      1792029600000,
-      23.447
+      1792036800000,
+      23.489
      ],
      [
-      1792044000000,
-      23.226
+      1792051200000,
+      23.375
      ],
      [
-      1792058400000,
-      23.319
+      1792065600000,
+      23.193
      ],
      [
-      1792072800000,
-      23.74
+      1792080000000,
+      23.415
      ],
      [
-      1792087200000,
-      23.598
+      1792094400000,
+      23.612
      ],
      [
-      1792101600000,
-      23.631
+      1792108800000,
+      23.61
      ],
      [
-      1792116000000,
-      23.592
+      1792123200000,
+      23.574
      ],
      [
-      1792130400000,
-      23.591
+      1792137600000,
+      23.67
      ],
      [
-      1792144800000,
-      23.783
+      1792152000000,
+      23.63
      ],
      [
-      1792159200000,
-      23.714
+      1792166400000,
+      23.56
      ],
      [
-      1792173600000,
+      1792180800000,
+      23.662
+     ],
+     [
+      1792195200000,
+      23.529
+     ],
+     [
+      1792209600000,
+      23.531
+     ],
+     [
+      1792224000000,
       23.543
      ],
      [
-      1792188000000,
-      23.66
-     ],
-     [
-      1792202400000,
-      23.512
-     ],
-     [
-      1792216800000,
-      23.554
-     ],
-     [
-      1792231200000,
-      23.557
-     ],
-     [
-      1792245600000,
+      1792238400000,
       23.543
      ],
      [
-      1792260000000,
-      23.513
+      1792252800000,
+      23.478
      ],
      [
-      1792274400000,
-      23.575
+      1792267200000,
+      23.564
      ],
      [
-      1792288800000,
-      23.495
+      1792281600000,
+      23.623
      ],
      [
-      1792303200000,
-      23.429
+      1792296000000,
+      23.452
      ],
      [
-      1792317600000,
-      23.59
+      1792310400000,
+      23.458
      ],
      [
-      1792332000000,
-      23.33
+      1792324800000,
+      23.621
      ],
      [
-      1792346400000,
-      23.4
+      1792339200000,
+      23.373
      ],
      [
-      1792360800000,
-      23.357
+      1792353600000,
+      23.411
      ],
      [
-      1792375200000,
-      23.596
+      1792368000000,
+      23.498
      ],
      [
-      1792389600000,
-      23.697
+      1792382400000,
+      23.623
      ],
      [
-      1792404000000,
-      23.514
+      1792396800000,
+      23.759
      ],
      [
-      1792418400000,
-      23.582
+      1792411200000,
+      23.491
      ],
      [
-      1792432800000,
-      23.442
+      1792425600000,
+      23.53
      ],
      [
-      1792447200000,
-      23.509
+      1792440000000,
+      23.484
      ],
      [
-      1792461600000,
-      23.509
+      1792454400000,
+      23.421
      ],
      [
-      1792476000000,
-      23.571
+      1792468800000,
+      23.602
      ],
      [
-      1792490400000,
-      23.78
+      1792483200000,
+      23.656
      ],
      [
-      1792504800000,
-      24.145
+      1792497600000,
+      23.884
      ],
      [
-      1792519200000,
-      23.716
+      1792512000000,
+      23.742
      ],
      [
-      1792533600000,
-      23.988
+      1792526400000,
+      23.777
      ],
      [
-      1792548000000,
-      23.947
+      1792540800000,
+      23.965
      ],
      [
-      1792562400000,
-      23.936
+      1792555200000,
+      23.962
      ],
      [
-      1792576800000,
-      24.446
+      1792569600000,
+      24.246
+     ],
+     [
+      1792584000000,
+      24.535
      ]
     ]
    },
    "funding": {
-    "last": 8.203845965176159e-05,
-    "pct": 95.7,
+    "last": 8.108409892781024e-05,
+    "pct": 93.5,
     "n": 92,
     "series": [
      [
       1784678400000,
-      1.0867898739945141e-05
+      1.0902110673449837e-05
      ],
      [
       1784764800000,
-      4.799677244492581e-05
+      4.800454086386076e-05
      ],
      [
       1784851200000,
-      4.166614044019746e-05
+      4.1694694537388604e-05
      ],
      [
       1784937600000,
-      3.801366255299407e-06
+      3.843392211582603e-06
      ],
      [
       1785024000000,
-      5.01757102852084e-05
+      5.021327179649875e-05
      ],
      [
       1785110400000,
-      4.749283018942128e-05
+      4.749139667599934e-05
      ],
      [
       1785196800000,
-      6.349364015185791e-05
+      6.352130125065027e-05
      ],
      [
       1785283200000,
-      7.599427962984732e-05
+      7.605049328540556e-05
      ],
      [
       1785369600000,
-      8.177356759514678e-05
+      8.177232879663682e-05
      ],
      [
       1785456000000,
-      5.018884191165557e-05
+      5.020884212537476e-05
      ],
      [
       1785542400000,
-      4.012159792807673e-05
+      4.0107255583342577e-05
      ],
      [
       1785628800000,
-      5.572120684560862e-05
+      5.576421350116761e-05
      ],
      [
       1785715200000,
-      4.363293938997394e-05
+      4.363684474118494e-05
      ],
      [
       1785801600000,
-      6.411589336726823e-05
+      6.409648819407238e-05
      ],
      [
       1785888000000,
-      4.223871415603471e-05
+      4.223705031114776e-05
      ],
      [
       1785974400000,
-      4.955972524721024e-05
+      4.9569015557041386e-05
      ],
      [
       1786060800000,
-      5.370412421369882e-05
+      5.366300713917617e-05
      ],
      [
       1786147200000,
-      3.71721366055243e-05
+      3.7167412116237436e-05
      ],
      [
       1786233600000,
-      7.125283395063084e-05
+      7.12235574463299e-05
      ],
      [
       1786320000000,
-      5.719364124171246e-05
+      5.720031377730064e-05
      ],
      [
       1786406400000,
-      6.548354948484034e-05
+      6.550186898114015e-05
      ],
      [
       1786492800000,
-      7.366977250552139e-05
+      7.371544758998556e-05
      ],
      [
       1786579200000,
-      8.138556390186689e-05
+      8.141934630094265e-05
      ],
      [
       1786665600000,
-      2.965861929818942e-05
+      2.9700275933108523e-05
      ],
      [
       1786752000000,
-      4.37252143953889e-05
+      4.3718860834464736e-05
      ],
      [
       1786838400000,
-      4.50114622656834e-05
+      4.502028900064085e-05
      ],
      [
       1786924800000,
-      5.13231718163586e-05
+      5.1300995307200495e-05
      ],
      [
       1787011200000,
-      3.569856684702491e-05
+      3.569480780324402e-05
      ],
      [
       1787097600000,
-      7.789274840129095e-05
+      7.788459902109983e-05
      ],
      [
       1787184000000,
-      3.4925782919969316e-05
+      3.493295850665258e-05
      ],
      [
       1787270400000,
-      8.721580490834477e-05
+      8.720217458127692e-05
      ],
      [
       1787356800000,
-      9.945278277835262e-05
+      9.944800699209127e-05
      ],
      [
       1787443200000,
-      8.70908117414543e-05
+      8.708062433996917e-05
      ],
      [
       1787529600000,
-      7.514049872845483e-05
+      7.509315525865837e-05
      ],
      [
       1787616000000,
-      6.271774159421781e-05
+      6.271297785914765e-05
      ],
      [
       1787702400000,
-      4.4967739080412334e-05
+      4.496854199878519e-05
      ],
      [
       1787788800000,
-      4.009060003627441e-05
+      4.007017385487147e-05
      ],
      [
       1787875200000,
-      6.972200191918795e-05
+      6.971045888073695e-05
      ],
      [
       1787961600000,
-      6.578858803750161e-05
+      6.57659701248362e-05
      ],
      [
       1788048000000,
-      7.20747967744899e-05
+      7.208057197140213e-05
      ],
      [
       1788134400000,
-      6.755152528196817e-05
+      6.753349569389852e-05
      ],
      [
       1788220800000,
-      5.6811932546347816e-05
+      5.6876931562105696e-05
      ],
      [
       1788307200000,
-      4.8467678867316334e-05
+      4.8448202642771765e-05
      ],
      [
       1788393600000,
-      6.542491550211691e-05
+      6.538490929206235e-05
      ],
      [
       1788480000000,
-      1.783965420424607e-05
+      1.780309133990889e-05
      ],
      [
       1788566400000,
-      9.910810138294172e-06
+      9.93339418182329e-06
      ],
      [
       1788652800000,
-      3.153916876550046e-05
+      3.1557841853840026e-05
      ],
      [
       1788739200000,
-      8.871783868491054e-06
+      8.862585844067498e-06
      ],
      [
       1788825600000,
-      6.869042909221878e-05
+      6.868282869419189e-05
      ],
      [
       1788912000000,
-      5.8725508270172774e-05
+      5.869280544490854e-05
      ],
      [
       1788998400000,
-      7.599303145351541e-05
+      7.597275192764471e-05
      ],
      [
       1789084800000,
-      4.571355635719344e-05
+      4.5691183760936996e-05
      ],
      [
       1789171200000,
-      5.0819776461828226e-05
+      5.081560090920317e-05
      ],
      [
       1789257600000,
-      5.2482532720393694e-05
+      5.247826429618705e-05
      ],
      [
       1789344000000,
-      3.815608811439592e-05
+      3.814313619533594e-05
      ],
      [
       1789430400000,
-      7.338231357029676e-05
+      7.33900336726111e-05
      ],
      [
       1789516800000,
-      6.800385342959391e-05
+      6.801007764327515e-05
      ],
      [
       1789603200000,
-      7.911580579367316e-05
+      7.912511581112111e-05
      ],
      [
       1789689600000,
-      7.274964708114988e-05
+      7.274309046150221e-05
      ],
      [
       1789776000000,
-      0.00010120949728494055
+      0.00010122543401052115
      ],
      [
       1789862400000,
-      7.650027177433602e-05
+      7.657112482481105e-05
      ],
      [
       1789948800000,
-      7.500978537861502e-05
+      7.502944834923262e-05
      ],
      [
       1790035200000,
-      3.2615399181997514e-05
+      3.264929118706138e-05
      ],
      [
       1790121600000,
-      3.181044941034818e-05
+      3.1797957969635354e-05
      ],
      [
       1790208000000,
-      1.9189840162387315e-05
+      1.919593482280411e-05
      ],
      [
       1790294400000,
-      -6.911375135962976e-06
+      -6.9037313938231215e-06
      ],
      [
       1790380800000,
-      -7.62715219099994e-06
+      -7.621272377440258e-06
      ],
      [
       1790467200000,
-      2.72468230708175e-05
+      2.7230231977358487e-05
      ],
      [
       1790553600000,
-      5.321924353843025e-05
+      5.3203715019726355e-05
      ],
      [
       1790640000000,
-      2.3964229923809565e-05
+      2.400466257356384e-05
      ],
      [
       1790726400000,
-      6.399800406839777e-05
+      6.399670291180461e-05
      ],
      [
       1790812800000,
-      5.361970199322886e-05
+      5.3601081754253355e-05
      ],
      [
       1790899200000,
-      3.008503912014543e-05
+      3.0019368301038666e-05
      ],
      [
       1790985600000,
-      9.78616122103684e-06
+      9.78835183530397e-06
      ],
      [
       1791072000000,
-      4.0578782189994345e-05
+      4.0574383752237474e-05
      ],
      [
       1791158400000,
-      4.970522960946143e-06
+      4.947194314134439e-06
      ],
      [
       1791244800000,
-      4.5195629325154967e-05
+      4.5181450988877767e-05
      ],
      [
       1791331200000,
-      2.5039809395703146e-05
+      2.5040674827151974e-05
      ],
      [
       1791417600000,
-      4.764645780186265e-05
+      4.7644346198609575e-05
      ],
      [
       1791504000000,
-      2.4983701812028252e-05
+      2.4961046648354413e-05
      ],
      [
       1791590400000,
-      1.0938356990772075e-06
+      1.09966036941299e-06
      ],
      [
       1791676800000,
-      1.816698915989695e-05
+      1.816441950683602e-05
      ],
      [
       1791763200000,
-      2.8682454603760046e-05
+      2.870752186129361e-05
      ],
      [
       1791849600000,
-      2.843270441103532e-05
+      2.8405554976384692e-05
      ],
      [
       1791936000000,
-      1.505012619187285e-05
+      1.5060323358691177e-05
      ],
      [
       1792022400000,
-      3.8930200005830496e-05
+      3.893354209453659e-05
      ],
      [
       1792108800000,
-      5.282081834625855e-05
+      5.284031792704911e-05
      ],
      [
       1792195200000,
-      4.71796604900751e-05
+      4.7156936379323764e-05
      ],
      [
       1792281600000,
-      5.140014645190668e-05
+      5.141990297299634e-05
      ],
      [
       1792368000000,
-      7.646492321569979e-05
+      7.647330872779852e-05
      ],
      [
       1792454400000,
-      6.146388292255949e-05
+      6.14626477944996e-05
      ],
      [
       1792540800000,
-      8.203845965176159e-05
+      8.108409892781024e-05
      ]
     ]
    }
   },
   "funding": {
    "src": "gộp 7 sàn",
-   "last": 8.203845965176159e-05,
-   "pct": 95.7,
+   "last": 8.108409892781024e-05,
+   "pct": 93.5,
    "n": 92,
    "agg": true
   },
   "ls": {
-   "buy": 0.5671,
+   "buy": 0.5707,
    "src": "OKX"
   },
   "pc": 0.612,
@@ -2684,12 +2684,12 @@
    "last": 2305
   },
   "composite": {
-   "value": 70,
+   "value": 69,
    "parts": [
     {
      "key": "text",
      "name": "Giọng điệu tin tức và mạng xã hội",
-     "raw": "+0.11 (2073 bài)",
+     "raw": "+0.13 (2087 bài)",
      "v": 78.0,
      "w": 25,
      "note": "so với lịch sử của máy chủ",
@@ -2707,8 +2707,8 @@
     {
      "key": "votes",
      "name": "Phiếu cộng đồng CoinGecko",
-     "raw": "74.0% tăng",
-     "v": 84.9,
+     "raw": "73.3% tăng",
+     "v": 83.2,
      "w": 10,
      "note": "40% → 0, 80% → 100",
      "src": "CoinGecko"
@@ -2716,8 +2716,8 @@
     {
      "key": "funding",
      "name": "Funding BTC (gộp các sàn)",
-     "raw": "+0.0082%",
-     "v": 95.7,
+     "raw": "+0.0081%",
+     "v": 93.5,
      "w": 20,
      "note": "phân vị trong 90 ngày, bình quân theo open interest 7 sàn",
      "src": "Coinalyze"
@@ -2726,7 +2726,7 @@
      "key": "ls",
      "name": "Tài khoản đang long",
      "raw": "57%",
-     "v": 47.8,
+     "v": 48.8,
      "w": 10,
      "note": "40% → 0, 75% → 100 (OKX)",
      "src": "OKX"
@@ -2753,19 +2753,11 @@
    "weight": 110
   },
   "premium": {
-   "last": -0.1017,
-   "avg24": -0.113,
+   "last": -0.0977,
+   "avg24": -0.1105,
    "ref": "OKX",
-   "avg7d": -0.1268,
+   "avg7d": -0.1269,
    "series": [
-    [
-     1791979200000,
-     -0.1066
-    ],
-    [
-     1791982800000,
-     -0.1097
-    ],
     [
      1791986400000,
      -0.1182
@@ -3428,37 +3420,45 @@
     ],
     [
      1792580400000,
-     -0.1017
+     -0.0982
+    ],
+    [
+     1792584000000,
+     -0.1304
+    ],
+    [
+     1792587600000,
+     -0.0977
     ]
    ]
   },
   "btc": {
-   "price": 83443.89,
-   "ch24": 2.53
+   "price": 83680.93,
+   "ch24": 2.0
   },
   "drivers": {
    "windows": {
     "24": {
-     "dp": 2.53,
-     "doi": 0.44,
-     "spot_net": 3.7,
-     "perp_net": 0.7,
-     "spot_btc": 273.7,
-     "perp_usd": 51166020,
-     "prem": -0.114,
-     "code": "liq_up",
-     "label": "Short bị thanh lý dây chuyền",
-     "why": "Short bị thanh lý gấp nhiều lần long, đẩy giá lên nhanh; open interest chưa giảm nhiều vì có vị thế mới mở thêm. Spot: trên OKX được mua ròng, phía Mỹ đang bán (Coinbase Premium âm).",
+     "dp": 2.0,
+     "doi": -0.22,
+     "spot_net": 4.3,
+     "perp_net": 0.9,
+     "spot_btc": 313.4,
+     "perp_usd": 71170638,
+     "prem": -0.111,
+     "code": "flat",
+     "label": "Chưa có đà rõ",
+     "why": "Giá và open interest đều ít thay đổi.",
      "analysis": {
-      "title": "Tăng 2,5%: short bị thanh lý",
-      "verdict": "24 giờ qua BTC tăng 2,5%, chủ yếu do short bị thanh lý 41,7 triệu $.",
+      "title": "Tăng 2,0%: short bị thanh lý",
+      "verdict": "24 giờ qua BTC tăng 2,0%, chủ yếu do short bị thanh lý 43,2 triệu $.",
       "tone": "warn",
       "assess": "Đà tăng chủ yếu nhờ short bị ép, tiền thật chưa theo. Khi short đã đóng xong mà spot không mua tiếp, đà thường hụt hơi.",
       "forces": [
        {
         "name": "Spot",
         "side": 1,
-        "text": "mua ròng 274 BTC trên OKX (+3,7% khối lượng)"
+        "text": "mua ròng 313 BTC trên OKX (+4,3% khối lượng)"
        },
        {
         "name": "Người mua Mỹ",
@@ -3468,52 +3468,52 @@
        {
         "name": "Futures",
         "side": 0,
-        "text": "cân bằng (+0,7%)"
+        "text": "cân bằng (+0,9%)"
        },
        {
         "name": "Thanh lý",
         "side": 1,
-        "text": "short bị thanh lý: long 6,7 triệu $, short 41,7 triệu $ (gấp 6,2 lần)"
+        "text": "short bị thanh lý: long 6,3 triệu $, short 43,2 triệu $ (gấp 6,8 lần)"
        },
        {
         "name": "Open interest",
         "side": 0,
-        "text": "ít đổi (+0,4%)"
+        "text": "ít đổi (-0,2%)"
        },
        {
         "name": "Funding",
         "side": 0,
-        "text": "phe long trả phí cao (phân vị 96 trên 90 ngày)"
+        "text": "phe long trả phí cao (phân vị 94 trên 90 ngày)"
        }
       ],
       "watch": [
-       "Giữ trên $81.387 (đáy 24 giờ) thì đà tăng còn nguyên; vượt $83.444 là đi tiếp, rơi lại dưới đáy là hỏng.",
+       "Giữ trên $82.044 (đáy 24 giờ) thì đà tăng còn nguyên; vượt $83.681 là đi tiếp, rơi lại dưới đáy là hỏng.",
        "Coinbase Premium quay về dương: dấu hiệu người mua Mỹ trở lại.",
        "Spot chuyển sang mua ròng: lúc đó đà tăng mới có nền tiền thật."
       ]
      }
     },
     "72": {
-     "dp": 1.81,
-     "doi": 1.78,
-     "spot_net": 1.5,
-     "perp_net": -1.1,
-     "spot_btc": 252.3,
-     "perp_usd": -196768711,
+     "dp": 2.77,
+     "doi": 2.64,
+     "spot_net": 1.6,
+     "perp_net": -0.9,
+     "spot_btc": 272.3,
+     "perp_usd": -161854148,
      "prem": -0.12,
      "code": "flat",
      "label": "Chưa có đà rõ",
      "why": "Giá và open interest đều ít thay đổi.",
      "analysis": {
-      "title": "Đi ngang (+1,8%)",
-      "verdict": "3 ngày qua BTC gần như đi ngang (+1,8%).",
-      "tone": "neutral",
-      "assess": "Thị trường đang chờ: không phe nào chiếm ưu thế.",
+      "title": "Tăng nhẹ 2,8%: long đòn bẩy",
+      "verdict": "3 ngày qua BTC tăng nhẹ 2,8%, chủ yếu do long đòn bẩy mở thêm (open interest +2,6%, funding cao).",
+      "tone": "neg",
+      "assess": "Tăng bằng đòn bẩy, thiếu tiền thật: dễ bị đảo chiều và quét long.",
       "forces": [
        {
         "name": "Spot",
         "side": 1,
-        "text": "mua ròng 252 BTC trên OKX (+1,5% khối lượng)"
+        "text": "mua ròng 272 BTC trên OKX (+1,6% khối lượng)"
        },
        {
         "name": "Người mua Mỹ",
@@ -3523,41 +3523,34 @@
        {
         "name": "Futures",
         "side": 0,
-        "text": "cân bằng (-1,1%)"
+        "text": "cân bằng (-0,9%)"
        },
        {
         "name": "Thanh lý",
         "side": 0,
-        "text": "không phía nào áp đảo: long 57,7 triệu $, short 65,0 triệu $"
+        "text": "không phía nào áp đảo: long 54,8 triệu $, short 68,3 triệu $"
        },
        {
         "name": "Open interest",
         "side": 0,
-        "text": "ít đổi (+1,8%)"
+        "text": "vị thế mới mở thêm (+2,6%)"
        },
        {
         "name": "Funding",
         "side": 0,
-        "text": "phe long trả phí cao (phân vị 96 trên 90 ngày)"
+        "text": "phe long trả phí cao (phân vị 94 trên 90 ngày)"
        }
       ],
       "watch": [
-       "Giá đang trong vùng $80.774–$83.444; thoát ra khỏi vùng này theo hướng nào thì đà mới rõ.",
-       "Coinbase Premium quay về dương: dấu hiệu người mua Mỹ trở lại."
+       "Giữ trên $80.774 (đáy 3 ngày) thì đà tăng còn nguyên; vượt $83.681 là đi tiếp, rơi lại dưới đáy là hỏng.",
+       "Coinbase Premium quay về dương: dấu hiệu người mua Mỹ trở lại.",
+       "Open interest và funding tăng tiếp khi giá chững lại: rủi ro long bị quét."
       ]
      }
     }
    },
    "series": {
     "price": [
-     [
-      1792234800000,
-      81458
-     ],
-     [
-      1792238400000,
-      81408
-     ],
      [
       1792242000000,
       81382
@@ -3936,18 +3929,18 @@
      ],
      [
       1792580400000,
-      83444
+      83419
+     ],
+     [
+      1792584000000,
+      83400
+     ],
+     [
+      1792587600000,
+      83681
      ]
     ],
     "oi": [
-     [
-      1792234800000,
-      289131.7
-     ],
-     [
-      1792238400000,
-      289201.1
-     ],
      [
       1792242000000,
       289295.0
@@ -4326,632 +4319,635 @@
      ],
      [
       1792580400000,
-      293480.8
+      293532.8
+     ],
+     [
+      1792584000000,
+      294181.3
+     ],
+     [
+      1792587600000,
+      293252.1
      ]
     ],
     "cvd_spot": [
      [
-      1792296000000,
-      66.9
-     ],
-     [
-      1792299600000,
-      48.7
-     ],
-     [
       1792303200000,
-      39.8
+      -8.9
      ],
      [
       1792306800000,
-      54.2
+      5.5
      ],
      [
       1792310400000,
-      71.3
+      22.6
      ],
      [
       1792314000000,
-      120.2
+      71.5
      ],
      [
       1792317600000,
-      167.7
+      119.0
      ],
      [
       1792321200000,
-      175.9
+      127.2
      ],
      [
       1792324800000,
-      153.6
+      104.9
      ],
      [
       1792328400000,
-      129.2
+      80.5
      ],
      [
       1792332000000,
-      68.5
+      19.8
      ],
      [
       1792335600000,
-      -114.9
+      -163.5
      ],
      [
       1792339200000,
-      -103.5
+      -152.2
      ],
      [
       1792342800000,
-      -117.4
+      -166.1
      ],
      [
       1792346400000,
-      -104.7
+      -153.3
      ],
      [
       1792350000000,
-      -105.4
+      -154.1
      ],
      [
       1792353600000,
-      -167.8
+      -216.5
      ],
      [
       1792357200000,
-      -177.8
+      -226.5
      ],
      [
       1792360800000,
-      -163.3
+      -212.0
      ],
      [
       1792364400000,
-      -109.3
+      -158.0
      ],
      [
       1792368000000,
-      66.4
+      17.7
      ],
      [
       1792371600000,
-      262.5
+      213.8
      ],
      [
       1792375200000,
-      316.1
+      267.4
      ],
      [
       1792378800000,
-      338.5
+      289.8
      ],
      [
       1792382400000,
-      293.0
+      244.3
      ],
      [
       1792386000000,
-      311.1
+      262.5
      ],
      [
       1792389600000,
-      301.9
+      253.2
      ],
      [
       1792393200000,
-      316.3
+      267.6
      ],
      [
       1792396800000,
-      179.0
+      130.3
      ],
      [
       1792400400000,
-      173.0
+      124.3
      ],
      [
       1792404000000,
-      160.3
-     ],
-     [
-      1792407600000,
-      -46.8
-     ],
-     [
-      1792411200000,
-      -101.2
-     ],
-     [
-      1792414800000,
-      -62.6
-     ],
-     [
-      1792418400000,
-      -125.4
-     ],
-     [
-      1792422000000,
-      19.6
-     ],
-     [
-      1792425600000,
-      57.9
-     ],
-     [
-      1792429200000,
-      85.6
-     ],
-     [
-      1792432800000,
-      121.4
-     ],
-     [
-      1792436400000,
-      138.2
-     ],
-     [
-      1792440000000,
-      147.4
-     ],
-     [
-      1792443600000,
-      177.1
-     ],
-     [
-      1792447200000,
-      185.5
-     ],
-     [
-      1792450800000,
-      201.2
-     ],
-     [
-      1792454400000,
-      191.3
-     ],
-     [
-      1792458000000,
-      97.3
-     ],
-     [
-      1792461600000,
-      110.7
-     ],
-     [
-      1792465200000,
       111.6
      ],
      [
+      1792407600000,
+      -95.5
+     ],
+     [
+      1792411200000,
+      -149.9
+     ],
+     [
+      1792414800000,
+      -111.3
+     ],
+     [
+      1792418400000,
+      -174.1
+     ],
+     [
+      1792422000000,
+      -29.1
+     ],
+     [
+      1792425600000,
+      9.2
+     ],
+     [
+      1792429200000,
+      36.9
+     ],
+     [
+      1792432800000,
+      72.7
+     ],
+     [
+      1792436400000,
+      89.6
+     ],
+     [
+      1792440000000,
+      98.7
+     ],
+     [
+      1792443600000,
+      128.4
+     ],
+     [
+      1792447200000,
+      136.8
+     ],
+     [
+      1792450800000,
+      152.5
+     ],
+     [
+      1792454400000,
+      142.6
+     ],
+     [
+      1792458000000,
+      48.7
+     ],
+     [
+      1792461600000,
+      62.0
+     ],
+     [
+      1792465200000,
+      62.9
+     ],
+     [
       1792468800000,
-      81.0
+      32.3
      ],
      [
       1792472400000,
-      99.3
+      50.6
      ],
      [
       1792476000000,
-      65.3
+      16.6
      ],
      [
       1792479600000,
-      56.6
+      7.9
      ],
      [
       1792483200000,
-      147.9
+      99.2
      ],
      [
       1792486800000,
-      135.0
+      86.3
      ],
      [
       1792490400000,
-      146.3
+      97.6
      ],
      [
       1792494000000,
-      158.1
+      109.4
      ],
      [
       1792497600000,
-      112.4
+      63.7
      ],
      [
       1792501200000,
-      119.7
+      71.0
      ],
      [
       1792504800000,
-      214.2
+      165.5
      ],
      [
       1792508400000,
-      444.2
+      395.5
      ],
      [
       1792512000000,
-      373.4
+      324.7
      ],
      [
       1792515600000,
-      442.0
+      393.3
      ],
      [
       1792519200000,
-      400.7
+      352.0
      ],
      [
       1792522800000,
-      389.3
+      340.6
      ],
      [
       1792526400000,
-      402.6
+      353.9
      ],
      [
       1792530000000,
-      425.5
+      376.8
      ],
      [
       1792533600000,
-      425.8
+      377.1
      ],
      [
       1792537200000,
-      466.1
+      417.4
      ],
      [
       1792540800000,
-      466.1
+      417.4
      ],
      [
       1792544400000,
-      473.0
+      424.3
      ],
      [
       1792548000000,
-      490.4
+      441.7
      ],
      [
       1792551600000,
-      488.1
+      439.4
      ],
      [
       1792555200000,
-      485.1
+      436.4
      ],
      [
       1792558800000,
-      533.4
+      484.7
      ],
      [
       1792562400000,
-      491.2
+      442.5
      ],
      [
       1792566000000,
-      536.4
+      487.7
      ],
      [
       1792569600000,
-      232.0
+      183.3
      ],
      [
       1792573200000,
-      382.2
+      333.5
      ],
      [
       1792576800000,
-      433.9
+      385.2
      ],
      [
       1792580400000,
-      420.0
+      371.3
+     ],
+     [
+      1792584000000,
+      370.2
+     ],
+     [
+      1792587600000,
+      377.1
      ]
     ],
     "cvd_perp": [
      [
-      1792324800000,
-      -14.5
-     ],
-     [
-      1792328400000,
-      -14.5
-     ],
-     [
       1792332000000,
-      -82.7
+      -68.2
      ],
      [
       1792335600000,
-      -160.5
+      -146.0
      ],
      [
       1792339200000,
-      -182.2
+      -167.7
      ],
      [
       1792342800000,
-      -222.1
+      -207.7
      ],
      [
       1792346400000,
-      -207.9
+      -193.5
      ],
      [
       1792350000000,
-      -207.5
+      -193.1
      ],
      [
       1792353600000,
-      -282.5
+      -268.0
      ],
      [
       1792357200000,
-      -294.1
+      -279.6
      ],
      [
       1792360800000,
-      -284.0
+      -269.5
      ],
      [
       1792364400000,
-      -273.5
+      -259.0
      ],
      [
       1792368000000,
-      -247.3
+      -232.9
      ],
      [
       1792371600000,
-      -190.5
+      -176.1
      ],
      [
       1792375200000,
-      -191.5
+      -177.0
      ],
      [
       1792378800000,
-      -148.9
+      -134.4
      ],
      [
       1792382400000,
-      -192.8
+      -178.3
      ],
      [
       1792386000000,
-      -193.6
+      -179.1
      ],
      [
       1792389600000,
-      -210.0
+      -195.5
      ],
      [
       1792393200000,
-      -175.0
+      -160.6
      ],
      [
       1792396800000,
-      -159.2
+      -144.8
      ],
      [
       1792400400000,
-      -149.4
+      -134.9
      ],
      [
       1792404000000,
-      -172.3
+      -157.8
      ],
      [
       1792407600000,
-      -180.4
+      -165.9
      ],
      [
       1792411200000,
-      -148.4
+      -133.9
      ],
      [
       1792414800000,
-      -137.3
+      -122.8
      ],
      [
       1792418400000,
-      -166.0
+      -151.5
      ],
      [
       1792422000000,
-      -101.9
+      -87.4
      ],
      [
       1792425600000,
-      -130.4
+      -115.9
      ],
      [
       1792429200000,
-      -132.4
+      -117.9
      ],
      [
       1792432800000,
-      -150.5
+      -136.0
      ],
      [
       1792436400000,
-      -133.6
+      -119.1
      ],
      [
       1792440000000,
-      -141.3
+      -126.9
      ],
      [
       1792443600000,
-      -121.8
+      -107.3
      ],
      [
       1792447200000,
-      -106.6
+      -92.1
      ],
      [
       1792450800000,
-      -82.7
+      -68.3
      ],
      [
       1792454400000,
-      -92.5
+      -78.0
      ],
      [
       1792458000000,
-      -154.1
+      -139.7
      ],
      [
       1792461600000,
-      -151.2
-     ],
-     [
-      1792465200000,
-      -151.6
-     ],
-     [
-      1792468800000,
-      -140.7
-     ],
-     [
-      1792472400000,
-      -158.5
-     ],
-     [
-      1792476000000,
-      -199.3
-     ],
-     [
-      1792479600000,
-      -166.4
-     ],
-     [
-      1792483200000,
-      -168.7
-     ],
-     [
-      1792486800000,
-      -197.8
-     ],
-     [
-      1792490400000,
-      -247.9
-     ],
-     [
-      1792494000000,
-      -240.8
-     ],
-     [
-      1792497600000,
-      -247.5
-     ],
-     [
-      1792501200000,
-      -230.9
-     ],
-     [
-      1792504800000,
-      -200.7
-     ],
-     [
-      1792508400000,
-      -95.3
-     ],
-     [
-      1792512000000,
-      -215.3
-     ],
-     [
-      1792515600000,
-      -194.8
-     ],
-     [
-      1792519200000,
-      -190.7
-     ],
-     [
-      1792522800000,
-      -196.7
-     ],
-     [
-      1792526400000,
-      -204.3
-     ],
-     [
-      1792530000000,
-      -176.2
-     ],
-     [
-      1792533600000,
-      -158.8
-     ],
-     [
-      1792537200000,
-      -128.1
-     ],
-     [
-      1792540800000,
-      -140.8
-     ],
-     [
-      1792544400000,
-      -140.8
-     ],
-     [
-      1792548000000,
-      -147.5
-     ],
-     [
-      1792551600000,
-      -128.9
-     ],
-     [
-      1792555200000,
-      -120.1
-     ],
-     [
-      1792558800000,
-      -120.4
-     ],
-     [
-      1792562400000,
-      -133.6
-     ],
-     [
-      1792566000000,
       -136.7
      ],
      [
+      1792465200000,
+      -137.2
+     ],
+     [
+      1792468800000,
+      -126.3
+     ],
+     [
+      1792472400000,
+      -144.0
+     ],
+     [
+      1792476000000,
+      -184.8
+     ],
+     [
+      1792479600000,
+      -151.9
+     ],
+     [
+      1792483200000,
+      -154.2
+     ],
+     [
+      1792486800000,
+      -183.4
+     ],
+     [
+      1792490400000,
+      -233.5
+     ],
+     [
+      1792494000000,
+      -226.3
+     ],
+     [
+      1792497600000,
+      -233.0
+     ],
+     [
+      1792501200000,
+      -216.5
+     ],
+     [
+      1792504800000,
+      -186.2
+     ],
+     [
+      1792508400000,
+      -80.8
+     ],
+     [
+      1792512000000,
+      -200.8
+     ],
+     [
+      1792515600000,
+      -180.3
+     ],
+     [
+      1792519200000,
+      -176.2
+     ],
+     [
+      1792522800000,
+      -182.2
+     ],
+     [
+      1792526400000,
+      -189.9
+     ],
+     [
+      1792530000000,
+      -161.7
+     ],
+     [
+      1792533600000,
+      -144.3
+     ],
+     [
+      1792537200000,
+      -113.6
+     ],
+     [
+      1792540800000,
+      -126.3
+     ],
+     [
+      1792544400000,
+      -126.3
+     ],
+     [
+      1792548000000,
+      -133.1
+     ],
+     [
+      1792551600000,
+      -114.4
+     ],
+     [
+      1792555200000,
+      -105.6
+     ],
+     [
+      1792558800000,
+      -105.9
+     ],
+     [
+      1792562400000,
+      -119.1
+     ],
+     [
+      1792566000000,
+      -122.2
+     ],
+     [
       1792569600000,
-      -79.4
+      -65.0
      ],
      [
       1792573200000,
-      -61.1
+      -46.7
      ],
      [
       1792576800000,
-      -96.9
+      -82.5
      ],
      [
       1792580400000,
-      -196.8
+      -182.3
+     ],
+     [
+      1792584000000,
+      -173.2
+     ],
+     [
+      1792587600000,
+      -161.9
      ]
     ]
    },
    "liq": {
-    "long": 2149847,
-    "short": 12452287,
+    "long": 2159533,
+    "short": 13638592,
     "hours": 23.6,
     "series": [
-     [
-      1792497600000,
-      0,
-      7439
-     ],
      [
       1792501200000,
       545,
@@ -4960,7 +4956,7 @@
      [
       1792504800000,
       70117,
-      9697657
+      9668451
      ],
      [
       1792508400000,
@@ -5040,7 +5036,7 @@
      [
       1792569600000,
       0,
-      1191043
+      1236845
      ],
      [
       1792573200000,
@@ -5056,17 +5052,27 @@
       1792580400000,
       0,
       23538
+     ],
+     [
+      1792584000000,
+      9561,
+      52039
+     ],
+     [
+      1792587600000,
+      125,
+      1125108
      ]
     ]
    },
    "liq_src": "agg",
    "oi_src": "7 sàn (Coinalyze)",
-   "funding_pct": 95.7
+   "funding_pct": 93.5
   },
   "stable": {
    "total": 303.4,
-   "ch7": -0.88,
-   "ch30": -0.1,
+   "ch7": -0.87,
+   "ch30": -0.09,
    "d30": -0.3,
    "series": [
     [
@@ -5923,7 +5929,7 @@
    },
    "days": 3180
   },
-  "runtime_sec": 9.4
+  "runtime_sec": 10.2
  },
  "attention": {
   "trends": {
@@ -6400,7 +6406,7 @@
       8
      ]
     ],
-    "age_h": 0.0,
+    "age_h": 1.2,
     "y5": [
      {
       "kw": "buy bitcoin",
@@ -7075,7 +7081,7 @@
       26
      ]
     ],
-    "age_h": 0.0,
+    "age_h": 1.2,
     "y5": [
      {
       "kw": "mua bitcoin",
@@ -9442,7 +9448,7 @@
   "errors": {
    "trends_vn_y5": "multiline HTTP 429"
   },
-  "runtime_sec": 25.9
+  "runtime_sec": 2.2
  },
  "events": {
   "groups": [
@@ -12434,7 +12440,7 @@
   "pending": 0,
   "since": "2022-01-07T13:30:00Z",
   "errors": {},
-  "runtime_sec": 4.5
+  "runtime_sec": 0.0
  },
  "history_test": {
   "day": "2026-10-21",
@@ -14788,7 +14794,7 @@
    }
   },
   "live": {
-   "n": 2069,
+   "n": 2077,
    "index_current": 54,
    "index_cryptobert": 62,
    "agree": 51,
@@ -14819,7 +14825,7 @@
     }
    ]
   },
-  "updated": "2026-10-21T11:56:42Z",
-  "runtime_sec": 14.9
+  "updated": "2026-10-21T13:09:47Z",
+  "runtime_sec": 26.1
  }
 }
