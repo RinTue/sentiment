@@ -738,7 +738,7 @@ def hl_top_accounts() -> list:
     """Ví cần đọc: 400 ví lớn nhất theo giá trị tài khoản + 400 ví giao dịch nhiều nhất tháng + 200 nhất tuần
     (bắt được cá voi đòn bẩy cao có tài khoản nhỏ) + mọi ví từng có vị thế lớn trong 7 ngày qua."""
     c = _hl_cache()
-    if not (c.get("addrs") and len(c["addrs"]) >= HL_TOP * 0.9 and time.time() - c.get("saved", 0) < 6 * 3600):
+    if not (c.get("v") == 2 and c.get("addrs") and time.time() - c.get("saved", 0) < 6 * 3600):
         r = requests.get("https://stats-data.hyperliquid.xyz/Mainnet/leaderboard", headers={"User-Agent": UA}, timeout=60)
         r.raise_for_status()
         rows = [x for x in r.json().get("leaderboardRows", []) if x.get("ethAddress")]
@@ -751,7 +751,7 @@ def hl_top_accounts() -> list:
         for key, n in ((lambda x: float(x.get("accountValue") or 0), HL_TOP), (lambda x: vlm(x, "month"), 400), (lambda x: vlm(x, "week"), 200)):
             pick += [x["ethAddress"] for x in sorted(rows, key=key, reverse=True)[:n]]
         c["addrs"] = list(dict.fromkeys(pick))
-        c["saved"] = time.time()
+        c["saved"], c["v"] = time.time(), 2
     sticky = {a: t for a, t in (c.get("sticky") or {}).items() if time.time() - t < 7 * 86400}
     c["sticky"] = sticky
     with open(HL_CACHE, "w", encoding="utf-8") as f:
