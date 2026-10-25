@@ -718,7 +718,7 @@ def drivers(cb: dict | None, M: dict, errs: dict) -> dict | None:
 # đọc vị thế BTC/ETH và giá thanh lý của từng vị thế, rồi cộng lại theo mức giá.
 HL_INFO = "https://api.hyperliquid.xyz/info"
 HL_CACHE = os.path.join(DATA, "hl_whales_cache.json")
-HL_TOP = 150
+HL_TOP = 400   # ví lớn nhất theo giá trị tài khoản; nhóm đầu chủ yếu là quỹ/market maker đòn bẩy thấp nên lấy rộng hơn
 
 
 def hl_post(body: dict, timeout: int = 20):
@@ -732,7 +732,7 @@ def hl_top_accounts() -> list:
         c = json.load(open(HL_CACHE, encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         c = {}
-    if c.get("addrs") and time.time() - c.get("saved", 0) < 86400:
+    if c.get("addrs") and len(c["addrs"]) >= HL_TOP * 0.9 and time.time() - c.get("saved", 0) < 86400:
         return c["addrs"]
     r = requests.get("https://stats-data.hyperliquid.xyz/Mainnet/leaderboard", headers={"User-Agent": UA}, timeout=60)
     r.raise_for_status()
@@ -756,8 +756,9 @@ def hl_whales(errs: dict) -> dict | None:
             st = hl_post({"type": "clearinghouseState", "user": a}, timeout=10)
         except Exception:  # noqa: BLE001
             fails += 1
-            if fails > 20:
+            if fails > 30:
                 break
+            time.sleep(1)
             continue
         for ap in st.get("assetPositions", []):
             p = ap.get("position") or {}
@@ -771,7 +772,7 @@ def hl_whales(errs: dict) -> dict | None:
             pos[coin].append({"side": "long" if szi > 0 else "short", "usd": abs(float(p.get("positionValue") or 0)),
                               "entry": float(p.get("entryPx") or 0), "liq": float(liq) if liq not in (None, "") else None,
                               "lev": (p.get("leverage") or {}).get("value"), "pnl": float(p.get("unrealizedPnl") or 0)})
-        time.sleep(0.05)
+        time.sleep(0.08)
     for coin, P in pos.items():
         px = float(mids.get(coin) or 0)
         if not P or not px:
