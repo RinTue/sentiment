@@ -178,6 +178,10 @@ h4.ph { margin: 10px 0 6px; font-size: .9rem; display: flex; align-items: center
 h4.ph::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--z2); }
 h4.ph.pos::before { background: var(--good); } h4.ph.neg::before { background: var(--bad); }
 .post .meta .tagb { font-weight: 600; } .post .meta .nsrc { font-weight: 600; color: var(--ink); }
+.evtbl.hlx td { vertical-align: middle; }
+.hbar { display: inline-block; width: 110px; height: 8px; border-radius: 4px; background: var(--neutral-bg); vertical-align: middle; margin-right: 8px; overflow: hidden; }
+.hbar.sm { width: 70px; } .hbar i { display: block; height: 100%; border-radius: 4px; }
+@media (max-width: 640px) { .hbar { width: 50px; } .hbar.sm { width: 34px; } }
 .evtbl.hlt td { white-space: nowrap; } .evtbl.hlt th { white-space: nowrap; }
 .kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 0; }
 .kpi .l { font-size: .8rem; color: var(--ink-2); display: flex; align-items: center; gap: 7px; }
@@ -1593,7 +1597,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
 
 
   /* ---------- Cá voi Hyperliquid ---------- */
-  const HL = { coin: "BTC" };
+  const HL = { coin: "BTC", sort: store.get("tamly-hl-sort", "price") };
   function renderWhales() {
     const box = $("hl-box"); if (!box) return;
     document.querySelectorAll("#hl-tabs button").forEach((b) => b.classList.toggle("on", b.dataset.coin === HL.coin));
@@ -1629,14 +1633,28 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const svRow = ([x, v, pr]) => `<tr><td class="num">${num(pr ? pr.up_px : P)}–${num(x.up_px)}</td><td class="num">+${x.pct - 1}–${x.pct}%</td><td class="num up">${mu(v)}</td><td class="num">${mu(x.short_liq)}</td></tr>`;
     const lvlTbl = (rows, fn, empty) => rows.length ? `<div class="tbl-wrap"><table class="evtbl hlt"><thead><tr><th>Giá chạm vùng</th><th>Cách giá</th><th>Bị thanh lý</th><th>Cộng dồn</th></tr></thead><tbody>${rows.map(fn).join("")}</tbody></table></div>` : `<p class="note">${empty}</p>`;
     h += `<div class="two"><div><h3>Long bị thanh lý nếu giá xuống</h3>${lvlTbl(lvAll, lvRow, "Không có trong 25% dưới giá hiện tại.")}</div><div><h3>Short bị thanh lý nếu giá lên</h3>${lvlTbl(svAll, svRow, "Không có trong 25% trên giá hiện tại.")}</div></div>`;
-    // 10 vị thế lớn nhất mỗi phe, xếp theo giá thanh lý gần nhất trước
-    const dist = (p) => p.liq ? Math.abs(p.liq / P - 1) : 9;
-    const posRow = (p) => `<tr><td class="num">${p.liq ? `${num(p.liq)} <span class="muted">(${pct((p.liq / P - 1) * 100, 1)})</span>` : "–"}</td><td class="num">${mu(p.usd)}</td><td class="num">${num(p.entry)}</td><td class="num">${p.margin != null ? mu(p.margin) : "–"}</td><td class="num">${p.lev ? p.lev + "x" + (p.cross ? " chéo" : "") : "–"}</td><td class="num ${p.pnl >= 0 ? "up" : "down"}">${p.pnl >= 0 ? "+" : "−"}${mu(Math.abs(p.pnl))}</td></tr>`;
-    const posTbl = (arr) => arr && arr.length ? `<div class="tbl-wrap"><table class="evtbl hlt"><thead><tr><th>Giá thanh lý</th><th>Giá trị</th><th>Giá vào</th><th>Ký quỹ</th><th>Đòn bẩy</th><th>Lãi/lỗ</th></tr></thead><tbody>${arr.slice().sort((a, b) => dist(a) - dist(b)).map(posRow).join("")}</tbody></table></div>` : `<p class="note">Không có vị thế.</p>`;
-    const TL = W.top_long || W.top.filter((p) => p.side === "long"), TS = W.top_short || W.top.filter((p) => p.side === "short");
-    h += `<h3>Vị thế lớn nhất, xếp theo giá thanh lý gần nhất trước</h3><h4 class="ph pos">Long (${TL.length} lớn nhất)</h4>${posTbl(TL)}<h4 class="ph neg">Short (${TS.length} lớn nhất)</h4>${posTbl(TS)}`;
-    h += `<p class="note">Ẩn địa chỉ ví. "–" ở giá thanh lý: vị thế có đủ ký quỹ, gần như không thể bị thanh lý. "Chéo": ký quỹ dùng chung cả tài khoản, nên giá thanh lý còn phụ thuộc các vị thế khác. Đọc ${W.n_pos} vị thế ${HL.coin} của ${W.n_acc} ví; cập nhật ${fmtTime(Date.parse(S.sv.L.generated_at))}.</p>`;
+    // Hai bảng giống các trang theo dõi Hyperliquid: short (trên giá) rồi long (dưới giá); xếp theo giá thanh lý hoặc kích thước
+    const TL = (W.top_long || W.top.filter((p) => p.side === "long")).filter((p) => p.liq && Math.abs(p.liq / P - 1) < 0.95), TS = (W.top_short || W.top.filter((p) => p.side === "short")).filter((p) => p.liq);
+    const sortFn = HL.sort === "size" ? (a, b) => b.usd - a.usd : (a, b) => Math.abs(a.liq / P - 1) - Math.abs(b.liq / P - 1);
+    const fmtCoin = (v) => num(v, v >= 100 ? 0 : 2) + " " + HL.coin;
+    const liqTbl = (arr, side) => {
+      if (!arr.length) return `<p class="note">Không có vị thế ${side} nào có giá thanh lý trong danh sách.</p>`;
+      const rows = arr.slice().sort(sortFn), mxU = Math.max(...rows.map((p) => p.usd)), mxD = Math.max(...rows.map((p) => Math.abs(p.liq / P - 1)));
+      const col = side === "short" ? "var(--bad)" : "var(--good)", dcol = side === "short" ? "var(--good)" : "var(--bad)";
+      return `<div class="tbl-wrap"><table class="evtbl hlt hlx"><thead><tr><th>#</th><th>Giá thanh lý</th><th>Khối lượng</th><th>Giá trị</th><th>Ký quỹ</th><th>Cách giá hiện tại</th></tr></thead><tbody>` +
+        rows.map((p, i) => { const d = (p.liq / P - 1) * 100;
+          return `<tr title="Giá vào ${num(p.entry)} · đòn bẩy ${p.lev ? p.lev + "x" + (p.cross ? " chéo" : "") : "–"} · lãi/lỗ ${p.pnl >= 0 ? "+" : "−"}${mu(Math.abs(p.pnl))}"><td>${i + 1}</td><td class="num"><b>${num(p.liq)}</b></td>
+            <td><div class="hbar"><i style="width:${(p.usd / mxU * 100).toFixed(1)}%;background:${col}"></i></div><span class="mono">${fmtCoin(p.usd / P)}</span></td>
+            <td class="num">${num(p.usd)} $</td><td class="num">${p.margin != null ? num(p.margin) + " $" : "–"}</td>
+            <td><div class="hbar sm"><i style="width:${(Math.abs(d) / 100 / mxD * 100).toFixed(1)}%;background:${dcol}"></i></div><span class="mono ${d > 0 ? "up" : "down"}">${d > 0 ? "+" : "−"}${num(Math.abs(d), 2)}%</span></td></tr>`; }).join("") + `</tbody></table></div>`;
+    };
+    h += `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px"><h3 style="margin:0">Vị thế lớn sẽ bị thanh lý</h3>
+      <div class="seg" id="hl-sort" style="margin:0"><button type="button" data-s="price" class="${HL.sort !== "size" ? "on" : ""}">Xếp theo giá gần nhất</button><button type="button" data-s="size" class="${HL.sort === "size" ? "on" : ""}">Xếp theo kích thước</button></div></div>`;
+    h += `<h4 class="ph neg">Short bị thanh lý nếu giá lên (trên giá hiện tại ${num(P)})</h4>${liqTbl(TS, "short")}`;
+    h += `<h4 class="ph pos">Long bị thanh lý nếu giá xuống (dưới giá hiện tại ${num(P)})</h4>${liqTbl(TL, "long")}`;
+    h += `<p class="note">Mỗi bảng gồm 10 vị thế ${HL.coin} lớn nhất mỗi phe; vị thế không có giá thanh lý hoặc chỉ bị thanh lý khi giá gần về 0 (ký quỹ đủ dày) không hiện. Đưa chuột hoặc chạm vào một dòng để xem giá vào, đòn bẩy, lãi/lỗ. Địa chỉ ví được ẩn. Đọc ${W.n_pos} vị thế ${HL.coin} của ${W.n_acc} ví; cập nhật ${fmtTime(Date.parse(S.sv.L.generated_at))}.</p>`;
     box.innerHTML = h;
+    box.querySelectorAll("#hl-sort button").forEach((b) => b.addEventListener("click", () => { HL.sort = b.dataset.s; store.set("tamly-hl-sort", HL.sort); renderWhales(); }));
   }
   document.querySelectorAll("#hl-tabs button").forEach((b) => b.addEventListener("click", () => { HL.coin = b.dataset.coin; renderWhales(); }));
   /* ---------- Tab ---------- */
