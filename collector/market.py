@@ -738,7 +738,7 @@ def hl_top_accounts() -> list:
     """Ví cần đọc: 400 ví lớn nhất theo giá trị tài khoản + 400 ví giao dịch nhiều nhất tháng + 200 nhất tuần
     (bắt được cá voi đòn bẩy cao có tài khoản nhỏ) + mọi ví từng có vị thế lớn trong 7 ngày qua."""
     c = _hl_cache()
-    if not (c.get("v") == 2 and c.get("addrs") and time.time() - c.get("saved", 0) < 6 * 3600):
+    if not (c.get("v") == 3 and c.get("addrs") and time.time() - c.get("saved", 0) < 6 * 3600):
         r = requests.get("https://stats-data.hyperliquid.xyz/Mainnet/leaderboard", headers={"User-Agent": UA}, timeout=60)
         r.raise_for_status()
         rows = [x for x in r.json().get("leaderboardRows", []) if x.get("ethAddress")]
@@ -750,8 +750,23 @@ def hl_top_accounts() -> list:
         pick = []
         for key, n in ((lambda x: float(x.get("accountValue") or 0), HL_TOP), (lambda x: vlm(x, "month"), 400), (lambda x: vlm(x, "week"), 200)):
             pick += [x["ethAddress"] for x in sorted(rows, key=key, reverse=True)[:n]]
+        # Quỹ (vault) không nằm trên bảng xếp hạng nhưng có thể giữ vị thế rất lớn: thêm 150 quỹ nhiều tiền nhất và các quỹ con
+        try:
+            vr = requests.get("https://stats-data.hyperliquid.xyz/Mainnet/vaults", headers={"User-Agent": UA}, timeout=60)
+            vr.raise_for_status()
+            vs = [v for v in vr.json() if isinstance(v, dict) and (v.get("summary") or {}).get("vaultAddress")]
+            vs.sort(key=lambda v: -float((v.get("summary") or {}).get("tvl") or 0))
+            for v in vs[:150]:
+                sm = v["summary"]
+                pick.append(sm["vaultAddress"])
+                rel = sm.get("relationship") or {}
+                for ch in ((rel.get("data") or {}).get("childAddresses") or []):
+                    pick.append(ch)
+            c["n_vaults"] = min(150, len(vs))
+        except Exception as ex:  # noqa: BLE001
+            c["vault_err"] = str(ex)[:100]
         c["addrs"] = list(dict.fromkeys(pick))
-        c["saved"], c["v"] = time.time(), 2
+        c["saved"], c["v"] = time.time(), 3
     sticky = {a: t for a, t in (c.get("sticky") or {}).items() if time.time() - t < 7 * 86400}
     c["sticky"] = sticky
     with open(HL_CACHE, "w", encoding="utf-8") as f:
