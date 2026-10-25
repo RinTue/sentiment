@@ -885,7 +885,11 @@ def hl_whales(errs: dict) -> dict | None:
                      "n_long": len(L), "n_short": len(Sh), "steps": steps, "near_long": cluster("long"), "near_short": cluster("short"),
                      "top": [brief(p) for p in top],
                      "top_long": [brief(p) for p in sorted(L, key=lambda p: -p["usd"])[:10]],
-                     "top_short": [brief(p) for p in sorted(Sh, key=lambda p: -p["usd"])[:10]]}
+                     "top_short": [brief(p) for p in sorted(Sh, key=lambda p: -p["usd"])[:10]],
+                     # mọi vị thế có giá thanh lý (để trang gộp theo bậc giá như các trang theo dõi Hyperliquid):
+                     # [1 long / -1 short, giá trị $, giá thanh lý, ký quỹ $, giá vào, đòn bẩy]
+                     "pos": [[1 if p["side"] == "long" else -1, round(p["usd"]), round(p["liq"], 2), round(p["margin"]), round(p["entry"], 2), p["lev"]]
+                             for p in P if p["liq"] and 0.05 < p["liq"] / px < 20]}
     hl_remember(big)
     if out and hv:
         out["harvest"] = hv
