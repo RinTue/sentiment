@@ -211,7 +211,7 @@ def bucket_table(score: dict, f7: dict, f30: dict) -> dict:
 
 
 SPLIT = datetime(2025, 1, 1, tzinfo=timezone.utc).timestamp()
-FAVOR_V = 4   # đổi số này để buộc tính lại trong ngày
+FAVOR_V = 5   # đổi số này để buộc tính lại trong ngày
 
 
 def favor_score(F: dict, codes: dict, f7: dict, f30: dict, names: dict) -> dict | None:
@@ -406,12 +406,23 @@ def run(force: bool = False) -> dict | None:
                         "up7": round(100 * sum(1 for x in g["r7"] if x > 0) / len(g["r7"])),
                         "cont7": round(100 * sum(g["cont"]) / len(g["cont"])) if g["cont"] else None})
         drv.sort(key=lambda x: -x["n"])
+    # Những ngày thanh lý cực lớn (trên phân vị 97% của 365 ngày trước đó): BTC sau đó ra sao — dùng cho cảnh báo Telegram
+    liq_ext = {}
+    if cz.get("liq"):
+        for side, idx in (("long", 0), ("short", 1)):
+            pc = trailing_pct({d: v[idx] for d, v in cz["liq"].items()}, 365)
+            days = [d for d, v in pc.items() if v >= 97 and d >= start]
+            r1 = [f1x for d in days if (f1x := fwd(px, 1).get(d)) is not None]
+            r7 = [f7[d] for d in days if d in f7]
+            if len(r7) >= 8:
+                liq_ext[side] = {"n": len(r7), "up1": round(100 * sum(1 for x in r1 if x > 0) / len(r1)) if r1 else None,
+                                 "up7": round(100 * sum(1 for x in r7 if x > 0) / len(r7)), "med7": round(statistics.median(r7), 1)}
     favor = None
     try:
         favor = favor_score(F, codes, f7, f30, NAMES)
     except Exception as ex:  # noqa: BLE001
         errs["favor"] = str(ex)[:120]
-    out = {"day": today, "start": START.strftime("%Y-%m-%d"), "base": base, "factors": factors, "drivers": drv, "favor": favor,
+    out = {"day": today, "start": START.strftime("%Y-%m-%d"), "base": base, "factors": factors, "drivers": drv, "favor": favor, "liq_ext": liq_ext,
            "symbols": cz.get("symbols"), "errors": errs, "runtime_sec": round(time.time() - t0, 1)}
     with open(OUT_FILE, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)

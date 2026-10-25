@@ -395,6 +395,12 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <p class="note">Vì sao có hai phần: các sàn chỉ phát lệnh thanh lý theo thời gian thực, không có kho lịch sử miễn phí gộp nhiều sàn. Phần "Gần đây" là số máy chủ gom mỗi giờ từ Coinalyze (BTC: tổng 7 sàn lớn); ngay khi mở trang, trình duyệt lấy thêm lịch sử 4 giờ của OKX (sàn duy nhất cho đọc lại miễn phí) để lấp khoảng trống; phần "Trực tiếp" cộng gộp Bybit, OKX và Binance (nếu mạng của bạn vào được) từ lúc mở trang. Cách đọc: một phe bị thanh lý dồn dập là giá đang chạy bằng lệnh cưỡng bức; đợt thanh lý long rất lớn thường xuất hiện gần đáy ngắn hạn, short rất lớn gần đỉnh ngắn hạn.</p>
     </section>
     <section class="panel">
+      <h2>Cá voi Hyperliquid: giá nào sẽ kích hoạt thanh lý</h2>
+      <div class="seg" id="hl-tabs"><button type="button" data-coin="BTC" class="on">BTC</button><button type="button" data-coin="ETH">ETH</button></div>
+      <div id="hl-box"><p class="loading">Đang tải…</p></div>
+      <p class="note">Hyperliquid chạy trên blockchain nên vị thế của mọi tài khoản đều công khai. Máy chủ đọc vị thế của các tài khoản lớn nhất theo bảng xếp hạng của Hyperliquid mỗi giờ, rồi cộng giá trị các vị thế theo giá thanh lý của chúng. Đây là thông tin nhìn trước: nếu giá chạm vùng có nhiều thanh lý, lệnh cưỡng bức có thể đẩy giá đi thêm. Chỉ phản ánh một sàn và một nhóm ví lớn, không phải toàn thị trường; vị thế có thể đóng hoặc thêm ký quỹ bất cứ lúc nào.</p>
+    </section>
+    <section class="panel">
       <h2>Đà giá đến từ đâu: spot, đòn bẩy hay short bị ép</h2>
       <div id="drv-detail"><p class="loading">Đang tải…</p></div>
     </section>
@@ -1584,6 +1590,40 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     drawFavorChart(H.favor);
   }
 
+
+  /* ---------- Cá voi Hyperliquid ---------- */
+  const HL = { coin: "BTC" };
+  function renderWhales() {
+    const box = $("hl-box"); if (!box) return;
+    document.querySelectorAll("#hl-tabs button").forEach((b) => b.classList.toggle("on", b.dataset.coin === HL.coin));
+    const W = S.mkt && S.mkt.hl_whales && S.mkt.hl_whales[HL.coin];
+    if (!W) { box.innerHTML = `<div class="msg">${S.mkt ? "Máy chủ chưa lấy được vị thế cá voi Hyperliquid; sẽ thử lại ở lần chạy tới." : "Phần này do bộ thu thập trên GitHub lấy."}</div>`; return; }
+    const tot = W.long_usd + W.short_usd, pl = tot ? W.long_usd / tot * 100 : 50, P = W.price;
+    const cl = (c, side) => c ? [`Cụm ${side} gần nhất`, usd(c.usd), `${side === "long" ? "nếu giá xuống" : "nếu giá lên"} ${num(c.from)}–${num(c.to)} (${side === "long" ? "−" : "+"}${c.pct - 1}–${c.pct}%)`, side === "long" ? "down" : "up"] : [`Cụm ${side} gần nhất`, "–", "không có trong ±10%"];
+    let h = `<div class="stats">` + statBoxes([
+      [`Tổng long của ${W.n_acc} ví lớn`, usd(W.long_usd), `${W.n_long} vị thế · ${num(pl)}% tổng`],
+      [`Tổng short`, usd(W.short_usd), `${W.n_short} vị thế · ${num(100 - pl)}% tổng`],
+      cl(W.near_long, "long"), cl(W.near_short, "short")]) + `</div>`;
+    // Biểu đồ: mỗi cột là 1% giá; bên trái (dưới giá hiện tại) là long sẽ bị thanh lý, bên phải là short
+    const st = W.steps.slice(0, 15), lv = st.map((x, i) => x.long_liq - (i ? st[i - 1].long_liq : 0)), sv = st.map((x, i) => x.short_liq - (i ? st[i - 1].short_liq : 0));
+    const mx = Math.max(1, ...lv, ...sv), Wd = 720, Hh = 190, n = st.length, cw = (Wd - 40) / (2 * n), mid = Wd / 2, base = Hh - 34;
+    let g = `<line x1="${mid}" x2="${mid}" y1="6" y2="${base + 4}" stroke="var(--ink-2)" stroke-dasharray="3 3"/><text x="${mid}" y="${Hh - 4}" font-size="11" text-anchor="middle" fill="var(--ink-2)">giá hiện tại ${num(P)}</text>`;
+    for (let i = 0; i < n; i++) {
+      const hl = lv[i] / mx * (base - 16), hs = sv[i] / mx * (base - 16), xl = mid - (i + 1) * cw, xs = mid + i * cw;
+      if (lv[i] > 0) g += `<rect x="${(xl + 1).toFixed(1)}" y="${(base - hl).toFixed(1)}" width="${(cw - 2).toFixed(1)}" height="${Math.max(1, hl).toFixed(1)}" fill="var(--bad)" rx="1"><title>Giá ${num(st[i].down_px)}–${num(i ? st[i - 1].down_px : P)}: ${usd(lv[i])} long bị thanh lý</title></rect>`;
+      if (sv[i] > 0) g += `<rect x="${(xs + 1).toFixed(1)}" y="${(base - hs).toFixed(1)}" width="${(cw - 2).toFixed(1)}" height="${Math.max(1, hs).toFixed(1)}" fill="var(--good)" rx="1"><title>Giá ${num(i ? st[i - 1].up_px : P)}–${num(st[i].up_px)}: ${usd(sv[i])} short bị thanh lý</title></rect>`;
+      if ((i + 1) % 5 === 0) g += `<text x="${(mid - (i + 1) * cw).toFixed(1)}" y="${base + 16}" font-size="11" text-anchor="middle" fill="var(--ink-3)">−${i + 1}%</text><text x="${(mid + (i + 1) * cw).toFixed(1)}" y="${base + 16}" font-size="11" text-anchor="middle" fill="var(--ink-3)">+${i + 1}%</text>`;
+    }
+    g += `<text x="4" y="14" font-size="11" fill="var(--bad)">long bị thanh lý nếu giá xuống</text><text x="${Wd - 4}" y="14" font-size="11" text-anchor="end" fill="var(--good)">short bị thanh lý nếu giá lên</text>`;
+    h += `<h3>Giá trị vị thế sẽ bị thanh lý theo từng mức giá (mỗi cột 1%)</h3><div class="chart"><svg viewBox="0 0 ${Wd} ${Hh}" role="img" aria-label="Thanh lý cá voi theo mức giá">${g}</svg></div>`;
+    const s10 = W.steps[9], s5 = W.steps[4];
+    h += `<p class="note" style="margin-top:4px">Cộng dồn: giá giảm 5% thì ${usd(s5.long_liq)} long bị thanh lý, giảm 10% thì ${usd(s10.long_liq)}; giá tăng 5% thì ${usd(s5.short_liq)} short bị thanh lý, tăng 10% thì ${usd(s10.short_liq)}.</p>`;
+    h += `<h3>10 vị thế lớn nhất</h3><div class="tbl-wrap"><table class="evtbl"><thead><tr><th>Phe</th><th>Giá trị</th><th>Giá vào</th><th>Giá thanh lý</th><th>Đòn bẩy</th><th>Lãi/lỗ chưa chốt</th></tr></thead><tbody>` +
+      W.top.map((p) => `<tr><td class="${p.side === "long" ? "up" : "down"}">${p.side === "long" ? "Long" : "Short"}</td><td class="num">${usd(p.usd)}</td><td class="num">${num(p.entry)}</td><td class="num">${p.liq ? `${num(p.liq)} <span class="muted">(${pct((p.liq / P - 1) * 100, 1)})</span>` : "–"}</td><td class="num">${p.lev ? p.lev + "x" : "–"}</td><td class="num ${p.pnl >= 0 ? "up" : "down"}">${p.pnl >= 0 ? "+" : "−"}${usd(Math.abs(p.pnl))}</td></tr>`).join("") + `</tbody></table></div>`;
+    h += `<p class="note">Ẩn địa chỉ ví. "–" ở giá thanh lý: vị thế có đủ ký quỹ, gần như không thể bị thanh lý. Đọc ${W.n_pos} vị thế ${HL.coin} của ${W.n_acc} ví; cập nhật ${fmtTime(Date.parse(S.sv.L.generated_at))}.</p>`;
+    box.innerHTML = h;
+  }
+  document.querySelectorAll("#hl-tabs button").forEach((b) => b.addEventListener("click", () => { HL.coin = b.dataset.coin; renderWhales(); }));
   /* ---------- Tab ---------- */
   const TABS = ["overview", "crowd", "money", "macro", "events", "method"];
   function showTab(t, scroll) {
@@ -1688,7 +1728,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       $("p2").textContent = `giữ ${kept.length}, loại ${col.items.length - kept.length}`;
       S.mode = "lex"; ENGINE.score(S.kept, null);
     }
-    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, renderEvents, renderHistTest, renderFavor, afterScore];
+    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, renderWhales, renderEvents, renderHistTest, renderFavor, afterScore];
     steps.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
     const failed = keys.filter((k) => S.err[k]).map((k) => SRC_NAME[k]).concat(Object.keys(col.errs || {}));
     $("updated").textContent = failed.length ? `Không tải được: ${failed.join(", ")}` : "";

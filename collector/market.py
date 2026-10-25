@@ -359,7 +359,7 @@ def coinalyze(cb: dict | None) -> dict:
     mk = cz_markets()
     syms = ",".join(mk["symbols"])
     now = int(time.time())
-    liq = cz_get("liquidation-history", {"symbols": syms, "interval": "1hour", "from": now - 73 * 3600, "to": now, "convert_to_usd": "true"})
+    liq = cz_get("liquidation-history", {"symbols": syms, "interval": "1hour", "from": now - 30 * 86400, "to": now, "convert_to_usd": "true"})
     agg: dict = {}
     for row in liq:
         for h in row.get("history", []):
@@ -371,6 +371,12 @@ def coinalyze(cb: dict | None) -> dict:
     out = {"exchanges": mk["exchanges"], "symbols": len(mk["symbols"]), "series": series,
            "h24": {"long": round(sum(x[1] for x in series)), "short": round(sum(x[2] for x in series))},
            "h72": {"long": round(sum(v[0] for v in s72)), "short": round(sum(v[1] for v in s72))} if len(s72) >= 60 else None}
+    # Mốc "giờ thanh lý bất thường": phân vị 95% và 99% của tổng thanh lý mỗi giờ trong 30 ngày (để cảnh báo dây chuyền)
+    tots = sorted(v[0] + v[1] for t, v in agg.items() if t < now - now % 3600)
+    if len(tots) >= 200:
+        out["hour_p95"] = round(tots[int(0.95 * (len(tots) - 1))])
+        out["hour_p99"] = round(tots[int(0.99 * (len(tots) - 1))])
+        out["hour_n"] = len(tots)
     oi = cz_get("open-interest-history", {"symbols": syms, "interval": "1hour", "from": now - 170 * 3600, "to": now, "convert_to_usd": "true"})
     tot: dict = {}
     cnt: dict = {}
@@ -707,6 +713,97 @@ def drivers(cb: dict | None, M: dict, errs: dict) -> dict | None:
     return out
 
 
+# ---------------------------------------------------------------- cá voi Hyperliquid: giá nào sẽ kích hoạt thanh lý
+# Hyperliquid chạy trên blockchain nên vị thế của mọi tài khoản đều công khai. Lấy các tài khoản lớn nhất từ bảng xếp hạng,
+# đọc vị thế BTC/ETH và giá thanh lý của từng vị thế, rồi cộng lại theo mức giá.
+HL_INFO = "https://api.hyperliquid.xyz/info"
+HL_CACHE = os.path.join(DATA, "hl_whales_cache.json")
+HL_TOP = 150
+
+
+def hl_post(body: dict, timeout: int = 20):
+    r = requests.post(HL_INFO, json=body, headers={"User-Agent": UA, "Content-Type": "application/json"}, timeout=timeout)
+    r.raise_for_status()
+    return r.json()
+
+
+def hl_top_accounts() -> list:
+    try:
+        c = json.load(open(HL_CACHE, encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        c = {}
+    if c.get("addrs") and time.time() - c.get("saved", 0) < 86400:
+        return c["addrs"]
+    r = requests.get("https://stats-data.hyperliquid.xyz/Mainnet/leaderboard", headers={"User-Agent": UA}, timeout=60)
+    r.raise_for_status()
+    rows = r.json().get("leaderboardRows", [])
+    rows = [x for x in rows if x.get("ethAddress")]
+    rows.sort(key=lambda x: -float(x.get("accountValue") or 0))
+    addrs = [x["ethAddress"] for x in rows[:HL_TOP]]
+    with open(HL_CACHE, "w", encoding="utf-8") as f:
+        json.dump({"saved": time.time(), "addrs": addrs}, f)
+    return addrs
+
+
+def hl_whales(errs: dict) -> dict | None:
+    addrs = hl_top_accounts()
+    mids = hl_post({"type": "allMids"})
+    out = {}
+    pos = {"BTC": [], "ETH": []}
+    fails = 0
+    for a in addrs:
+        try:
+            st = hl_post({"type": "clearinghouseState", "user": a}, timeout=10)
+        except Exception:  # noqa: BLE001
+            fails += 1
+            if fails > 20:
+                break
+            continue
+        for ap in st.get("assetPositions", []):
+            p = ap.get("position") or {}
+            coin = p.get("coin")
+            if coin not in pos:
+                continue
+            szi = float(p.get("szi") or 0)
+            if not szi:
+                continue
+            liq = p.get("liquidationPx")
+            pos[coin].append({"side": "long" if szi > 0 else "short", "usd": abs(float(p.get("positionValue") or 0)),
+                              "entry": float(p.get("entryPx") or 0), "liq": float(liq) if liq not in (None, "") else None,
+                              "lev": (p.get("leverage") or {}).get("value"), "pnl": float(p.get("unrealizedPnl") or 0)})
+        time.sleep(0.05)
+    for coin, P in pos.items():
+        px = float(mids.get(coin) or 0)
+        if not P or not px:
+            continue
+        L = [p for p in P if p["side"] == "long"]
+        Sh = [p for p in P if p["side"] == "short"]
+        # Thanh lý cộng dồn nếu giá đi tới từng mức (bước 1%, tới ±25%)
+        steps = []
+        for k in range(1, 26):
+            dn, up = px * (1 - k / 100), px * (1 + k / 100)
+            steps.append({"pct": k, "down_px": round(dn), "long_liq": round(sum(p["usd"] for p in L if p["liq"] and p["liq"] >= dn)),
+                          "up_px": round(up), "short_liq": round(sum(p["usd"] for p in Sh if p["liq"] and p["liq"] <= up))})
+        # Cụm gần nhất: mức 1% có nhiều thanh lý nhất trong ±10%
+        def cluster(side):
+            best = None
+            for k in range(1, 11):
+                lo, hi = (px * (1 - k / 100), px * (1 - (k - 1) / 100)) if side == "long" else (px * (1 + (k - 1) / 100), px * (1 + k / 100))
+                v = sum(p["usd"] for p in (L if side == "long" else Sh) if p["liq"] and lo <= p["liq"] < hi)
+                if v and (not best or v > best["usd"]):
+                    best = {"from": round(lo), "to": round(hi), "pct": k, "usd": round(v)}
+            return best
+        top = sorted(P, key=lambda p: -p["usd"])[:10]
+        out[coin] = {"price": px, "n_acc": len(addrs), "n_pos": len(P),
+                     "long_usd": round(sum(p["usd"] for p in L)), "short_usd": round(sum(p["usd"] for p in Sh)),
+                     "n_long": len(L), "n_short": len(Sh), "steps": steps, "near_long": cluster("long"), "near_short": cluster("short"),
+                     "top": [{"side": p["side"], "usd": round(p["usd"]), "entry": round(p["entry"], 1), "liq": round(p["liq"], 1) if p["liq"] else None,
+                              "lev": p["lev"], "pnl": round(p["pnl"])} for p in top]}
+    if fails:
+        errs["hl_fails"] = fails
+    return out or None
+
+
 # ---------------------------------------------------------------- chỉ số tổng hợp
 def try_(errs: dict, key: str, fn, *a):
     try:
@@ -807,6 +904,9 @@ def run(latest: dict, text_history: list) -> dict:
         M["btc"] = {"price": cb[max(cb)], "ch24": round((cb[max(cb)] / cb[max(cb) - 86400] - 1) * 100, 2) if max(cb) - 86400 in cb else None}
 
     dv = try_(errs, "drivers", drivers, cb, M, errs)
+    hw = try_(errs, "hl_whales", hl_whales, errs)
+    if hw:
+        M["hl_whales"] = hw
     if M.get("liq_agg"):
         M["liq_agg"].pop("oi_btc", None)   # đã dùng trong phân tích đà giá, không cần ghi vào latest.json
     if dv:

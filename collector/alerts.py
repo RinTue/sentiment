@@ -131,6 +131,26 @@ def composite_rows() -> list:
         return rows
 
 
+def musd(v: float) -> str:
+    return f"{vn(v / 1e9, 2)} tỷ $" if v >= 1e9 else f"{vn(v / 1e6, 1)} triệu $"
+
+
+def whale_line(M: dict) -> str | None:
+    """Một dòng về cá voi Hyperliquid: tổng long/short và cụm giá thanh lý gần nhất (trong ±10%)."""
+    W = (M.get("hl_whales") or {}).get("BTC")
+    if not W:
+        return None
+    t = f"Cá voi Hyperliquid (BTC, {W['n_acc']} ví lớn nhất): long {musd(W['long_usd'])}, short {musd(W['short_usd'])}"
+    parts = []
+    if W.get("near_long") and W["near_long"]["usd"] >= 5e6:
+        c = W["near_long"]
+        parts.append(f"{musd(c['usd'])} long bị thanh lý nếu giá xuống {vn(c['from'])}–{vn(c['to'])}")
+    if W.get("near_short") and W["near_short"]["usd"] >= 5e6:
+        c = W["near_short"]
+        parts.append(f"{musd(c['usd'])} short bị thanh lý nếu giá lên {vn(c['from'])}–{vn(c['to'])}")
+    return t + (". Cụm gần nhất: " + "; ".join(parts) if parts else "")
+
+
 def summary_lines(latest: dict) -> list:
     M = latest.get("market") or {}
     a, nw, so = latest.get("all") or {}, latest.get("news") or {}, latest.get("social") or {}
@@ -151,6 +171,9 @@ def summary_lines(latest: dict) -> list:
     if dv:
         an = dv.get("analysis")
         L.append(f"• Đà giá 24h: {an['title']}. {an['assess']}" if an else f"• Đà giá 24h: {dv['label']} (giá {vn(dv['dp'], 1, True)}%, open interest {vn(dv['doi'], 1, True)}%)")
+    wl = whale_line(M)
+    if wl:
+        L.append("• " + wl)
     mac = latest.get("macro") or {}
     if mac.get("label") and mac.get("have", 1):
         L.append(f"• Vĩ mô: {mac['label']} (điểm {mac.get('score', 0):+d})")
@@ -222,6 +245,33 @@ def run(latest: dict) -> dict:
         else:
             msgs.append(("market:drivers", f"{'🚀' if dv['dp'] > 0 else '🔻'} BTC {vn(dv['dp'], 1, True)}% trong 24 giờ: <b>{html.escape(dv['label'])}</b>\n\n{html.escape(dv['why'])}\n"
                          f"Open interest {vn(dv['doi'], 1, True)}% · mua spot ròng {vn(dv['spot_btc'], 0, True) if dv.get('spot_btc') is not None else '–'} BTC (OKX) · Coinbase Premium {vn(dv['prem'], 3, True) if dv.get('prem') is not None else '–'}%{extra}"))
+
+    # 2c) thanh lý dây chuyền: một giờ có tổng thanh lý BTC (7 sàn) vượt phân vị 99% của 30 ngày
+    LA = M.get("liq_agg") or {}
+    thr = max(LA["hour_p99"], 20e6) if LA.get("hour_p99") else 40e6
+    cand = [x for x in (LA.get("series") or []) if x[0] / 1000 >= time.time() - 3 * 3600 and x[1] + x[2] >= thr]
+    if cand and not recently("liq", 4):
+        b = max(cand, key=lambda x: x[1] + x[2])
+        if st.get("liq_bucket") != b[0]:
+            side = "long" if b[1] >= b[2] else "short"
+            v, other = (b[1], b[2]) if side == "long" else (b[2], b[1])
+            t0 = datetime.fromtimestamp(b[0] / 1000, VN)
+            pr = {p[0]: p[1] for p in ((M.get("drivers") or {}).get("series") or {}).get("price", [])}
+            p0, p1 = pr.get(b[0]), pr.get(b[0] + 3600000) or (list(pr.values())[-1] if pr else None)
+            mv = f" Giá BTC trong giờ đó: {vn((p1 / p0 - 1) * 100, 1, True)}% ({vn(p0)} → {vn(p1)})." if p0 and p1 else ""
+            body = (f"💥 <b>Thanh lý dây chuyền BTC</b>: {side} bị thanh lý {musd(v)} trong giờ {t0:%H}:00–{(t0 + timedelta(hours=1)):%H}:00"
+                    f" (phe kia {musd(other)}), gấp {vn((b[1] + b[2]) / LA['hour_p95'], 1) if LA.get('hour_p95') else '–'} lần một giờ sôi động thường gặp.{mv}\n\n"
+                    + ("Long bị thanh lý dồn dập: giá bị đạp xuống bằng lệnh bán cưỡng bức. " if side == "long" else "Short bị thanh lý dồn dập: giá bị đẩy lên bằng lệnh mua cưỡng bức (short squeeze). "))
+            hx = ((latest.get("history_test") or {}).get("liq_ext") or {}).get(side)
+            if hx:
+                body += (f"Lịch sử từ 2022 ({hx['n']} ngày {side} bị thanh lý cực lớn): BTC 7 ngày sau tăng ở {hx['up7']}% số lần, trung vị {vn(hx['med7'], 1, True)}%"
+                         f" (mọi ngày khoảng 52%).")
+            W = (M.get("hl_whales") or {}).get("BTC") or {}
+            c = W.get("near_long" if side == "long" else "near_short")
+            if c and c["usd"] >= 5e6:
+                body += f"\nCá voi Hyperliquid: còn {musd(c['usd'])} {side} sẽ bị thanh lý nếu giá {'xuống' if side == 'long' else 'lên'} {vn(c['from'])}–{vn(c['to'])}."
+            msgs.append(("market:liq", body))
+            st["liq_bucket"] = b[0]
 
     # 3) funding bất thường
     fd = M.get("funding")
