@@ -399,7 +399,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <h2>Cá voi Hyperliquid: giá nào sẽ kích hoạt thanh lý</h2>
       <div class="seg" id="hl-tabs"><button type="button" data-coin="BTC" class="on">BTC</button><button type="button" data-coin="ETH">ETH</button></div>
       <div id="hl-box"><p class="loading">Đang tải…</p></div>
-      <p class="note">Hyperliquid chạy trên blockchain nên vị thế của mọi tài khoản đều công khai. Máy chủ đọc vị thế của các tài khoản lớn nhất theo bảng xếp hạng của Hyperliquid mỗi giờ, rồi cộng giá trị các vị thế theo giá thanh lý của chúng. Đây là thông tin nhìn trước: nếu giá chạm vùng có nhiều thanh lý, lệnh cưỡng bức có thể đẩy giá đi thêm. Chỉ phản ánh một sàn và một nhóm ví lớn, không phải toàn thị trường; vị thế có thể đóng hoặc thêm ký quỹ bất cứ lúc nào.</p>
+      <p class="note">Hyperliquid chạy trên blockchain nên vị thế của mọi tài khoản đều công khai. Mỗi giờ máy chủ đọc vị thế của khoảng 900 ví: 400 ví nhiều tiền nhất, 600 ví giao dịch nhiều nhất trong tuần/tháng (để bắt cá voi đòn bẩy cao có tài khoản nhỏ), và mọi ví từng có vị thế từ 5 triệu $ trong 7 ngày qua; rồi cộng giá trị các vị thế theo giá thanh lý. Các trang chuyên theo dõi Hyperliquid quét toàn bộ ví nên có thể thấy thêm vài vị thế mà danh sách này bỏ sót, và số của họ cập nhật liên tục còn số ở đây cập nhật mỗi giờ. Đây là thông tin nhìn trước: nếu giá chạm vùng có nhiều thanh lý, lệnh cưỡng bức có thể đẩy giá đi thêm. Chỉ phản ánh một sàn và một nhóm ví lớn, không phải toàn thị trường; vị thế có thể đóng hoặc thêm ký quỹ bất cứ lúc nào.</p>
     </section>
     <section class="panel">
       <h2>Đà giá đến từ đâu: spot, đòn bẩy hay short bị ép</h2>
@@ -1602,7 +1602,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const tot = W.long_usd + W.short_usd, pl = tot ? W.long_usd / tot * 100 : 50, P = W.price;
     const cl = (c, side) => c ? [`Cụm ${side} gần nhất`, usd(c.usd), `${side === "long" ? "nếu giá xuống" : "nếu giá lên"} ${num(c.from)}–${num(c.to)} (${side === "long" ? "−" : "+"}${c.pct - 1}–${c.pct}%)`, side === "long" ? "down" : "up"] : [`Cụm ${side} gần nhất`, "–", "không có trong ±10%"];
     let h = `<div class="stats">` + statBoxes([
-      [`Tổng long của ${W.n_acc} ví lớn`, usd(W.long_usd), `${W.n_long} vị thế · ${num(pl)}% tổng`],
+      [`Tổng long (${W.n_acc} ví theo dõi)`, usd(W.long_usd), `${W.n_long} vị thế · ${num(pl)}% tổng`],
       [`Tổng short`, usd(W.short_usd), `${W.n_short} vị thế · ${num(100 - pl)}% tổng`],
       cl(W.near_long, "long"), cl(W.near_short, "short")]) + `</div>`;
     // Biểu đồ: mỗi cột là 1% giá; bên trái (dưới giá hiện tại) là long sẽ bị thanh lý, bên phải là short
@@ -1631,11 +1631,11 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     h += `<div class="two"><div><h3>Long bị thanh lý nếu giá xuống</h3>${lvlTbl(lvAll, lvRow, "Không có trong 25% dưới giá hiện tại.")}</div><div><h3>Short bị thanh lý nếu giá lên</h3>${lvlTbl(svAll, svRow, "Không có trong 25% trên giá hiện tại.")}</div></div>`;
     // 10 vị thế lớn nhất mỗi phe, xếp theo giá thanh lý gần nhất trước
     const dist = (p) => p.liq ? Math.abs(p.liq / P - 1) : 9;
-    const posRow = (p) => `<tr><td class="num">${p.liq ? `${num(p.liq)} <span class="muted">(${pct((p.liq / P - 1) * 100, 1)})</span>` : "–"}</td><td class="num">${mu(p.usd)}</td><td class="num">${num(p.entry)}</td><td class="num">${p.lev ? p.lev + "x" : "–"}</td><td class="num ${p.pnl >= 0 ? "up" : "down"}">${p.pnl >= 0 ? "+" : "−"}${mu(Math.abs(p.pnl))}</td></tr>`;
-    const posTbl = (arr) => arr && arr.length ? `<div class="tbl-wrap"><table class="evtbl hlt"><thead><tr><th>Giá thanh lý</th><th>Giá trị</th><th>Giá vào</th><th>Đòn bẩy</th><th>Lãi/lỗ</th></tr></thead><tbody>${arr.slice().sort((a, b) => dist(a) - dist(b)).map(posRow).join("")}</tbody></table></div>` : `<p class="note">Không có vị thế.</p>`;
+    const posRow = (p) => `<tr><td class="num">${p.liq ? `${num(p.liq)} <span class="muted">(${pct((p.liq / P - 1) * 100, 1)})</span>` : "–"}</td><td class="num">${mu(p.usd)}</td><td class="num">${num(p.entry)}</td><td class="num">${p.margin != null ? mu(p.margin) : "–"}</td><td class="num">${p.lev ? p.lev + "x" + (p.cross ? " chéo" : "") : "–"}</td><td class="num ${p.pnl >= 0 ? "up" : "down"}">${p.pnl >= 0 ? "+" : "−"}${mu(Math.abs(p.pnl))}</td></tr>`;
+    const posTbl = (arr) => arr && arr.length ? `<div class="tbl-wrap"><table class="evtbl hlt"><thead><tr><th>Giá thanh lý</th><th>Giá trị</th><th>Giá vào</th><th>Ký quỹ</th><th>Đòn bẩy</th><th>Lãi/lỗ</th></tr></thead><tbody>${arr.slice().sort((a, b) => dist(a) - dist(b)).map(posRow).join("")}</tbody></table></div>` : `<p class="note">Không có vị thế.</p>`;
     const TL = W.top_long || W.top.filter((p) => p.side === "long"), TS = W.top_short || W.top.filter((p) => p.side === "short");
     h += `<h3>Vị thế lớn nhất, xếp theo giá thanh lý gần nhất trước</h3><h4 class="ph pos">Long (${TL.length} lớn nhất)</h4>${posTbl(TL)}<h4 class="ph neg">Short (${TS.length} lớn nhất)</h4>${posTbl(TS)}`;
-    h += `<p class="note">Ẩn địa chỉ ví. "–" ở giá thanh lý: vị thế có đủ ký quỹ, gần như không thể bị thanh lý. Đọc ${W.n_pos} vị thế ${HL.coin} của ${W.n_acc} ví; cập nhật ${fmtTime(Date.parse(S.sv.L.generated_at))}.</p>`;
+    h += `<p class="note">Ẩn địa chỉ ví. "–" ở giá thanh lý: vị thế có đủ ký quỹ, gần như không thể bị thanh lý. "Chéo": ký quỹ dùng chung cả tài khoản, nên giá thanh lý còn phụ thuộc các vị thế khác. Đọc ${W.n_pos} vị thế ${HL.coin} của ${W.n_acc} ví; cập nhật ${fmtTime(Date.parse(S.sv.L.generated_at))}.</p>`;
     box.innerHTML = h;
   }
   document.querySelectorAll("#hl-tabs button").forEach((b) => b.addEventListener("click", () => { HL.coin = b.dataset.coin; renderWhales(); }));

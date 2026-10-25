@@ -140,7 +140,7 @@ def whale_line(M: dict) -> str | None:
     W = (M.get("hl_whales") or {}).get("BTC")
     if not W:
         return None
-    t = f"Cá voi Hyperliquid (BTC, {W['n_acc']} ví lớn nhất): long {musd(W['long_usd'])}, short {musd(W['short_usd'])}"
+    t = f"Cá voi Hyperliquid (BTC, {W['n_acc']} ví lớn): long {musd(W['long_usd'])}, short {musd(W['short_usd'])}"
     parts = []
     if W.get("near_long") and W["near_long"]["usd"] >= 5e6:
         c = W["near_long"]

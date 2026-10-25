@@ -727,22 +727,45 @@ def hl_post(body: dict, timeout: int = 20):
     return r.json()
 
 
-def hl_top_accounts() -> list:
+def _hl_cache() -> dict:
     try:
-        c = json.load(open(HL_CACHE, encoding="utf-8"))
+        return json.load(open(HL_CACHE, encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
-        c = {}
-    if c.get("addrs") and len(c["addrs"]) >= HL_TOP * 0.9 and time.time() - c.get("saved", 0) < 86400:
-        return c["addrs"]
-    r = requests.get("https://stats-data.hyperliquid.xyz/Mainnet/leaderboard", headers={"User-Agent": UA}, timeout=60)
-    r.raise_for_status()
-    rows = r.json().get("leaderboardRows", [])
-    rows = [x for x in rows if x.get("ethAddress")]
-    rows.sort(key=lambda x: -float(x.get("accountValue") or 0))
-    addrs = [x["ethAddress"] for x in rows[:HL_TOP]]
+        return {}
+
+
+def hl_top_accounts() -> list:
+    """Ví cần đọc: 400 ví lớn nhất theo giá trị tài khoản + 400 ví giao dịch nhiều nhất tháng + 200 nhất tuần
+    (bắt được cá voi đòn bẩy cao có tài khoản nhỏ) + mọi ví từng có vị thế lớn trong 7 ngày qua."""
+    c = _hl_cache()
+    if not (c.get("addrs") and len(c["addrs"]) >= HL_TOP * 0.9 and time.time() - c.get("saved", 0) < 6 * 3600):
+        r = requests.get("https://stats-data.hyperliquid.xyz/Mainnet/leaderboard", headers={"User-Agent": UA}, timeout=60)
+        r.raise_for_status()
+        rows = [x for x in r.json().get("leaderboardRows", []) if x.get("ethAddress")]
+        def vlm(x, win):
+            for w in x.get("windowPerformances") or []:
+                if isinstance(w, list) and len(w) == 2 and w[0] == win:
+                    return float((w[1] or {}).get("vlm") or 0)
+            return 0.0
+        pick = []
+        for key, n in ((lambda x: float(x.get("accountValue") or 0), HL_TOP), (lambda x: vlm(x, "month"), 400), (lambda x: vlm(x, "week"), 200)):
+            pick += [x["ethAddress"] for x in sorted(rows, key=key, reverse=True)[:n]]
+        c["addrs"] = list(dict.fromkeys(pick))
+        c["saved"] = time.time()
+    sticky = {a: t for a, t in (c.get("sticky") or {}).items() if time.time() - t < 7 * 86400}
+    c["sticky"] = sticky
     with open(HL_CACHE, "w", encoding="utf-8") as f:
-        json.dump({"saved": time.time(), "addrs": addrs}, f)
-    return addrs
+        json.dump(c, f)
+    return list(dict.fromkeys(c["addrs"] + list(sticky)))
+
+
+def hl_remember(big: list) -> None:
+    c = _hl_cache()
+    st = c.setdefault("sticky", {})
+    for a in big:
+        st[a] = time.time()
+    with open(HL_CACHE, "w", encoding="utf-8") as f:
+        json.dump(c, f)
 
 
 def hl_whales(errs: dict) -> dict | None:
@@ -750,7 +773,7 @@ def hl_whales(errs: dict) -> dict | None:
     mids = hl_post({"type": "allMids"})
     out = {}
     pos = {"BTC": [], "ETH": []}
-    fails = 0
+    fails, big = 0, []
     for a in addrs:
         try:
             st = hl_post({"type": "clearinghouseState", "user": a}, timeout=10)
@@ -765,14 +788,17 @@ def hl_whales(errs: dict) -> dict | None:
             coin = p.get("coin")
             if coin not in pos:
                 continue
+            if abs(float(p.get("positionValue") or 0)) >= 5e6:
+                big.append(a)
             szi = float(p.get("szi") or 0)
             if not szi:
                 continue
             liq = p.get("liquidationPx")
             pos[coin].append({"side": "long" if szi > 0 else "short", "usd": abs(float(p.get("positionValue") or 0)),
                               "entry": float(p.get("entryPx") or 0), "liq": float(liq) if liq not in (None, "") else None,
-                              "lev": (p.get("leverage") or {}).get("value"), "pnl": float(p.get("unrealizedPnl") or 0)})
-        time.sleep(0.08)
+                              "lev": (p.get("leverage") or {}).get("value"), "pnl": float(p.get("unrealizedPnl") or 0),
+                              "margin": float(p.get("marginUsed") or 0), "cross": (p.get("leverage") or {}).get("type") == "cross"})
+        time.sleep(0.06)
     for coin, P in pos.items():
         px = float(mids.get(coin) or 0)
         if not P or not px:
@@ -797,13 +823,14 @@ def hl_whales(errs: dict) -> dict | None:
         top = sorted(P, key=lambda p: -p["usd"])[:10]
         def brief(p):
             return {"side": p["side"], "usd": round(p["usd"]), "entry": round(p["entry"], 1), "liq": round(p["liq"], 1) if p["liq"] else None,
-                    "lev": p["lev"], "pnl": round(p["pnl"])}
+                    "lev": p["lev"], "pnl": round(p["pnl"]), "margin": round(p["margin"]), "cross": p["cross"]}
         out[coin] = {"price": px, "n_acc": len(addrs), "n_pos": len(P),
                      "long_usd": round(sum(p["usd"] for p in L)), "short_usd": round(sum(p["usd"] for p in Sh)),
                      "n_long": len(L), "n_short": len(Sh), "steps": steps, "near_long": cluster("long"), "near_short": cluster("short"),
                      "top": [brief(p) for p in top],
                      "top_long": [brief(p) for p in sorted(L, key=lambda p: -p["usd"])[:10]],
                      "top_short": [brief(p) for p in sorted(Sh, key=lambda p: -p["usd"])[:10]]}
+    hl_remember(big)
     if fails:
         errs["hl_fails"] = fails
     return out or None
