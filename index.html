@@ -380,7 +380,11 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <div class="seg" id="liq-tabs"><button type="button" data-coin="BTC" class="on">BTC</button><button type="button" data-coin="ETH">ETH</button></div>
       <div class="chips liq-src" id="liq-src"></div>
       <div class="msg" id="liq-alert" hidden style="margin-top:10px;font-weight:600"></div>
-      <div class="kpis" id="liq-win" style="margin-top:12px"></div>
+      <h3>Gần đây</h3>
+      <div class="kpis" id="liq-recent"></div>
+      <p class="note" id="liq-recent-note" style="margin-top:4px"></p>
+      <h3>Trực tiếp</h3>
+      <div class="kpis" id="liq-win"></div>
       <h3>60 phút gần nhất, mỗi cột 1 phút</h3>
       <div class="legend"><span><i class="sq" style="background:var(--good)"></i>Short bị thanh lý (đẩy giá lên)</span><span><i class="sq" style="background:var(--bad)"></i>Long bị thanh lý (đạp giá xuống)</span></div>
       <div class="chart" id="c-liq-min"></div>
@@ -388,7 +392,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <div id="liq-24"><p class="loading">Đang tải…</p></div>
       <h3>Lệnh bị thanh lý lớn (từ 50.000 $)</h3>
       <div class="feed" id="live-feed"><span class="loading">Đang kết nối…</span></div>
-      <p class="note">Phần trực tiếp cộng gộp Bybit, OKX và Binance (nếu mạng của bạn vào được), đếm từ lúc mở trang; phần 24 giờ là tổng các sàn lớn do máy chủ lấy từ Coinalyze. Cách đọc: một phe bị thanh lý dồn dập là giá đang chạy bằng lệnh cưỡng bức; đợt thanh lý long rất lớn thường xuất hiện gần đáy ngắn hạn, short rất lớn gần đỉnh ngắn hạn.</p>
+      <p class="note">Vì sao có hai phần: các sàn chỉ phát lệnh thanh lý theo thời gian thực, không có kho lịch sử miễn phí gộp nhiều sàn. Phần "Gần đây" là số máy chủ gom mỗi giờ từ Coinalyze (BTC: tổng 7 sàn lớn); ngay khi mở trang, trình duyệt lấy thêm lịch sử 4 giờ của OKX (sàn duy nhất cho đọc lại miễn phí) để lấp khoảng trống; phần "Trực tiếp" cộng gộp Bybit, OKX và Binance (nếu mạng của bạn vào được) từ lúc mở trang. Cách đọc: một phe bị thanh lý dồn dập là giá đang chạy bằng lệnh cưỡng bức; đợt thanh lý long rất lớn thường xuất hiện gần đáy ngắn hạn, short rất lớn gần đỉnh ngắn hạn.</p>
     </section>
     <section class="panel">
       <h2>Đà giá đến từ đâu: spot, đòn bẩy hay short bị ép</h2>
@@ -1725,6 +1729,34 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     };
     connect();
   }
+  // Lấy lại lịch sử 4 giờ của OKX ngay khi mở trang (OKX là sàn duy nhất cho đọc lại lệnh thanh lý miễn phí, không cần khóa).
+  async function liqBackfill() {
+    const from = Date.now() - 4 * 3600e3, wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    LIQ.bf = { st: "loading", n: 0, from: null };
+    for (const uly of ["BTC-USDT", "BTC-USD", "ETH-USDT", "ETH-USD"]) {
+      let after = null;
+      for (let page = 0; page < 15; page++) {
+        let data;
+        try { data = await okx(`/api/v5/public/liquidation-orders?instType=SWAP&uly=${uly}&state=filled&limit=100${after ? "&after=" + after : ""}`); }
+        catch (e) { LIQ.bf.err = e.message; break; }
+        let oldest = Infinity, seen = 0;
+        for (const x of data || []) {
+          const id = x.instId || uly + "-SWAP", ct = OKX_CT[id]; if (!ct) continue;
+          const coin = id.startsWith("ETH") ? "ETH" : "BTC";
+          for (const d of x.details || []) {
+            seen++; const t = +d.ts; oldest = Math.min(oldest, t);
+            if (t < from || t >= LIQ.since) continue;      // từ lúc mở trang đã có kênh trực tiếp
+            const px = +d.bkPx, sz = +d.sz, isLong = d.posSide === "long" || (d.posSide !== "short" && d.side === "sell");
+            liqAdd({ t, ex: "okx", coin, long: isLong, usd: ct[1] === "coin" ? sz * ct[0] * px : sz * ct[0], px, bf: true });
+            LIQ.bf.n++;
+          }
+        }
+        if (!seen || oldest < from) break;
+        after = oldest; await wait(150);
+      }
+    }
+    LIQ.bf.st = "done"; LIQ.dirty = true;
+  }
   function startLive() {
     // Bybit công bố mọi lệnh bị thanh lý; S = "Buy" nghĩa là vị thế long bị thanh lý.
     liqWS("bybit", "wss://stream.bybit.com/v5/public/linear", (ws) => ws.send(JSON.stringify({ op: "subscribe", args: ["allLiquidation.BTCUSDT", "allLiquidation.ETHUSDT"] })), (j) => {
@@ -1750,6 +1782,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       const coin = o.s && o.s.startsWith("ETH") ? "ETH" : "BTC", px = +(o.ap || o.p);
       liqAdd({ t: +o.T, ex: "binance", coin, long: o.S === "SELL", usd: +(o.z || o.q) * px, px });
     }, null);
+    liqBackfill().catch(() => { LIQ.bf = { st: "done", n: 0 }; LIQ.dirty = true; });
     setInterval(() => { if (LIQ.dirty) { LIQ.dirty = false; try { renderLive(); } catch (e) { console.error(e); } } }, 1000);
     setInterval(() => { LIQ.dirty = true; }, 15000);   // cửa sổ 5 phút, 60 phút trôi theo thời gian
     renderLive();
@@ -1765,6 +1798,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       if (S2[k]) { const h = Math.max(1.5, S2[k] / mx * (mid - 8)); g += `<rect x="${(k * bw + 1).toFixed(1)}" y="${(mid - h).toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${h.toFixed(1)}" fill="var(--good)" rx="1"><title>${lab}: short ${usd(S2[k])}</title></rect>`; }
       if (L[k]) { const h = Math.max(1.5, L[k] / mx * (mid - 8)); g += `<rect x="${(k * bw + 1).toFixed(1)}" y="${mid}" width="${(bw - 2).toFixed(1)}" height="${h.toFixed(1)}" fill="var(--bad)" rx="1"><title>${lab}: long ${usd(L[k])}</title></rect>`; }
     }
+    const ko = Math.floor(LIQ.since / 60000) - m0;
+    if (ko > 0 && ko < 60) g += `<line x1="${(ko * bw).toFixed(1)}" x2="${(ko * bw).toFixed(1)}" y1="14" y2="${H - 16}" stroke="var(--ink-3)" stroke-dasharray="3 3"/><text x="${(ko * bw - 4).toFixed(1)}" y="26" font-size="11" text-anchor="end" fill="var(--ink-3)">trước: chỉ OKX</text>${ko < 54 ? `<text x="${(ko * bw + 4).toFixed(1)}" y="26" font-size="11" fill="var(--ink-3)">mở trang</text>` : ""}`;
     g += `<text x="${W - 4}" y="12" font-size="12" text-anchor="end" fill="var(--ink-3)">cao nhất ${usd(mx)}/phút</text><text x="4" y="${H - 4}" font-size="12" fill="var(--ink-3)">60 phút trước</text><text x="${W - 4}" y="${H - 4}" font-size="12" text-anchor="end" fill="var(--ink-3)">bây giờ</text>`;
     return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Thanh lý theo phút trong 60 phút qua">${g}</svg>`;
   }
@@ -1783,13 +1818,29 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const stTxt = { open: ["pos", "đang nhận"], connecting: ["", "đang kết nối"], retry: ["warn", "đang thử lại"], fail: ["neg", "không kết nối được"] };
     const on = Object.keys(LIQ_EX).filter((k) => LIQ.st[k] === "open").length;
     $("liq-src").innerHTML = `<span><span class="dot ${on >= 2 ? "pos" : on ? "warn" : "neg"}"></span> ${on ? `Đang gộp trực tiếp từ ${on} sàn` : "Chưa kết nối được sàn nào"}</span>`;
-    const el = Date.now() - LIQ.since, mins = Math.max(1, Math.round(el / 60e3));
-    const win = [["5 phút", 300e3], ["1 giờ", 3600e3], ["Từ lúc mở trang", el + 60e3]];
-    $("liq-win").innerHTML = win.map(([lab0, ms]) => {
-      const lab = lab0 !== "Từ lúc mở trang" && ms > el + 60e3 ? `${lab0} (mới đếm ${mins} phút)` : lab0;
-      const o = liqSum(coin, ms), tot = o.long + o.short, pl = tot ? o.long / tot * 100 : 50;
+    const el = Date.now() - LIQ.since, mins = Math.max(1, Math.round(el / 60e3)), bfDone = LIQ.bf && LIQ.bf.st === "done" && !LIQ.bf.err;
+    const tile = (lab, o, sub) => {
+      const tot = o.long + o.short, pl = tot ? o.long / tot * 100 : 50;
       return `<div class="kpi"><div class="l">${esc(lab)}</div><div class="liq-split"><span style="width:${pl}%;background:${tot ? "var(--bad)" : "var(--neutral-bg)"}"></span><span style="width:${100 - pl}%;background:${tot ? "var(--good)" : "var(--neutral-bg)"}"></span></div>
-        <div class="s"><span class="down">Long ${usd(o.long)}</span> · <span class="up">Short ${usd(o.short)}</span></div><div class="s">${o.nl + o.ns} lệnh${tot ? ` · ${pl >= 50 ? "long" : "short"} chiếm ${num(Math.max(pl, 100 - pl))}%` : ""}</div></div>`;
+        <div class="s"><span class="down">Long ${usd(o.long)}</span> · <span class="up">Short ${usd(o.short)}</span></div><div class="s">${sub || ""}${tot ? `${sub ? " · " : ""}${pl >= 50 ? "long" : "short"} chiếm ${num(Math.max(pl, 100 - pl))}%` : ""}</div></div>`;
+    };
+    // Gần đây: BTC lấy tổng 7 sàn của máy chủ; ETH (máy chủ chưa gộp) lấy lịch sử OKX vừa tải
+    const A = S.mkt && S.mkt.liq_agg, gen = S.sv ? Date.parse(S.sv.L.generated_at) : Date.now();
+    if (coin === "BTC" && A && A.series && A.series.length) {
+      const sumH = (h) => { const o = { long: 0, short: 0 }; for (const [t, l, sh] of A.series) if (t + 3600e3 > gen - h * 3600e3) { o.long += l; o.short += sh; } return o; };
+      $("liq-recent").innerHTML = [1, 4, 12, 24].map((h) => tile(`${h} giờ qua`, sumH(h))).join("");
+      $("liq-recent-note").textContent = `Tổng ${A.exchanges.length} sàn lớn (${A.exchanges.join(", ")}), tính đến ${fmtClock(gen).slice(0, 5)}; máy chủ cập nhật mỗi giờ nên số có thể trễ tới khoảng 1 giờ, phần trễ đó xem ở "Trực tiếp" bên dưới. Ô 1 giờ tính theo cột giờ nên có thể bao khoảng 1–2 giờ.`;
+    } else {
+      const o1 = liqSum(coin, 3600e3), o4 = liqSum(coin, 4 * 3600e3);
+      $("liq-recent").innerHTML = bfDone ? tile("1 giờ qua", o1, "chỉ OKX trước lúc mở trang") + tile("4 giờ qua", o4, "chỉ OKX trước lúc mở trang") : `<p class="loading">${LIQ.bf && LIQ.bf.err ? "Không tải được lịch sử OKX: " + esc(LIQ.bf.err) : "Đang tải lịch sử 4 giờ từ OKX…"}</p>`;
+      $("liq-recent-note").textContent = coin === "ETH" ? "Máy chủ mới gộp nhiều sàn cho BTC; với ETH, phần gần đây lấy lịch sử của OKX (một sàn lớn, đại diện) cộng với số trực tiếp từ lúc mở trang." : "Chưa có số liệu gộp từ máy chủ; tạm dùng lịch sử OKX.";
+    }
+    const win = [["5 phút", 300e3], ["60 phút", 3600e3], ["Từ lúc mở trang", el + 500]];
+    $("liq-win").innerHTML = win.map(([lab0, ms]) => {
+      const pre = lab0 !== "Từ lúc mở trang" && ms > el + 500;
+      const lab = pre ? `${lab0}${bfDone ? "" : ` (mới đếm ${mins} phút)`}` : lab0;
+      const o = liqSum(coin, ms);
+      return tile(lab, o, `${o.nl + o.ns} lệnh${pre && bfDone ? " · trước lúc mở trang: chỉ OKX" : ""}`);
     }).join("");
     $("c-liq-min").innerHTML = liqBars(coin);
     const cz = liqCascade(coin), al = $("liq-alert"), ov = $("ov-liq-alert");
@@ -1803,6 +1854,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       : `<span class="loading">${any ? "Chưa có lệnh nào từ 50.000 $ trở lên kể từ lúc mở trang." : `Đang chờ lệnh thanh lý ${coin} đầu tiên (từ ${fmtClock(LIQ.since)}).`}</span>`;
   }
   function renderLiq24() {
+    LIQ.dirty = true;   // ô "Gần đây" dùng số gộp của máy chủ khi đã tải xong
     const box = $("liq-24"), A = S.mkt && S.mkt.liq_agg, O = S.mkt && S.mkt.drivers && S.mkt.drivers.liq;
     const src = A && A.series && A.series.length ? { s: A.series, name: `tổng các sàn lớn (Coinalyze; gồm ${A.exchanges.join(", ")})`, tot: A.h24 }
       : O && O.series && O.series.length ? { s: O.series, name: `chỉ OKX, ${num(O.hours)} giờ gần nhất`, tot: { long: O.long, short: O.short } } : null;
