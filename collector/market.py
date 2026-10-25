@@ -795,11 +795,15 @@ def hl_whales(errs: dict) -> dict | None:
                     best = {"from": round(lo), "to": round(hi), "pct": k, "usd": round(v)}
             return best
         top = sorted(P, key=lambda p: -p["usd"])[:10]
+        def brief(p):
+            return {"side": p["side"], "usd": round(p["usd"]), "entry": round(p["entry"], 1), "liq": round(p["liq"], 1) if p["liq"] else None,
+                    "lev": p["lev"], "pnl": round(p["pnl"])}
         out[coin] = {"price": px, "n_acc": len(addrs), "n_pos": len(P),
                      "long_usd": round(sum(p["usd"] for p in L)), "short_usd": round(sum(p["usd"] for p in Sh)),
                      "n_long": len(L), "n_short": len(Sh), "steps": steps, "near_long": cluster("long"), "near_short": cluster("short"),
-                     "top": [{"side": p["side"], "usd": round(p["usd"]), "entry": round(p["entry"], 1), "liq": round(p["liq"], 1) if p["liq"] else None,
-                              "lev": p["lev"], "pnl": round(p["pnl"])} for p in top]}
+                     "top": [brief(p) for p in top],
+                     "top_long": [brief(p) for p in sorted(L, key=lambda p: -p["usd"])[:10]],
+                     "top_short": [brief(p) for p in sorted(Sh, key=lambda p: -p["usd"])[:10]]}
     if fails:
         errs["hl_fails"] = fails
     return out or None
