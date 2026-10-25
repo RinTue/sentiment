@@ -756,7 +756,40 @@ def hl_top_accounts() -> list:
     c["sticky"] = sticky
     with open(HL_CACHE, "w", encoding="utf-8") as f:
         json.dump(c, f)
-    return list(dict.fromkeys(c["addrs"] + list(sticky)))
+    seen = [a for a, t in (c.get("seen") or {}).items() if time.time() - t < 3 * 86400]
+    return list(dict.fromkeys(c["addrs"] + list(sticky) + seen))
+
+
+def hl_harvest(seconds: int = 40, min_usd: float = 250e3) -> int:
+    """Nghe khớp lệnh BTC/ETH trên Hyperliquid trong ít giây để tìm thêm ví đang giao dịch lớn
+    (bảng xếp hạng không có ví phụ và ví ít giao dịch). Ví tìm được giữ 3 ngày."""
+    import websocket  # gói websocket-client
+    ws = websocket.create_connection("wss://api.hyperliquid.xyz/ws", timeout=10)
+    for coin in ("BTC", "ETH"):
+        ws.send(json.dumps({"method": "subscribe", "subscription": {"type": "trades", "coin": coin}}))
+    vol: dict = {}
+    end = time.time() + seconds
+    while time.time() < end:
+        try:
+            m = json.loads(ws.recv())
+        except Exception:  # noqa: BLE001
+            continue
+        if m.get("channel") != "trades":
+            continue
+        for t in m.get("data") or []:
+            usd = float(t.get("px") or 0) * float(t.get("sz") or 0)
+            for u in t.get("users") or []:
+                vol[u] = vol.get(u, 0.0) + usd
+    ws.close()
+    c = _hl_cache()
+    seen = {a: ts for a, ts in (c.get("seen") or {}).items() if time.time() - ts < 3 * 86400}
+    for a, v in sorted(vol.items(), key=lambda kv: -kv[1])[:300]:
+        if v >= min_usd:
+            seen[a] = time.time()
+    c["seen"] = dict(sorted(seen.items(), key=lambda kv: -kv[1])[:300])   # ví thấy gần nhất, tối đa 300
+    with open(HL_CACHE, "w", encoding="utf-8") as f:
+        json.dump(c, f)
+    return len(vol)
 
 
 def hl_remember(big: list) -> None:
@@ -769,6 +802,11 @@ def hl_remember(big: list) -> None:
 
 
 def hl_whales(errs: dict) -> dict | None:
+    try:
+        errs.pop("hl_harvest", None)
+        hl_harvest()
+    except Exception as ex:  # noqa: BLE001
+        errs["hl_harvest"] = str(ex)[:100]
     addrs = hl_top_accounts()
     mids = hl_post({"type": "allMids"})
     out = {}
