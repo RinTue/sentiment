@@ -1615,7 +1615,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       if ((i + 1) % 5 === 0) g += `<text x="${(mid - (i + 1) * cw).toFixed(1)}" y="${base + 16}" font-size="11" text-anchor="middle" fill="var(--ink-3)">−${i + 1}%</text><text x="${(mid + (i + 1) * cw).toFixed(1)}" y="${base + 16}" font-size="11" text-anchor="middle" fill="var(--ink-3)">+${i + 1}%</text>`;
     }
     g += `<text x="4" y="14" font-size="11" fill="var(--bad)">long bị thanh lý nếu giá xuống</text><text x="${Wd - 4}" y="14" font-size="11" text-anchor="end" fill="var(--good)">short bị thanh lý nếu giá lên</text>`;
-    h += `<h3>Giá trị vị thế sẽ bị thanh lý theo từng mức giá (mỗi cột 1%)</h3><div class="chart"><svg viewBox="0 0 ${Wd} ${Hh}" role="img" aria-label="Thanh lý cá voi theo mức giá">${g}</svg></div>`;
+    h += `<h3>Giá trị vị thế sẽ bị thanh lý theo từng mức giá (mỗi cột 1%)</h3>` + (mx > 1 ? `<div class="chart"><svg viewBox="0 0 ${Wd} ${Hh}" role="img" aria-label="Thanh lý cá voi theo mức giá">${g}</svg></div>`
+      : `<div class="msg">Không vị thế ${HL.coin} nào của nhóm ví này bị thanh lý nếu giá đi trong khoảng ±15%: cá voi đang dùng đòn bẩy thấp, nên vùng giá gần không có "bẫy thanh lý" của họ.</div>`);
     const s10 = W.steps[9], s5 = W.steps[4];
     h += `<p class="note" style="margin-top:4px">Cộng dồn: giá giảm 5% thì ${usd(s5.long_liq)} long bị thanh lý, giảm 10% thì ${usd(s10.long_liq)}; giá tăng 5% thì ${usd(s5.short_liq)} short bị thanh lý, tăng 10% thì ${usd(s10.short_liq)}.</p>`;
     h += `<h3>10 vị thế lớn nhất</h3><div class="tbl-wrap"><table class="evtbl"><thead><tr><th>Phe</th><th>Giá trị</th><th>Giá vào</th><th>Giá thanh lý</th><th>Đòn bẩy</th><th>Lãi/lỗ chưa chốt</th></tr></thead><tbody>` +
