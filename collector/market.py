@@ -760,7 +760,7 @@ def hl_top_accounts() -> list:
     return list(dict.fromkeys(c["addrs"] + list(sticky) + seen))
 
 
-def hl_harvest(seconds: int = 40, min_usd: float = 250e3) -> int:
+def hl_harvest(seconds: int = 60, min_usd: float = 50e3) -> dict:
     """Nghe khớp lệnh BTC/ETH trên Hyperliquid trong ít giây để tìm thêm ví đang giao dịch lớn
     (bảng xếp hạng không có ví phụ và ví ít giao dịch). Ví tìm được giữ 3 ngày."""
     import websocket  # gói websocket-client
@@ -768,15 +768,18 @@ def hl_harvest(seconds: int = 40, min_usd: float = 250e3) -> int:
     for coin in ("BTC", "ETH"):
         ws.send(json.dumps({"method": "subscribe", "subscription": {"type": "trades", "coin": coin}}))
     vol: dict = {}
+    n_tr, n_msg = 0, 0
     end = time.time() + seconds
     while time.time() < end:
         try:
             m = json.loads(ws.recv())
         except Exception:  # noqa: BLE001
             continue
+        n_msg += 1
         if m.get("channel") != "trades":
             continue
         for t in m.get("data") or []:
+            n_tr += 1
             usd = float(t.get("px") or 0) * float(t.get("sz") or 0)
             for u in t.get("users") or []:
                 vol[u] = vol.get(u, 0.0) + usd
@@ -789,7 +792,7 @@ def hl_harvest(seconds: int = 40, min_usd: float = 250e3) -> int:
     c["seen"] = dict(sorted(seen.items(), key=lambda kv: -kv[1])[:300])   # ví thấy gần nhất, tối đa 300
     with open(HL_CACHE, "w", encoding="utf-8") as f:
         json.dump(c, f)
-    return len(vol)
+    return {"msgs": n_msg, "trades": n_tr, "users": len(vol), "big": sum(1 for v in vol.values() if v >= min_usd), "kept": len(c["seen"])}
 
 
 def hl_remember(big: list) -> None:
@@ -802,9 +805,9 @@ def hl_remember(big: list) -> None:
 
 
 def hl_whales(errs: dict) -> dict | None:
+    hv = None
     try:
-        errs.pop("hl_harvest", None)
-        hl_harvest()
+        hv = hl_harvest()
     except Exception as ex:  # noqa: BLE001
         errs["hl_harvest"] = str(ex)[:100]
     addrs = hl_top_accounts()
@@ -869,6 +872,8 @@ def hl_whales(errs: dict) -> dict | None:
                      "top_long": [brief(p) for p in sorted(L, key=lambda p: -p["usd"])[:10]],
                      "top_short": [brief(p) for p in sorted(Sh, key=lambda p: -p["usd"])[:10]]}
     hl_remember(big)
+    if out and hv:
+        out["harvest"] = hv
     if fails:
         errs["hl_fails"] = fails
     return out or None
