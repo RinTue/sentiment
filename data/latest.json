@@ -1,33 +1,33 @@
 {
- "generated_at": "2026-10-29T15:14:10+00:00",
+ "generated_at": "2026-10-29T16:13:00+00:00",
  "scoring": "AI + từ điển (100% số bài có điểm AI)",
- "raw_count": 1951,
- "kept_count": 774,
- "new_count": 283,
- "stored_7d": 14473,
+ "raw_count": 1878,
+ "kept_count": 740,
+ "new_count": 215,
+ "stored_7d": 14502,
  "filter_reasons": {
-  "bot / báo giá tự động": 157,
-  "trùng lặp": 349,
-  "không liên quan crypto": 263,
-  "quảng cáo / rao bán": 29,
-  "quá ngắn": 43,
-  "không phải tiếng Anh": 139,
-  "cùng tác giả quá nhiều": 197
+  "bot / báo giá tự động": 159,
+  "quảng cáo / rao bán": 23,
+  "không liên quan crypto": 247,
+  "trùng lặp": 357,
+  "không phải tiếng Anh": 138,
+  "quá ngắn": 34,
+  "cùng tác giả quá nhiều": 180
  },
  "source_status": {
   "CoinDesk": 25,
   "Cointelegraph": 30,
-  "Decrypt": 56,
+  "Decrypt": 37,
   "The Block": 20,
   "Bitcoin Magazine": 10,
   "CryptoSlate": 10,
   "NewsBTC": 10,
   "CryptoPotato": 36,
-  "r/CryptoCurrency": 50,
   "r/Bitcoin": 50,
-  "r/ethereum": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/ethereum/n",
-  "r/CryptoMarkets": 50,
+  "r/ethereum": 50,
+  "r/CryptoMarkets": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/CryptoMark",
   "r/BitcoinMarkets": 50,
+  "r/CryptoCurrency": "lỗi: 429 Client Error: Too Many Requests for url: https://www.reddit.com/r/CryptoCurr",
   "#bitcoin": 120,
   "#btc": 120,
   "#crypto": 120,
@@ -35,7 +35,7 @@
   "#ethereum": 120,
   "Lemmy bitcoin": 100,
   "Lemmy crypto": 100,
-  "HN bitcoin": 33,
+  "HN bitcoin": 30,
   "HN cryptocurrency": 5,
   "HN ethereum": 5,
   "YT Coin Bureau": 15,
@@ -50,41 +50,41 @@
   "YT Crypto Zombie": 15,
   "YT Paul Barron Network": 15,
   "TG @WatcherGuru": 15,
-  "TG @cointelegraph": 13,
-  "TG @bitcoinmagazinetelegram": 19,
+  "TG @cointelegraph": 12,
+  "TG @bitcoinmagazinetelegram": 18,
   "TG @wublockchainenglish": 20,
   "Stocktwits $BTC": 90,
   "Stocktwits $ETH": 90,
   "Bluesky bitcoin": 100,
-  "Bluesky crypto": 99,
+  "Bluesky crypto": 100,
   "Bluesky ethereum": 100
  },
- "runtime_sec": 575.5,
+ "runtime_sec": 623.2,
  "all": {
-  "score": 0.0326,
+  "score": 0.0409,
   "index": 52,
-  "n": 2018,
-  "pos": 33.9,
-  "neg": 27.9,
+  "n": 2041,
+  "pos": 34.3,
+  "neg": 27.5,
   "neu": 38.2
  },
  "news": {
-  "score": 0.0078,
-  "index": 50,
+  "score": 0.0163,
+  "index": 51,
   "n": 130,
-  "pos": 27.7,
-  "neg": 28.5,
-  "neu": 43.8
+  "pos": 29.2,
+  "neg": 27.7,
+  "neu": 43.1
  },
  "social": {
-  "score": 0.0342,
+  "score": 0.0424,
   "index": 52,
-  "n": 1888,
-  "pos": 34.3,
-  "neg": 27.9,
-  "neu": 37.8
+  "n": 1911,
+  "pos": 34.6,
+  "neg": 27.5,
+  "neu": 37.9
  },
- "trend": -0.1235,
+ "trend": -0.1119,
  "window_hours": 24,
  "daily": [
   {
@@ -119,50 +119,50 @@
   },
   {
    "date": "2026-10-29",
-   "n": 1832,
-   "score": 0.0364
+   "n": 1955,
+   "score": 0.0442
   }
  ],
  "sources": [
   {
    "src": "Bluesky",
-   "n": 1164,
-   "score": 0.0153
+   "n": 1162,
+   "score": 0.0178
   },
   {
    "src": "Stocktwits",
-   "n": 593,
-   "score": 0.0615
+   "n": 619,
+   "score": 0.0783
   },
   {
    "src": "Tin tức",
    "n": 130,
-   "score": 0.0078
-  },
-  {
-   "src": "Mastodon",
-   "n": 39,
-   "score": 0.0456
+   "score": 0.0163
   },
   {
    "src": "Reddit",
    "n": 36,
-   "score": 0.0364
+   "score": 0.0402
+  },
+  {
+   "src": "Mastodon",
+   "n": 36,
+   "score": 0.0283
   },
   {
    "src": "Telegram",
    "n": 28,
-   "score": 0.158
+   "score": 0.1517
+  },
+  {
+   "src": "Lemmy",
+   "n": 11,
+   "score": -0.421
   },
   {
    "src": "YouTube",
    "n": 10,
-   "score": 0.0652
-  },
-  {
-   "src": "Lemmy",
-   "n": 9,
-   "score": -0.3907
+   "score": 0.0868
   },
   {
    "src": "Hacker News",
@@ -173,19 +173,19 @@
  "keywords": [
   [
    "$btc",
-   606
+   628
   ],
   [
    "$eth",
-   105
+   112
   ],
   [
    "trading",
-   103
+   104
   ],
   [
    "live",
-   96
+   92
   ],
   [
    "$spy",
@@ -193,19 +193,15 @@
   ],
   [
    "data",
-   67
+   68
   ],
   [
    "institutional",
-   66
+   64
   ],
   [
-   "forecast",
-   62
-  ],
-  [
-   "rate",
-   62
+   "$mstr",
+   61
   ],
   [
    "wallet",
@@ -216,30 +212,34 @@
    60
   ],
   [
-   "assets",
-   58
+   "rate",
+   60
   ],
   [
-   "$mstr",
-   58
+   "forecast",
+   59
   ],
   [
    "cryptonews",
+   56
+  ],
+  [
+   "move",
    56
   ]
  ],
  "coins": [
   [
    "BTC",
-   1435
+   1461
   ],
   [
    "ETH",
-   306
+   314
   ],
   [
    "Stablecoin",
-   128
+   125
   ],
   [
    "SOL",
@@ -247,7 +247,7 @@
   ],
   [
    "XRP",
-   83
+   82
   ],
   [
    "DOGE",
@@ -265,13 +265,33 @@
  "news_pos": [
   {
    "src": "Tin tức",
-   "outlet": "Cointelegraph, The Block, Bitcoin Magazine +1",
-   "n_src": 4,
-   "t": 1793267424000,
-   "s": 0.377,
-   "text": "Bitwise raises bitcoin price target to $1.6 million by 2036, projects 34% annualized returns",
-   "url": "https://www.theblock.co/news/markets/2026-10-28-bitwise-raises-bitcoin-price-target-to-1-6-million-by-2036-projects-34-annualized-returns-432010",
-   "vi": "Bitwise tăng mục tiêu giá bitcoin lên 1,6 triệu $ vào năm 2036, dự đoán 34% lợi nhuận hàng năm"
+   "outlet": "CryptoPotato, NewsBTC",
+   "n_src": 2,
+   "t": 1793289600000,
+   "s": 0.394,
+   "text": "Ripple’s Swell Blitz Continues: Coinbase Deal and $900M Revenue Run Rate Revealed",
+   "url": "https://cryptopotato.com/ripples-swell-blitz-continues-coinbase-deal-and-900m-revenue-run-rate-revealed/",
+   "vi": "Swell Blitz của Ripple tiếp tục: Giao dịch Coinbase và tỷ lệ chạy doanh thu 900 TRIỆU $ được tiết lộ"
+  },
+  {
+   "src": "Tin tức",
+   "outlet": "CryptoPotato, CryptoSlate",
+   "n_src": 2,
+   "t": 1793251807000,
+   "s": 0.539,
+   "text": "Ripple’s RLUSD Earns Moody’s Investment-Grade Rating in Stablecoin Milestone",
+   "url": "https://cryptopotato.com/ripples-rlusd-earns-moodys-investment-grade-rating-in-stablecoin-milestone/",
+   "vi": "RLUSD của Ripple được Moody's xếp hạng đầu tư trong cột mốc Stablecoin"
+  },
+  {
+   "src": "Telegram",
+   "outlet": "Cointelegraph, Bitcoin Magazine",
+   "n_src": 2,
+   "t": 1793289127000,
+   "s": 0.311,
+   "text": "Standard Asset Company has opened a UAE office to advance its $1.5 billion Bitcoin and real estate strategy.",
+   "url": "https://t.me/cointelegraph/72935",
+   "vi": "Standard Asset Company đã mở một văn phòng tại UAE để thúc đẩy chiến lược Bitcoin và bất động sản trị giá 1,5 tỷ $."
   },
   {
    "src": "Telegram",
@@ -282,26 +302,6 @@
    "text": "Russia's central bank officially registers its first regulatory organization for crypto exchanges.",
    "url": "https://t.me/WatcherGuru/15667",
    "vi": "Ngân hàng trung ương Nga chính thức đăng ký tổ chức quản lý đầu tiên cho các sàn giao dịch tiền điện tử."
-  },
-  {
-   "src": "Tin tức",
-   "outlet": "The Block, CryptoSlate",
-   "n_src": 2,
-   "t": 1793251807000,
-   "s": 0.388,
-   "text": "Coinbase adds Ripple’s RLUSD stablecoin across retail, exchange and Prime platforms",
-   "url": "https://www.theblock.co/news/business/2026-10-28-coinbase-adds-ripple-rlusd-stablecoin-432009",
-   "vi": "Coinbase bổ sung stablecoin RLUSD của Ripple trên các nền tảng bán lẻ, trao đổi và Prime"
-  },
-  {
-   "src": "Tin tức",
-   "outlet": "Bitcoin Magazine, Cointelegraph",
-   "n_src": 2,
-   "t": 1793210454000,
-   "s": 0.475,
-   "text": "Strategy (MSTR) Shareholders Approve Daily Dividends on Four Preferred Stocks",
-   "url": "https://bitcoinmagazine.com/news/strategy-shareholders-daily-dividends",
-   "vi": "Chiến lược (MSTR) Cổ đông phê duyệt cổ tức hàng ngày trên bốn cổ phiếu ưu đãi"
   }
  ],
  "news_neg": [
@@ -314,6 +314,16 @@
    "text": "Treasury Sanctions 11 Over North Korean IT Worker Scheme That Moved Millions in Crypto",
    "url": "https://decrypt.co/382132/treasury-sanctions-11-over-north-korean-it-worker-scheme-that-moved-millions-in-crypto",
    "vi": "Các biện pháp trừng phạt kho bạc 11 đối với chương trình công nhân CNTT của Triều Tiên đã di chuyển hàng triệu đô la bằng tiền điện tử"
+  },
+  {
+   "src": "Tin tức",
+   "outlet": "CoinDesk, CryptoSlate",
+   "n_src": 2,
+   "t": 1793286659000,
+   "s": -0.381,
+   "text": "Security failure at Indian certificate firm bites Ethereum as developers rush out fixes",
+   "url": "https://www.coindesk.com/tech/2026/10/29/ethereum-clients-patch-flaw-that-could-let-attackers-redirect-eth-rewards",
+   "vi": "Lỗi bảo mật tại công ty chứng nhận Ấn Độ cắn Ethereum khi các nhà phát triển vội vã đưa ra các bản sửa lỗi"
   },
   {
    "src": "Telegram",
@@ -334,16 +344,6 @@
    "text": "Tampered Ledger wallets cost Singapore users $2.7M: Police",
    "url": "https://cointelegraph.com/news/tampered-ledger-wallets-cost-singapore-users-27m-police?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
    "vi": "Ví Ledger giả mạo tiêu tốn của người dùng Singapore 2,7 TRIỆU $: Cảnh sát"
-  },
-  {
-   "src": "Tin tức",
-   "outlet": "CryptoPotato",
-   "n_src": 1,
-   "t": 1793281891000,
-   "s": -0.657,
-   "text": "Bitcoin Price Analysis: How Far Could BTC Crash if $80K Support Breaks?",
-   "url": "https://cryptopotato.com/bitcoin-price-analysis-how-far-could-btc-crash-if-80k-support-breaks/",
-   "vi": "Phân tích giá Bitcoin: BTC có thể sụp đổ đến mức nào nếu mức hỗ trợ $ 80k bị phá vỡ?"
   }
  ],
  "crowd_pos": [
@@ -372,13 +372,13 @@
   {
    "src": "Stocktwits",
    "outlet": "$BTC",
-   "t": 1793203032000,
-   "s": 0.497,
-   "text": "$BTC.X We’re definitely headed 90k. Lock in.",
-   "url": "https://stocktwits.com/message/667547716",
-   "eng": 5,
+   "t": 1793272994000,
+   "s": 0.603,
+   "text": "$HYPE.X the cryptos that make revenue and burn tokens are this cycles winners $NEAR.X does a similar program this is why I think it’s under valued! $BTC.X",
+   "url": "https://stocktwits.com/message/667621340",
+   "eng": 4,
    "tag": "bull",
-   "vi": "$BTC.X Chúng tôi chắc chắn sẽ nhận được 90k. Hãy tham gia."
+   "vi": "$HYPE.X các loại tiền điện tử tạo doanh thu và đốt token là những người chiến thắng chu kỳ này $NEAR.X thực hiện một chương trình tương tự, đây là lý do tại sao tôi nghĩ rằng nó bị đánh giá thấp! $BTC.X"
   }
  ],
  "crowd_neg": [
@@ -428,18 +428,18 @@
   }
  ],
  "tag_check": {
-  "n": 254,
+  "n": 268,
   "agree": 69,
   "n_bear": 68,
-  "agree_bear": 84
+  "agree_bear": 87
  },
  "translation": "ok",
  "stocktwits": {
-  "n": 593,
-  "bull": 248,
-  "bear": 99,
-  "bull_pct": 71.5,
-  "prev_bull_pct": 75.0
+  "n": 616,
+  "bull": 260,
+  "bear": 97,
+  "bull_pct": 72.8,
+  "prev_bull_pct": 74.2
  },
  "macro": {
   "sources": [
@@ -1955,7 +1955,7 @@
    "cls": "Neutral",
    "d7": -17
   },
-  "votes": 67.31,
+  "votes": 67.29,
   "liq_agg": {
    "exchanges": [
     "Binance",
@@ -1968,11 +1968,6 @@
    ],
    "symbols": 12,
    "series": [
-    [
-     1793203200000,
-     1371173,
-     181492
-    ],
     [
      1793206800000,
      12884,
@@ -2085,599 +2080,604 @@
     ],
     [
      1793286000000,
-     81,
-     1246164
+     11117,
+     5265068
+    ],
+    [
+     1793289600000,
+     17804,
+     1557894
     ]
    ],
    "h24": {
-    "long": 27079287,
-    "short": 24043411
+    "long": 25736954,
+    "short": 29438717
    },
    "h72": {
-    "long": 42595080,
-    "short": 47679119
+    "long": 40273918,
+    "short": 53189183
    },
    "hour_p95": 10252515,
    "hour_p99": 30902973,
    "hour_n": 715,
    "oi": {
-    "usd": 24291133872,
-    "ch7": 1.01,
+    "usd": 24335394493,
+    "ch7": 2.18,
     "series": [
      [
-      1792677600000,
-      24.035
-     ],
-     [
-      1792692000000,
-      23.982
-     ],
-     [
-      1792706400000,
-      23.966
-     ],
-     [
-      1792720800000,
-      24.273
-     ],
-     [
-      1792735200000,
-      24.244
-     ],
-     [
-      1792749600000,
-      24.241
-     ],
-     [
-      1792764000000,
-      24.257
-     ],
-     [
-      1792778400000,
-      23.94
-     ],
-     [
-      1792792800000,
-      23.729
-     ],
-     [
-      1792807200000,
-      23.901
-     ],
-     [
-      1792821600000,
-      23.906
-     ],
-     [
-      1792836000000,
-      24.1
-     ],
-     [
-      1792850400000,
-      23.995
-     ],
-     [
-      1792864800000,
-      24.133
-     ],
-     [
-      1792879200000,
+      1792681200000,
       24.047
      ],
      [
-      1792893600000,
-      23.841
+      1792695600000,
+      24.038
      ],
      [
-      1792908000000,
-      23.677
+      1792710000000,
+      24.028
      ],
      [
-      1792922400000,
-      23.572
+      1792724400000,
+      24.213
      ],
      [
-      1792936800000,
-      23.712
+      1792738800000,
+      24.112
      ],
      [
-      1792951200000,
-      23.723
+      1792753200000,
+      24.255
      ],
      [
-      1792965600000,
-      23.681
+      1792767600000,
+      24.123
      ],
      [
-      1792980000000,
-      23.586
+      1792782000000,
+      23.919
      ],
      [
-      1792994400000,
-      23.589
+      1792796400000,
+      23.953
      ],
      [
-      1793008800000,
-      23.616
+      1792810800000,
+      23.935
      ],
      [
-      1793023200000,
-      23.997
+      1792825200000,
+      23.93
      ],
      [
-      1793037600000,
-      23.652
+      1792839600000,
+      24.084
      ],
      [
-      1793052000000,
-      23.803
+      1792854000000,
+      23.861
      ],
      [
-      1793066400000,
-      23.917
+      1792868400000,
+      24.115
      ],
      [
-      1793080800000,
-      24.07
+      1792882800000,
+      24.002
      ],
      [
-      1793095200000,
-      24.304
+      1792897200000,
+      23.846
      ],
      [
-      1793109600000,
-      24.452
+      1792911600000,
+      23.664
      ],
      [
-      1793124000000,
-      24.16
+      1792926000000,
+      23.629
      ],
      [
-      1793138400000,
-      24.092
+      1792940400000,
+      23.71
      ],
      [
-      1793152800000,
-      24.097
+      1792954800000,
+      23.69
      ],
      [
-      1793167200000,
-      24.061
+      1792969200000,
+      23.483
      ],
      [
-      1793181600000,
-      24.205
+      1792983600000,
+      23.524
      ],
      [
-      1793196000000,
-      24.007
+      1792998000000,
+      23.579
      ],
      [
-      1793210400000,
-      24.083
+      1793012400000,
+      23.657
      ],
      [
-      1793224800000,
-      24.14
+      1793026800000,
+      23.818
      ],
      [
-      1793239200000,
-      23.816
+      1793041200000,
+      23.679
      ],
      [
-      1793253600000,
-      23.927
+      1793055600000,
+      23.84
      ],
      [
-      1793268000000,
-      24.114
+      1793070000000,
+      23.977
      ],
      [
-      1793282400000,
-      24.176
+      1793084400000,
+      24.134
+     ],
+     [
+      1793098800000,
+      24.288
+     ],
+     [
+      1793113200000,
+      24.345
+     ],
+     [
+      1793127600000,
+      24.18
+     ],
+     [
+      1793142000000,
+      24.076
+     ],
+     [
+      1793156400000,
+      24.167
+     ],
+     [
+      1793170800000,
+      24.107
+     ],
+     [
+      1793185200000,
+      24.136
+     ],
+     [
+      1793199600000,
+      24.029
+     ],
+     [
+      1793214000000,
+      24.384
+     ],
+     [
+      1793228400000,
+      24.086
+     ],
+     [
+      1793242800000,
+      23.881
+     ],
+     [
+      1793257200000,
+      23.896
+     ],
+     [
+      1793271600000,
+      24.091
+     ],
+     [
+      1793286000000,
+      24.373
      ]
     ]
    },
    "funding": {
-    "last": 6.177087090280475e-05,
-    "pct": 63.0,
+    "last": 7.627898065390069e-05,
+    "pct": 84.8,
     "n": 92,
     "series": [
      [
       1785369600000,
-      8.167353619569527e-05
+      8.167611973428723e-05
      ],
      [
       1785456000000,
-      5.008931165546096e-05
+      5.002872777330231e-05
      ],
      [
       1785542400000,
-      3.9882072143073066e-05
+      3.995747532414298e-05
      ],
      [
       1785628800000,
-      5.520993752989138e-05
+      5.512177756350442e-05
      ],
      [
       1785715200000,
-      4.351220358805633e-05
+      4.355818090936666e-05
      ],
      [
       1785801600000,
-      6.40467248388844e-05
+      6.409925169470526e-05
      ],
      [
       1785888000000,
-      4.234569828664556e-05
+      4.2314358791370476e-05
      ],
      [
       1785974400000,
-      4.9206707665855565e-05
+      4.9154557473623325e-05
      ],
      [
       1786060800000,
-      5.343822217177306e-05
+      5.349562686169121e-05
      ],
      [
       1786147200000,
-      3.808518190810784e-05
+      3.804921296658727e-05
      ],
      [
       1786233600000,
-      7.120464984748755e-05
+      7.120945905861683e-05
      ],
      [
       1786320000000,
-      5.74060861937282e-05
+      5.732680958646387e-05
      ],
      [
       1786406400000,
-      6.512916693019726e-05
+      6.50980024756532e-05
      ],
      [
       1786492800000,
-      7.35303434791749e-05
+      7.343874960870234e-05
      ],
      [
       1786579200000,
-      8.111466600313874e-05
+      8.107296489017575e-05
      ],
      [
       1786665600000,
-      3.063450057044286e-05
+      3.0502529383687803e-05
      ],
      [
       1786752000000,
-      4.459514185290965e-05
+      4.457902356690519e-05
      ],
      [
       1786838400000,
-      4.5144182641123884e-05
+      4.5066959534939865e-05
      ],
      [
       1786924800000,
-      5.199587597149711e-05
+      5.2072906044686216e-05
      ],
      [
       1787011200000,
-      3.620006141931515e-05
+      3.617923304369174e-05
      ],
      [
       1787097600000,
-      7.830238397654871e-05
+      7.829719412916616e-05
      ],
      [
       1787184000000,
-      3.6101735746838676e-05
+      3.6071781483581535e-05
      ],
      [
       1787270400000,
-      8.828648268641742e-05
+      8.827650059157269e-05
      ],
      [
       1787356800000,
-      9.953462354745117e-05
+      9.953688044680955e-05
      ],
      [
       1787443200000,
-      8.841728885918321e-05
+      8.841091823412089e-05
      ],
      [
       1787529600000,
-      7.537629916416548e-05
+      7.543149006322621e-05
      ],
      [
       1787616000000,
-      6.213960523256468e-05
+      6.209190463322725e-05
      ],
      [
       1787702400000,
-      4.4986237364238676e-05
+      4.497266946130734e-05
      ],
      [
       1787788800000,
-      3.9413011846826495e-05
+      3.9453674129787044e-05
      ],
      [
       1787875200000,
-      7.019509815751857e-05
+      7.016794196155999e-05
      ],
      [
       1787961600000,
-      6.589036494444034e-05
+      6.594631022516594e-05
      ],
      [
       1788048000000,
-      7.178650424569447e-05
+      7.179892994400886e-05
      ],
      [
       1788134400000,
-      6.82842802052184e-05
+      6.8307742581786e-05
      ],
      [
       1788220800000,
-      5.6283469101303656e-05
+      5.620107992867463e-05
      ],
      [
       1788307200000,
-      4.8683843659486084e-05
+      4.869668812700472e-05
      ],
      [
       1788393600000,
-      6.464904009774478e-05
+      6.47422214450037e-05
      ],
      [
       1788480000000,
-      1.895189345206549e-05
+      1.900609603807334e-05
      ],
      [
       1788566400000,
-      9.52512900505549e-06
+      9.488171315278127e-06
      ],
      [
       1788652800000,
-      3.090378356484972e-05
+      3.092860034334085e-05
      ],
      [
       1788739200000,
-      9.576812869750761e-06
+      9.569146398290974e-06
      ],
      [
       1788825600000,
-      6.895252386338616e-05
+      6.895702825120853e-05
      ],
      [
       1788912000000,
-      5.8787004650843145e-05
+      5.882684034739048e-05
      ],
      [
       1788998400000,
-      7.642115928024017e-05
+      7.64115928105313e-05
      ],
      [
       1789084800000,
-      4.566825365817406e-05
+      4.570374788693351e-05
      ],
      [
       1789171200000,
-      5.083879899489744e-05
+      5.0831120558861e-05
      ],
      [
       1789257600000,
-      5.27844689870971e-05
+      5.277815367263652e-05
      ],
      [
       1789344000000,
-      3.94003562849395e-05
+      3.940120306922374e-05
      ],
      [
       1789430400000,
-      7.327733966554253e-05
+      7.323494771903533e-05
      ],
      [
       1789516800000,
-      6.863092291246219e-05
+      6.860317800527181e-05
      ],
      [
       1789603200000,
-      7.908157716579484e-05
+      7.905046531930777e-05
      ],
      [
       1789689600000,
-      7.329792991563161e-05
+      7.33190067678242e-05
      ],
      [
       1789776000000,
-      0.00010085920326364514
+      0.00010085240267346296
      ],
      [
       1789862400000,
-      7.584299798098727e-05
+      7.57562559807975e-05
      ],
      [
       1789948800000,
-      7.420227752129785e-05
+      7.41930230864747e-05
      ],
      [
       1790035200000,
-      3.205412170678643e-05
+      3.2063896869282726e-05
      ],
      [
       1790121600000,
-      3.277955335701025e-05
+      3.282583968187262e-05
      ],
      [
       1790208000000,
-      1.938909941522201e-05
+      1.9396329809663116e-05
      ],
      [
       1790294400000,
-      -6.798418302668105e-06
+      -6.820090359719931e-06
      ],
      [
       1790380800000,
-      -7.473412504315413e-06
+      -7.473275821450154e-06
      ],
      [
       1790467200000,
-      2.6643578265191948e-05
+      2.665142689371743e-05
      ],
      [
       1790553600000,
-      5.407846811934356e-05
+      5.406128271866662e-05
      ],
      [
       1790640000000,
-      2.467557967592695e-05
+      2.4526424225131903e-05
      ],
      [
       1790726400000,
-      6.419432248827697e-05
+      6.418325330416682e-05
      ],
      [
       1790812800000,
-      5.322462811799749e-05
+      5.3290898135489164e-05
      ],
      [
       1790899200000,
-      3.0473340632358435e-05
+      3.0621076104973e-05
      ],
      [
       1790985600000,
-      9.377655144997179e-06
+      9.34097775796034e-06
      ],
      [
       1791072000000,
-      4.062731786370153e-05
+      4.0610044678326555e-05
      ],
      [
       1791158400000,
-      4.923068820232281e-06
+      4.968160127917273e-06
      ],
      [
       1791244800000,
-      4.5118742631007494e-05
+      4.513231451117693e-05
      ],
      [
       1791331200000,
-      2.543809754738081e-05
+      2.536995034744583e-05
      ],
      [
       1791417600000,
-      4.810789933431573e-05
+      4.810367098944839e-05
      ],
      [
       1791504000000,
-      2.6095656843754423e-05
+      2.6108292609320943e-05
      ],
      [
       1791590400000,
-      1.4612236208272507e-06
+      1.4751498942524474e-06
      ],
      [
       1791676800000,
-      1.868606121384122e-05
+      1.870667381753324e-05
      ],
      [
       1791763200000,
-      2.85035686640469e-05
+      2.8487553802939685e-05
      ],
      [
       1791849600000,
-      2.9133425692746458e-05
+      2.921453557238948e-05
      ],
      [
       1791936000000,
-      1.5562470616725346e-05
+      1.5510480592573803e-05
      ],
      [
       1792022400000,
-      3.9741671619915286e-05
+      3.975423250071199e-05
      ],
      [
       1792108800000,
-      5.333084321543146e-05
+      5.321912965540018e-05
      ],
      [
       1792195200000,
-      4.727905071060341e-05
+      4.731125304346632e-05
      ],
      [
       1792281600000,
-      5.164117769549451e-05
+      5.1544992224807606e-05
      ],
      [
       1792368000000,
-      7.670876032187038e-05
+      7.666348652464577e-05
      ],
      [
       1792454400000,
-      6.1923199028505e-05
+      6.190029708311265e-05
      ],
      [
       1792540800000,
-      4.635791723235576e-05
+      4.652897701335296e-05
      ],
      [
       1792627200000,
-      4.0563161856681294e-05
+      4.048646485456184e-05
      ],
      [
       1792713600000,
-      8.440997885143668e-05
+      8.432883172658108e-05
      ],
      [
       1792800000000,
-      2.390588604565042e-05
+      2.3905629672961547e-05
      ],
      [
       1792886400000,
-      6.57730567961826e-05
+      6.572263415333872e-05
      ],
      [
       1792972800000,
-      9.533989502293885e-05
+      9.533046418992646e-05
      ],
      [
       1793059200000,
-      9.274572264873566e-05
+      9.273510019901446e-05
      ],
      [
       1793145600000,
-      7.906252143802009e-05
+      7.902323440169058e-05
      ],
      [
       1793232000000,
-      6.177087090280475e-05
+      7.627898065390069e-05
      ]
     ]
    }
   },
   "funding": {
    "src": "gộp 7 sàn",
-   "last": 6.177087090280475e-05,
-   "pct": 63.0,
+   "last": 7.627898065390069e-05,
+   "pct": 84.8,
    "n": 92,
    "agg": true
   },
   "ls": {
-   "buy": 0.6404,
+   "buy": 0.616,
    "src": "OKX"
   },
-  "pc": 0.599,
+  "pc": 0.598,
   "wiki": {
    "z": 0.27,
    "last": 5495
   },
   "composite": {
-   "value": 60,
+   "value": 64,
    "parts": [
     {
      "key": "text",
      "name": "Giọng điệu tin tức và mạng xã hội",
-     "raw": "+0.03 (2018 bài)",
-     "v": 58.2,
+     "raw": "+0.04 (2041 bài)",
+     "v": 58.3,
      "w": 25,
      "note": "so với lịch sử của máy chủ",
      "src": "máy chủ"
@@ -2695,7 +2695,7 @@
      "key": "votes",
      "name": "Phiếu cộng đồng CoinGecko",
      "raw": "67.3% tăng",
-     "v": 68.3,
+     "v": 68.2,
      "w": 10,
      "note": "40% → 0, 80% → 100",
      "src": "CoinGecko"
@@ -2703,8 +2703,8 @@
     {
      "key": "funding",
      "name": "Funding BTC (gộp các sàn)",
-     "raw": "+0.0062%",
-     "v": 63.0,
+     "raw": "+0.0076%",
+     "v": 84.8,
      "w": 20,
      "note": "phân vị trong 90 ngày, bình quân theo open interest 7 sàn",
      "src": "Coinalyze"
@@ -2712,8 +2712,8 @@
     {
      "key": "ls",
      "name": "Tài khoản đang long",
-     "raw": "64%",
-     "v": 68.7,
+     "raw": "62%",
+     "v": 61.7,
      "w": 10,
      "note": "40% → 0, 75% → 100 (OKX)",
      "src": "OKX"
@@ -2722,7 +2722,7 @@
      "key": "pc",
      "name": "Put/call quyền chọn",
      "raw": "0.60",
-     "v": 66.9,
+     "v": 67.0,
      "w": 10,
      "note": "càng thấp càng chủ quan",
      "src": "Deribit"
@@ -2740,15 +2740,11 @@
    "weight": 110
   },
   "premium": {
-   "last": -0.2032,
-   "avg24": -0.1329,
+   "last": 0.0798,
+   "avg24": -0.1187,
    "ref": "OKX",
-   "avg7d": -0.1442,
+   "avg7d": -0.1423,
    "series": [
-    [
-     1792684800000,
-     -0.1284
-    ],
     [
      1792688400000,
      -0.1368
@@ -3415,4521 +3411,4429 @@
     ],
     [
      1793286000000,
-     -0.2032
+     -0.095
+    ],
+    [
+     1793289600000,
+     0.0798
     ]
    ]
   },
   "btc": {
-   "price": 81331.1,
-   "ch24": 1.11
+   "price": 81780.07,
+   "ch24": 1.6
   },
   "hl_whales": {
    "BTC": {
-    "price": 81592.5,
-    "n_acc": 1154,
-    "n_pos": 360,
-    "long_usd": 812213633,
-    "short_usd": 1205542177,
-    "n_long": 183,
-    "n_short": 177,
+    "price": 81665.5,
+    "n_acc": 1163,
+    "n_pos": 372,
+    "long_usd": 896533685,
+    "short_usd": 1213735093,
+    "n_long": 202,
+    "n_short": 170,
     "steps": [
      {
       "pct": 1,
-      "down_px": 80777,
+      "down_px": 80849,
       "long_liq": 0,
-      "up_px": 82408,
-      "short_liq": 12088071
+      "up_px": 82482,
+      "short_liq": 8289723
      },
      {
       "pct": 2,
-      "down_px": 79961,
-      "long_liq": 10180555,
-      "up_px": 83224,
-      "short_liq": 21897598
+      "down_px": 80032,
+      "long_liq": 13670780,
+      "up_px": 83299,
+      "short_liq": 59321167
      },
      {
       "pct": 3,
-      "down_px": 79145,
-      "long_liq": 24424131,
-      "up_px": 84040,
-      "short_liq": 23921013
+      "down_px": 79216,
+      "long_liq": 33929081,
+      "up_px": 84115,
+      "short_liq": 71128686
      },
      {
       "pct": 4,
-      "down_px": 78329,
-      "long_liq": 45992204,
-      "up_px": 84856,
-      "short_liq": 31370389
+      "down_px": 78399,
+      "long_liq": 56398447,
+      "up_px": 84932,
+      "short_liq": 73194160
      },
      {
       "pct": 5,
-      "down_px": 77513,
-      "long_liq": 60532666,
-      "up_px": 85672,
-      "short_liq": 31370389
+      "down_px": 77582,
+      "long_liq": 60888820,
+      "up_px": 85749,
+      "short_liq": 73275646
      },
      {
       "pct": 6,
-      "down_px": 76697,
-      "long_liq": 71443773,
-      "up_px": 86488,
-      "short_liq": 33922086
+      "down_px": 76766,
+      "long_liq": 70701435,
+      "up_px": 86565,
+      "short_liq": 76906741
      },
      {
       "pct": 7,
-      "down_px": 75881,
-      "long_liq": 94205158,
-      "up_px": 87304,
-      "short_liq": 35887923
+      "down_px": 75949,
+      "long_liq": 93182256,
+      "up_px": 87382,
+      "short_liq": 77023283
      },
      {
       "pct": 8,
-      "down_px": 75065,
-      "long_liq": 133304278,
-      "up_px": 88120,
-      "short_liq": 36243006
+      "down_px": 75132,
+      "long_liq": 132337616,
+      "up_px": 88199,
+      "short_liq": 77186237
      },
      {
       "pct": 9,
-      "down_px": 74249,
-      "long_liq": 202395469,
-      "up_px": 88936,
-      "short_liq": 36243006
+      "down_px": 74316,
+      "long_liq": 199960871,
+      "up_px": 89015,
+      "short_liq": 77927871
      },
      {
       "pct": 10,
-      "down_px": 73433,
-      "long_liq": 202802844,
-      "up_px": 89752,
-      "short_liq": 37982058
+      "down_px": 73499,
+      "long_liq": 201264236,
+      "up_px": 89832,
+      "short_liq": 83814401
      },
      {
       "pct": 11,
-      "down_px": 72617,
-      "long_liq": 204112788,
-      "up_px": 90568,
-      "short_liq": 137111195
+      "down_px": 72682,
+      "long_liq": 201514416,
+      "up_px": 90649,
+      "short_liq": 159313604
      },
      {
       "pct": 12,
-      "down_px": 71801,
-      "long_liq": 204483687,
-      "up_px": 91384,
-      "short_liq": 141021899
+      "down_px": 71866,
+      "long_liq": 201677412,
+      "up_px": 91465,
+      "short_liq": 169941684
      },
      {
       "pct": 13,
-      "down_px": 70985,
-      "long_liq": 204483687,
-      "up_px": 92200,
-      "short_liq": 245161578
+      "down_px": 71049,
+      "long_liq": 201677412,
+      "up_px": 92282,
+      "short_liq": 273513623
      },
      {
       "pct": 14,
-      "down_px": 70170,
-      "long_liq": 306566379,
-      "up_px": 93015,
-      "short_liq": 245161578
+      "down_px": 70232,
+      "long_liq": 307132236,
+      "up_px": 93099,
+      "short_liq": 273513623
      },
      {
       "pct": 15,
-      "down_px": 69354,
-      "long_liq": 394194120,
-      "up_px": 93831,
-      "short_liq": 249383430
+      "down_px": 69416,
+      "long_liq": 396664058,
+      "up_px": 93915,
+      "short_liq": 273753427
      },
      {
       "pct": 16,
-      "down_px": 68538,
-      "long_liq": 395869786,
-      "up_px": 94647,
-      "short_liq": 249443339
+      "down_px": 68599,
+      "long_liq": 396664058,
+      "up_px": 94732,
+      "short_liq": 273753427
      },
      {
       "pct": 17,
-      "down_px": 67722,
-      "long_liq": 403862559,
-      "up_px": 95463,
-      "short_liq": 249443339
+      "down_px": 67782,
+      "long_liq": 397848497,
+      "up_px": 95549,
+      "short_liq": 293814040
      },
      {
       "pct": 18,
-      "down_px": 66906,
-      "long_liq": 421711220,
-      "up_px": 96279,
-      "short_liq": 249443339
+      "down_px": 66966,
+      "long_liq": 400075978,
+      "up_px": 96365,
+      "short_liq": 293854787
      },
      {
       "pct": 19,
-      "down_px": 66090,
-      "long_liq": 422485164,
-      "up_px": 97095,
-      "short_liq": 350312555
+      "down_px": 66149,
+      "long_liq": 407092197,
+      "up_px": 97182,
+      "short_liq": 392036961
      },
      {
       "pct": 20,
-      "down_px": 65274,
-      "long_liq": 423676325,
-      "up_px": 97911,
-      "short_liq": 350312555
+      "down_px": 65332,
+      "long_liq": 408154513,
+      "up_px": 97999,
+      "short_liq": 396668866
      },
      {
       "pct": 21,
-      "down_px": 64458,
-      "long_liq": 424490865,
-      "up_px": 98727,
-      "short_liq": 350312555
+      "down_px": 64516,
+      "long_liq": 408154513,
+      "up_px": 98815,
+      "short_liq": 396694311
      },
      {
       "pct": 22,
-      "down_px": 63642,
-      "long_liq": 436856634,
-      "up_px": 99543,
-      "short_liq": 350785779
+      "down_px": 63699,
+      "long_liq": 420531213,
+      "up_px": 99632,
+      "short_liq": 396694311
      },
      {
       "pct": 23,
-      "down_px": 62826,
-      "long_liq": 456187137,
-      "up_px": 100359,
-      "short_liq": 356262054
+      "down_px": 62882,
+      "long_liq": 424358566,
+      "up_px": 100449,
+      "short_liq": 399498599
      },
      {
       "pct": 24,
-      "down_px": 62010,
-      "long_liq": 456187137,
-      "up_px": 101175,
-      "short_liq": 356262054
+      "down_px": 62066,
+      "long_liq": 447454521,
+      "up_px": 101265,
+      "short_liq": 419823746
      },
      {
       "pct": 25,
-      "down_px": 61194,
-      "long_liq": 456433298,
-      "up_px": 101991,
-      "short_liq": 359928339
+      "down_px": 61249,
+      "long_liq": 452754426,
+      "up_px": 102082,
+      "short_liq": 423707919
      }
     ],
     "near_long": {
-     "from": 74249,
-     "to": 75065,
+     "from": 74316,
+     "to": 75132,
      "pct": 9,
-     "usd": 69091190
+     "usd": 67623254
     },
     "near_short": {
-     "from": 81592,
-     "to": 82408,
-     "pct": 1,
-     "usd": 12088071
+     "from": 82482,
+     "to": 83299,
+     "pct": 2,
+     "usd": 51031444
     },
     "top": [
      {
       "side": "short",
-      "usd": 214463675,
+      "usd": 214687124,
       "entry": 76366.1,
-      "liq": 136083.9,
+      "liq": 137927.9,
       "lev": 5,
-      "pnl": -13711413,
-      "margin": 42892735,
+      "pnl": -13934862,
+      "margin": 42937425,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 205200448,
+      "usd": 205482251,
       "entry": 78114.5,
-      "liq": 128281.1,
+      "liq": 130487.5,
       "lev": 5,
-      "pnl": -8656535,
-      "margin": 41040090,
+      "pnl": -8938338,
+      "margin": 41096450,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 104099235,
+      "usd": 103531162,
       "entry": 81519.3,
-      "liq": 92025.9,
+      "liq": 92012.1,
       "lev": 25,
-      "pnl": 11909,
-      "margin": 4163969,
+      "pnl": -141636,
+      "margin": 4141246,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 100735694,
+      "usd": 100914864,
       "entry": 81993.1,
-      "liq": 70513.9,
+      "liq": 70406.6,
       "lev": 12,
-      "pnl": -579687,
-      "margin": 8394641,
+      "pnl": -400516,
+      "margin": 8409572,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 99808856,
+      "usd": 98182175,
       "entry": 80886.8,
-      "liq": 96414.3,
+      "liq": 96691.7,
       "lev": 13,
-      "pnl": -692564,
-      "margin": 7677604,
+      "pnl": -767387,
+      "margin": 7552475,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 81535000,
+      "usd": 81688000,
       "entry": 62353.6,
-      "liq": 57583.8,
+      "liq": 57504.8,
       "lev": 40,
-      "pnl": 19181345,
-      "margin": 2038375,
+      "pnl": 19334345,
+      "margin": 2042200,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 81521000,
+      "usd": 81660000,
       "entry": 72771.2,
-      "liq": 50951.7,
+      "liq": 50952.8,
       "lev": 3,
-      "pnl": 8749722,
-      "margin": 27173667,
+      "pnl": 8888722,
+      "margin": 27220000,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 79546510,
+      "usd": 79652862,
       "entry": 80951.2,
-      "liq": 69970.2,
+      "liq": 69971.2,
       "lev": 30,
-      "pnl": 561718,
-      "margin": 12129455,
+      "pnl": 668070,
+      "margin": 12234810,
       "cross": false
      },
      {
       "side": "short",
-      "usd": 65956396,
+      "usd": 66039799,
       "entry": 79051.3,
-      "liq": 89932.9,
+      "liq": 89933.9,
       "lev": 8,
-      "pnl": -2007468,
-      "margin": 7704587,
+      "pnl": -2090872,
+      "margin": 7622010,
       "cross": false
      },
      {
       "side": "short",
-      "usd": 62444029,
+      "usd": 62539795,
       "entry": 78913.4,
-      "liq": 117295.6,
+      "liq": 116976.5,
       "lev": 20,
-      "pnl": -1986224,
-      "margin": 3122201,
+      "pnl": -2081990,
+      "margin": 3126990,
       "cross": true
      }
     ],
     "top_long": [
      {
       "side": "long",
-      "usd": 100735694,
+      "usd": 100914864,
       "entry": 81993.1,
-      "liq": 70513.9,
+      "liq": 70406.6,
       "lev": 12,
-      "pnl": -579687,
-      "margin": 8394641,
+      "pnl": -400516,
+      "margin": 8409572,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 81535000,
+      "usd": 81688000,
       "entry": 62353.6,
-      "liq": 57583.8,
+      "liq": 57504.8,
       "lev": 40,
-      "pnl": 19181345,
-      "margin": 2038375,
+      "pnl": 19334345,
+      "margin": 2042200,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 81521000,
+      "usd": 81660000,
       "entry": 72771.2,
-      "liq": 50951.7,
+      "liq": 50952.8,
       "lev": 3,
-      "pnl": 8749722,
-      "margin": 27173667,
+      "pnl": 8888722,
+      "margin": 27220000,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 79546510,
+      "usd": 79652862,
       "entry": 80951.2,
-      "liq": 69970.2,
+      "liq": 69971.2,
       "lev": 30,
-      "pnl": 561718,
-      "margin": 12129455,
+      "pnl": 668070,
+      "margin": 12234810,
       "cross": false
      },
      {
       "side": "long",
-      "usd": 54353260,
+      "usd": 54447998,
       "entry": 81112.4,
-      "liq": 74768.3,
+      "liq": 74769.3,
       "lev": 11,
-      "pnl": 237909,
-      "margin": 5094009,
+      "pnl": 332646,
+      "margin": 5188065,
       "cross": false
      },
      {
       "side": "long",
-      "usd": 44838750,
+      "usd": 49184376,
+      "entry": 85665.7,
+      "liq": 56213.1,
+      "lev": 20,
+      "pnl": -2477228,
+      "margin": 2459219,
+      "cross": true
+     },
+     {
+      "side": "long",
+      "usd": 44908050,
       "entry": 82749.1,
-      "liq": 58044.2,
+      "liq": 58045.2,
       "lev": 20,
-      "pnl": -673271,
-      "margin": 2241938,
+      "pnl": -603971,
+      "margin": 2245402,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 24475851,
+      "usd": 24528438,
       "entry": 70766.9,
-      "liq": 52351.3,
+      "liq": 50986.6,
       "lev": 20,
-      "pnl": 3210806,
-      "margin": 1223793,
+      "pnl": 3263393,
+      "margin": 1226422,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 24436500,
+      "usd": 24481800,
       "entry": 80050.7,
-      "liq": 75599.5,
+      "liq": 75422.9,
       "lev": 40,
-      "pnl": 421260,
-      "margin": 610912,
+      "pnl": 466560,
+      "margin": 612045,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 20631464,
+      "usd": 20664385,
       "entry": 82108.9,
-      "liq": 76001.4,
+      "liq": 76002.4,
       "lev": 40,
-      "pnl": -161562,
-      "margin": 1625691,
+      "pnl": -128641,
+      "margin": 1658353,
       "cross": false
-     },
-     {
-      "side": "long",
-      "usd": 20363000,
-      "entry": 67524.6,
-      "liq": 34692.2,
-      "lev": 20,
-      "pnl": 3481848,
-      "margin": 1018150,
-      "cross": true
      }
     ],
     "top_short": [
      {
       "side": "short",
-      "usd": 214463675,
+      "usd": 214687124,
       "entry": 76366.1,
-      "liq": 136083.9,
+      "liq": 137927.9,
       "lev": 5,
-      "pnl": -13711413,
-      "margin": 42892735,
+      "pnl": -13934862,
+      "margin": 42937425,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 205200448,
+      "usd": 205482251,
       "entry": 78114.5,
-      "liq": 128281.1,
+      "liq": 130487.5,
       "lev": 5,
-      "pnl": -8656535,
-      "margin": 41040090,
+      "pnl": -8938338,
+      "margin": 41096450,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 104099235,
+      "usd": 103531162,
       "entry": 81519.3,
-      "liq": 92025.9,
+      "liq": 92012.1,
       "lev": 25,
-      "pnl": 11909,
-      "margin": 4163969,
+      "pnl": -141636,
+      "margin": 4141246,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 99808856,
+      "usd": 98182175,
       "entry": 80886.8,
-      "liq": 96414.3,
+      "liq": 96691.7,
       "lev": 13,
-      "pnl": -692564,
-      "margin": 7677604,
+      "pnl": -767387,
+      "margin": 7552475,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 65956396,
+      "usd": 66039799,
       "entry": 79051.3,
-      "liq": 89932.9,
+      "liq": 89933.9,
       "lev": 8,
-      "pnl": -2007468,
-      "margin": 7704587,
+      "pnl": -2090872,
+      "margin": 7622010,
       "cross": false
      },
      {
       "side": "short",
-      "usd": 62444029,
+      "usd": 62539795,
       "entry": 78913.4,
-      "liq": 117295.6,
+      "liq": 116976.5,
       "lev": 20,
-      "pnl": -1986224,
-      "margin": 3122201,
+      "pnl": -2081990,
+      "margin": 3126990,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 40905369,
-      "entry": 82666.8,
-      "liq": 150906.9,
+      "usd": 40972272,
+      "entry": 82666.3,
+      "liq": 151371.8,
       "lev": 40,
-      "pnl": 560191,
-      "margin": 1022634,
+      "pnl": 511543,
+      "margin": 1024307,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 35555800,
-      "entry": 77001.5,
-      "liq": 155303.6,
-      "lev": 20,
-      "pnl": -1983104,
-      "margin": 1777790,
-      "cross": true
-     },
-     {
-      "side": "short",
-      "usd": 35014650,
-      "entry": 80839.2,
-      "liq": 160545.6,
+      "usd": 36265595,
+      "entry": 80864.9,
+      "liq": 161020.6,
       "lev": 30,
-      "pnl": -290679,
-      "margin": 1167155,
+      "pnl": -347821,
+      "margin": 1208853,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 24460500,
-      "entry": 79675.0,
-      "liq": 151040.9,
+      "usd": 35598528,
+      "entry": 77001.5,
+      "liq": 150351.2,
       "lev": 20,
-      "pnl": -558000,
-      "margin": 1223025,
+      "pnl": -2025832,
+      "margin": 1779926,
+      "cross": true
+     },
+     {
+      "side": "short",
+      "usd": 29009405,
+      "entry": 81508.6,
+      "liq": 82577.1,
+      "lev": 40,
+      "pnl": -34623,
+      "margin": 725235,
       "cross": true
      }
     ],
     "pos": [
      [
       -1,
-      214463675,
-      136083.86,
-      42892735,
+      214687124,
+      137927.86,
+      42937425,
       76366.1,
       5
      ],
      [
       -1,
-      205200448,
-      128281.1,
-      41040090,
+      205482251,
+      130487.55,
+      41096450,
       78114.5,
       5
      ],
      [
       -1,
-      14963601,
-      244116.37,
-      748180,
+      12920556,
+      296112.35,
+      646028,
       80513.9,
       20
      ],
      [
       -1,
-      2241541,
-      1177282.9,
-      112077,
-      81465.5,
-      20
-     ],
-     [
-      -1,
-      513003,
-      304260.53,
-      25650,
+      513620,
+      226505.09,
+      25681,
       67733.3,
       20
      ],
      [
       -1,
-      2712339,
-      134366.15,
-      904113,
-      81318.6,
-      3
-     ],
-     [
-      -1,
-      23195678,
-      276926.74,
-      7731893,
+      23224405,
+      270312.62,
+      7741468,
       79296.3,
       3
      ],
      [
       -1,
-      35555800,
-      155303.59,
-      1777790,
+      35598528,
+      150351.25,
+      1779926,
       77001.5,
       20
      ],
      [
       -1,
-      40905369,
-      150906.9,
-      1022634,
-      82666.8,
-      40
-     ],
-     [
-      -1,
-      35014650,
-      160545.57,
-      1167155,
-      80839.2,
+      36265595,
+      161020.6,
+      1208853,
+      80864.9,
       30
      ],
      [
       -1,
-      2050551,
-      830462.75,
-      136703,
+      2053847,
+      840499.75,
+      136923,
       79550.5,
       15
      ],
      [
       -1,
-      62444029,
-      117295.56,
-      3122201,
+      40972272,
+      151371.77,
+      1024307,
+      82666.3,
+      40
+     ],
+     [
+      -1,
+      62539795,
+      116976.52,
+      3126990,
       78913.4,
       20
      ],
      [
       -1,
-      104099235,
-      92025.9,
-      4163969,
+      103531162,
+      92012.1,
+      4141246,
       81519.3,
       25
      ],
      [
       -1,
-      1869706,
-      1090255.28,
-      186971,
+      1872894,
+      1080127.34,
+      187289,
       82688.9,
       10
      ],
      [
       1,
-      81521000,
-      50951.72,
-      27173667,
+      81660000,
+      50952.75,
+      27220000,
       72771.2,
       3
      ],
      [
       -1,
-      1630839,
-      921219.73,
-      81542,
-      78955.4,
-      20
+      729547,
+      1226436.25,
+      18239,
+      80841.9,
+      40
      ],
      [
       1,
-      81535000,
-      57583.81,
-      2038375,
+      81688000,
+      57504.76,
+      2042200,
       62353.6,
       40
      ],
      [
       -1,
-      24460500,
-      151040.94,
-      1223025,
-      79675.0,
+      1634199,
+      729077.56,
+      81710,
+      78955.4,
       20
      ],
      [
-      -1,
-      14719804,
-      110518.61,
-      5478945,
-      85057.0,
-      20
-     ],
-     [
-      -1,
-      21983676,
-      127204.13,
-      549592,
-      80669.4,
+      1,
+      9159184,
+      6225.68,
+      228980,
+      80825.1,
       40
      ],
      [
       1,
-      6808727,
-      67766.22,
-      170218,
+      6820834,
+      66866.79,
+      170521,
       81759.1,
       40
      ],
      [
       -1,
-      728529,
-      1215362.97,
-      18213,
-      80841.9,
-      40
-     ],
-     [
-      -1,
-      4492306,
-      270282.51,
-      224615,
-      81136.8,
+      24507300,
+      150711.62,
+      1225365,
+      79675.0,
       20
      ],
      [
       -1,
-      1783777,
-      529621.06,
-      89189,
-      81040.2,
+      14718947,
+      110519.58,
+      5446409,
+      85057.0,
       20
-     ],
-     [
-      -1,
-      65956396,
-      89932.87,
-      7704587,
-      79051.3,
-      8
-     ],
-     [
-      -1,
-      6623830,
-      174052.55,
-      662383,
-      83281.3,
-      10
      ],
      [
       1,
-      100735694,
-      70513.9,
-      8394641,
+      100914864,
+      70406.58,
+      8409572,
       81993.1,
       12
      ],
      [
+      -1,
+      6635611,
+      175197.22,
+      663561,
+      83281.3,
+      10
+     ],
+     [
+      -1,
+      22016835,
+      126718.86,
+      550421,
+      80669.4,
+      40
+     ],
+     [
+      -1,
+      915343,
+      949083.58,
+      45767,
+      81279.6,
+      20
+     ],
+     [
+      -1,
+      2565240,
+      413646.18,
+      64131,
+      79633.7,
+      40
+     ],
+     [
       1,
-      44838750,
-      58044.2,
-      2241938,
+      44908050,
+      58045.23,
+      2245402,
       82749.1,
       20
      ],
      [
-      1,
-      8182038,
-      8245.73,
-      282139,
-      109632.3,
-      29
+      -1,
+      66039799,
+      89933.88,
+      7622010,
+      79051.3,
+      8
      ],
      [
       1,
-      79546510,
-      69970.18,
-      12129455,
+      79652862,
+      69971.22,
+      12234810,
       80951.2,
       30
      ],
      [
       1,
-      16300413,
-      28552.4,
-      815021,
-      79855.0,
-      20
-     ],
-     [
-      -1,
-      513126,
-      1421525.8,
-      256563,
-      81922.8,
-      2
-     ],
-     [
-      -1,
-      12528059,
-      133274.72,
-      313201,
-      82701.7,
-      40
-     ],
-     [
-      -1,
-      2560151,
-      394964.61,
-      64004,
-      79633.7,
-      40
-     ],
-     [
-      -1,
-      516475,
-      458931.43,
-      25824,
-      81320.6,
+      20409000,
+      32545.21,
+      1020450,
+      67524.6,
       20
      ],
      [
       1,
-      24436500,
-      75599.51,
-      610912,
+      8194022,
+      7851.96,
+      282552,
+      109632.3,
+      29
+     ],
+     [
+      1,
+      16325289,
+      27337.51,
+      816264,
+      79855.0,
+      20
+     ],
+     [
+      1,
+      24528438,
+      50986.59,
+      1226422,
+      70766.9,
+      20
+     ],
+     [
+      1,
+      24481800,
+      75422.93,
+      612045,
       80050.7,
       40
      ],
      [
       -1,
-      303919,
-      166332.51,
-      7598,
-      81305.0,
+      29009405,
+      82577.06,
+      725235,
+      81508.6,
       40
      ],
      [
       -1,
-      10115,
-      209843.11,
+      10131,
+      209844.12,
       253,
       77046.1,
       40
      ],
      [
       -1,
-      7810969,
-      89998.26,
-      195274,
-      81361.6,
+      7828562,
+      89989.14,
+      195714,
+      81369.5,
       40
      ],
      [
       -1,
-      4277812,
-      82058.7,
-      106945,
+      4284481,
+      82059.71,
+      107112,
       79891.4,
       40
      ],
      [
       -1,
-      28814,
-      975999.97,
-      1441,
-      81464.4,
-      20
-     ],
-     [
-      -1,
-      521573,
-      1037717.23,
-      47416,
-      80765.0,
+      532477,
+      1028459.42,
+      48407,
+      80800.0,
       11
      ],
      [
       1,
-      3018650,
-      77946.02,
-      166462,
+      3022652,
+      77947.06,
+      170426,
       80954.8,
       20
      ],
      [
       -1,
-      363132,
-      283959.13,
-      18157,
+      363614,
+      283851.8,
+      18181,
       80823.0,
       20
      ],
      [
       -1,
-      9111086,
-      114392.72,
-      759257,
-      81237.6,
+      1049379,
+      84684.78,
+      26234,
+      81660.8,
+      40
+     ],
+     [
+      -1,
+      8158700,
+      100756.11,
+      271957,
+      81600.0,
+      30
+     ],
+     [
+      -1,
+      9229224,
+      118599.42,
+      769102,
+      81243.7,
       12
      ],
      [
       -1,
-      524859,
-      431192.34,
-      13121,
+      1631740,
+      91102.33,
+      40794,
+      81534.0,
+      40
+     ],
+     [
+      -1,
+      297612,
+      641196.21,
+      7440,
       80688.6,
       40
      ],
      [
-      1,
-      8446981,
-      79946.1,
-      211175,
-      80588.9,
+      -1,
+      10853702,
+      82695.31,
+      271343,
+      81638.0,
       40
      ],
      [
       1,
-      1075873,
-      79357.59,
-      26897,
+      1077642,
+      79358.62,
+      26941,
       81439.7,
       40
      ],
      [
       1,
-      814540,
-      64552.43,
-      20364,
-      80408.0,
+      1632200,
+      70254.18,
+      40805,
+      81107.5,
       40
      ],
      [
       1,
-      2341825,
-      79266.62,
-      58546,
+      2346310,
+      78701.11,
+      58658,
       81294.7,
       40
      ],
      [
       1,
-      5701780,
-      26863.89,
-      142544,
+      5712700,
+      25255.45,
+      142818,
       80885.8,
       40
      ],
      [
       1,
-      54353260,
-      74768.3,
-      5094009,
+      54447998,
+      74769.33,
+      5188065,
       81112.4,
       11
      ],
      [
       -1,
-      537929,
-      150066.84,
-      26896,
+      538814,
+      149343.96,
+      26941,
       80033.3,
       20
      ],
      [
       -1,
-      958712,
-      84132.39,
-      43693,
+      960242,
+      84133.4,
+      42176,
       82731.4,
       36
      ],
      [
       1,
-      814710,
-      78214.03,
-      20368,
-      81650.6,
-      40
-     ],
-     [
-      1,
-      20631464,
-      76001.37,
-      1625691,
+      20664385,
+      76002.41,
+      1658353,
       82108.9,
       40
      ],
      [
       1,
-      1706080,
-      31417.24,
-      42652,
-      80754.5,
-      40
-     ],
-     [
-      -1,
-      13719,
-      117038.31,
-      2744,
-      81544.0,
-      5
-     ],
-     [
-      -1,
-      4073300,
-      93257.73,
-      101832,
-      81117.6,
-      40
-     ],
-     [
-      -1,
-      217832,
-      81921.37,
-      5446,
-      79950.1,
+      815900,
+      78185.16,
+      20398,
+      81650.6,
       40
      ],
      [
       1,
-      2369017,
-      80077.58,
-      69483,
+      1708572,
+      30946.05,
+      42714,
+      80754.5,
+      40
+     ],
+     [
+      1,
+      32399,
+      66626.07,
+      4628,
+      81652.0,
+      7
+     ],
+     [
+      -1,
+      4923270,
+      91104.62,
+      123082,
+      81221.7,
+      40
+     ],
+     [
+      1,
+      2372535,
+      80078.62,
+      72972,
       81205.3,
       38
      ],
      [
       -1,
-      9998,
-      185217.87,
+      174524,
+      82163.75,
+      4363,
+      79950.1,
+      40
+     ],
+     [
+      -1,
+      10014,
+      188718.47,
       250,
       80047.0,
       40
      ],
      [
       -1,
-      7165031,
-      154641.42,
-      358252,
+      7043008,
+      156511.28,
+      352150,
       81094.9,
       20
      ],
      [
       -1,
-      4398408,
-      84135.06,
-      201676,
-      81116.2,
+      5954026,
+      83746.16,
+      235862,
+      81259.8,
       40
      ],
      [
       1,
-      252504,
-      7100.73,
-      12024,
-      81876.3,
-      21
+      2489401,
+      80832.56,
+      62235,
+      81656.8,
+      40
      ],
      [
       1,
-      16290600,
-      67606.01,
-      407265,
+      12234450,
+      62468.07,
+      305861,
       80127.8,
       40
      ],
      [
       1,
-      27873,
-      76722.85,
-      697,
-      81464.0,
+      83967,
+      80370.76,
+      2099,
+      81655.4,
       40
      ],
      [
+      1,
+      252808,
+      7532.84,
+      12038,
+      81876.3,
+      21
+     ],
+     [
       -1,
-      1561750,
-      86251.65,
-      78088,
+      1563648,
+      86252.66,
+      78182,
       81242.1,
       20
      ],
      [
       1,
-      691849,
-      79505.65,
-      17296,
+      692571,
+      79506.68,
+      17314,
       80501.0,
       40
      ],
      [
-      1,
-      8081231,
-      69700.34,
-      808123,
-      80732.4,
-      10
-     ],
-     [
       -1,
-      327609,
-      82524.04,
-      8190,
-      80064.5,
+      333943,
+      83590.29,
+      8349,
+      80088.9,
       40
      ],
      [
       1,
-      8672587,
-      57895.1,
-      346903,
+      8089664,
+      69817.34,
+      808966,
+      80732.4,
+      10
+     ],
+     [
+      1,
+      8680998,
+      55323.99,
+      347240,
       82537.3,
       25
      ],
      [
       1,
-      9316734,
-      77852.43,
-      232918,
-      81239.3,
-      40
-     ],
-     [
-      1,
-      1675666,
-      69104.71,
-      41892,
-      80149.3,
+      15045577,
+      79710.32,
+      376139,
+      81355.2,
       40
      ],
      [
       -1,
-      591332,
-      114772.12,
-      14783,
+      244123,
+      163788.04,
+      6103,
       80918.0,
       40
      ],
      [
       1,
-      982673,
-      77618.3,
-      39307,
-      79824.0,
+      1677209,
+      69813.32,
+      41930,
+      80149.3,
+      40
+     ],
+     [
+      -1,
+      1447439,
+      83760.5,
+      57898,
+      81576.0,
       25
      ],
      [
       1,
-      1299873,
-      75985.93,
-      102478,
+      1301069,
+      75986.97,
+      103658,
       79903.7,
       17
      ],
      [
       -1,
-      4393585,
-      81864.89,
-      109840,
-      80815.2,
-      40
-     ],
-     [
-      -1,
-      2036450,
-      84183.33,
-      50911,
+      2038325,
+      83934.62,
+      50958,
       80315.2,
       40
      ],
      [
       1,
-      881153,
-      78990.11,
-      22029,
+      60315,
+      29216.76,
+      1508,
       80984.5,
       40
      ],
      [
       -1,
-      1826338,
-      289686.7,
-      913169,
+      1828109,
+      285249.9,
+      914055,
       81003.5,
       2
      ],
      [
       1,
-      5294770,
-      63089.59,
-      264738,
+      5299905,
+      61979.69,
+      264995,
       80700.5,
       20
      ],
      [
       1,
-      6516720,
-      75234.17,
-      162918,
+      326148,
+      43329.01,
+      16307,
+      80297.2,
+      20
+     ],
+     [
+      1,
+      6522960,
+      75158.67,
+      163074,
       80503.2,
       40
      ],
      [
       1,
-      486902,
-      79774.17,
-      12173,
+      112087,
+      70204.2,
+      2802,
       81027.8,
       40
      ],
      [
       1,
-      5702620,
-      78745.96,
-      285131,
+      5707618,
+      78746.99,
+      285381,
       82160.3,
       20
      ],
      [
+      -1,
+      513229,
+      1421130.17,
+      256615,
+      81922.8,
+      2
+     ],
+     [
       1,
-      3145971,
-      78993.23,
-      133363,
+      3148906,
+      78994.26,
+      136259,
       82782.0,
       16
      ],
      [
       -1,
-      821851,
-      275509.47,
-      410926,
-      80568.0,
+      12529596,
+      133124.15,
+      313240,
+      82701.7,
+      40
+     ],
+     [
+      -1,
+      809108,
+      277910.89,
+      404554,
+      80582.1,
       2
      ],
      [
       -1,
-      3747903,
-      104359.41,
-      535415,
-      82404.3,
+      3884172,
+      102051.89,
+      554882,
+      82381.4,
       7
      ],
      [
-      1,
-      584511,
-      67236.72,
-      14613,
-      80554.8,
-      40
-     ],
-     [
       -1,
-      24760,
-      759722.78,
-      619,
+      24781,
+      751876.92,
+      620,
       83982.2,
       40
      ],
      [
+      1,
+      601721,
+      67065.68,
+      15043,
+      80760.5,
+      40
+     ],
+     [
       -1,
-      5089172,
-      153759.5,
-      130492,
+      5092921,
+      156836.13,
+      130588,
       82111.1,
       39
      ],
      [
-      -1,
-      2155708,
-      100085.16,
-      53893,
-      71833.9,
-      40
-     ],
-     [
-      -1,
-      12159431,
-      102711.13,
-      303986,
-      76719.3,
-      40
-     ],
-     [
       1,
-      8145900,
-      75673.48,
-      271530,
+      8150600,
+      75615.57,
+      271687,
       81350.3,
       30
      ],
      [
       -1,
-      50360,
-      465006.24,
-      2518,
-      80748.8,
-      20
+      12166447,
+      101226.04,
+      304161,
+      76719.3,
+      40
      ],
      [
       -1,
-      116486,
-      86986.09,
-      2912,
+      2156793,
+      100059.58,
+      53920,
+      71833.9,
+      40
+     ],
+     [
+      -1,
+      50384,
+      464253.9,
+      2519,
+      80916.2,
+      20
+     ],
+     [
+      1,
+      162996,
+      72432.11,
+      4075,
+      80344.0,
+      40
+     ],
+     [
+      -1,
+      709234,
+      86394.56,
+      17731,
+      80016.6,
+      40
+     ],
+     [
+      -1,
+      116542,
+      86987.1,
+      2914,
       84922.0,
       40
      ],
      [
       -1,
-      708895,
-      86313.54,
-      17722,
-      80016.6,
-      40
-     ],
-     [
-      1,
-      162918,
-      72750.31,
-      4073,
-      80344.0,
-      40
-     ],
-     [
-      1,
-      8994947,
-      77413.58,
-      224874,
-      82237.4,
-      40
-     ],
-     [
-      1,
-      1184046,
-      68227.96,
-      204716,
-      80807.4,
-      6
-     ],
-     [
-      1,
-      1560539,
-      74730.98,
-      39013,
-      81364.0,
-      40
-     ],
-     [
-      1,
-      319,
-      50762.85,
-      16,
-      63720.0,
-      20
-     ],
-     [
-      -1,
       3400,
-      847797.45,
+      804043.81,
       170,
       84044.5,
       20
      ],
      [
       1,
-      10811731,
-      78989.18,
-      463050,
+      8997929,
+      77414.59,
+      224948,
+      82237.4,
+      40
+     ],
+     [
+      1,
+      319,
+      50763.89,
+      16,
+      63720.0,
+      20
+     ],
+     [
+      -1,
+      81486,
+      85724.2,
+      2037,
+      81715.0,
+      40
+     ],
+     [
+      1,
+      8417008,
+      80787.48,
+      210425,
+      81386.2,
+      40
+     ],
+     [
+      1,
+      1184438,
+      68228.99,
+      205094,
+      80807.4,
+      6
+     ],
+     [
+      1,
+      1560482,
+      70547.38,
+      39012,
+      81364.0,
+      40
+     ],
+     [
+      -1,
+      627404,
+      88901.26,
+      62740,
+      81800.0,
+      10
+     ],
+     [
+      -1,
+      407041,
+      270862.7,
+      20352,
+      81287.4,
+      20
+     ],
+     [
+      1,
+      10810139,
+      78990.22,
+      461323,
       80200.3,
       40
      ],
      [
       -1,
-      19881149,
-      90359.77,
-      497029,
-      84070.0,
-      40
-     ],
-     [
-      -1,
-      319282,
-      113458.4,
-      7982,
-      81025.0,
-      40
-     ],
-     [
-      -1,
-      1017714,
-      206476.17,
-      25443,
+      1017577,
+      208829.2,
+      25439,
       80157.0,
       40
      ],
      [
       -1,
-      374678,
-      287084.41,
-      18734,
-      81172.9,
-      20
-     ],
-     [
-      1,
-      207344,
-      79222.59,
-      5184,
-      80165.3,
-      40
-     ],
-     [
-      1,
-      111,
-      56127.04,
-      35,
-      81332.0,
+      34783,
+      297834.97,
+      870,
+      83614.3,
       40
      ],
      [
       -1,
-      150594,
-      136776.52,
-      3861,
-      81168.9,
-      39
-     ],
-     [
-      1,
-      7533014,
-      80549.07,
-      188325,
-      81343.3,
+      19878465,
+      95275.41,
+      496962,
+      84070.0,
       40
      ],
      [
       1,
-      12699864,
-      74828.34,
-      1184103,
+      651848,
+      67308.84,
+      16296,
+      81847.5,
+      40
+     ],
+     [
+      1,
+      12699708,
+      74829.38,
+      1183788,
       81145.3,
       11
      ],
      [
+      1,
+      145732,
+      80562.94,
+      3471,
+      81571.0,
+      40
+     ],
+     [
       -1,
-      171451,
-      82309.35,
-      3901,
-      81332.1,
+      138545,
+      82772.45,
+      3927,
+      81785.0,
       40
      ],
      [
       1,
-      3453197,
-      63035.98,
-      815198,
+      3441729,
+      63037.1,
+      812928,
       81160.4,
       6
      ],
      [
       1,
-      5703880,
-      49401.39,
-      285194,
+      5704930,
+      49558.62,
+      285246,
       75676.2,
       20
      ],
      [
       1,
-      2115835,
-      18710.59,
-      211583,
+      2116224,
+      18321.91,
+      211622,
       77034.6,
       10
      ],
      [
       1,
-      3447748,
-      47581.97,
-      1149249,
+      2452830,
+      33331.63,
+      817610,
       81428.6,
       3
      ],
      [
       1,
-      2629983,
-      45996.84,
-      876661,
+      1955813,
+      33318.86,
+      651938,
       81379.2,
       3
      ],
      [
       -1,
-      217741,
-      356590.26,
-      10887,
+      217838,
+      356591.27,
+      10892,
       80468.7,
       20
      ],
      [
       -1,
-      721120,
-      160024.79,
-      36056,
+      721457,
+      160230.09,
+      36073,
       72749.2,
       20
      ],
      [
       1,
-      1153796,
-      36826.12,
-      28845,
+      1154334,
+      36827.15,
+      28858,
       81347.5,
       40
      ],
      [
       -1,
-      115560,
-      272786.33,
-      5778,
+      115603,
+      275783.49,
+      5780,
       74789.7,
       20
      ],
      [
       1,
-      733199,
-      60774.72,
-      36660,
+      733473,
+      60450.56,
+      36674,
       79778.3,
       20
      ],
      [
       1,
-      973549,
-      67350.42,
-      24339,
+      973913,
+      67191.77,
+      24348,
       81354.3,
       40
      ],
      [
       -1,
-      14787,
-      868948.03,
-      1056,
+      14791,
+      867135.47,
+      1057,
       80568.0,
       14
      ],
      [
       1,
-      166854,
-      25968.91,
-      8343,
+      166889,
+      28358.16,
+      8344,
       78020.0,
       20
      ],
      [
       1,
-      410059,
-      70595.2,
-      10251,
+      410086,
+      70323.39,
+      10252,
       73645.7,
       40
      ],
      [
       1,
-      65391,
-      27079.15,
+      65403,
+      25594.53,
       1635,
       83491.2,
       40
      ],
      [
       -1,
-      56241,
-      85780.79,
-      3707,
-      81442.5,
+      137744,
+      86008.53,
+      9446,
+      81654.0,
       15
      ],
      [
       1,
-      119870,
-      56954.32,
-      23974,
+      119889,
+      56955.35,
+      23978,
       81579.3,
       5
      ],
      [
       1,
-      62019,
-      40659.16,
+      62030,
+      40660.19,
       3101,
       80276.0,
       20
      ],
      [
       1,
-      32796,
-      15607.21,
-      10932,
-      72429.6,
-      3
+      115411,
+      65980.0,
+      2885,
+      80443.0,
+      40
      ],
      [
       1,
-      48883,
-      40989.3,
-      9777,
+      407480,
+      76846.75,
+      20374,
+      82396.4,
+      20
+     ],
+     [
+      1,
+      48898,
+      40439.75,
+      9780,
       83254.1,
       5
      ],
      [
       1,
-      407295,
-      76845.72,
-      20365,
-      82396.4,
-      20
+      32802,
+      15663.92,
+      10934,
+      72429.6,
+      3
      ],
      [
-      -1,
-      4390053,
-      210623.16,
-      878011,
-      81334.3,
+      1,
+      15175609,
+      44034.1,
+      3035122,
+      81669.2,
       5
      ],
      [
       -1,
-      1403700,
-      369703.41,
-      46790,
-      81414.9,
-      30
-     ],
-     [
-      1,
-      24475851,
-      52351.34,
-      1223793,
-      70766.9,
-      20
-     ],
-     [
-      -1,
-      99808856,
-      96414.34,
-      7677604,
+      98182175,
+      96691.71,
+      7552475,
       80886.8,
       13
      ],
      [
+      1,
+      6712976,
+      38330.21,
+      291869,
+      81591.1,
+      23
+     ],
+     [
       -1,
-      5212928,
-      83129.67,
-      130323,
+      5217536,
+      83130.68,
+      130438,
       80072.1,
       40
      ],
      [
       -1,
-      8695001,
-      118946.14,
-      217375,
-      81551.1,
+      8702687,
+      118739.08,
+      217567,
+      81555.1,
       40
      ],
      [
       1,
-      12365769,
-      63994.91,
-      309144,
+      12376700,
+      63988.29,
+      309417,
       83283.6,
       40
      ],
      [
       -1,
-      12679240,
-      111930.25,
-      316981,
-      80679.8,
+      5771321,
+      149437.7,
+      144283,
+      80766.4,
       40
      ],
      [
-      1,
-      20363000,
-      34692.17,
-      1018150,
-      67524.6,
-      20
-     ],
-     [
       -1,
-      5439890,
-      90005.29,
-      271994,
-      80440.6,
+      5593553,
+      89758.99,
+      279678,
+      80594.3,
       20
      ],
      [
       1,
-      10196543,
-      62954.55,
-      509827,
+      10205556,
+      62383.97,
+      510278,
       83866.3,
       20
      ],
      [
       -1,
-      5685135,
-      108075.67,
-      437318,
-      80869.4,
+      1056896,
+      228471.02,
+      81300,
+      81631.8,
       13
      ],
      [
       -1,
-      4675572,
-      136416.52,
-      359659,
-      80689.6,
+      2389349,
+      189890.79,
+      183796,
+      81150.1,
       13
      ],
      [
-      -1,
-      55805,
-      84506.44,
-      2816,
-      81500.0,
-      20
+      1,
+      913177,
+      79575.71,
+      31489,
+      81634.3,
+      29
      ],
      [
       -1,
-      1739053,
-      89259.15,
-      86953,
-      80533.9,
-      20
-     ],
-     [
-      -1,
-      59909,
-      94337.8,
-      1712,
-      81575.0,
-      35
-     ],
-     [
-      -1,
-      661558,
-      96379.7,
-      16539,
-      81154.6,
+      25549,
+      83335.99,
+      639,
+      81665.7,
       40
      ],
      [
       -1,
-      100091,
-      149617.41,
-      2502,
-      81327.4,
+      40770,
+      90974.8,
+      4077,
+      81494.0,
+      10
+     ],
+     [
+      1,
+      58058,
+      58673.36,
+      2903,
+      81577.5,
+      20
+     ],
+     [
+      -1,
+      114231,
+      88522.56,
+      11423,
+      81635.7,
+      10
+     ],
+     [
+      -1,
+      60567,
+      82591.97,
+      1547,
+      81659.0,
       40
      ],
      [
       1,
-      50368,
-      26105.91,
-      8395,
-      81483.0,
+      1666612,
+      79267.37,
+      64100,
+      81482.0,
+      26
+     ],
+     [
+      1,
+      73428,
+      34000.81,
+      3671,
+      81647.7,
+      20
+     ],
+     [
+      1,
+      274240,
+      47977.18,
+      6856,
+      81685.0,
+      40
+     ],
+     [
+      -1,
+      25446,
+      98055.8,
+      1272,
+      81497.0,
+      20
+     ],
+     [
+      -1,
+      40777,
+      91712.19,
+      4078,
+      81494.0,
+      10
+     ],
+     [
+      -1,
+      52486,
+      122355.99,
+      2624,
+      81794.0,
+      20
+     ],
+     [
+      -1,
+      44767,
+      82633.88,
+      1160,
+      81657.0,
+      40
+     ],
+     [
+      -1,
+      197348,
+      130180.36,
+      4934,
+      81657.6,
+      40
+     ],
+     [
+      -1,
+      3566,
+      460699.87,
+      357,
+      81497.0,
+      10
+     ],
+     [
+      1,
+      49184376,
+      56213.07,
+      2459219,
+      85665.7,
+      20
+     ],
+     [
+      -1,
+      18004,
+      214368.58,
+      900,
+      81592.5,
+      20
+     ],
+     [
+      1,
+      436040,
+      60403.27,
+      10901,
+      81656.2,
+      40
+     ],
+     [
+      -1,
+      1215623,
+      83532.1,
+      41918,
+      81382.5,
+      29
+     ],
+     [
+      -1,
+      32665,
+      942018.27,
+      1633,
+      81497.0,
+      20
+     ],
+     [
+      1,
+      146086,
+      62644.36,
+      24348,
+      81503.5,
       6
      ],
      [
-      -1,
-      100395,
-      464623.86,
-      5020,
-      81559.2,
-      20
-     ],
-     [
       1,
-      733212,
-      66848.45,
-      36661,
-      80110.3,
-      20
-     ],
-     [
-      -1,
-      81468,
-      85691.27,
-      4073,
-      81512.0,
-      20
-     ],
-     [
-      1,
-      244404,
-      65947.22,
-      49035,
-      81382.8,
-      5
-     ],
-     [
-      -1,
-      40734,
-      90058.29,
-      4073,
-      81587.0,
-      10
-     ],
-     [
-      -1,
-      81458,
-      120151.43,
-      2036,
-      80690.7,
+      132567,
+      5597.49,
+      3314,
+      81570.5,
       40
      ],
      [
       -1,
-      87443,
-      82681.09,
-      2422,
-      80748.0,
-      40
+      27101,
+      136468.53,
+      2710,
+      81663.3,
+      10
      ],
      [
-      1,
-      151635,
-      74281.42,
-      15088,
-      81491.0,
+      -1,
+      85522,
+      100146.4,
+      8552,
+      81659.6,
       10
      ],
      [
       1,
-      422353,
-      75994.63,
-      30168,
-      81298.3,
+      509863,
+      62497.93,
+      12747,
+      81715.4,
+      40
+     ],
+     [
+      -1,
+      253737,
+      397338.88,
+      12687,
+      81546.4,
+      20
+     ],
+     [
+      1,
+      155148,
+      15764.67,
+      3879,
+      81568.2,
+      40
+     ],
+     [
+      -1,
+      182148,
+      94767.76,
+      9107,
+      81646.4,
+      20
+     ],
+     [
+      -1,
+      56130,
+      157320.67,
+      9355,
+      81661.8,
+      6
+     ],
+     [
+      1,
+      280373,
+      79629.37,
+      9346,
+      81555.1,
+      30
+     ],
+     [
+      -1,
+      292977,
+      89670.48,
+      14649,
+      81655.1,
+      20
+     ],
+     [
+      -1,
+      463365,
+      83583.86,
+      11584,
+      81669.7,
+      40
+     ],
+     [
+      -1,
+      544583,
+      82660.17,
+      13615,
+      81648.4,
+      40
+     ],
+     [
+      -1,
+      2515188,
+      122512.45,
+      62880,
+      81677.3,
+      40
+     ],
+     [
+      1,
+      108117,
+      76233.59,
+      7723,
+      81624.1,
       14
      ],
      [
       -1,
-      162916,
-      111962.0,
-      4073,
-      81492.0,
-      40
-     ],
-     [
-      -1,
-      47637,
-      286373.37,
-      1191,
-      81471.1,
-      40
-     ],
-     [
-      -1,
-      1427711,
-      136367.69,
-      71386,
-      80741.3,
+      55853,
+      84507.45,
+      2768,
+      81500.0,
       20
      ],
      [
       -1,
-      143343,
-      85825.31,
-      9577,
-      81500.0,
-      15
-     ],
-     [
-      -1,
-      1567555,
-      82705.74,
-      42366,
-      80790.2,
-      37
-     ],
-     [
-      -1,
-      40444,
-      91543.41,
-      4044,
-      81483.8,
+      17087,
+      437622.3,
+      1709,
+      81504.4,
       10
      ],
      [
       -1,
-      70520,
-      82608.65,
-      1763,
+      1630842,
+      89850.63,
+      81542,
+      80910.0,
+      20
+     ],
+     [
+      -1,
+      79841,
+      90998.58,
+      2281,
+      81669.6,
+      35
+     ],
+     [
+      1,
+      144240,
+      21384.23,
+      3606,
+      81658.5,
+      40
+     ],
+     [
+      1,
+      40010,
+      51319.95,
+      2000,
+      81489.1,
+      20
+     ],
+     [
+      1,
+      407465,
+      54694.35,
+      20373,
+      80110.3,
+      20
+     ],
+     [
+      1,
+      162986,
+      66380.83,
+      31884,
+      81903.0,
+      5
+     ],
+     [
+      -1,
+      40746,
+      91349.84,
+      4075,
+      81497.0,
+      10
+     ],
+     [
+      -1,
+      162986,
+      100280.68,
+      4075,
+      81189.1,
+      40
+     ],
+     [
+      -1,
+      168973,
+      82795.68,
+      4847,
+      81311.3,
+      40
+     ],
+     [
+      1,
+      149565,
+      74535.86,
+      14478,
+      81769.0,
+      10
+     ],
+     [
+      -1,
+      162986,
+      113687.91,
+      4075,
+      81810.0,
+      40
+     ],
+     [
+      -1,
+      1385102,
+      136947.26,
+      69255,
+      80788.8,
+      20
+     ],
+     [
+      -1,
+      70553,
+      82609.66,
+      1764,
       81574.1,
       40
      ],
      [
       -1,
-      162912,
-      83164.88,
-      5497,
+      162986,
+      83165.89,
+      5425,
       81500.0,
       30
      ],
      [
       -1,
-      491465,
-      99547.55,
-      12287,
-      81107.1,
-      40
-     ],
-     [
-      -1,
-      18570,
-      300985.34,
-      3714,
-      81455.6,
-      5
-     ],
-     [
-      -1,
-      72069,
-      187399.96,
-      1802,
-      81416.8,
-      40
-     ],
-     [
-      -1,
-      398801,
-      96331.54,
-      26587,
+      398986,
+      100193.23,
+      26599,
       81449.6,
       15
      ],
      [
-      1,
-      1073327,
-      77410.58,
-      63137,
-      81163.0,
-      17
-     ],
-     [
       -1,
-      859776,
-      252071.79,
-      42989,
-      81121.6,
+      453917,
+      405704.14,
+      22696,
+      81576.1,
       20
      ],
      [
       1,
-      207882,
-      72313.32,
-      25638,
-      81600.0,
-      8
-     ],
-     [
-      1,
-      115709,
-      42814.42,
-      23142,
-      81454.2,
-      5
-     ],
-     [
-      -1,
-      532505,
-      99831.47,
-      13313,
-      81207.6,
-      40
-     ],
-     [
-      1,
-      537879,
-      79433.88,
-      19904,
+      538128,
+      79434.91,
+      20147,
       81036.1,
       40
      ],
      [
       -1,
-      977726,
-      81754.1,
-      24443,
+      782545,
+      81999.01,
+      19564,
       80177.3,
       40
      ],
      [
       -1,
-      715389,
-      807206.21,
-      143078,
-      81308.8,
-      5
+      329250,
+      83664.63,
+      12999,
+      81486.6,
+      25
      ],
      [
       -1,
-      386202,
-      82560.66,
-      10092,
-      81600.0,
+      1157498,
+      82675.36,
+      31473,
+      81719.5,
       40
      ],
      [
       -1,
-      3287621,
-      146858.66,
-      164381,
-      80917.9,
+      1256180,
+      253785.72,
+      62809,
+      80992.1,
       20
      ],
      [
       1,
-      744255,
-      65846.97,
-      37213,
+      744529,
+      65848.0,
+      37226,
       81524.1,
       20
      ],
      [
       -1,
-      1714253,
-      82343.01,
-      40156,
-      81452.2,
+      2627983,
+      82424.2,
+      63221,
+      81529.8,
       40
      ],
      [
       -1,
-      380764,
-      116578.21,
-      9519,
-      81011.0,
-      40
-     ],
-     [
-      -1,
-      734797,
-      501505.18,
-      18370,
+      735068,
+      479735.67,
+      18377,
       80263.6,
       40
      ],
      [
       -1,
-      526528,
-      291155.34,
-      105306,
-      81270.3,
-      5
-     ],
-     [
-      1,
-      131843,
-      61680.37,
-      21974,
-      81464.6,
-      6
-     ],
-     [
-      -1,
-      61552,
-      82313.19,
+      61574,
+      82314.2,
       2052,
       80325.2,
       30
      ],
      [
-      1,
-      40732,
-      66760.29,
-      4073,
-      81481.2,
+      -1,
+      40747,
+      96060.67,
+      4075,
+      81494.0,
       10
      ],
      [
       -1,
-      246911,
-      82905.52,
-      7510,
+      247002,
+      82906.53,
+      7422,
       81337.1,
       31
      ],
      [
       -1,
-      2023415,
-      83239.39,
-      50585,
+      2024160,
+      83240.4,
+      50604,
       80523.1,
       40
      ],
      [
+      1,
+      325976,
+      77733.42,
+      12538,
+      81874.0,
+      26
+     ],
+     [
       -1,
-      3910704,
-      91123.38,
-      97768,
+      3911712,
+      91113.89,
+      97793,
       80388.1,
       40
      ],
      [
       1,
-      410715,
-      79312.34,
-      10268,
-      80318.0,
+      97706,
+      80632.32,
+      2241,
+      81621.0,
       40
      ],
      [
       1,
-      88458,
-      80106.53,
-      2571,
-      81067.9,
-      40
-     ],
-     [
-      -1,
-      907570,
-      106022.85,
-      22689,
-      81521.0,
-      40
-     ],
-     [
-      -1,
-      473224,
-      99028.03,
-      11831,
-      81317.9,
+      897970,
+      56600.19,
+      22449,
+      81769.0,
       40
      ],
      [
       1,
-      204130,
-      73178.92,
-      5103,
+      204185,
+      73179.96,
+      5105,
       79827.0,
       40
      ],
      [
       1,
-      936940,
-      70491.46,
-      23423,
+      937192,
+      70500.7,
+      23430,
       82819.8,
       40
      ],
      [
-      1,
-      114318,
-      61375.39,
-      28580,
-      80826.7,
-      4
-     ],
-     [
       -1,
-      124782,
-      82834.04,
-      3670,
+      124815,
+      82835.04,
+      3638,
       81398.0,
       32
      ],
      [
       -1,
-      407223,
-      82912.18,
-      12374,
+      407333,
+      83110.79,
+      13269,
       80026.7,
       40
      ],
      [
       -1,
-      148551,
-      93606.06,
-      24256,
-      81275.0,
+      239804,
+      93807.26,
+      39677,
+      81448.8,
       6
      ],
      [
-      -1,
-      405546,
-      103289.87,
-      10139,
-      81153.7,
-      40
+      1,
+      6930814,
+      43981.61,
+      346541,
+      81517.9,
+      20
      ],
      [
       1,
-      325892,
-      74956.88,
-      10513,
+      325983,
+      74957.92,
+      10516,
       80199.0,
       31
      ],
      [
       -1,
-      176356,
-      207438.53,
-      8818,
-      80905.4,
+      88066,
+      330027.75,
+      4403,
+      81391.0,
       20
      ],
      [
       -1,
-      52553,
-      82198.73,
-      1131,
-      81227.0,
+      94895,
+      82388.87,
+      2242,
+      81414.3,
       40
      ],
      [
       -1,
-      672063,
-      104443.72,
-      16802,
-      80633.6,
+      482190,
+      113861.05,
+      12055,
+      80681.5,
       40
      ],
      [
-      1,
-      40736,
-      72133.29,
-      4074,
-      81464.0,
-      10
-     ],
-     [
-      1,
-      15431,
-      56901.06,
-      3086,
-      81472.2,
+      -1,
+      16179,
+      104841.33,
+      3236,
+      81529.4,
       5
      ],
      [
       -1,
-      81473,
-      135978.56,
-      8147,
+      81493,
+      136870.35,
+      8149,
       81523.0,
       10
      ],
      [
       -1,
-      355082,
-      87947.98,
-      17754,
-      81136.8,
+      1450509,
+      119897.57,
+      72525,
+      80861.9,
       20
      ],
      [
       -1,
-      1410227,
-      122085.16,
-      70511,
-      80778.3,
-      20
+      149734,
+      97571.6,
+      5989,
+      81634.4,
+      25
      ],
      [
       -1,
-      408170,
-      87134.74,
-      20408,
-      81140.6,
-      20
-     ],
-     [
-      1,
-      570311,
-      78949.3,
-      24574,
-      79948.4,
+      888312,
+      86059.14,
+      22208,
+      81471.6,
       40
      ],
      [
       -1,
-      752234,
-      86950.32,
-      18806,
-      81290.0,
-      40
-     ],
-     [
-      -1,
-      3666285,
-      101758.65,
-      91657,
-      81042.5,
+      4482170,
+      97930.36,
+      112054,
+      81168.5,
       40
      ],
      [
       1,
-      44207,
-      79860.15,
-      1417,
+      44219,
+      79861.19,
+      1428,
       80814.0,
       40
      ],
      [
       1,
-      407375,
-      73790.98,
-      43032,
+      407470,
+      73792.02,
+      43122,
       82493.7,
       15
      ],
      [
       1,
-      456287,
-      78769.74,
-      11407,
+      456393,
+      78707.34,
+      11410,
       81070.9,
       40
      ],
      [
       1,
-      325900,
-      26051.89,
+      325924,
+      24767.06,
       8148,
       81556.9,
       40
      ],
      [
       -1,
-      10127,
-      512561.96,
+      10128,
+      521769.19,
       506,
       80450.0,
       20
      ],
      [
       -1,
-      13399,
-      130866.16,
-      335,
-      81101.5,
+      6312,
+      197211.56,
+      158,
+      81768.4,
       40
      ],
      [
       -1,
-      62587,
-      82448.96,
-      1540,
+      62591,
+      82449.97,
+      1536,
       81498.9,
       40
      ],
      [
       -1,
-      2296597,
-      99663.97,
-      57415,
-      81115.6,
+      655945,
+      147413.19,
+      16399,
+      81167.5,
       40
      ],
      [
       -1,
-      22789,
-      388215.77,
-      570,
-      81004.0,
-      40
-     ],
-     [
-      -1,
-      13768,
-      357001.65,
-      688,
-      81416.0,
-      20
-     ],
-     [
-      -1,
-      10223,
-      121967.66,
-      256,
-      81347.5,
-      40
-     ],
-     [
-      -1,
-      999404,
-      82583.62,
-      25626,
-      80828.7,
-      39
-     ],
-     [
-      -1,
-      4923,
-      546109.25,
-      246,
-      81492.6,
-      20
-     ],
-     [
-      -1,
-      69674,
-      1203550.65,
-      1742,
-      80965.1,
-      40
+      799019,
+      83266.08,
+      26634,
+      81374.7,
+      30
      ],
      [
       1,
-      162972,
-      54113.55,
-      56098,
+      162961,
+      54114.59,
+      56085,
       80110.3,
       3
      ],
      [
       -1,
-      332192,
-      86519.46,
-      24929,
+      332156,
+      86520.47,
+      24970,
       80523.2,
       40
      ],
      [
       -1,
-      742617,
-      122343.12,
-      18565,
-      81221.3,
-      40
-     ],
-     [
-      -1,
-      4517165,
-      108835.26,
-      903433,
-      80752.4,
+      3627296,
+      116466.07,
+      725459,
+      80777.7,
       5
      ],
      [
       -1,
-      182779,
-      111472.34,
-      4569,
-      81127.5,
+      162954,
+      88040.88,
+      4074,
+      81666.7,
       40
      ],
      [
       1,
-      70536,
-      45871.1,
+      70520,
+      42326.37,
       1763,
       81139.7,
       40
      ],
      [
       -1,
-      320279,
-      115418.35,
-      8007,
-      81063.6,
-      40
-     ],
-     [
-      -1,
-      3130640,
-      149158.78,
-      156532,
+      1486949,
+      224937.79,
+      74347,
       80809.9,
       20
      ],
      [
       -1,
-      22618,
-      146027.92,
-      2262,
-      81311.4,
-      10
-     ],
-     [
-      -1,
-      107798,
-      602561.07,
-      5390,
-      80990.0,
+      98097,
+      645266.04,
+      4905,
+      81539.0,
       20
      ],
      [
       -1,
-      161272,
-      82291.0,
-      3576,
-      81360.1,
+      201130,
+      82325.78,
+      4676,
+      81393.8,
       40
      ],
      [
       -1,
-      74618,
-      554904.38,
-      8291,
-      80982.8,
+      39583,
+      954072.68,
+      4398,
+      81609.7,
       9
      ],
      [
-      -1,
-      356755,
-      86491.66,
-      17838,
-      81133.8,
-      20
-     ],
-     [
       1,
-      202502,
-      65976.47,
-      40644,
+      202375,
+      65977.51,
+      40515,
       81417.0,
       5
      ],
      [
       1,
-      407695,
-      78289.09,
-      21143,
+      325844,
+      78297.28,
+      16570,
       79934.1,
       33
      ],
      [
       1,
-      385993,
-      62887.34,
-      77199,
+      385624,
+      62888.37,
+      77125,
       80307.8,
       5
      ],
      [
       -1,
-      1772789,
-      429755.4,
-      44320,
+      1747509,
+      447059.18,
+      43688,
       81031.4,
       40
      ],
      [
       1,
-      407695,
-      76139.94,
-      10192,
+      407250,
+      76158.75,
+      10181,
       81258.7,
       40
      ],
      [
       -1,
-      203949,
-      116540.83,
-      5099,
-      81344.9,
-      40
-     ],
-     [
-      -1,
-      2766579,
-      203394.69,
-      138329,
+      1707364,
+      278873.52,
+      85368,
       80758.3,
       20
      ],
      [
       1,
-      71328,
-      21204.52,
-      11888,
-      81464.0,
-      6
-     ],
-     [
-      1,
-      407665,
-      77204.0,
-      10192,
+      407206,
+      77247.65,
+      10180,
       81193.1,
       40
      ],
      [
       1,
-      64505,
-      80447.1,
-      1655,
+      64432,
+      80448.13,
+      1581,
       81491.0,
       40
      ],
      [
       -1,
-      1419368,
-      157738.83,
-      70968,
-      80619.3,
-      20
-     ],
-     [
-      -1,
-      559899,
-      224812.41,
-      27995,
-      81268.2,
+      1452906,
+      157524.8,
+      72645,
+      80663.1,
       20
      ],
      [
       1,
-      896852,
-      73183.43,
-      22421,
+      8706,
+      41022.82,
+      435,
+      81455.9,
+      20
+     ],
+     [
+      1,
+      895895,
+      73746.35,
+      22397,
       81335.8,
       40
      ],
      [
-      -1,
-      85624,
-      82885.48,
-      2854,
-      81017.4,
-      30
-     ],
-     [
       1,
-      46044,
-      72747.3,
-      1151,
+      45995,
+      72748.33,
+      1150,
       80948.4,
-      40
-     ],
-     [
-      1,
-      125562,
-      80088.53,
-      3765,
-      81090.3,
-      40
-     ],
-     [
-      -1,
-      67828,
-      82733.98,
-      1696,
-      81436.0,
-      40
-     ],
-     [
-      1,
-      101783,
-      51787.76,
-      2545,
-      80104.0,
-      40
-     ],
-     [
-      -1,
-      60034,
-      82191.44,
-      1251,
-      81200.0,
-      40
-     ],
-     [
-      1,
-      81520,
-      16748.15,
-      4076,
-      80220.0,
-      20
-     ],
-     [
-      1,
-      122281,
-      71954.78,
-      3057,
-      80309.3,
       40
      ]
     ]
    },
    "ETH": {
-    "price": 2363.65,
-    "n_acc": 1154,
-    "n_pos": 243,
-    "long_usd": 744085855,
-    "short_usd": 965478837,
-    "n_long": 139,
-    "n_short": 104,
+    "price": 2367.35,
+    "n_acc": 1163,
+    "n_pos": 236,
+    "long_usd": 737082518,
+    "short_usd": 965361578,
+    "n_long": 134,
+    "n_short": 102,
     "steps": [
      {
       "pct": 1,
-      "down_px": 2340,
+      "down_px": 2344,
       "long_liq": 0,
-      "up_px": 2387,
-      "short_liq": 3318258
+      "up_px": 2391,
+      "short_liq": 2658560
      },
      {
       "pct": 2,
-      "down_px": 2316,
-      "long_liq": 0,
-      "up_px": 2411,
-      "short_liq": 8195391
+      "down_px": 2320,
+      "long_liq": 996637,
+      "up_px": 2415,
+      "short_liq": 7337287
      },
      {
       "pct": 3,
-      "down_px": 2293,
-      "long_liq": 1544689,
-      "up_px": 2435,
-      "short_liq": 14088039
+      "down_px": 2296,
+      "long_liq": 996637,
+      "up_px": 2438,
+      "short_liq": 23196901
      },
      {
       "pct": 4,
-      "down_px": 2269,
-      "long_liq": 7799285,
-      "up_px": 2458,
-      "short_liq": 20569941
+      "down_px": 2273,
+      "long_liq": 7775185,
+      "up_px": 2462,
+      "short_liq": 23196901
      },
      {
       "pct": 5,
-      "down_px": 2245,
-      "long_liq": 10876124,
-      "up_px": 2482,
-      "short_liq": 20569941
+      "down_px": 2249,
+      "long_liq": 12794546,
+      "up_px": 2486,
+      "short_liq": 23608186
      },
      {
       "pct": 6,
-      "down_px": 2222,
-      "long_liq": 11002450,
-      "up_px": 2505,
-      "short_liq": 20927226
+      "down_px": 2225,
+      "long_liq": 12794546,
+      "up_px": 2509,
+      "short_liq": 23608186
      },
      {
       "pct": 7,
-      "down_px": 2198,
-      "long_liq": 11002450,
-      "up_px": 2529,
-      "short_liq": 20927226
+      "down_px": 2202,
+      "long_liq": 12794546,
+      "up_px": 2533,
+      "short_liq": 23608186
      },
      {
       "pct": 8,
-      "down_px": 2175,
-      "long_liq": 131754047,
-      "up_px": 2553,
-      "short_liq": 20927226
+      "down_px": 2178,
+      "long_liq": 133734739,
+      "up_px": 2557,
+      "short_liq": 23608186
      },
      {
       "pct": 9,
-      "down_px": 2151,
-      "long_liq": 262715446,
-      "up_px": 2576,
-      "short_liq": 21201682
+      "down_px": 2154,
+      "long_liq": 248367682,
+      "up_px": 2580,
+      "short_liq": 23764669
      },
      {
       "pct": 10,
-      "down_px": 2127,
-      "long_liq": 263250540,
-      "up_px": 2600,
-      "short_liq": 21201682
+      "down_px": 2131,
+      "long_liq": 263719382,
+      "up_px": 2604,
+      "short_liq": 23764669
      },
      {
       "pct": 11,
-      "down_px": 2104,
-      "long_liq": 280930290,
-      "up_px": 2624,
-      "short_liq": 21929988
+      "down_px": 2107,
+      "long_liq": 281412632,
+      "up_px": 2628,
+      "short_liq": 24941443
      },
      {
       "pct": 12,
-      "down_px": 2080,
-      "long_liq": 303188761,
-      "up_px": 2647,
-      "short_liq": 22165618
+      "down_px": 2083,
+      "long_liq": 303331480,
+      "up_px": 2651,
+      "short_liq": 24941443
      },
      {
       "pct": 13,
-      "down_px": 2056,
-      "long_liq": 322180145,
-      "up_px": 2671,
-      "short_liq": 45023668
+      "down_px": 2060,
+      "long_liq": 308050280,
+      "up_px": 2675,
+      "short_liq": 48071483
      },
      {
       "pct": 14,
-      "down_px": 2033,
-      "long_liq": 339214618,
-      "up_px": 2695,
-      "short_liq": 45023668
+      "down_px": 2036,
+      "long_liq": 322371620,
+      "up_px": 2699,
+      "short_liq": 48071483
      },
      {
       "pct": 15,
-      "down_px": 2009,
-      "long_liq": 339214618,
-      "up_px": 2718,
-      "short_liq": 70186435
+      "down_px": 2012,
+      "long_liq": 322371620,
+      "up_px": 2722,
+      "short_liq": 73242326
      },
      {
       "pct": 16,
-      "down_px": 1985,
-      "long_liq": 340671039,
-      "up_px": 2742,
-      "short_liq": 70234166
+      "down_px": 1989,
+      "long_liq": 322648850,
+      "up_px": 2746,
+      "short_liq": 73242326
      },
      {
       "pct": 17,
-      "down_px": 1962,
-      "long_liq": 341172978,
-      "up_px": 2765,
-      "short_liq": 70234166
+      "down_px": 1965,
+      "long_liq": 324787175,
+      "up_px": 2770,
+      "short_liq": 73242326
      },
      {
       "pct": 18,
-      "down_px": 1938,
-      "long_liq": 341221122,
-      "up_px": 2789,
-      "short_liq": 70234166
+      "down_px": 1941,
+      "long_liq": 324787175,
+      "up_px": 2793,
+      "short_liq": 73242326
      },
      {
       "pct": 19,
-      "down_px": 1915,
-      "long_liq": 344378564,
-      "up_px": 2813,
-      "short_liq": 70234166
+      "down_px": 1918,
+      "long_liq": 327879037,
+      "up_px": 2817,
+      "short_liq": 73242326
      },
      {
       "pct": 20,
-      "down_px": 1891,
-      "long_liq": 363446000,
-      "up_px": 2836,
-      "short_liq": 70234166
+      "down_px": 1894,
+      "long_liq": 327879037,
+      "up_px": 2841,
+      "short_liq": 73242326
      },
      {
       "pct": 21,
-      "down_px": 1867,
-      "long_liq": 363446000,
-      "up_px": 2860,
-      "short_liq": 70234166
+      "down_px": 1870,
+      "long_liq": 364012881,
+      "up_px": 2864,
+      "short_liq": 73242326
      },
      {
       "pct": 22,
-      "down_px": 1844,
-      "long_liq": 363601474,
-      "up_px": 2884,
-      "short_liq": 115119966
+      "down_px": 1847,
+      "long_liq": 364012881,
+      "up_px": 2888,
+      "short_liq": 117748477
      },
      {
       "pct": 23,
-      "down_px": 1820,
-      "long_liq": 363601474,
-      "up_px": 2907,
-      "short_liq": 126325877
+      "down_px": 1823,
+      "long_liq": 364168659,
+      "up_px": 2912,
+      "short_liq": 128970082
      },
      {
       "pct": 24,
-      "down_px": 1796,
-      "long_liq": 374366647,
-      "up_px": 2931,
-      "short_liq": 126325877
+      "down_px": 1799,
+      "long_liq": 364888566,
+      "up_px": 2936,
+      "short_liq": 129006688
      },
      {
       "pct": 25,
-      "down_px": 1773,
-      "long_liq": 445808893,
-      "up_px": 2955,
-      "short_liq": 142169868
+      "down_px": 1776,
+      "long_liq": 447088334,
+      "up_px": 2959,
+      "short_liq": 144872869
      }
     ],
     "near_long": {
-     "from": 2151,
-     "to": 2175,
-     "pct": 9,
-     "usd": 130961399
+     "from": 2178,
+     "to": 2202,
+     "pct": 8,
+     "usd": 120940192
     },
     "near_short": {
-     "from": 2435,
-     "to": 2458,
-     "pct": 4,
-     "usd": 6481903
+     "from": 2415,
+     "to": 2438,
+     "pct": 3,
+     "usd": 15859614
     },
     "top": [
      {
       "side": "short",
-      "usd": 251465052,
+      "usd": 251933289,
       "entry": 2322.7,
-      "liq": 3698.5,
+      "liq": 3746.0,
       "lev": 5,
-      "pnl": -4284039,
-      "margin": 50293010,
+      "pnl": -4752277,
+      "margin": 50386658,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 153988529,
+      "usd": 154360198,
       "entry": 2375.3,
-      "liq": 4150.1,
+      "liq": 4236.0,
       "lev": 5,
-      "pnl": 893735,
-      "margin": 30797706,
+      "pnl": 522065,
+      "margin": 30872040,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 114274550,
+      "usd": 114444298,
       "entry": 2610.3,
       "liq": 2171.1,
       "lev": 10,
-      "pnl": -12324334,
-      "margin": 11427455,
+      "pnl": -12154586,
+      "margin": 11444430,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 105404167,
+      "usd": 105560739,
       "entry": 2518.7,
-      "liq": 2180.1,
+      "liq": 2180.2,
       "lev": 9,
-      "pnl": -7270139,
-      "margin": 11711574,
+      "pnl": -7113567,
+      "margin": 11728971,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 71442246,
+      "usd": 71666336,
       "entry": 2134.4,
-      "liq": 1787.0,
+      "liq": 1787.1,
       "lev": 20,
-      "pnl": 6805916,
-      "margin": 3572112,
+      "pnl": 7030006,
+      "margin": 3583317,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 66572262,
-      "entry": 2438.2,
-      "liq": 3553.8,
+      "usd": 66895993,
+      "entry": 2437.9,
+      "liq": 3603.6,
       "lev": 25,
-      "pnl": 2216318,
-      "margin": 2662890,
+      "pnl": 2019177,
+      "margin": 2675840,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 53464231,
+      "usd": 53604711,
       "entry": 2402.5,
-      "liq": 3884.5,
+      "liq": 3899.7,
       "lev": 25,
-      "pnl": 961443,
-      "margin": 2138569,
+      "pnl": 818462,
+      "margin": 2144188,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 44031667,
+      "usd": 44093336,
       "entry": 2522.1,
-      "liq": 3359.7,
+      "liq": 3360.4,
       "lev": 20,
-      "pnl": 3100245,
-      "margin": 2201583,
+      "pnl": 3038576,
+      "margin": 2204667,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 39402856,
+      "usd": 39516448,
       "entry": 2557.7,
-      "liq": 3988.2,
+      "liq": 3974.7,
       "lev": 20,
-      "pnl": 3323309,
-      "margin": 1970143,
+      "pnl": 3209717,
+      "margin": 1975822,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 37552478,
+      "usd": 37687863,
       "entry": 2410.2,
-      "liq": 1497.0,
+      "liq": 1485.8,
       "lev": 6,
-      "pnl": -836141,
-      "margin": 6258746,
+      "pnl": -700757,
+      "margin": 6281310,
       "cross": true
      }
     ],
     "top_long": [
      {
       "side": "long",
-      "usd": 114274550,
+      "usd": 114444298,
       "entry": 2610.3,
       "liq": 2171.1,
       "lev": 10,
-      "pnl": -12324334,
-      "margin": 11427455,
+      "pnl": -12154586,
+      "margin": 11444430,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 105404167,
+      "usd": 105560739,
       "entry": 2518.7,
-      "liq": 2180.1,
+      "liq": 2180.2,
       "lev": 9,
-      "pnl": -7270139,
-      "margin": 11711574,
+      "pnl": -7113567,
+      "margin": 11728971,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 71442246,
+      "usd": 71666336,
       "entry": 2134.4,
-      "liq": 1787.0,
+      "liq": 1787.1,
       "lev": 20,
-      "pnl": 6805916,
-      "margin": 3572112,
+      "pnl": 7030006,
+      "margin": 3583317,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 37552478,
+      "usd": 37687863,
       "entry": 2410.2,
-      "liq": 1497.0,
+      "liq": 1485.8,
       "lev": 6,
-      "pnl": -836141,
-      "margin": 6258746,
+      "pnl": -700757,
+      "margin": 6281310,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 28295400,
-      "entry": 2419.9,
-      "liq": 1520.9,
-      "lev": 20,
-      "pnl": -743632,
-      "margin": 1414770,
-      "cross": true
-     },
-     {
-      "side": "long",
-      "usd": 28292400,
+      "usd": 28386000,
       "entry": 2421.8,
       "liq": 1280.0,
       "lev": 20,
-      "pnl": -768895,
-      "margin": 1414620,
+      "pnl": -675295,
+      "margin": 1419300,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 25668460,
+      "usd": 28311840,
+      "entry": 2419.9,
+      "liq": 1520.9,
+      "lev": 20,
+      "pnl": -727192,
+      "margin": 1415592,
+      "cross": true
+     },
+     {
+      "side": "long",
+      "usd": 25753386,
       "entry": 2398.3,
-      "liq": 1377.3,
+      "liq": 1360.4,
       "lev": 10,
-      "pnl": -444497,
-      "margin": 2566846,
+      "pnl": -359571,
+      "margin": 2575339,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 23601761,
+      "usd": 23685903,
       "entry": 2162.8,
-      "liq": 1476.5,
+      "liq": 1438.4,
       "lev": 10,
-      "pnl": 1936959,
-      "margin": 2360176,
+      "pnl": 2021101,
+      "margin": 2368590,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 23593000,
+      "usd": 23674000,
       "entry": 1761.9,
       "liq": null,
       "lev": 20,
-      "pnl": 5973519,
-      "margin": 1179650,
+      "pnl": 6054519,
+      "margin": 1183700,
       "cross": true
      },
      {
       "side": "long",
-      "usd": 22258470,
+      "usd": 21918848,
       "entry": 2472.0,
-      "liq": 2103.3,
+      "liq": 2090.5,
       "lev": 25,
-      "pnl": -1093603,
-      "margin": 890339,
+      "pnl": -1023364,
+      "margin": 876754,
       "cross": true
      }
     ],
     "top_short": [
      {
       "side": "short",
-      "usd": 251465052,
+      "usd": 251933289,
       "entry": 2322.7,
-      "liq": 3698.5,
+      "liq": 3746.0,
       "lev": 5,
-      "pnl": -4284039,
-      "margin": 50293010,
+      "pnl": -4752277,
+      "margin": 50386658,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 153988529,
+      "usd": 154360198,
       "entry": 2375.3,
-      "liq": 4150.1,
+      "liq": 4236.0,
       "lev": 5,
-      "pnl": 893735,
-      "margin": 30797706,
+      "pnl": 522065,
+      "margin": 30872040,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 66572262,
-      "entry": 2438.2,
-      "liq": 3553.8,
+      "usd": 66895993,
+      "entry": 2437.9,
+      "liq": 3603.6,
       "lev": 25,
-      "pnl": 2216318,
-      "margin": 2662890,
+      "pnl": 2019177,
+      "margin": 2675840,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 53464231,
+      "usd": 53604711,
       "entry": 2402.5,
-      "liq": 3884.5,
+      "liq": 3899.7,
       "lev": 25,
-      "pnl": 961443,
-      "margin": 2138569,
+      "pnl": 818462,
+      "margin": 2144188,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 44031667,
+      "usd": 44093336,
       "entry": 2522.1,
-      "liq": 3359.7,
+      "liq": 3360.4,
       "lev": 20,
-      "pnl": 3100245,
-      "margin": 2201583,
+      "pnl": 3038576,
+      "margin": 2204667,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 39402856,
+      "usd": 39516448,
       "entry": 2557.7,
-      "liq": 3988.2,
+      "liq": 3974.7,
       "lev": 20,
-      "pnl": 3323309,
-      "margin": 1970143,
+      "pnl": 3209717,
+      "margin": 1975822,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 32931765,
+      "usd": 33012675,
       "entry": 2443.6,
-      "liq": 4648.9,
+      "liq": 4498.0,
       "lev": 20,
-      "pnl": 1156517,
-      "margin": 1646588,
+      "pnl": 1075607,
+      "margin": 1650634,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 31794994,
+      "usd": 29279857,
       "entry": 2327.5,
-      "liq": 4581.1,
+      "liq": 5110.4,
       "lev": 15,
-      "pnl": -453959,
-      "margin": 2119666,
+      "pnl": -491705,
+      "margin": 1951990,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 25844159,
+      "usd": 25588194,
       "entry": 2374.0,
-      "liq": 2866.4,
+      "liq": 2872.8,
       "lev": 10,
-      "pnl": 195721,
-      "margin": 2584416,
+      "pnl": 155541,
+      "margin": 2558819,
       "cross": true
      },
      {
       "side": "short",
-      "usd": 22858050,
+      "usd": 22893940,
       "entry": 2311.9,
       "liq": 2658.6,
       "lev": 25,
-      "pnl": -432368,
-      "margin": 914322,
+      "pnl": -468258,
+      "margin": 915758,
       "cross": true
      }
     ],
     "pos": [
      [
       -1,
-      251465052,
-      3698.49,
-      50293010,
+      251933289,
+      3745.99,
+      50386658,
       2322.74,
       5
      ],
      [
       -1,
-      153988529,
-      4150.1,
-      30797706,
+      154360198,
+      4235.97,
+      30872040,
       2375.3,
       5
      ],
      [
       -1,
-      31794994,
-      4581.1,
-      2119666,
-      2327.48,
+      29279857,
+      5110.41,
+      1951990,
+      2327.54,
       15
      ],
      [
       -1,
-      409108,
-      12421.87,
-      136369,
-      2356.6,
+      67124,
+      34257.21,
+      3356,
+      1676.34,
+      20
+     ],
+     [
+      -1,
+      268062,
+      17913.06,
+      89354,
+      2369.82,
       3
      ],
      [
       -1,
-      32931765,
-      4648.88,
-      1646588,
+      33012675,
+      4498.0,
+      1650634,
       2443.6,
       20
      ],
      [
       -1,
-      53464231,
-      3884.53,
-      2138569,
-      2402.54,
+      66895993,
+      3603.64,
+      2675840,
+      2437.93,
       25
      ],
      [
       -1,
-      66572262,
-      3553.84,
-      2662890,
-      2438.15,
-      25
-     ],
-     [
-      -1,
-      1887189,
-      25742.4,
-      125813,
+      1892636,
+      26058.49,
+      126176,
       2494.83,
       15
      ],
      [
       -1,
-      39402856,
-      3988.16,
-      1970143,
+      53604711,
+      3899.68,
+      2144188,
+      2402.54,
+      25
+     ],
+     [
+      -1,
+      39516448,
+      3974.74,
+      1975822,
       2557.74,
       20
      ],
      [
       -1,
-      4046784,
-      10129.05,
-      161871,
-      2402.59,
+      4061040,
+      9979.06,
+      162442,
+      2402.17,
       25
      ],
      [
       -1,
-      9434869,
-      6527.97,
-      471743,
-      2480.32,
-      20
-     ],
-     [
-      1,
-      71442246,
-      1787.03,
-      3572112,
-      2134.45,
-      20
-     ],
-     [
-      -1,
-      21856245,
-      3678.06,
-      874250,
-      2549.47,
-      25
-     ],
-     [
-      1,
-      4191707,
-      1706.69,
-      167668,
-      2398.85,
-      25
-     ],
-     [
-      -1,
-      10386573,
-      4643.09,
-      415463,
+      10416510,
+      4671.96,
+      416660,
       2440.17,
       25
      ],
      [
       -1,
-      3983948,
-      8470.99,
-      199197,
-      2434.6,
+      9468867,
+      5581.66,
+      473443,
+      2480.32,
       20
      ],
      [
       1,
-      15475383,
-      637.86,
-      773769,
-      2323.06,
-      20
+      4205654,
+      1665.08,
+      168226,
+      2398.85,
+      25
      ],
      [
-      -1,
-      17933917,
-      3977.03,
-      2561988,
-      1862.69,
-      7
-     ],
-     [
-      -1,
-      18863572,
-      2877.16,
-      1886357,
-      2208.16,
-      10
-     ],
-     [
-      -1,
-      9438155,
-      5105.3,
-      471908,
-      2382.44,
+      1,
+      71666336,
+      1787.06,
+      3583317,
+      2134.45,
       20
      ],
      [
       1,
-      9091257,
-      343.36,
-      454563,
-      2513.67,
-      20
-     ],
-     [
-      1,
-      37552478,
-      1497.0,
-      6258746,
+      37687863,
+      1485.78,
+      6281310,
       2410.19,
       6
      ],
      [
       1,
-      717533,
-      1802.37,
-      179977,
-      1868.5,
-      12
-     ],
-     [
-      1,
-      28292400,
-      1280.01,
-      1414620,
-      2421.77,
+      9124033,
+      330.1,
+      456202,
+      2513.67,
       20
      ],
      [
       -1,
-      3112690,
-      8336.71,
-      345854,
-      2425.76,
-      9
-     ],
-     [
-      1,
-      7072500,
-      1494.96,
-      282900,
-      2400.0,
-      25
-     ],
-     [
-      1,
-      25668460,
-      1377.35,
-      2566846,
-      2398.32,
-      10
-     ],
-     [
-      1,
-      21226521,
-      1185.98,
-      4245304,
-      2003.01,
-      5
+      3995769,
+      8409.61,
+      199788,
+      2434.6,
+      20
      ],
      [
       -1,
-      5955682,
-      5657.48,
-      238227,
+      21922022,
+      3667.59,
+      876881,
+      2549.47,
+      25
+     ],
+     [
+      -1,
+      17992389,
+      3970.84,
+      2570341,
+      1862.69,
+      7
+     ],
+     [
+      -1,
+      5976874,
+      5959.74,
+      239075,
       2028.32,
       25
      ],
      [
       -1,
-      516972,
-      40544.76,
-      258486,
-      2412.63,
-      2
-     ],
-     [
-      1,
-      16524039,
-      988.67,
-      660962,
-      2065.97,
-      25
-     ],
-     [
-      1,
-      28295400,
-      1520.91,
-      1414770,
-      2419.91,
+      9470132,
+      5105.33,
+      473507,
+      2382.44,
       20
      ],
      [
-      -1,
-      9389897,
-      4340.25,
-      375596,
-      2476.53,
-      25
-     ],
-     [
-      -1,
-      5121467,
-      2707.33,
-      876453,
-      2387.49,
+      1,
+      21300352,
+      1114.99,
+      4260070,
+      2003.01,
       5
      ],
      [
+      1,
+      28386000,
+      1280.04,
+      1419300,
+      2421.77,
+      20
+     ],
+     [
+      1,
+      719907,
+      1802.4,
+      182342,
+      1868.5,
+      12
+     ],
+     [
       -1,
-      9425600,
-      3801.24,
-      377024,
-      1791.18,
+      18917957,
+      2877.19,
+      1891796,
+      2208.16,
+      10
+     ],
+     [
+      1,
+      7095900,
+      1496.61,
+      283836,
+      2400.0,
       25
      ],
      [
       1,
-      14137200,
-      2061.19,
-      565488,
+      25753386,
+      1360.36,
+      2575339,
+      2398.32,
+      10
+     ],
+     [
+      -1,
+      3122724,
+      8053.36,
+      346969,
+      2425.76,
+      9
+     ],
+     [
+      1,
+      23685903,
+      1438.39,
+      2368590,
+      2162.83,
+      10
+     ],
+     [
+      1,
+      14179800,
+      2051.78,
+      567192,
       2318.7,
       25
      ],
      [
       -1,
-      2317436,
-      10141.03,
-      92697,
-      2336.96,
+      2183638,
+      10640.02,
+      87346,
+      2348.07,
       25
      ],
      [
       1,
-      6136756,
-      2280.73,
-      245470,
+      6151603,
+      2280.76,
+      246064,
       2321.74,
       25
      ],
      [
       1,
-      2356000,
-      1105.42,
-      94240,
+      2361700,
+      1122.93,
+      94468,
       2346.34,
       25
      ],
      [
       -1,
-      159421,
-      14367.52,
-      7971,
-      2341.59,
+      171685,
+      13370.42,
+      8584,
+      2346.73,
       20
      ],
      [
       1,
-      901026,
-      2315.46,
-      36041,
-      2358.35,
-      25
-     ],
-     [
-      1,
-      22258470,
-      2103.34,
-      890339,
+      21918848,
+      2090.53,
+      876754,
       2471.96,
       25
      ],
      [
       1,
-      10155826,
-      888.59,
-      1015583,
+      996637,
+      2325.27,
+      39865,
+      2359.49,
+      25
+     ],
+     [
+      -1,
+      19859,
+      39657.97,
+      993,
+      2373.66,
+      20
+     ],
+     [
+      1,
+      10175328,
+      879.23,
+      1017533,
       2342.89,
       10
      ],
      [
       -1,
-      294116,
-      4994.43,
-      14706,
+      294615,
+      5009.62,
+      14731,
       2667.44,
       20
      ],
      [
       -1,
-      197929,
-      13025.22,
-      9896,
+      198265,
+      13017.88,
+      9913,
       2319.0,
       20
      ],
      [
       -1,
-      4810791,
-      4147.38,
-      400899,
-      2335.89,
+      4807067,
+      4402.84,
+      400589,
+      2336.05,
       12
      ],
      [
       1,
-      16498300,
-      2155.01,
-      659932,
+      15351700,
+      2135.19,
+      614068,
       2328.85,
       25
      ],
      [
       1,
-      397018,
-      1980.54,
-      15881,
-      2361.95,
+      2038374,
+      2264.83,
+      81535,
+      2368.13,
       25
      ],
      [
       -1,
-      427406,
-      4836.25,
-      21370,
+      428367,
+      4810.58,
+      21418,
       2319.21,
       20
      ],
      [
       -1,
-      500063,
-      2402.62,
-      19830,
+      501124,
+      2402.65,
+      18776,
       2356.64,
       25
      ],
      [
       1,
-      155474,
-      1859.54,
-      6219,
-      2431.94,
-      25
-     ],
-     [
-      1,
-      14462627,
-      2186.36,
-      1315943,
+      14493919,
+      2186.39,
+      1347054,
       2382.15,
       25
      ],
      [
+      1,
+      155778,
+      1841.55,
+      6231,
+      2431.94,
+      25
+     ],
+     [
       -1,
-      235630,
-      2644.72,
-      9425,
+      2361100,
+      2423.01,
+      94444,
+      2363.71,
+      25
+     ],
+     [
+      -1,
+      236100,
+      2662.76,
+      9444,
       2320.76,
       25
      ],
      [
       1,
-      395001,
-      970.82,
-      19750,
-      2346.92,
+      372053,
+      893.45,
+      18603,
+      2348.73,
       20
      ],
      [
       1,
-      3086753,
-      1922.14,
-      619111,
+      3091862,
+      1922.17,
+      624182,
       2352.6,
       5
      ],
      [
       -1,
-      840538,
-      8075.77,
-      280179,
-      2364.44,
+      822193,
+      8238.78,
+      274064,
+      2364.5,
       3
      ],
      [
       -1,
-      252904,
-      2396.18,
-      10116,
+      253323,
+      2437.97,
+      10133,
       2322.59,
       25
      ],
      [
       1,
-      473453,
-      1112.88,
-      18938,
+      461179,
+      1057.92,
+      18447,
       2356.29,
       25
      ],
      [
-      -1,
-      1218743,
-      3200.38,
-      48750,
-      2348.15,
-      25
+      1,
+      1416042,
+      678.78,
+      177005,
+      2336.32,
+      8
      ],
      [
       -1,
-      4124165,
-      2395.14,
-      164967,
+      4130413,
+      2394.12,
+      165217,
       2328.82,
       25
      ],
      [
       -1,
-      2254280,
-      7200.93,
-      1127140,
+      1220589,
+      3265.73,
+      48824,
+      2348.15,
+      25
+     ],
+     [
+      -1,
+      2257966,
+      7099.26,
+      1128983,
       2337.12,
       2
      ],
      [
       -1,
-      22858050,
-      2658.59,
-      914322,
+      22893940,
+      2658.62,
+      915758,
       2311.92,
       25
      ],
      [
       1,
-      3534750,
-      1554.44,
-      176738,
+      3540300,
+      1506.23,
+      177015,
       2346.68,
       20
      ],
      [
       -1,
-      298955,
-      2375.45,
-      11958,
+      239530,
+      2386.23,
+      9581,
       2322.91,
       25
      ],
      [
       1,
-      914519,
-      1689.54,
-      36581,
+      915955,
+      1689.57,
+      36638,
       2330.31,
       25
      ],
      [
       -1,
-      6481903,
-      2450.17,
-      324095,
-      2356.46,
+      517432,
+      40535.12,
+      258716,
+      2412.63,
+      2
+     ],
+     [
+      -1,
+      7344290,
+      2434.9,
+      367215,
+      2357.5,
       20
      ],
      [
+      -1,
+      9398061,
+      4336.15,
+      375922,
+      2476.53,
+      25
+     ],
+     [
       1,
-      708478,
-      1470.83,
-      35424,
+      709503,
+      1419.67,
+      35475,
       2326.72,
       20
      ],
      [
       1,
-      11445142,
-      1395.78,
-      457806,
+      11460198,
+      1358.79,
+      458408,
       2604.61,
       25
      ],
      [
-      -1,
-      554095,
-      4436.39,
-      22164,
-      2280.92,
-      25
-     ],
-     [
-      -1,
-      7784556,
-      3309.61,
-      311382,
-      2270.55,
-      25
-     ],
-     [
       1,
-      4712800,
-      2064.91,
-      188512,
+      4718800,
+      2062.62,
+      188752,
       2342.02,
       25
      ],
      [
       -1,
-      106185,
-      7579.67,
-      5309,
-      2341.95,
+      7794467,
+      3243.89,
+      311779,
+      2270.55,
+      25
+     ],
+     [
+      -1,
+      554801,
+      4431.95,
+      22192,
+      2280.92,
+      25
+     ],
+     [
+      -1,
+      108304,
+      7475.16,
+      5415,
+      2350.29,
       20
      ],
      [
       1,
-      141384,
-      2063.89,
-      5655,
+      141540,
+      2054.49,
+      5662,
       2328.69,
       25
      ],
      [
       1,
-      472380,
-      2192.17,
-      41712,
+      472901,
+      2192.2,
+      42227,
       2325.75,
       13
      ],
      [
       -1,
-      2643,
-      30672.86,
+      2644,
+      29056.86,
       132,
       2481.2,
       20
      ],
      [
       -1,
-      20041300,
-      2708.94,
-      801652,
+      20046400,
+      2708.97,
+      801856,
       2308.3,
       25
      ],
      [
       -1,
-      1180362,
-      7689.46,
-      47214,
+      119896,
+      20832.13,
+      5995,
+      2352.49,
+      20
+     ],
+     [
+      -1,
+      1180612,
+      7689.58,
+      47224,
       2316.04,
       25
      ],
      [
       1,
-      60239,
-      2266.49,
+      17038085,
+      1877.28,
+      681523,
+      2500.18,
+      25
+     ],
+     [
+      1,
+      60252,
+      2272.83,
       2410,
       2327.96,
       25
      ],
      [
       1,
-      17034473,
-      2048.68,
-      681379,
-      2500.18,
-      25
-     ],
-     [
-      1,
-      471620,
-      1711.12,
-      18865,
+      471720,
+      1787.38,
+      18869,
       2350.42,
       25
      ],
      [
-      -1,
-      134870,
-      18763.72,
-      6743,
-      2344.21,
-      20
+      1,
+      16529996,
+      986.42,
+      661200,
+      2065.97,
+      25
      ],
      [
       1,
-      1179050,
-      1992.3,
-      78603,
+      1179550,
+      1986.39,
+      78637,
       2322.87,
       15
      ],
      [
       1,
-      84,
-      1964.6,
-      15,
-      2738.21,
-      25
-     ],
-     [
-      1,
-      17679750,
-      2115.14,
-      1767975,
+      17693250,
+      2115.17,
+      1769325,
       2320.35,
       10
      ],
      [
       -1,
-      1051785,
-      8539.77,
-      52589,
+      47190,
+      2409.96,
+      1973,
+      2364.2,
+      25
+     ],
+     [
+      -1,
+      1053080,
+      8668.99,
+      52654,
       2192.58,
       20
      ],
      [
       1,
-      2872071,
-      1009.01,
-      287207,
+      2875605,
+      1003.24,
+      287560,
       2461.81,
       10
      ],
      [
       -1,
-      80429,
-      16338.25,
-      4021,
+      80546,
+      16344.12,
+      4027,
       2372.75,
       20
      ],
      [
       -1,
-      37312,
-      19370.3,
-      1866,
+      37355,
+      19636.83,
+      1868,
       2285.7,
       20
      ],
      [
       1,
-      706950,
-      1730.99,
-      70695,
+      707760,
+      1722.97,
+      70776,
       2308.39,
       10
      ],
      [
       -1,
-      9863,
-      36254.81,
-      986,
+      9874,
+      36178.35,
+      987,
       2347.67,
       10
      ],
      [
       -1,
-      11670,
-      31219.36,
+      11681,
+      31217.23,
       584,
       2326.33,
       20
      ],
      [
-      1,
-      164955,
-      389.27,
-      8248,
-      2407.0,
-      20
-     ],
-     [
       -1,
-      7463,
-      44379.59,
-      746,
-      2343.12,
-      10
-     ],
-     [
-      -1,
-      18414,
-      4603.27,
-      18276,
-      2347.0,
-      1
-     ],
-     [
-      -1,
-      23565,
-      13423.59,
-      1178,
-      2311.8,
-      20
-     ],
-     [
-      -1,
-      176738,
-      3538.5,
-      7070,
+      176910,
+      3588.01,
+      7076,
       2370.77,
       25
      ],
      [
       -1,
-      16190,
-      14569.65,
+      18432,
+      4603.3,
+      18258,
+      2347.0,
+      1
+     ],
+     [
+      -1,
+      23588,
+      13650.8,
+      1179,
+      2311.8,
+      20
+     ],
+     [
+      -1,
+      16203,
+      14681.83,
       810,
       2340.2,
       20
      ],
      [
       -1,
-      47146,
-      4469.94,
-      1886,
+      47186,
+      4530.2,
+      1887,
       2447.16,
       25
      ],
      [
       1,
-      32991,
-      608.25,
-      3666,
+      33022,
+      585.68,
+      3669,
       2463.92,
       9
      ],
      [
       -1,
-      9851,
-      3152.68,
-      3594,
-      2399.47,
+      9980,
+      3152.06,
+      3623,
+      2399.12,
       3
      ],
      [
       1,
-      19067436,
-      1891.13,
-      1271162,
+      28311840,
+      1520.94,
+      1415592,
+      2419.91,
+      20
+     ],
+     [
+      -1,
+      5124443,
+      2707.36,
+      873542,
+      2387.49,
+      5
+     ],
+     [
+      -1,
+      9437280,
+      3784.13,
+      377491,
+      1791.18,
+      25
+     ],
+     [
+      1,
+      19095759,
+      1890.91,
+      1273051,
       1658.44,
       15
      ],
      [
       1,
-      114274550,
-      2171.08,
-      11427455,
+      114444298,
+      2171.11,
+      11444430,
       2610.31,
       10
      ],
      [
       -1,
-      8802671,
-      3675.94,
-      352107,
-      2299.06,
+      8720472,
+      3732.05,
+      348819,
+      2299.42,
       25
      ],
      [
-      -1,
-      1758644,
-      15934.91,
-      351729,
-      2352.89,
-      5
-     ],
-     [
       1,
-      105404167,
-      2180.14,
-      11711574,
+      105560739,
+      2180.17,
+      11728971,
       2518.71,
       9
      ],
      [
       -1,
-      3019303,
-      2369.82,
-      120772,
+      2419030,
+      2381.01,
+      96761,
       2338.37,
       25
      ],
      [
-      1,
-      23601761,
-      1476.53,
-      2360176,
-      2162.83,
-      10
-     ],
-     [
       -1,
-      25844159,
-      2866.43,
-      2584416,
+      25588194,
+      2872.77,
+      2558819,
       2374.04,
       10
      ],
      [
       -1,
-      15843991,
-      2947.05,
-      633760,
+      15866181,
+      2945.95,
+      634647,
       2494.55,
       25
      ],
      [
       -1,
-      11205911,
-      2895.7,
-      448236,
+      11221606,
+      2901.43,
+      448864,
       2262.69,
       25
      ],
      [
       1,
-      10047640,
-      1809.03,
-      502382,
+      10061712,
+      1793.32,
+      503086,
       2623.9,
       20
      ],
      [
       -1,
-      44031667,
-      3359.7,
-      2201583,
+      44093336,
+      3360.37,
+      2204667,
       2522.09,
       20
      ],
      [
       -1,
-      5892648,
-      2426.03,
-      235706,
+      5900901,
+      2426.06,
+      236036,
       2325.63,
       25
      ],
      [
+      -1,
+      41732,
+      4698.41,
+      20866,
+      2368.27,
+      2
+     ],
+     [
       1,
-      181842,
-      125.05,
-      9092,
-      2349.75,
+      717188,
+      2268.82,
+      37747,
+      2361.69,
+      19
+     ],
+     [
+      1,
+      201416,
+      339.32,
+      10071,
+      2358.39,
       20
      ],
      [
       -1,
-      1328210,
-      3970.44,
-      442737,
-      2329.23,
+      1340715,
+      3957.16,
+      446905,
+      2331.78,
       3
      ],
      [
       -1,
-      178069,
-      2861.69,
-      29678,
-      2351.37,
-      6
-     ],
-     [
-      1,
-      70689,
-      1928.52,
-      13991,
-      2364.27,
-      5
-     ],
-     [
-      1,
-      35343,
-      2308.6,
-      1407,
-      2357.3,
-      25
-     ],
-     [
-      -1,
-      194176,
-      3091.79,
-      64725,
+      194316,
+      3091.82,
+      64772,
       2360.49,
       3
      ],
      [
       -1,
-      873120,
-      4703.38,
-      174624,
-      2355.24,
+      860383,
+      4739.34,
+      172077,
+      2356.8,
       5
      ],
      [
       -1,
-      854396,
-      4990.91,
-      42720,
-      2330.01,
+      914818,
+      4768.97,
+      45741,
+      2332.4,
       20
      ],
      [
+      -1,
+      448120,
+      13855.7,
+      17925,
+      2370.8,
+      25
+     ],
+     [
       1,
-      541926,
-      1629.06,
-      27096,
+      542271,
+      1660.29,
+      27114,
       2542.11,
       20
      ],
      [
       -1,
-      57652,
-      21022.11,
-      5765,
+      57688,
+      21224.58,
+      5769,
       2350.0,
       10
      ],
      [
       1,
-      535095,
-      2129.34,
-      21404,
-      2360.78,
-      25
-     ],
-     [
-      1,
-      166586,
-      2249.55,
-      8329,
+      166692,
+      2249.58,
+      8335,
       2363.1,
       20
      ],
      [
       -1,
-      128417,
-      35156.1,
-      6421,
-      2345.19,
-      20
+      283753,
+      22959.14,
+      11350,
+      2371.39,
+      25
      ],
      [
       1,
-      96711,
-      1008.66,
-      19342,
-      2358.33,
-      5
+      958775,
+      1976.28,
+      38351,
+      2365.99,
+      25
+     ],
+     [
+      1,
+      68173,
+      422.37,
+      2727,
+      2364.24,
+      25
      ],
      [
       -1,
-      171678,
-      38321.92,
-      8584,
-      2341.55,
-      20
-     ],
-     [
-      -1,
-      127291,
-      8609.75,
-      6365,
-      2339.98,
-      20
+      58433,
+      3468.88,
+      29216,
+      2359.4,
+      2
      ],
      [
       1,
-      751412,
-      2265.57,
-      39548,
-      2354.85,
-      19
-     ],
-     [
-      1,
-      52782,
-      1508.01,
-      7540,
+      52804,
+      1646.71,
+      7543,
       2351.37,
       7
      ],
      [
       -1,
-      64655,
-      12222.88,
-      3233,
-      2341.47,
-      20
-     ],
-     [
-      1,
-      104837,
-      1979.8,
-      5242,
-      2361.0,
+      54079,
+      13981.13,
+      2704,
+      2360.94,
       20
      ],
      [
       -1,
-      117840,
-      3438.9,
-      5892,
+      117895,
+      3457.3,
+      5895,
       2391.71,
       20
      ],
      [
       -1,
-      913142,
-      4157.79,
-      45657,
-      2328.65,
+      852960,
+      4233.65,
+      42648,
+      2332.82,
       20
      ],
      [
       1,
-      117840,
-      2281.85,
-      6030,
-      2329.01,
-      25
-     ],
-     [
-      1,
-      412422,
-      2184.77,
-      37735,
+      412632,
+      2184.8,
+      37940,
       2457.14,
       20
      ],
      [
       1,
-      188549,
-      2165.88,
-      7542,
+      188645,
+      2161.34,
+      7546,
       2366.24,
       25
      ],
      [
-      1,
-      235670,
-      122.81,
-      9427,
-      2318.5,
-      25
-     ],
-     [
-      1,
-      48145,
-      1945.92,
-      1926,
-      2356.82,
-      25
+      -1,
+      448963,
+      2606.17,
+      57208,
+      2363.37,
+      8
      ],
      [
       -1,
-      18653,
-      8195.76,
-      933,
-      2362.4,
-      20
-     ],
-     [
-      -1,
-      8813,
-      3705.38,
-      353,
-      2363.1,
+      36606,
+      2931.1,
+      1464,
+      2371.15,
       25
      ],
      [
       1,
-      94268,
-      1574.96,
-      32529,
+      17521,
+      1663.28,
+      701,
+      2358.78,
+      25
+     ],
+     [
+      1,
+      94308,
+      1574.99,
+      32568,
       2313.82,
       3
      ],
      [
       -1,
-      357285,
-      2491.98,
-      25520,
-      2337.81,
-      14
+      411285,
+      2472.35,
+      25705,
+      2357.88,
+      16
      ],
      [
       -1,
-      47134,
-      3135.55,
-      1885,
-      2350.09,
+      47152,
+      3009.16,
+      1886,
+      2368.3,
       25
      ],
      [
       1,
-      608319,
-      2295.95,
-      26449,
-      2352.96,
-      23
+      566694,
+      2285.15,
+      26985,
+      2359.6,
+      21
      ],
      [
       1,
-      39962,
-      1516.6,
-      1998,
-      2359.89,
+      39987,
+      1490.87,
+      1999,
+      2364.36,
       20
      ],
      [
       1,
-      235720,
-      1688.26,
-      9429,
+      235690,
+      1668.8,
+      9428,
       2326.51,
       25
      ],
      [
       1,
-      277371,
-      2006.47,
-      46081,
+      277230,
+      2006.5,
+      45936,
       2358.07,
       6
      ],
      [
       -1,
-      728306,
-      2616.48,
-      29132,
+      727812,
+      2616.51,
+      29112,
       2340.04,
       25
      ],
      [
       -1,
-      506511,
-      21465.6,
-      25326,
+      506210,
+      21479.92,
+      25310,
       2328.12,
       20
      ],
      [
       -1,
-      156576,
-      2572.85,
-      7829,
+      156483,
+      2572.88,
+      7824,
       2331.7,
       20
      ],
      [
       -1,
-      47731,
-      2723.17,
-      9546,
-      2314.2,
-      5
-     ],
-     [
-      -1,
-      910738,
-      5767.2,
-      45537,
-      2331.89,
+      925056,
+      5787.92,
+      46253,
+      2333.82,
       20
      ],
      [
       1,
-      2098602,
-      2254.01,
-      83944,
+      2097107,
+      2260.42,
+      83884,
       2343.49,
       25
-     ],
-     [
-      1,
-      100682,
-      1481.69,
-      4027,
-      2343.3,
-      25
-     ],
-     [
-      1,
-      126326,
-      2238.24,
-      8794,
-      2330.77,
-      25
-     ],
-     [
-      -1,
-      117880,
-      2575.61,
-      5894,
-      2308.25,
-      20
      ]
     ]
    },
    "harvest": {
-    "msgs": 333,
-    "trades": 1843,
-    "users": 990,
-    "big": 87,
+    "msgs": 229,
+    "trades": 865,
+    "users": 377,
+    "big": 58,
     "kept": 300
    }
   },
   "drivers": {
    "windows": {
     "24": {
-     "dp": 1.11,
-     "doi": -0.02,
-     "spot_net": 5.1,
-     "perp_net": 0.5,
-     "spot_btc": 296.3,
-     "perp_usd": 35841474,
-     "prem": -0.134,
+     "dp": 1.6,
+     "doi": -0.26,
+     "spot_net": 6.7,
+     "perp_net": 1.0,
+     "spot_btc": 406.2,
+     "perp_usd": 81316615,
+     "prem": -0.12,
      "code": "flat",
      "label": "Chưa có đà rõ",
      "why": "Giá và open interest đều ít thay đổi.",
      "analysis": {
-      "title": "Tăng nhẹ 1,1%",
-      "verdict": "24 giờ qua BTC tăng nhẹ 1,1%.",
+      "title": "Tăng nhẹ 1,6%",
+      "verdict": "24 giờ qua BTC tăng nhẹ 1,6%.",
       "tone": "neutral",
       "assess": "Chưa thấy lực nào áp đảo đứng sau đà tăng.",
       "forces": [
        {
         "name": "Spot",
         "side": 1,
-        "text": "mua ròng 296 BTC trên OKX (+5,1% khối lượng)"
+        "text": "mua ròng 406 BTC trên OKX (+6,7% khối lượng)"
        },
        {
         "name": "Người mua Mỹ",
         "side": -1,
-        "text": "bán, đứng ngoài (Coinbase Premium -0,13%)"
+        "text": "bán, đứng ngoài (Coinbase Premium -0,12%)"
        },
        {
         "name": "Futures",
         "side": 0,
-        "text": "cân bằng (+0,5%)"
+        "text": "cân bằng (+1,0%)"
        },
        {
         "name": "Thanh lý",
         "side": 0,
-        "text": "không phía nào áp đảo: long 27,1 triệu $, short 24,0 triệu $"
+        "text": "không phía nào áp đảo: long 25,7 triệu $, short 29,4 triệu $"
        },
        {
         "name": "Open interest",
         "side": 0,
-        "text": "ít đổi (-0,0%)"
+        "text": "ít đổi (-0,3%)"
        },
        {
         "name": "Funding",
         "side": 0,
-        "text": "bình thường (phân vị 63 trên 90 ngày)"
+        "text": "phe long trả phí cao (phân vị 85 trên 90 ngày)"
        }
       ],
       "watch": [
-       "Giữ trên $79.737 (đáy 24 giờ) thì đà tăng còn nguyên; vượt $81.502 là đi tiếp, rơi lại dưới đáy là hỏng.",
+       "Giữ trên $79.737 (đáy 24 giờ) thì đà tăng còn nguyên; vượt $81.780 là đi tiếp, rơi lại dưới đáy là hỏng.",
        "Coinbase Premium quay về dương: dấu hiệu người mua Mỹ trở lại.",
        "Spot chuyển sang mua ròng: lúc đó đà tăng mới có nền tiền thật."
       ]
      }
     },
     "72": {
-     "dp": 1.29,
-     "doi": 0.69,
-     "spot_net": 2.9,
-     "perp_net": 0.4,
-     "spot_btc": 409.5,
-     "perp_usd": 76026858,
-     "prem": -0.151,
+     "dp": 2.1,
+     "doi": 0.54,
+     "spot_net": 3.2,
+     "perp_net": 0.8,
+     "spot_btc": 461.2,
+     "perp_usd": 149605132,
+     "prem": -0.146,
      "code": "flat",
      "label": "Chưa có đà rõ",
      "why": "Giá và open interest đều ít thay đổi.",
      "analysis": {
-      "title": "Đi ngang (+1,3%)",
-      "verdict": "3 ngày qua BTC gần như đi ngang (+1,3%).",
+      "title": "Tăng nhẹ 2,1%",
+      "verdict": "3 ngày qua BTC tăng nhẹ 2,1%.",
       "tone": "neutral",
-      "assess": "Thị trường đang chờ: không phe nào chiếm ưu thế.",
+      "assess": "Chưa thấy lực nào áp đảo đứng sau đà tăng.",
       "forces": [
        {
         "name": "Spot",
         "side": 1,
-        "text": "mua ròng 410 BTC trên OKX (+2,9% khối lượng)"
+        "text": "mua ròng 461 BTC trên OKX (+3,2% khối lượng)"
        },
        {
         "name": "Người mua Mỹ",
@@ -7939,37 +7843,34 @@
        {
         "name": "Futures",
         "side": 0,
-        "text": "cân bằng (+0,4%)"
+        "text": "cân bằng (+0,8%)"
        },
        {
         "name": "Thanh lý",
         "side": 0,
-        "text": "không phía nào áp đảo: long 42,6 triệu $, short 47,7 triệu $"
+        "text": "không phía nào áp đảo: long 40,3 triệu $, short 53,2 triệu $"
        },
        {
         "name": "Open interest",
         "side": 0,
-        "text": "ít đổi (+0,7%)"
+        "text": "ít đổi (+0,5%)"
        },
        {
         "name": "Funding",
         "side": 0,
-        "text": "bình thường (phân vị 63 trên 90 ngày)"
+        "text": "phe long trả phí cao (phân vị 85 trên 90 ngày)"
        }
       ],
       "watch": [
-       "Giá đang trong vùng $79.516–$81.502; thoát ra khỏi vùng này theo hướng nào thì đà mới rõ.",
-       "Coinbase Premium quay về dương: dấu hiệu người mua Mỹ trở lại."
+       "Giữ trên $79.516 (đáy 3 ngày) thì đà tăng còn nguyên; vượt $81.780 là đi tiếp, rơi lại dưới đáy là hỏng.",
+       "Coinbase Premium quay về dương: dấu hiệu người mua Mỹ trở lại.",
+       "Spot chuyển sang mua ròng: lúc đó đà tăng mới có nền tiền thật."
       ]
      }
     }
    },
    "series": {
     "price": [
-     [
-      1792940400000,
-      80528
-     ],
      [
       1792944000000,
       80692
@@ -8352,14 +8253,14 @@
      ],
      [
       1793286000000,
-      81331
+      81699
+     ],
+     [
+      1793289600000,
+      81780
      ]
     ],
     "oi": [
-     [
-      1792940400000,
-      294426.6
-     ],
      [
       1792944000000,
       294292.2
@@ -8742,626 +8643,630 @@
      ],
      [
       1793286000000,
-      298669.7
+      298327.8
+     ],
+     [
+      1793289600000,
+      297571.2
      ]
     ],
     "cvd_spot": [
      [
-      1793001600000,
-      -43.9
-     ],
-     [
       1793005200000,
-      -16.8
+      27.1
      ],
      [
       1793008800000,
-      11.9
+      55.8
      ],
      [
       1793012400000,
-      43.3
+      87.2
      ],
      [
       1793016000000,
-      86.2
+      130.1
      ],
      [
       1793019600000,
-      78.3
+      122.2
      ],
      [
       1793023200000,
-      -18.4
+      25.5
      ],
      [
       1793026800000,
-      64.7
+      108.6
      ],
      [
       1793030400000,
-      80.1
+      124.0
      ],
      [
       1793034000000,
-      78.1
+      122.0
      ],
      [
       1793037600000,
-      107.9
-     ],
-     [
-      1793041200000,
-      89.4
-     ],
-     [
-      1793044800000,
-      109.1
-     ],
-     [
-      1793048400000,
-      107.4
-     ],
-     [
-      1793052000000,
-      102.8
-     ],
-     [
-      1793055600000,
-      108.1
-     ],
-     [
-      1793059200000,
-      110.6
-     ],
-     [
-      1793062800000,
-      111.0
-     ],
-     [
-      1793066400000,
-      103.0
-     ],
-     [
-      1793070000000,
-      67.2
-     ],
-     [
-      1793073600000,
-      69.2
-     ],
-     [
-      1793077200000,
-      61.4
-     ],
-     [
-      1793080800000,
-      55.1
-     ],
-     [
-      1793084400000,
-      17.5
-     ],
-     [
-      1793088000000,
-      12.8
-     ],
-     [
-      1793091600000,
-      35.1
-     ],
-     [
-      1793095200000,
-      53.8
-     ],
-     [
-      1793098800000,
-      77.8
-     ],
-     [
-      1793102400000,
-      77.9
-     ],
-     [
-      1793106000000,
-      106.6
-     ],
-     [
-      1793109600000,
-      122.8
-     ],
-     [
-      1793113200000,
-      134.7
-     ],
-     [
-      1793116800000,
-      152.9
-     ],
-     [
-      1793120400000,
-      213.0
-     ],
-     [
-      1793124000000,
-      209.7
-     ],
-     [
-      1793127600000,
-      215.4
-     ],
-     [
-      1793131200000,
-      239.9
-     ],
-     [
-      1793134800000,
-      236.0
-     ],
-     [
-      1793138400000,
-      322.5
-     ],
-     [
-      1793142000000,
-      290.8
-     ],
-     [
-      1793145600000,
-      301.6
-     ],
-     [
-      1793149200000,
-      249.9
-     ],
-     [
-      1793152800000,
-      259.5
-     ],
-     [
-      1793156400000,
-      293.6
-     ],
-     [
-      1793160000000,
-      375.0
-     ],
-     [
-      1793163600000,
-      295.7
-     ],
-     [
-      1793167200000,
-      264.8
-     ],
-     [
-      1793170800000,
-      195.8
-     ],
-     [
-      1793174400000,
-      229.5
-     ],
-     [
-      1793178000000,
-      355.3
-     ],
-     [
-      1793181600000,
-      393.3
-     ],
-     [
-      1793185200000,
-      369.1
-     ],
-     [
-      1793188800000,
-      357.7
-     ],
-     [
-      1793192400000,
-      186.3
-     ],
-     [
-      1793196000000,
-      94.8
-     ],
-     [
-      1793199600000,
-      119.7
-     ],
-     [
-      1793203200000,
-      126.0
-     ],
-     [
-      1793206800000,
-      139.7
-     ],
-     [
-      1793210400000,
-      191.1
-     ],
-     [
-      1793214000000,
-      184.6
-     ],
-     [
-      1793217600000,
-      202.0
-     ],
-     [
-      1793221200000,
-      162.2
-     ],
-     [
-      1793224800000,
-      186.3
-     ],
-     [
-      1793228400000,
-      190.1
-     ],
-     [
-      1793232000000,
-      189.2
-     ],
-     [
-      1793235600000,
-      164.0
-     ],
-     [
-      1793239200000,
-      21.8
-     ],
-     [
-      1793242800000,
-      -40.4
-     ],
-     [
-      1793246400000,
-      -45.3
-     ],
-     [
-      1793250000000,
-      -52.4
-     ],
-     [
-      1793253600000,
-      -27.8
-     ],
-     [
-      1793257200000,
-      -46.7
-     ],
-     [
-      1793260800000,
-      43.7
-     ],
-     [
-      1793264400000,
-      61.1
-     ],
-     [
-      1793268000000,
-      143.6
-     ],
-     [
-      1793271600000,
       151.8
      ],
      [
+      1793041200000,
+      133.4
+     ],
+     [
+      1793044800000,
+      153.1
+     ],
+     [
+      1793048400000,
+      151.3
+     ],
+     [
+      1793052000000,
+      146.7
+     ],
+     [
+      1793055600000,
+      152.0
+     ],
+     [
+      1793059200000,
+      154.5
+     ],
+     [
+      1793062800000,
+      154.9
+     ],
+     [
+      1793066400000,
+      146.9
+     ],
+     [
+      1793070000000,
+      111.1
+     ],
+     [
+      1793073600000,
+      113.1
+     ],
+     [
+      1793077200000,
+      105.3
+     ],
+     [
+      1793080800000,
+      99.0
+     ],
+     [
+      1793084400000,
+      61.4
+     ],
+     [
+      1793088000000,
+      56.7
+     ],
+     [
+      1793091600000,
+      79.0
+     ],
+     [
+      1793095200000,
+      97.7
+     ],
+     [
+      1793098800000,
+      121.7
+     ],
+     [
+      1793102400000,
+      121.8
+     ],
+     [
+      1793106000000,
+      150.5
+     ],
+     [
+      1793109600000,
+      166.7
+     ],
+     [
+      1793113200000,
+      178.6
+     ],
+     [
+      1793116800000,
+      196.8
+     ],
+     [
+      1793120400000,
+      256.9
+     ],
+     [
+      1793124000000,
+      253.7
+     ],
+     [
+      1793127600000,
+      259.3
+     ],
+     [
+      1793131200000,
+      283.8
+     ],
+     [
+      1793134800000,
+      280.0
+     ],
+     [
+      1793138400000,
+      366.4
+     ],
+     [
+      1793142000000,
+      334.7
+     ],
+     [
+      1793145600000,
+      345.5
+     ],
+     [
+      1793149200000,
+      293.8
+     ],
+     [
+      1793152800000,
+      303.4
+     ],
+     [
+      1793156400000,
+      337.5
+     ],
+     [
+      1793160000000,
+      418.9
+     ],
+     [
+      1793163600000,
+      339.7
+     ],
+     [
+      1793167200000,
+      308.8
+     ],
+     [
+      1793170800000,
+      239.7
+     ],
+     [
+      1793174400000,
+      273.4
+     ],
+     [
+      1793178000000,
+      399.2
+     ],
+     [
+      1793181600000,
+      437.2
+     ],
+     [
+      1793185200000,
+      413.0
+     ],
+     [
+      1793188800000,
+      401.6
+     ],
+     [
+      1793192400000,
+      230.3
+     ],
+     [
+      1793196000000,
+      138.7
+     ],
+     [
+      1793199600000,
+      163.6
+     ],
+     [
+      1793203200000,
+      169.9
+     ],
+     [
+      1793206800000,
+      183.6
+     ],
+     [
+      1793210400000,
+      235.0
+     ],
+     [
+      1793214000000,
+      228.5
+     ],
+     [
+      1793217600000,
+      245.9
+     ],
+     [
+      1793221200000,
+      206.2
+     ],
+     [
+      1793224800000,
+      230.2
+     ],
+     [
+      1793228400000,
+      234.0
+     ],
+     [
+      1793232000000,
+      233.1
+     ],
+     [
+      1793235600000,
+      208.0
+     ],
+     [
+      1793239200000,
+      65.7
+     ],
+     [
+      1793242800000,
+      3.5
+     ],
+     [
+      1793246400000,
+      -1.4
+     ],
+     [
+      1793250000000,
+      -8.5
+     ],
+     [
+      1793253600000,
+      16.1
+     ],
+     [
+      1793257200000,
+      -2.8
+     ],
+     [
+      1793260800000,
+      87.6
+     ],
+     [
+      1793264400000,
+      105.1
+     ],
+     [
+      1793268000000,
+      187.5
+     ],
+     [
+      1793271600000,
+      195.8
+     ],
+     [
       1793275200000,
-      139.7
+      183.6
      ],
      [
       1793278800000,
-      167.6
+      211.5
      ],
      [
       1793282400000,
-      202.4
+      246.3
      ],
      [
       1793286000000,
-      391.1
+      435.0
+     ],
+     [
+      1793289600000,
+      569.8
      ]
     ],
     "cvd_perp": [
      [
-      1793030400000,
-      -29.2
-     ],
-     [
       1793034000000,
-      -34.9
+      -5.7
      ],
      [
       1793037600000,
-      -28.5
+      0.7
      ],
      [
       1793041200000,
-      -39.5
+      -10.3
      ],
      [
       1793044800000,
-      -26.1
+      3.1
      ],
      [
       1793048400000,
-      -28.7
+      0.5
      ],
      [
       1793052000000,
-      -15.9
+      13.3
      ],
      [
       1793055600000,
-      -44.0
+      -14.8
      ],
      [
       1793059200000,
-      -31.1
+      -1.9
      ],
      [
       1793062800000,
-      -29.5
+      -0.3
      ],
      [
       1793066400000,
-      -22.6
+      6.6
      ],
      [
       1793070000000,
-      -27.0
-     ],
-     [
-      1793073600000,
-      -15.2
-     ],
-     [
-      1793077200000,
-      -20.5
-     ],
-     [
-      1793080800000,
-      -29.7
-     ],
-     [
-      1793084400000,
-      -40.2
-     ],
-     [
-      1793088000000,
-      -22.5
-     ],
-     [
-      1793091600000,
-      -37.4
-     ],
-     [
-      1793095200000,
-      -20.8
-     ],
-     [
-      1793098800000,
-      -12.4
-     ],
-     [
-      1793102400000,
-      -41.2
-     ],
-     [
-      1793106000000,
-      -19.3
-     ],
-     [
-      1793109600000,
       2.2
      ],
      [
-      1793113200000,
-      9.0
+      1793073600000,
+      14.0
      ],
      [
-      1793116800000,
-      -30.9
+      1793077200000,
+      8.7
      ],
      [
-      1793120400000,
-      -56.5
+      1793080800000,
+      -0.5
      ],
      [
-      1793124000000,
-      -30.4
+      1793084400000,
+      -11.0
      ],
      [
-      1793127600000,
-      -20.9
+      1793088000000,
+      6.7
      ],
      [
-      1793131200000,
-      5.1
+      1793091600000,
+      -8.2
      ],
      [
-      1793134800000,
-      -14.3
+      1793095200000,
+      8.4
      ],
      [
-      1793138400000,
-      95.8
+      1793098800000,
+      16.8
      ],
      [
-      1793142000000,
-      59.9
+      1793102400000,
+      -12.0
      ],
      [
-      1793145600000,
-      54.2
-     ],
-     [
-      1793149200000,
-      33.2
-     ],
-     [
-      1793152800000,
-      42.5
-     ],
-     [
-      1793156400000,
-      53.1
-     ],
-     [
-      1793160000000,
-      53.4
-     ],
-     [
-      1793163600000,
-      40.7
-     ],
-     [
-      1793167200000,
-      44.4
-     ],
-     [
-      1793170800000,
-      24.5
-     ],
-     [
-      1793174400000,
-      41.8
-     ],
-     [
-      1793178000000,
-      133.6
-     ],
-     [
-      1793181600000,
-      127.0
-     ],
-     [
-      1793185200000,
-      117.6
-     ],
-     [
-      1793188800000,
-      94.9
-     ],
-     [
-      1793192400000,
-      -32.6
-     ],
-     [
-      1793196000000,
-      40.2
-     ],
-     [
-      1793199600000,
-      39.1
-     ],
-     [
-      1793203200000,
-      28.8
-     ],
-     [
-      1793206800000,
-      27.3
-     ],
-     [
-      1793210400000,
-      63.0
-     ],
-     [
-      1793214000000,
-      68.6
-     ],
-     [
-      1793217600000,
-      116.9
-     ],
-     [
-      1793221200000,
-      89.3
-     ],
-     [
-      1793224800000,
-      104.5
-     ],
-     [
-      1793228400000,
-      102.8
-     ],
-     [
-      1793232000000,
-      97.0
-     ],
-     [
-      1793235600000,
-      77.5
-     ],
-     [
-      1793239200000,
-      -28.0
-     ],
-     [
-      1793242800000,
-      -1.2
-     ],
-     [
-      1793246400000,
-      3.2
-     ],
-     [
-      1793250000000,
-      52.2
-     ],
-     [
-      1793253600000,
+      1793106000000,
       9.8
      ],
      [
+      1793109600000,
+      31.4
+     ],
+     [
+      1793113200000,
+      38.2
+     ],
+     [
+      1793116800000,
+      -1.7
+     ],
+     [
+      1793120400000,
+      -27.3
+     ],
+     [
+      1793124000000,
+      -1.2
+     ],
+     [
+      1793127600000,
+      8.3
+     ],
+     [
+      1793131200000,
+      34.3
+     ],
+     [
+      1793134800000,
+      14.9
+     ],
+     [
+      1793138400000,
+      125.0
+     ],
+     [
+      1793142000000,
+      89.1
+     ],
+     [
+      1793145600000,
+      83.4
+     ],
+     [
+      1793149200000,
+      62.4
+     ],
+     [
+      1793152800000,
+      71.7
+     ],
+     [
+      1793156400000,
+      82.3
+     ],
+     [
+      1793160000000,
+      82.6
+     ],
+     [
+      1793163600000,
+      69.9
+     ],
+     [
+      1793167200000,
+      73.6
+     ],
+     [
+      1793170800000,
+      53.7
+     ],
+     [
+      1793174400000,
+      71.0
+     ],
+     [
+      1793178000000,
+      162.8
+     ],
+     [
+      1793181600000,
+      156.2
+     ],
+     [
+      1793185200000,
+      146.8
+     ],
+     [
+      1793188800000,
+      124.1
+     ],
+     [
+      1793192400000,
+      -3.4
+     ],
+     [
+      1793196000000,
+      69.4
+     ],
+     [
+      1793199600000,
+      68.3
+     ],
+     [
+      1793203200000,
+      58.0
+     ],
+     [
+      1793206800000,
+      56.5
+     ],
+     [
+      1793210400000,
+      92.2
+     ],
+     [
+      1793214000000,
+      97.8
+     ],
+     [
+      1793217600000,
+      146.1
+     ],
+     [
+      1793221200000,
+      118.5
+     ],
+     [
+      1793224800000,
+      133.7
+     ],
+     [
+      1793228400000,
+      132.0
+     ],
+     [
+      1793232000000,
+      126.2
+     ],
+     [
+      1793235600000,
+      106.7
+     ],
+     [
+      1793239200000,
+      1.1
+     ],
+     [
+      1793242800000,
+      28.0
+     ],
+     [
+      1793246400000,
+      32.4
+     ],
+     [
+      1793250000000,
+      81.4
+     ],
+     [
+      1793253600000,
+      38.9
+     ],
+     [
       1793257200000,
-      -9.5
+      19.7
      ],
      [
       1793260800000,
-      5.9
+      35.1
      ],
      [
       1793264400000,
-      25.9
+      55.1
      ],
      [
       1793268000000,
-      28.6
+      57.7
      ],
      [
       1793271600000,
-      16.3
+      45.5
      ],
      [
       1793275200000,
-      10.6
+      39.8
      ],
      [
       1793278800000,
-      31.3
+      60.5
      ],
      [
       1793282400000,
-      43.3
+      72.5
      ],
      [
       1793286000000,
-      76.0
+      105.2
+     ],
+     [
+      1793289600000,
+      149.6
      ]
     ]
    },
    "liq": {
-    "long": 6224356,
-    "short": 8757868,
-    "hours": 22.8,
+    "long": 6079461,
+    "short": 10759372,
+    "hours": 23.8,
     "series": [
      [
       1793203200000,
@@ -9376,12 +9281,12 @@
      [
       1793210400000,
       6791,
-      986870
+      986337
      ],
      [
       1793214000000,
       406,
-      1088002
+      1088792
      ],
      [
       1793217600000,
@@ -9405,12 +9310,12 @@
      ],
      [
       1793235600000,
-      3359991,
+      3212085,
       592
      ],
      [
       1793239200000,
-      1330419,
+      1333430,
       0
      ],
      [
@@ -9456,18 +9361,23 @@
      [
       1793282400000,
       1171175,
-      3145272
+      3174024
      ],
      [
       1793286000000,
       0,
-      898727
+      2285232
+     ],
+     [
+      1793289600000,
+      0,
+      585991
      ]
     ]
    },
    "liq_src": "agg",
    "oi_src": "7 sàn (Coinalyze)",
-   "funding_pct": 63.0
+   "funding_pct": 84.8
   },
   "stable": {
    "total": 300.3,
@@ -10329,7 +10239,7 @@
    },
    "days": 3188
   },
-  "runtime_sec": 377.4
+  "runtime_sec": 429.3
  },
  "attention": {
   "trends": {
@@ -10806,7 +10716,7 @@
       8
      ]
     ],
-    "age_h": 9.2,
+    "age_h": 10.2,
     "y5": [
      {
       "kw": "buy bitcoin",
@@ -11481,7 +11391,7 @@
       25
      ]
     ],
-    "age_h": 9.2,
+    "age_h": 10.2,
     "y5": [
      {
       "kw": "mua bitcoin",
@@ -11516,7 +11426,7 @@
      "finance": 34,
      "of": 100,
      "fof": 100,
-     "d1_fin": 34,
+     "d1_fin": 35,
      "d1_all": null,
      "d7_fin": 28,
      "d7_all": null,
@@ -11594,7 +11504,7 @@
      "finance": 47,
      "of": 99,
      "fof": 100,
-     "d1_fin": 46,
+     "d1_fin": 45,
      "d1_all": null,
      "d7_fin": 47,
      "d7_all": null,
@@ -11620,7 +11530,7 @@
      "finance": 61,
      "of": 99,
      "fof": 100,
-     "d1_fin": 60,
+     "d1_fin": 63,
      "d1_all": null,
      "d7_fin": 58,
      "d7_all": null,
@@ -13850,7 +13760,7 @@
    "trends_vn_d90": "multiline HTTP 429",
    "trends_vn_y5": "multiline HTTP 429"
   },
-  "runtime_sec": 3.0
+  "runtime_sec": 3.8
  },
  "events": {
   "groups": [
@@ -19203,9 +19113,9 @@
    }
   },
   "live": {
-   "n": 2007,
-   "index_current": 50,
-   "index_cryptobert": 59,
+   "n": 2019,
+   "index_current": 51,
+   "index_cryptobert": 60,
    "agree": 47,
    "examples": [
     {
@@ -19234,7 +19144,7 @@
     }
    ]
   },
-  "updated": "2026-10-29T15:21:23Z",
-  "runtime_sec": 20.3
+  "updated": "2026-10-29T16:20:53Z",
+  "runtime_sec": 17.0
  }
 }
