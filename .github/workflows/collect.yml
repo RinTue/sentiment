@@ -2,7 +2,11 @@ name: Thu thập tâm lý crypto
 
 on:
   schedule:
-    - cron: "17 * * * *"   # mỗi giờ, vào phút 17 (giờ UTC)
+    # GitHub hay bỏ bớt lượt chạy theo lịch khi máy chủ của họ bận (từ 8/11 chỉ còn 3–4 lượt/ngày),
+    # nên đặt nhiều mốc trong giờ để tăng cơ hội; "concurrency" bên dưới bảo đảm không chạy chồng nhau.
+    - cron: "17 * * * *"
+    - cron: "37 * * * *"
+    - cron: "57 * * * *"
   workflow_dispatch:        # cho phép bấm chạy tay
 
 permissions:
