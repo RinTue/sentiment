@@ -1607,11 +1607,48 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     } catch (e) { HL.liveErr = e.message; }
     renderWhales();
   }
-  setTimeout(hlLive, 1500); setInterval(hlLive, 60000);
+  setTimeout(hlLive, 1500); setInterval(() => { if (!HL.livePos) hlLive(); }, 60000);
+  // Đọc lại vị thế trực tiếp từ Hyperliquid ngay trên trình duyệt (vị thế trên blockchain là công khai), cho các ví máy chủ đã tìm ra
+  const hlPost = (body) => fetch("https://api.hyperliquid.xyz/info", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+    .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
+  async function hlRefresh() {
+    const H = S.mkt && S.mkt.hl_whales; if (!H || HL.busy) return;
+    HL.busy = true; HL.prog = 0;
+    try {
+      const mids = await hlPost({ type: "allMids" });
+      for (const c of ["BTC", "ETH"]) if (mids && mids[c]) HL.live[c] = +mids[c];
+      HL.liveT = Date.now(); HL.liveSrc = "Hyperliquid";
+      const addrs = [...new Set([...((H.BTC && H.BTC.addrs) || []), ...((H.ETH && H.ETH.addrs) || [])])];
+      HL.total = addrs.length; renderWhales();
+      const out = { BTC: [], ETH: [] }; let i = 0, ok = 0;
+      const worker = async () => {
+        while (i < addrs.length) {
+          const a = addrs[i++];
+          try {
+            const st = await hlPost({ type: "clearinghouseState", user: a }); ok++;
+            for (const ap of st.assetPositions || []) {
+              const p = ap.position || {}; if (!out[p.coin]) continue;
+              const szi = +p.szi; if (!szi) continue;
+              out[p.coin].push({ long: szi > 0, usd: Math.abs(+p.positionValue || 0), liq: p.liquidationPx ? +p.liquidationPx : null, margin: +p.marginUsed || 0, entry: +p.entryPx || 0, lev: (p.leverage || {}).value, cross: (p.leverage || {}).type === "cross" });
+            }
+          } catch (e) { /* bỏ qua ví lỗi */ }
+          HL.prog = i;
+          if (i % 25 === 0) renderWhales();
+          await new Promise((r) => setTimeout(r, 200));     // giữ dưới giới hạn tốc độ của Hyperliquid
+        }
+      };
+      await Promise.all([worker(), worker(), worker()]);
+      if (addrs.length && ok >= addrs.length * 0.7) { HL.livePos = out; HL.posT = Date.now(); HL.posN = ok; HL.liveErr = null; }
+      else HL.liveErr = `chỉ đọc được ${ok}/${addrs.length} ví`;
+    } catch (e) { HL.liveErr = e.message; }
+    HL.busy = false; renderWhales();
+  }
+  // Chạy khi mở tab Dòng tiền, rồi 5 phút một lần khi trang đang hiện
+  setInterval(() => { if (!document.hidden && document.querySelector('.tabpanel[data-panel="money"]:not([hidden])') && Date.now() - (HL.posT || 0) > 5 * 60e3) hlRefresh(); }, 20e3);
   // Tính lại bậc thanh lý cộng dồn và cụm gần nhất theo giá P từ danh sách vị thế (nếu máy chủ gửi kèm)
   function hlDerive(W, P) {
     const P0 = W.price;
-    if (!W.pos || !W.pos.length || !P || P === P0) return { steps: W.steps, near_long: W.near_long, near_short: W.near_short, P0 };
+    if (!W.pos || !W.pos.length || !P) return { steps: W.steps, near_long: W.near_long, near_short: W.near_short, P0 };
     const L = [], Sh = [];
     for (const [sd, u, lq] of W.pos) { const usdNow = u / P0 * P; if (sd > 0) { if (lq < P) L.push([lq, usdNow]); } else if (lq > P) Sh.push([lq, usdNow]); }
     const steps = [];
@@ -1633,7 +1670,13 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   function renderWhales() {
     const box = $("hl-box"); if (!box) return;
     document.querySelectorAll("#hl-tabs button").forEach((b) => b.classList.toggle("on", b.dataset.coin === HL.coin));
-    const W = S.mkt && S.mkt.hl_whales && S.mkt.hl_whales[HL.coin];
+    let W = S.mkt && S.mkt.hl_whales && S.mkt.hl_whales[HL.coin];
+    const LP = HL.livePos && HL.livePos[HL.coin], LPx = HL.live[HL.coin];
+    if (W && LP && LPx) {   // vị thế đọc trực tiếp: dựng lại toàn bộ số theo giá Hyperliquid lúc này
+      const lo = LP.filter((p) => p.long), sh = LP.filter((p) => !p.long), big = (a) => a.slice().sort((x, y) => y.usd - x.usd).slice(0, 10).map((p) => ({ side: p.long ? "long" : "short", usd: p.usd, entry: p.entry, liq: p.liq, lev: p.lev, pnl: 0, margin: p.margin, cross: p.cross }));
+      W = { ...W, price: LPx, live: true, n_pos: LP.length, n_acc: HL.posN, long_usd: lo.reduce((a, p) => a + p.usd, 0), short_usd: sh.reduce((a, p) => a + p.usd, 0), n_long: lo.length, n_short: sh.length,
+        pos: LP.filter((p) => p.liq && p.liq / LPx > 0.05 && p.liq / LPx < 20).map((p) => [p.long ? 1 : -1, p.usd, p.liq, p.margin, p.entry, p.lev]), top_long: big(lo), top_short: big(sh) };
+    }
     if (!W) { box.innerHTML = `<div class="msg">${S.mkt ? "Máy chủ chưa lấy được vị thế cá voi Hyperliquid; sẽ thử lại ở lần chạy tới." : "Phần này do bộ thu thập trên GitHub lấy."}</div>`; return; }
     const tot = W.long_usd + W.short_usd, pl = tot ? W.long_usd / tot * 100 : 50, live = HL.live[HL.coin], P = live || W.price, D = hlDerive(W, P), P0 = W.price;
     const cl = (c, side) => c ? [`Cụm ${side} gần nhất`, usd(c.usd), `${side === "long" ? "nếu giá xuống" : "nếu giá lên"} ${num(c.from)}–${num(c.to)} (${side === "long" ? "−" : "+"}${c.pct - 1}–${c.pct}%)`, side === "long" ? "down" : "up"] : [`Cụm ${side} gần nhất`, "–", "không có trong ±10%"];
@@ -1641,7 +1684,9 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       [`Tổng long (${W.n_acc} ví theo dõi)`, usd(W.long_usd), `${W.n_long} vị thế · ${num(pl)}% tổng`],
       [`Tổng short`, usd(W.short_usd), `${W.n_short} vị thế · ${num(100 - pl)}% tổng`],
       cl(D.near_long, "long"), cl(D.near_short, "short")]) + `</div>`;
-    h = `<p class="note" style="margin:0 0 8px">Giá hiện tại <b>${num(P)} $</b> ${live ? `(trực tiếp OKX, ${fmtClock(HL.liveT).slice(0, 5)})` : "(lúc máy chủ chạy; chưa lấy được giá trực tiếp)"} · vị thế cá voi đọc lúc ${fmtClock(Date.parse(S.sv.L.generated_at)).slice(0, 5)}, khi đó giá ${num(P0)} $.</p>` + h;
+    const st0 = HL.busy ? ` · đang đọc trực tiếp ${HL.prog || 0}/${HL.total || "…"} ví` : HL.liveErr ? ` · chưa đọc trực tiếp được (${esc(HL.liveErr)})` : "";
+    h = `<p class="note" style="margin:0 0 8px">Giá hiện tại <b>${num(P)} $</b> ${live ? `(trực tiếp ${HL.liveSrc || "OKX"}, ${fmtClock(HL.liveT).slice(0, 5)})` : "(lúc máy chủ chạy; chưa lấy được giá trực tiếp)"} · ` +
+      (W.live ? `<b>vị thế đọc trực tiếp từ Hyperliquid lúc ${fmtClock(HL.posT)}</b> (${HL.posN} ví)` : `vị thế cá voi đọc lúc ${fmtClock(Date.parse(S.sv.L.generated_at)).slice(0, 5)}, khi đó giá ${num(P0)} $`) + `${st0}.</p>` + h;
     // Biểu đồ: mỗi cột là 1% giá; bên trái (dưới giá hiện tại) là long sẽ bị thanh lý, bên phải là short
     const st = D.steps.slice(0, 15), lv = st.map((x, i) => x.long_liq - (i ? st[i - 1].long_liq : 0)), sv = st.map((x, i) => x.short_liq - (i ? st[i - 1].short_liq : 0));
     const mx = Math.max(1, ...lv, ...sv), Wd = 720, Hh = 200, n = st.length, cw = (Wd - 40) / (2 * n), mid = Wd / 2, base = Hh - 34;
@@ -1718,6 +1763,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     store.set("tamly-tab", t);
     try { if (location.hash.slice(1) !== t) history.replaceState(null, "", "#" + t); } catch (e) { /* bỏ qua */ }
     if (scroll) window.scrollTo(0, 0);
+    if (t === "money" && typeof hlRefresh === "function" && Date.now() - (HL.posT || 0) > 5 * 60e3) setTimeout(hlRefresh, 300);
   }
   document.querySelectorAll("#tabs button").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab, true)));
   window.addEventListener("hashchange", () => showTab(location.hash.slice(1), false));

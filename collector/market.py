@@ -850,7 +850,7 @@ def hl_whales(errs: dict) -> dict | None:
             if not szi:
                 continue
             liq = p.get("liquidationPx")
-            pos[coin].append({"side": "long" if szi > 0 else "short", "usd": abs(float(p.get("positionValue") or 0)),
+            pos[coin].append({"addr": a, "side": "long" if szi > 0 else "short", "usd": abs(float(p.get("positionValue") or 0)),
                               "entry": float(p.get("entryPx") or 0), "liq": float(liq) if liq not in (None, "") else None,
                               "lev": (p.get("leverage") or {}).get("value"), "pnl": float(p.get("unrealizedPnl") or 0),
                               "margin": float(p.get("marginUsed") or 0), "cross": (p.get("leverage") or {}).get("type") == "cross"})
@@ -889,7 +889,9 @@ def hl_whales(errs: dict) -> dict | None:
                      # mọi vị thế có giá thanh lý (để trang gộp theo bậc giá như các trang theo dõi Hyperliquid):
                      # [1 long / -1 short, giá trị $, giá thanh lý, ký quỹ $, giá vào, đòn bẩy]
                      "pos": [[1 if p["side"] == "long" else -1, round(p["usd"]), round(p["liq"], 2), round(p["margin"]), round(p["entry"], 2), p["lev"]]
-                             for p in P if p["liq"] and 0.05 < p["liq"] / px < 20]}
+                             for p in P if p["liq"] and 0.05 < p["liq"] / px < 20],
+                     # ví đang có vị thế (công khai trên blockchain) để trang tự đọc lại vị thế trực tiếp khi mở
+                     "addrs": sorted({p["addr"] for p in P}, key=lambda a: -max(q["usd"] for q in P if q["addr"] == a))[:300]}
     hl_remember(big)
     if out and hv:
         out["harvest"] = hv
