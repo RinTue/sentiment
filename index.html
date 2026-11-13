@@ -1597,20 +1597,53 @@ if (typeof module !== "undefined") module.exports = ENGINE;
 
 
   /* ---------- Cá voi Hyperliquid ---------- */
-  const HL = { coin: "BTC", sort: store.get("tamly-hl-sort2", "size"), bucket: store.get("tamly-hl-bucket", {}) || {} };
+  const HL = { coin: "BTC", sort: store.get("tamly-hl-sort2", "size"), bucket: store.get("tamly-hl-bucket", {}) || {}, live: {}, liveT: 0 };
+  // Giá trực tiếp (OKX) để tính khoảng cách tới giá thanh lý theo giá lúc xem trang, không theo giá lúc máy chủ chạy
+  async function hlLive() {
+    try {
+      const d = await okx("/api/v5/market/tickers?instType=SWAP");
+      for (const t of d || []) { if (t.instId === "BTC-USDT-SWAP") HL.live.BTC = +t.last; if (t.instId === "ETH-USDT-SWAP") HL.live.ETH = +t.last; }
+      HL.liveT = Date.now();
+    } catch (e) { HL.liveErr = e.message; }
+    renderWhales();
+  }
+  setTimeout(hlLive, 1500); setInterval(hlLive, 60000);
+  // Tính lại bậc thanh lý cộng dồn và cụm gần nhất theo giá P từ danh sách vị thế (nếu máy chủ gửi kèm)
+  function hlDerive(W, P) {
+    const P0 = W.price;
+    if (!W.pos || !W.pos.length || !P || P === P0) return { steps: W.steps, near_long: W.near_long, near_short: W.near_short, P0 };
+    const L = [], Sh = [];
+    for (const [sd, u, lq] of W.pos) { const usdNow = u / P0 * P; if (sd > 0) { if (lq < P) L.push([lq, usdNow]); } else if (lq > P) Sh.push([lq, usdNow]); }
+    const steps = [];
+    for (let k = 1; k <= 25; k++) {
+      const dn = P * (1 - k / 100), up = P * (1 + k / 100);
+      steps.push({ pct: k, down_px: Math.round(dn), up_px: Math.round(up), long_liq: Math.round(L.reduce((a, [q, v]) => a + (q >= dn ? v : 0), 0)), short_liq: Math.round(Sh.reduce((a, [q, v]) => a + (q <= up ? v : 0), 0)) });
+    }
+    const cluster = (arr, side) => {
+      let best = null;
+      for (let k = 1; k <= 10; k++) {
+        const lo = side === "long" ? P * (1 - k / 100) : P * (1 + (k - 1) / 100), hi = side === "long" ? P * (1 - (k - 1) / 100) : P * (1 + k / 100);
+        const v = arr.reduce((a, [q, u]) => a + (q >= lo && q < hi ? u : 0), 0);
+        if (v && (!best || v > best.usd)) best = { from: Math.round(lo), to: Math.round(hi), pct: k, usd: Math.round(v) };
+      }
+      return best;
+    };
+    return { steps, near_long: cluster(L, "long"), near_short: cluster(Sh, "short"), P0 };
+  }
   function renderWhales() {
     const box = $("hl-box"); if (!box) return;
     document.querySelectorAll("#hl-tabs button").forEach((b) => b.classList.toggle("on", b.dataset.coin === HL.coin));
     const W = S.mkt && S.mkt.hl_whales && S.mkt.hl_whales[HL.coin];
     if (!W) { box.innerHTML = `<div class="msg">${S.mkt ? "Máy chủ chưa lấy được vị thế cá voi Hyperliquid; sẽ thử lại ở lần chạy tới." : "Phần này do bộ thu thập trên GitHub lấy."}</div>`; return; }
-    const tot = W.long_usd + W.short_usd, pl = tot ? W.long_usd / tot * 100 : 50, P = W.price;
+    const tot = W.long_usd + W.short_usd, pl = tot ? W.long_usd / tot * 100 : 50, live = HL.live[HL.coin], P = live || W.price, D = hlDerive(W, P), P0 = W.price;
     const cl = (c, side) => c ? [`Cụm ${side} gần nhất`, usd(c.usd), `${side === "long" ? "nếu giá xuống" : "nếu giá lên"} ${num(c.from)}–${num(c.to)} (${side === "long" ? "−" : "+"}${c.pct - 1}–${c.pct}%)`, side === "long" ? "down" : "up"] : [`Cụm ${side} gần nhất`, "–", "không có trong ±10%"];
     let h = `<div class="stats">` + statBoxes([
       [`Tổng long (${W.n_acc} ví theo dõi)`, usd(W.long_usd), `${W.n_long} vị thế · ${num(pl)}% tổng`],
       [`Tổng short`, usd(W.short_usd), `${W.n_short} vị thế · ${num(100 - pl)}% tổng`],
-      cl(W.near_long, "long"), cl(W.near_short, "short")]) + `</div>`;
+      cl(D.near_long, "long"), cl(D.near_short, "short")]) + `</div>`;
+    h = `<p class="note" style="margin:0 0 8px">Giá hiện tại <b>${num(P)} $</b> ${live ? `(trực tiếp OKX, ${fmtClock(HL.liveT).slice(0, 5)})` : "(lúc máy chủ chạy; chưa lấy được giá trực tiếp)"} · vị thế cá voi đọc lúc ${fmtClock(Date.parse(S.sv.L.generated_at)).slice(0, 5)}, khi đó giá ${num(P0)} $.</p>` + h;
     // Biểu đồ: mỗi cột là 1% giá; bên trái (dưới giá hiện tại) là long sẽ bị thanh lý, bên phải là short
-    const st = W.steps.slice(0, 15), lv = st.map((x, i) => x.long_liq - (i ? st[i - 1].long_liq : 0)), sv = st.map((x, i) => x.short_liq - (i ? st[i - 1].short_liq : 0));
+    const st = D.steps.slice(0, 15), lv = st.map((x, i) => x.long_liq - (i ? st[i - 1].long_liq : 0)), sv = st.map((x, i) => x.short_liq - (i ? st[i - 1].short_liq : 0));
     const mx = Math.max(1, ...lv, ...sv), Wd = 720, Hh = 200, n = st.length, cw = (Wd - 40) / (2 * n), mid = Wd / 2, base = Hh - 34;
     let g = `<line x1="${mid}" x2="${mid}" y1="6" y2="${base + 4}" stroke="var(--ink-2)" stroke-dasharray="3 3"/><text x="${mid}" y="${Hh - 4}" font-size="11" text-anchor="middle" fill="var(--ink-2)">giá hiện tại ${num(P)}</text>`;
     for (let i = 0; i < n; i++) {
@@ -1627,8 +1660,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       : `<div class="msg">Không vị thế ${HL.coin} nào của nhóm ví này bị thanh lý nếu giá đi trong khoảng ±15%: cá voi đang dùng đòn bẩy thấp, nên vùng giá gần không có "bẫy thanh lý" của họ.</div>`);
     const mu = (v) => v >= 1e9 ? num(v / 1e9, 2) + " tỷ $" : v >= 1e6 ? num(v / 1e6, 1) + " tr $" : num(v / 1e3, 0) + " nghìn $";
     // Bảng các mức giá có thanh lý (tới ±25%), gần giá hiện tại xếp trước
-    const lvAll = W.steps.map((x, i) => [x, x.long_liq - (i ? W.steps[i - 1].long_liq : 0), i ? W.steps[i - 1] : null]).filter((r) => r[1] > 0);
-    const svAll = W.steps.map((x, i) => [x, x.short_liq - (i ? W.steps[i - 1].short_liq : 0), i ? W.steps[i - 1] : null]).filter((r) => r[1] > 0);
+    const lvAll = D.steps.map((x, i) => [x, x.long_liq - (i ? D.steps[i - 1].long_liq : 0), i ? D.steps[i - 1] : null]).filter((r) => r[1] > 0);
+    const svAll = D.steps.map((x, i) => [x, x.short_liq - (i ? D.steps[i - 1].short_liq : 0), i ? D.steps[i - 1] : null]).filter((r) => r[1] > 0);
     const lvRow = ([x, v, pr]) => `<tr><td class="num">${num(x.down_px)}–${num(pr ? pr.down_px : P)}</td><td class="num">−${x.pct - 1}–${x.pct}%</td><td class="num down">${mu(v)}</td><td class="num">${mu(x.long_liq)}</td></tr>`;
     const svRow = ([x, v, pr]) => `<tr><td class="num">${num(pr ? pr.up_px : P)}–${num(x.up_px)}</td><td class="num">+${x.pct - 1}–${x.pct}%</td><td class="num up">${mu(v)}</td><td class="num">${mu(x.short_liq)}</td></tr>`;
     const lvlTbl = (rows, fn, empty) => rows.length ? `<div class="tbl-wrap"><table class="evtbl hlt"><thead><tr><th>Giá chạm vùng</th><th>Cách giá</th><th>Bị thanh lý</th><th>Cộng dồn</th></tr></thead><tbody>${rows.map(fn).join("")}</tbody></table></div>` : `<p class="note">${empty}</p>`;
@@ -1642,11 +1675,11 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       for (const [sd, u, lq, mg, en, lv] of W.pos) {
         const side = sd > 0 ? "l" : "s"; if ((side === "l") !== (lq < P)) continue;
         const key = Math.floor(lq / bk) * bk, o = g[side].get(key) || { liq: key, usd: 0, coin: 0, margin: 0, n: 0, info: [] };
-        o.usd += u; o.coin += u / P; o.margin += mg; o.n++; o.info.push(`${num(u / P, 2)} ${HL.coin} · giá vào ${num(en)} · ${lv || "–"}x`); g[side].set(key, o);
+        o.usd += u / P0 * P; o.coin += u / P0; o.margin += mg; o.n++; o.info.push(`${num(u / P0, 2)} ${HL.coin} · giá vào ${num(en)} · ${lv || "–"}x`); g[side].set(key, o);
       }
       rowsS = [...g.s.values()]; rowsL = [...g.l.values()];
     } else {
-      const fromTop = (arr) => (arr || []).filter((p) => p.liq && Math.abs(p.liq / P - 1) < 0.95).map((p) => ({ liq: p.liq, usd: p.usd, coin: p.usd / P, margin: p.margin, n: 1, info: [`giá vào ${num(p.entry)} · ${p.lev || "–"}x`] }));
+      const fromTop = (arr) => (arr || []).filter((p) => p.liq && Math.abs(p.liq / P - 1) < 0.95).map((p) => ({ liq: p.liq, usd: p.usd / P0 * P, coin: p.usd / P0, margin: p.margin, n: 1, info: [`giá vào ${num(p.entry)} · ${p.lev || "–"}x`] }));
       rowsS = fromTop(W.top_short); rowsL = fromTop(W.top_long);
     }
     const sortFn = HL.sort === "price" ? (a, b) => Math.abs(a.liq / P - 1) - Math.abs(b.liq / P - 1) : (a, b) => b.usd - a.usd;
