@@ -188,6 +188,14 @@ h4.ph.pos::before { background: var(--good); } h4.ph.neg::before { background: v
 .hlm-card { background: #0b0e11; border-radius: 12px; padding: 10px 12px 4px; margin-top: 8px; }
 .hlm-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: #f1f3f5; font-size: 1rem; }
 .hlm-ctl { display: flex; gap: 8px; } .hlm-ctl select, .hlm-ctl button { background: #12171c; color: #e6e9ec; border: 1px solid #2b333b; border-radius: 6px; padding: 5px 10px; font: inherit; font-size: .85rem; cursor: pointer; }
+.etf-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 8px 0 2px; color: #e6e9ec; }
+.etf-big { font-size: 1.9rem; font-weight: 700; letter-spacing: -.01em; margin-right: 4px; } .etf-big.neg { color: #f6465d; } .etf-big.pos { color: #2ebd85; }
+.etf-chip { font-size: .8rem; padding: 3px 8px; border-radius: 6px; background: #1a2027; color: #c7ced6; } .etf-chip.neg { color: #f6465d; background: rgba(246,70,93,.12); } .etf-chip.pos { color: #2ebd85; background: rgba(46,189,133,.12); }
+.etf-px { margin-left: auto; font-size: .82rem; color: #c7ced6; } .etf-px i { display: inline-block; width: 16px; height: 2px; background: #f0b90b; vertical-align: middle; margin-right: 6px; }
+.etf-sub { font-size: .76rem; color: #7d8792; }
+.etf-head { flex-wrap: wrap; } .hlm-ctl.etf-rg { flex-wrap: wrap; gap: 6px; } .hlm-ctl.etf-rg button { white-space: nowrap; }
+.hlm-ctl button.on { background: #24324a; border-color: #4a6fa5; color: #fff; }
+@media (max-width: 640px) { .etf-big { font-size: 1.5rem; } .etf-px { margin-left: 0; width: 100%; } .hlm-ctl.etf-rg button { padding: 4px 7px; } }
 .hlmap { position: relative; margin-top: 4px; }
 .hlmap svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
 .hlm-tip { position: absolute; top: 28px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; font-size: .84rem; line-height: 1.45; box-shadow: 0 4px 14px rgba(0,0,0,.12); pointer-events: none; white-space: nowrap; z-index: 2; }
@@ -394,6 +402,11 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       </div>
     </section>
     <section class="panel">
+      <h2>Dòng tiền ETF Bitcoin ở Mỹ: quỹ lớn đang mua hay bán</h2>
+      <div id="etf-box"><p class="loading">Đang tải…</p></div>
+      <p class="note">Các quỹ ETF Bitcoin giao ngay (IBIT của BlackRock, FBTC của Fidelity, GBTC…) là kênh để tổ chức, quỹ hưu trí và nhà đầu tư qua tài khoản chứng khoán mua BTC; tiền vào ròng thì quỹ phải mua BTC thật, tiền ra ròng thì quỹ bán. Số mỗi phiên có sau khi thị trường Mỹ đóng cửa, tức sáng hôm sau giờ Việt Nam; thứ Bảy, Chủ nhật và ngày lễ Mỹ không có phiên. Hợp để xem xu hướng vài ngày đến vài tuần, không dùng để vào lệnh trong ngày. Nguồn: <a href="https://www.tftc.io/bitcoin-etf-flows" target="_blank" rel="noopener">The Commoner Bitcoin ETF Tracker của TFTC</a> (CC BY 4.0), tổng hợp từ SoSoValue và số công bố của các quỹ.</p>
+    </section>
+    <section class="panel">
       <h2>Thanh lý: phe nào đang bị ép</h2>
       <div class="seg" id="liq-tabs"><button type="button" data-coin="BTC" class="on">BTC</button><button type="button" data-coin="ETH">ETH</button></div>
       <div class="chips liq-src" id="liq-src"></div>
@@ -487,7 +500,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <h2>Cách hệ thống hoạt động và giới hạn</h2>
       <div class="method">
       <ol>
-        <li><b>Thu thập:</b> mỗi giờ, bộ thu thập trên GitHub đọc 8 báo crypto, Reddit, Stocktwits, Bluesky, tiêu đề video của 11 kênh YouTube crypto lớn, 4 kênh tin Telegram, Mastodon, Lemmy và Hacker News; cùng dữ liệu thị trường (Fear &amp; Greed, CoinGecko, funding và tỷ lệ long/short của OKX/Hyperliquid, quyền chọn Deribit, Wikipedia, Coinbase, DefiLlama) và số liệu vĩ mô (FRED, Bộ Tài chính Mỹ, Fed New York, Yahoo). Khi bạn mở trang, trình duyệt lấy thêm số liệu trực tiếp từ Bybit, OKX, Deribit và lịch Investing.com.</li>
+        <li><b>Thu thập:</b> mỗi giờ, bộ thu thập trên GitHub đọc 8 báo crypto, Reddit, Stocktwits, Bluesky, tiêu đề video của 11 kênh YouTube crypto lớn, 4 kênh tin Telegram, Mastodon, Lemmy và Hacker News; cùng dữ liệu thị trường (Fear &amp; Greed, CoinGecko, dòng tiền ETF Bitcoin (TFTC), funding và tỷ lệ long/short của OKX/Hyperliquid, quyền chọn Deribit, Wikipedia, Coinbase, DefiLlama) và số liệu vĩ mô (FRED, Bộ Tài chính Mỹ, Fed New York, Yahoo). Khi bạn mở trang, trình duyệt lấy thêm số liệu trực tiếp từ Bybit, OKX, Deribit và lịch Investing.com.</li>
         <li><b>Lọc:</b> bỏ bài trùng, bot báo giá, quảng cáo, bài không phải tiếng Anh, bài không nói về crypto, và giới hạn số bài của mỗi tác giả.</li>
         <li><b>Chấm điểm:</b> mỗi bài nhận điểm từ −1 đến +1, kết hợp mô hình AI Twitter RoBERTa với từ điển thuật ngữ crypto (hiểu "rekt", "ATH", "outflows", phủ định…).</li>
         <li><b>Chỉ số:</b> điểm văn bản (so với lịch sử) kết hợp với Fear &amp; Greed, phiếu cộng đồng, funding, tỷ lệ long/short, quyền chọn và mức chú ý thành chỉ số 0–100. Máy chủ tính và lưu chỉ số mỗi giờ; trang dùng đúng con số đó (cùng số với tin Telegram). Chỉ khi máy chủ chưa cập nhật quá 2 giờ, trang mới tự tính lại bằng dữ liệu trực tiếp.</li>
@@ -1815,6 +1828,108 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   document.querySelectorAll("#hl-tabs button").forEach((b) => b.addEventListener("click", () => { HL.coin = b.dataset.coin; renderWhales(); }));
   /* ---------- Tab ---------- */
   const TABS = ["overview", "crowd", "money", "macro", "events", "method"];
+  /* ---------- Dòng tiền ETF BTC ---------- */
+  // Máy chủ lưu data/etf.json (nguồn TFTC); nếu tệp đó cũ hoặc thiếu, trình duyệt thử tự đọc TFTC.
+  const ETF = { data: null, src: null, err: null, range: store.get("tamly-etf-range", "3T"), chart: null, busy: false, loaded: false, tried: false, pending: false };
+  const ETF_URL = "https://www.tftc.io/bitcoin-etf-flows/data.json";
+  const ETF_RANGES = [["1T", 31], ["3T", 92], ["6T", 183], ["1N", 366], ["Tất cả", 0]];
+  const mUsd = (m, signed = true) => usd(m * 1e6, signed);
+  const ddmm = (d) => `${+d.slice(8, 10)}/${+d.slice(5, 7)}`;
+  function etfSummJS(days, funds) {
+    const last = days.at(-1), fl = days.map((r) => r[1]), sg = Math.sign(last[1]);
+    let n = 0, sum = 0; for (let i = fl.length - 1; i >= 0; i--) { if (sg && Math.sign(fl[i]) === sg) { n++; sum += fl[i]; } else break; }
+    const dl = Date.parse(last[0] + "T00:00:00Z"), cal = (k) => { const lo = new Date(dl - (k - 1) * 864e5).toISOString().slice(0, 10); return days.filter((r) => r[0] >= lo).reduce((a, r) => a + r[1], 0); };
+    const yr = fl.slice(-252).map(Math.abs), f = (funds || {})[last[0]] || {};
+    const assets = (days.slice().reverse().find((r) => r[2]) || [])[2] || null;
+    return { date: last[0], flow: last[1], streak: { n, sign: sg, sum }, d7: cal(7), d30: cal(30), s5: fl.slice(-5).reduce((a, b) => a + b, 0),
+      rank: Math.round(100 * yr.filter((x) => x <= Math.abs(last[1])).length / yr.length), top: Object.entries(f).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).slice(0, 3), assets };
+  }
+  async function etfLoad() {
+    if (ETF.busy) return; ETF.busy = true; ETF.loaded = true;
+    try {
+      const r = await fetch("data/etf.json?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const j = await r.json(); if (j.days && j.days.length) { ETF.data = j; ETF.src = "server"; }
+    } catch (e) { ETF.err = "bộ thu thập: " + e.message; }
+    const age = ETF.data ? Date.now() - Date.parse(ETF.data.days.at(-1)[0] + "T21:00:00Z") : Infinity;
+    if (age > 4 * 864e5 && !ETF.tried) {   // phiên gần nhất cũ hơn 4 ngày: thử tự đọc TFTC
+      ETF.tried = true;
+      try {
+        const r = await fetch(ETF_URL, { cache: "no-store" }); if (!r.ok) throw new Error("HTTP " + r.status);
+        const j = await r.json(), arr = (j.days || []).filter((d) => d.date).sort((a, b) => (a.date < b.date ? -1 : 1));
+        const days = arr.map((d) => [d.date, Math.round((d.netFlowUsd ?? d.vendorNetFlowUsd ?? 0) / 1e5) / 10, d.totalNetAssetsUsd ? Math.round(d.totalNetAssetsUsd / 1e7) / 100 : null, d.btcCloseUsd ? Math.round(d.btcCloseUsd) : null]);
+        const funds = {}; arr.slice(-130).forEach((d) => { if (d.perEtfUsd) { const o = {}; for (const [k, v] of Object.entries(d.perEtfUsd)) if (v) o[k] = Math.round(v / 1e5) / 10; funds[d.date] = o; } });
+        if (days.length && (!ETF.data || days.at(-1)[0] > ETF.data.days.at(-1)[0])) { ETF.data = { ...(ETF.data || {}), days, funds, summary: null, src_time: j.dateModified }; ETF.src = "browser"; }
+      } catch (e) { ETF.err = (ETF.err ? ETF.err + "; " : "") + "đọc trực tiếp TFTC: " + e.message; }
+    }
+    ETF.busy = false; renderETF();
+  }
+  function renderETF() {
+    const box = $("etf-box"); if (!box) return;
+    if (!ETF.data) {
+      if (!ETF.loaded) { etfLoad(); return; }
+      if (!ETF.busy) box.innerHTML = `<div class="msg">Chưa lấy được dữ liệu ETF${ETF.err ? ` (${esc(ETF.err)})` : ""}. Bộ thu thập sẽ thử lại ở lần chạy sau.</div>`;
+      return;
+    }
+    const D = ETF.data, E = (ETF.src === "server" && D.summary) || etfSummJS(D.days, D.funds), H = D.hist || {}, st = E.streak;
+    const out = E.flow < 0, tone = st.n >= 3 ? (st.sign < 0 ? "neg" : "pos") : "warn";
+    const big = st.n >= 2 ? `${st.sign < 0 ? "Rút" : "Vào"} ${st.n} phiên liền: ${mUsd(st.sum)}` : `Phiên ${ddmm(E.date)}: ${out ? "rút" : "vào"} ${mUsd(E.flow)}`;
+    const topTxt = E.top && E.top.length ? `, chủ yếu ${E.top.map(([k, v]) => `${esc(k)} ${mUsd(v)}`).join(", ")}` : "";
+    let concl;
+    if (st.n >= 4 && st.sign < 0) concl = `Nhà đầu tư qua ETF (tổ chức, quỹ hưu trí, cố vấn tài chính) đang rút tiền liên tục: lực mua lớn nhất của BTC hai năm qua đang đứng ngoài, thậm chí bán ra. Khi chuỗi rút chưa dừng, các nhịp hồi của giá thường khó bền; tín hiệu đầu tiên đáng chú ý là một phiên tiền vào ròng trở lại.`;
+    else if (st.n >= 4 && st.sign > 0) concl = `Tiền vào ETF đều đặn nhiều phiên: có lực mua thật từ nhà đầu tư lớn, thường giúp đỡ giá. Đáng lo khi chuỗi này đứt bằng một phiên rút mạnh.`;
+    else if (E.d30 < 0 && out) concl = `Dòng tiền 30 ngày đang âm và phiên gần nhất vẫn rút: nghiêng về bán, nhưng chưa thành chuỗi dài.`;
+    else if (E.d30 > 0 && !out) concl = `Dòng tiền 30 ngày dương và phiên gần nhất vẫn vào: nghiêng về mua.`;
+    else concl = `Dòng tiền đổi chiều qua lại, chưa thành xu hướng rõ.`;
+    const hk = st.n >= (H.streak_n || 4) ? (st.sign < 0 ? "out" : "in") : (H.big_thr != null && E.flow <= H.big_thr ? "big_out" : null), hx = hk && H[hk];
+    const hist = hx && hx.d7 ? `<p class="note" style="margin:6px 0 0">Lịch sử từ 2024: sau ${hx.d7.n} lần ${hk === "big_out" ? `có phiên rút từ ${mUsd(H.big_thr)} trở lên` : `chuỗi ${H.streak_n} phiên ${hk === "out" ? "rút" : "vào"} liền`}, BTC 7 ngày sau tăng ở ${hx.d7.up}% số lần (trung vị ${pct(hx.d7.med)})${hx.d30 ? `, 30 ngày sau tăng ${hx.d30.up}% (trung vị ${pct(hx.d30.med)})` : ""}. Với mọi ngày: 7 ngày tăng ${H.base.d7.up}%, 30 ngày tăng ${H.base.d30 ? H.base.d30.up : "–"}%. Mẫu còn nhỏ (ETF mới có từ 2024), chỉ để tham khảo.</p>` : "";
+    const chip = (lab, m) => `<div><b>${lab}</b><br><span class="${m < 0 ? "down" : m > 0 ? "up" : ""}">${mUsd(m)}</span></div>`;
+    const v = `<div class="liq-verdict ${tone}"><p class="big">${big}</p>
+      <p>Phiên ${ddmm(E.date)} (giờ Mỹ): <b>${mUsd(E.flow)}</b>${topTxt}.${E.rank != null ? ` Quy mô phiên này lớn hơn ${E.rank}% số phiên trong 1 năm qua.` : ""}</p>
+      <p><b>Kết luận:</b> ${concl}</p>
+      <div class="mini">${chip("7 ngày", E.d7)}${chip("30 ngày", E.d30)}<div><b>Tổng tài sản các quỹ</b><br>${E.assets ? num(E.assets, 1) + " tỷ $" : "–"}</div></div>${hist}</div>`;
+    const lastPx = (D.days.slice().reverse().find((r) => r[3]) || [])[3];
+    const card = `<div class="hlm-card"><div class="hlm-head etf-head"><b>Dòng tiền ETF BTC</b><div class="hlm-ctl etf-rg">${ETF_RANGES.map(([k]) => `<button type="button" data-r="${k}" class="${k === ETF.range ? "on" : ""}">${k}</button>`).join("")}</div></div>
+      <div class="etf-top"><span class="etf-big ${out ? "neg" : "pos"}">${mUsd(E.flow)}</span><span class="etf-chip ${E.d7 < 0 ? "neg" : "pos"}">${mUsd(E.d7)} · 7 ngày</span><span class="etf-chip ${E.d30 < 0 ? "neg" : "pos"}">${mUsd(E.d30)} · 30 ngày</span><span class="etf-px"><i></i>Giá BTC ${num(lastPx)} $</span></div>
+      <div class="etf-sub">Tiền vào/ra ròng mỗi phiên · phiên gần nhất ${ddmm(E.date)}/${E.date.slice(0, 4)}${ETF.src === "browser" ? " · trình duyệt đọc trực tiếp TFTC" : D.updated ? ` · máy chủ kiểm tra lúc ${fmtTime(Date.parse(D.updated))}` : ""}</div>
+      <div id="etf-ec" style="height:340px"><p class="loading" style="color:#9aa4ad;padding:20px">Đang vẽ biểu đồ…</p></div></div>
+      <p class="note" style="margin-top:4px">Cột xanh: tiền vào ròng; cột đỏ: tiền ra ròng (trục trái, triệu $). Đường vàng: giá BTC đóng cửa (trục phải). Rê chuột hoặc chạm vào một cột để xem số và các quỹ đóng góp; kéo thanh bên dưới để xem giai đoạn khác.${D.err && ETF.src === "server" ? ` Lần kiểm tra gần nhất không tải được nguồn (${esc(D.err.slice(0, 120))}), đang dùng bản đã lưu.` : ""}</p>`;
+    box.innerHTML = v + card;
+    box.querySelectorAll(".etf-rg button").forEach((b) => b.addEventListener("click", () => { ETF.range = b.dataset.r; store.set("tamly-etf-range", ETF.range); box.querySelectorAll(".etf-rg button").forEach((x) => x.classList.toggle("on", x === b)); etfDraw(); }));
+    etfDraw();
+  }
+  function etfDraw() {
+    const el = $("etf-ec"), D = ETF.data; if (!el || !D) return;
+    if (!el.clientWidth) { ETF.pending = true; return; }
+    ETF.pending = false;
+    loadEcharts().then((ec) => {
+      if (!document.body.contains(el)) return;
+      if (ETF.chart && ETF.chart.getDom() !== el) { try { ETF.chart.dispose(); } catch (e) { /* bỏ qua */ } ETF.chart = null; }
+      if (!ETF.chart) { el.innerHTML = ""; ETF.chart = ec.init(el, null, { renderer: "canvas" }); }
+      const ch = ETF.chart, days = D.days, cats = days.map((r) => r[0]), red = "#f6465d", green = "#2ebd85", gold = "#f0b90b", axis = "#7d8792", narrow = el.clientWidth < 520;
+      const rg = (ETF_RANGES.find((x) => x[0] === ETF.range) || ETF_RANGES[1])[1];
+      let si = 0; if (rg) { const lo = new Date(Date.parse(cats.at(-1) + "T00:00:00Z") - rg * 864e5).toISOString().slice(0, 10); si = Math.max(0, cats.findIndex((d) => d >= lo)); }
+      const lab = (d) => `${+d.slice(8, 10)}/${+d.slice(5, 7)}${rg === 0 || rg > 200 ? "/" + d.slice(2, 4) : ""}`;
+      ch.setOption({
+        backgroundColor: "#0b0e11", animation: false,
+        grid: { left: narrow ? 46 : 58, right: narrow ? 46 : 58, top: 16, bottom: 62 },
+        tooltip: { trigger: "axis", confine: true, extraCssText: "white-space:normal;max-width:" + (narrow ? 240 : 320) + "px;", axisPointer: { type: "shadow" }, backgroundColor: "#1a2027", borderColor: "#2b333b", textStyle: { color: "#e6e9ec", fontSize: 12 },
+          formatter: (ps) => { const i = ps[0].dataIndex, r = days[i], f = (D.funds || {})[r[0]];
+            const fl = f ? Object.entries(f).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).slice(0, 5).map(([k, v]) => `${esc(k)} <span style="color:${v < 0 ? red : green}">${mUsd(v)}</span>`).join(" · ") : "";
+            return `<b>${r[0].slice(8, 10)}/${r[0].slice(5, 7)}/${r[0].slice(0, 4)}</b><br><span style="color:${r[1] < 0 ? red : green}">●</span> ${r[1] < 0 ? "Tiền ra ròng" : "Tiền vào ròng"}: <b>${mUsd(r[1])}</b>` + (r[3] ? `<br><span style="color:${gold}">●</span> Giá BTC: ${num(r[3])} $` : "") + (r[2] ? `<br>Tổng tài sản các quỹ: ${num(r[2], 1)} tỷ $` : "") + (fl ? `<br><span style="color:#9aa4ad">${fl}</span>` : ""); } },
+        xAxis: { type: "category", data: cats, axisLine: { lineStyle: { color: "#2b333b" } }, axisLabel: { color: axis, fontSize: 10, hideOverlap: true, formatter: lab }, axisTick: { show: false } },
+        yAxis: [{ type: "value", axisLabel: { color: axis, fontSize: 10, formatter: (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + num(Math.abs(v)) + (narrow ? "" : " tr") }, splitLine: { lineStyle: { color: "#1f262d" } } },
+                { type: "value", scale: true, axisLabel: { color: axis, fontSize: 10, formatter: (v) => num(v / 1000) + "K" }, splitLine: { show: false } }],
+        dataZoom: [{ type: "inside", startValue: si, endValue: cats.length - 1 },
+                   { type: "slider", height: 18, bottom: 10, startValue: si, endValue: cats.length - 1, borderColor: "#2b333b", backgroundColor: "#11161b", fillerColor: "rgba(80,120,200,.25)", textStyle: { color: axis }, labelFormatter: (i) => cats[i] ? lab(cats[i]) : "", dataBackground: { lineStyle: { color: "#3a4450" }, areaStyle: { color: "#1c232a" } } }],
+        series: [
+          { name: "Tiền ròng", type: "bar", data: days.map((r) => ({ value: r[1], itemStyle: { color: r[1] < 0 ? red : green } })), barMaxWidth: 14, barCategoryGap: "25%" },
+          { name: "Giá BTC", type: "line", yAxisIndex: 1, data: days.map((r) => r[3]), showSymbol: false, smooth: true, connectNulls: true, lineStyle: { color: gold, width: 1.6 }, itemStyle: { color: gold }, z: 3 },
+        ],
+      }, true);
+      if (!ETF.resize) { ETF.resize = true; window.addEventListener("resize", () => { try { ETF.chart && ETF.chart.resize(); } catch (e) { /* bỏ qua */ } }); }
+    }).catch((e) => { el.innerHTML = `<div class="msg">${esc(e.message)}</div>`; });
+  }
   function showTab(t, scroll) {
     if (!TABS.includes(t)) t = "overview";
     document.querySelectorAll("#tabs button").forEach((b) => { const on = b.dataset.tab === t; b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false"); });
@@ -1823,6 +1938,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     try { if (location.hash.slice(1) !== t) history.replaceState(null, "", "#" + t); } catch (e) { /* bỏ qua */ }
     if (scroll) window.scrollTo(0, 0);
     if (t === "money" && typeof hlRefresh === "function" && Date.now() - (HL.posT || 0) > 5 * 60e3) setTimeout(hlRefresh, 300);
+    if (t === "money") setTimeout(() => { if (ETF.pending) etfDraw(); else if (ETF.chart) try { ETF.chart.resize(); } catch (e) { /* bỏ qua */ } }, 60);
   }
   document.querySelectorAll("#tabs button").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab, true)));
   window.addEventListener("hashchange", () => showTab(location.hash.slice(1), false));
@@ -1918,7 +2034,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       $("p2").textContent = `giữ ${kept.length}, loại ${col.items.length - kept.length}`;
       S.mode = "lex"; ENGINE.score(S.kept, null);
     }
-    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, renderWhales, renderEvents, renderHistTest, renderFavor, afterScore];
+    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, renderWhales, renderETF, renderEvents, renderHistTest, renderFavor, afterScore];
     steps.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
     const failed = keys.filter((k) => S.err[k]).map((k) => SRC_NAME[k]).concat(Object.keys(col.errs || {}));
     $("updated").textContent = failed.length ? `Không tải được: ${failed.join(", ")}` : "";

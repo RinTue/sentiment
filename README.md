@@ -7,10 +7,11 @@ Trang: https://rintue.github.io/sentiment/ · Tài liệu đầy đủ: tệp PD
 - `index.html`: trang web (tầng 5). Đọc dữ liệu trong `data/`; khi mở trang lấy thêm trực tiếp Bybit, OKX, Deribit, thanh lý theo thời gian thực (Bybit, OKX, Binance) và lịch Investing.com.
 - `collector/collect.py`: thu thập (8 báo crypto, Reddit, Stocktwits, Bluesky, YouTube, 4 kênh tin Telegram, Mastodon, Lemmy, Hacker News), lọc, chấm điểm (Twitter-RoBERTa + từ điển crypto), chọn Tin nổi bật / Đám đông, dịch, số liệu vĩ mô; điều phối các phần dưới.
 - `collector/market.py`: chỉ số tổng hợp 0–100, funding / open interest / thanh lý gộp 7 sàn (Coinalyze), Coinbase Premium, stablecoin, "Đà giá đến từ đâu" kèm kết luận tự động, bản đồ thanh lý cá voi Hyperliquid.
+- `collector/etf.py`: dòng tiền ETF Bitcoin giao ngay ở Mỹ từ TFTC (tftc.io/bitcoin-etf-flows, không cần mã API, CC BY 4.0), lưu `data/etf.json`, kiểm chứng giá sau các chuỗi rút/vào.
 - `collector/attention.py`: Google Trends (toàn cầu, Việt Nam), hạng ứng dụng sàn trên App Store, Wikipedia nhiều trang.
 - `collector/events.py`: lịch sự kiện vĩ mô và đo phản ứng giá BTC từ 2022.
 - `collector/history_test.py`: kiểm chứng lịch sử các chỉ báo từ 2022, Điểm thuận lợi (học 2022–2024, kiểm tra 2025–nay).
-- `collector/alerts.py`: cảnh báo Telegram (bản tin sáng, vùng cực đoan, funding bất thường, giá chạy mạnh, thanh lý dây chuyền, sự kiện vĩ mô cấp 1).
+- `collector/alerts.py`: cảnh báo Telegram (bản tin sáng, vùng cực đoan, funding bất thường, giá chạy mạnh, thanh lý dây chuyền, dòng tiền ETF bất thường, sự kiện vĩ mô cấp 1).
 - `collector/cryptobert.py`: thử nghiệm so sánh mô hình; không ảnh hưởng điểm chính.
 - `.github/workflows/collect.yml`: lịch chạy mỗi giờ (phút 17, giờ UTC).
 

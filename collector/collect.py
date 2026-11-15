@@ -1229,6 +1229,12 @@ def main() -> int:
         latest["attention"] = {"error": str(ex)[:200]}
         print("Lỗi phần chú ý nhỏ lẻ:", ex, file=sys.stderr)
     try:
+        import etf
+        latest["etf"] = etf.run()
+    except Exception as ex:  # noqa: BLE001
+        latest["etf"] = {"error": str(ex)[:200]}
+        print("Lỗi dòng tiền ETF:", ex, file=sys.stderr)
+    try:
         import events
         latest["events"] = events.run(latest, store)
     except Exception as ex:  # noqa: BLE001

@@ -151,6 +151,24 @@ def whale_line(M: dict) -> str | None:
     return t + (". Cụm gần nhất: " + "; ".join(parts) if parts else "")
 
 
+def mflow(m: float) -> str:
+    """Tiền ròng (đơn vị triệu $) có dấu: +25,3 triệu $ / −1,07 tỷ $."""
+    t = f"{vn(abs(m) / 1e3, 2)} tỷ $" if abs(m) >= 1e3 else f"{vn(abs(m), 0 if abs(m) >= 100 else 1)} triệu $"
+    return ("+" if m > 0 else "−" if m < 0 else "") + t
+
+
+def etf_line(latest: dict) -> str | None:
+    E = (latest.get("etf") or {}).get("summary")
+    if not E:
+        return None
+    d = datetime.strptime(E["date"], "%Y-%m-%d")
+    st = E["streak"]
+    t = f"ETF BTC phiên {d:%d/%m}: {mflow(E['flow'])}"
+    if st["n"] >= 2:
+        t += f", {'rút' if st['sign'] < 0 else 'vào'} {st['n']} phiên liền (tổng {mflow(st['sum'])})"
+    return t + f"; 7 ngày {mflow(E['d7'])}, 30 ngày {mflow(E['d30'])}"
+
+
 def summary_lines(latest: dict) -> list:
     M = latest.get("market") or {}
     a, nw, so = latest.get("all") or {}, latest.get("news") or {}, latest.get("social") or {}
@@ -174,6 +192,9 @@ def summary_lines(latest: dict) -> list:
     wl = whale_line(M)
     if wl:
         L.append("• " + wl)
+    el = etf_line(latest)
+    if el:
+        L.append("• " + el)
     mac = latest.get("macro") or {}
     if mac.get("label") and mac.get("have", 1):
         L.append(f"• Vĩ mô: {mac['label']} (điểm {mac.get('score', 0):+d})")
@@ -272,6 +293,27 @@ def run(latest: dict) -> dict:
                 body += f"\nCá voi Hyperliquid: còn {musd(c['usd'])} {side} sẽ bị thanh lý nếu giá {'xuống' if side == 'long' else 'lên'} {vn(c['from'])}–{vn(c['to'])}."
             msgs.append(("market:liq", body))
             st["liq_bucket"] = b[0]
+
+    # 2d) dòng tiền ETF BTC: phiên mới có rút/vào rất mạnh, hoặc chuỗi cùng chiều đạt 5 phiên
+    EF = latest.get("etf") or {}
+    E, EH = EF.get("summary"), EF.get("hist") or {}
+    if E and st.get("etf_day") != E["date"]:
+        first = "etf_day" not in st
+        st["etf_day"] = E["date"]
+        big = EH.get("big_thr") is not None and E["flow"] <= EH["big_thr"]
+        streak5 = E["streak"]["n"] == 5
+        if not first and (big or streak5):
+            out = E["flow"] < 0 if big else E["streak"]["sign"] < 0
+            body = f"{'🏦🔻' if out else '🏦🟢'} <b>Dòng tiền ETF BTC</b>: {etf_line(latest)}."
+            if E.get("top"):
+                body += "\nĐóng góp lớn nhất: " + ", ".join(f"{k} {mflow(v)}" for k, v in E["top"]) + "."
+            hx = EH.get("big_out" if big else ("out" if out else "in"))
+            if hx and hx.get("d7"):
+                what = f"phiên rút từ {mflow(EH['big_thr'])}" if big else f"chuỗi {EH.get('streak_n', 4)} phiên {'rút' if out else 'vào'} liền"
+                body += (f"\n\nLịch sử từ 2024 ({hx['d7']['n']} lần có {what}): BTC 7 ngày sau tăng ở {hx['d7']['up']}% số lần, trung vị {vn(hx['d7']['med'], 1, True)}%"
+                         + (f"; 30 ngày sau tăng {hx['d30']['up']}%, trung vị {vn(hx['d30']['med'], 1, True)}%" if hx.get("d30") else "")
+                         + (f" (mọi ngày: 7 ngày tăng {EH['base']['d7']['up']}%)." if EH.get("base") else "."))
+            msgs.append(("market:etf", body))
 
     # 3) funding bất thường
     fd = M.get("funding")
