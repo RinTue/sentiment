@@ -185,6 +185,9 @@ h4.ph.pos::before { background: var(--good); } h4.ph.neg::before { background: v
 .liq-verdict .mini { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 10px 0 6px; font-size: .85rem; color: var(--ink-2); }
 .liq-verdict .mini .bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--line); margin-top: 4px; }
 .liq-more { margin-top: 10px; } .liq-more > summary { cursor: pointer; font-weight: 600; color: var(--accent, var(--ink-2)); padding: 6px 0; }
+.hlm-card { background: #0b0e11; border-radius: 12px; padding: 10px 12px 4px; margin-top: 8px; }
+.hlm-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: #f1f3f5; font-size: 1rem; }
+.hlm-ctl { display: flex; gap: 8px; } .hlm-ctl select, .hlm-ctl button { background: #12171c; color: #e6e9ec; border: 1px solid #2b333b; border-radius: 6px; padding: 5px 10px; font: inherit; font-size: .85rem; cursor: pointer; }
 .hlmap { position: relative; margin-top: 4px; }
 .hlmap svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
 .hlm-tip { position: absolute; top: 28px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; font-size: .84rem; line-height: 1.45; box-shadow: 0 4px 14px rgba(0,0,0,.12); pointer-events: none; white-space: nowrap; z-index: 2; }
@@ -1680,69 +1683,72 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     };
     return { steps, near_long: cluster(L, "long"), near_short: cluster(Sh, "short"), P0 };
   }
-  // Bản đồ thanh lý kiểu CoinGlass: cột = giá trị vị thế bị thanh lý ở từng bậc giá, đường = cộng dồn từ giá hiện tại ra xa; rê chuột để xem số
+  // Bản đồ thanh lý giống CoinGlass (dùng thư viện ECharts như họ): cột = khối lượng bị thanh lý ở từng mức giá,
+  // đường = cộng dồn từ giá hiện tại ra xa, thanh kéo bên dưới để phóng to, rê chuột xem số.
+  let EC_LOAD = null;
+  const loadEcharts = () => EC_LOAD || (EC_LOAD = new Promise((ok, no) => {
+    if (window.echarts) return ok(window.echarts);
+    const sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js";
+    sc.onload = () => ok(window.echarts); sc.onerror = () => { EC_LOAD = null; no(new Error("không tải được thư viện biểu đồ")); }; document.head.appendChild(sc);
+  }));
   function hlMapHtml(W, P) {
     if (!W.pos || !W.pos.length || !P) return "";
-    const R = HL.range || 0.25, lo = P * (1 - R), hi = P * (1 + R), P0 = W.price;
-    const NICE = [0.5, 1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000, 10000];
-    const bk = NICE.find((x) => (hi - lo) / x <= 120) || 10000, start = Math.floor(lo / bk) * bk, n = Math.ceil((hi - start) / bk);
-    const L = new Array(n).fill(0), Sh = new Array(n).fill(0), Lc = new Array(n).fill(0), Sc = new Array(n).fill(0);
+    const P0 = W.price, coin = HL.coin, bk = coin === "BTC" ? 100 : 2;
+    const L = new Map(), Sh = new Map();
     for (const [sd, u, lq] of W.pos) {
-      if (lq < start || lq >= start + n * bk) continue;
-      const i = Math.floor((lq - start) / bk), v = u / P0 * P;
-      if (sd > 0 && lq < P) { L[i] += v; Lc[i]++; } else if (sd < 0 && lq > P) { Sh[i] += v; Sc[i]++; }
+      const k = Math.floor(lq / bk) * bk, c = u / P0, m = sd > 0 ? (lq < P ? L : null) : (lq > P ? Sh : null); if (!m) continue;
+      const o = m.get(k) || { c: 0, n: 0 }; o.c += c; o.n++; m.set(k, o);
     }
-    const pi = Math.floor((P - start) / bk), cumL = new Array(n).fill(0), cumS = new Array(n).fill(0);
-    for (let i = Math.min(pi, n - 1), acc = 0; i >= 0; i--) { acc += L[i]; cumL[i] = acc; }
-    for (let i = Math.max(pi, 0), acc = 0; i < n; i++) { acc += Sh[i]; cumS[i] = acc; }
-    const Wd = 900, Hh = 320, ml = 52, mr = 60, mt = 22, mb = 34, cw = (Wd - ml - mr) / n, ph = Hh - mt - mb;
-    const mxB = Math.max(1, ...L, ...Sh), mxC = Math.max(1, ...cumL, ...cumS);
-    const x = (i) => ml + i * cw, yB = (v) => mt + ph - v / mxB * ph, yC = (v) => mt + ph - v / mxC * ph;
-    const sm = (v) => v >= 1e9 ? num(v / 1e9, 1) + " tỷ" : v >= 1e6 ? num(v / 1e6, 0) + " tr" : num(v / 1e3, 0) + " k";
-    let g = "";
-    for (let k = 0; k <= 4; k++) { const yy = mt + ph * k / 4; g += `<line x1="${ml}" x2="${Wd - mr}" y1="${yy}" y2="${yy}" stroke="var(--line)"/><text x="${ml - 6}" y="${yy + 4}" font-size="11" text-anchor="end" fill="var(--ink-3)">${sm(mxB * (1 - k / 4))}</text><text x="${Wd - mr + 6}" y="${yy + 4}" font-size="11" fill="var(--ink-3)">${sm(mxC * (1 - k / 4))}</text>`; }
-    for (let i = 0; i < n; i++) {
-      if (L[i] > 0) g += `<rect x="${(x(i) + 0.5).toFixed(1)}" y="${yB(L[i]).toFixed(1)}" width="${Math.max(1, cw - 1).toFixed(1)}" height="${(mt + ph - yB(L[i])).toFixed(1)}" fill="var(--bad)" opacity=".85"/>`;
-      if (Sh[i] > 0) g += `<rect x="${(x(i) + 0.5).toFixed(1)}" y="${yB(Sh[i]).toFixed(1)}" width="${Math.max(1, cw - 1).toFixed(1)}" height="${(mt + ph - yB(Sh[i])).toFixed(1)}" fill="var(--good)" opacity=".85"/>`;
+    const lk = [...L.keys()].sort((a, b) => a - b), sk = [...Sh.keys()].sort((a, b) => a - b);
+    const cats = [...lk, "P", ...sk], long = [], short = [], cl = [], cs = [], cnt = [];
+    let acc = 0; const cumL = new Map(); for (let i = lk.length - 1; i >= 0; i--) { acc += L.get(lk[i]).c; cumL.set(lk[i], acc); }
+    acc = 0; const cumS = new Map(); for (const k of sk) { acc += Sh.get(k).c; cumS.set(k, acc); }
+    for (const k of cats) {
+      if (k === "P") { long.push(0); short.push(0); cl.push(0); cs.push(0); cnt.push(0); continue; }
+      const isL = L.has(k) && k < P, o = isL ? L.get(k) : Sh.get(k);
+      long.push(isL ? +o.c.toFixed(3) : 0); short.push(isL ? 0 : +o.c.toFixed(3)); cnt.push(o.n);
+      cl.push(isL ? +cumL.get(k).toFixed(2) : null); cs.push(isL ? null : +cumS.get(k).toFixed(2));
     }
-    const lineL = [], lineS = [];
-    for (let i = 0; i <= Math.min(pi, n - 1); i++) lineL.push(`${(x(i) + cw / 2).toFixed(1)},${yC(cumL[i]).toFixed(1)}`);
-    for (let i = Math.max(pi, 0); i < n; i++) lineS.push(`${(x(i) + cw / 2).toFixed(1)},${yC(cumS[i]).toFixed(1)}`);
-    const base = (mt + ph).toFixed(1);
-    if (lineL.length > 1) g += `<polygon points="${lineL[0].split(",")[0]},${base} ${lineL.join(" ")} ${lineL.at(-1).split(",")[0]},${base}" fill="var(--bad)" opacity=".10"/><polyline points="${lineL.join(" ")}" fill="none" stroke="var(--bad)" stroke-width="2"/>`;
-    if (lineS.length > 1) g += `<polygon points="${lineS[0].split(",")[0]},${base} ${lineS.join(" ")} ${lineS.at(-1).split(",")[0]},${base}" fill="var(--good)" opacity=".10"/><polyline points="${lineS.join(" ")}" fill="none" stroke="var(--good)" stroke-width="2"/>`;
-    const xp = ml + (P - start) / bk * cw;
-    g += `<line x1="${xp.toFixed(1)}" x2="${xp.toFixed(1)}" y1="${mt - 6}" y2="${base}" stroke="var(--ink)" stroke-dasharray="4 4"/><text x="${xp.toFixed(1)}" y="${mt - 9}" font-size="11.5" text-anchor="middle" fill="var(--ink)">Giá hiện tại ${num(P)}</text>`;
-    for (let k = 0; k <= 6; k++) { const i = Math.round(k * (n - 1) / 6), v = start + i * bk; g += `<text x="${(x(i) + cw / 2).toFixed(1)}" y="${Hh - 12}" font-size="11" text-anchor="middle" fill="var(--ink-3)">${num(v)}</text>`; }
-    g += `<line id="hlm-guide" x1="0" x2="0" y1="${mt}" y2="${base}" stroke="var(--ink-2)" stroke-width="1" visibility="hidden"/>`;
-    HL.map = { start, bk, n, L, Sh, Lc, Sc, cumL, cumS, pi, P, ml, cw, Wd, coin: HL.coin };
-    const rs = [0.1, 0.25, 0.5].map((r) => `<button type="button" data-r="${r}" class="${Math.abs(r - R) < 1e-9 ? "on" : ""}">±${r * 100}%</button>`).join("");
-    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px"><h3 style="margin:0">Bản đồ thanh lý ${HL.coin}</h3><div class="seg" id="hl-range" style="margin:0">${rs}</div></div>
-      <div class="legend" style="margin-top:6px"><span><i class="sq" style="background:var(--bad)"></i>Long bị thanh lý ở bậc giá đó</span><span><i class="sq" style="background:var(--good)"></i>Short bị thanh lý ở bậc giá đó</span><span><i style="background:var(--bad)"></i>Cộng dồn long nếu giá xuống tới đó</span><span><i style="background:var(--good)"></i>Cộng dồn short nếu giá lên tới đó</span></div>
-      <div class="hlmap"><svg id="hlm-svg" viewBox="0 0 ${Wd} ${Hh}" role="img" aria-label="Bản đồ thanh lý Hyperliquid">${g}<rect id="hlm-hit" x="${ml}" y="${mt}" width="${Wd - ml - mr}" height="${ph}" fill="transparent"/></svg><div class="hlm-tip" id="hlm-tip" hidden></div></div>
-      <p class="note" style="margin-top:2px">Mỗi cột rộng ${num(bk)} $. Trục trái: giá trị bị thanh lý ở từng cột; trục phải: cộng dồn. Rê chuột hoặc chạm vào biểu đồ để xem số.</p>`;
+    HL.ec = { cats, long, short, cl, cs, cnt, P, coin, bk };
+    return `<div class="hlm-card"><div class="hlm-head"><b>Bản đồ thanh lý Hyperliquid</b><div class="hlm-ctl"><select id="hlm-coin" aria-label="Chọn đồng">${["BTC", "ETH"].map((c) => `<option ${c === coin ? "selected" : ""}>${c}</option>`).join("")}</select><button type="button" id="hlm-ref" title="Đọc lại vị thế trực tiếp">⟳</button></div></div>
+      <div id="hlm-ec" style="height:380px"><p class="loading" style="color:#9aa4ad;padding:20px">Đang vẽ biểu đồ…</p></div></div>
+      <p class="note" style="margin-top:4px">Mỗi cột là một mức giá (bậc ${num(bk)} $) có vị thế sẽ bị thanh lý, xếp liền nhau theo giá. Trục trái: khối lượng ${coin} bị thanh lý ở mức đó; trục phải: cộng dồn từ giá hiện tại. Kéo thanh bên dưới hoặc lăn chuột để phóng to; rê chuột để xem số.</p>`;
   }
   function hlMapBind() {
-    const svg = $("hlm-svg"), tip = $("hlm-tip"), M = HL.map; if (!svg || !M) return;
-    document.querySelectorAll("#hl-range button").forEach((b) => b.addEventListener("click", () => { HL.range = +b.dataset.r; store.set("tamly-hl-range", HL.range); renderWhales(); }));
-    const guide = svg.querySelector("#hlm-guide");
-    const show = (clientX) => {
-      const r = svg.getBoundingClientRect(), vx = (clientX - r.left) / r.width * M.Wd, i = Math.floor((vx - M.ml) / M.cw);
-      if (i < 0 || i >= M.n) { tip.hidden = true; guide.setAttribute("visibility", "hidden"); return; }
-      const lo = M.start + i * M.bk, hi = lo + M.bk, below = lo < M.P, gx = M.ml + (i + 0.5) * M.cw;
-      guide.setAttribute("x1", gx); guide.setAttribute("x2", gx); guide.setAttribute("visibility", "visible");
-      const d = ((below ? hi : lo) / M.P - 1) * 100;
-      tip.innerHTML = `<b>${num(lo)}–${num(hi)} $</b> <span class="muted">(${d >= 0 ? "+" : "−"}${num(Math.abs(d), 1)}%)</span><br>` + (below
-        ? `<span class="down">Long bị thanh lý ở đây: ${usd(M.L[i])}</span>${M.Lc[i] ? ` (${M.Lc[i]} vị thế)` : ""}<br>Cộng dồn nếu giá xuống tới đây: <b>${usd(M.cumL[i])}</b>`
-        : `<span class="up">Short bị thanh lý ở đây: ${usd(M.Sh[i])}</span>${M.Sc[i] ? ` (${M.Sc[i]} vị thế)` : ""}<br>Cộng dồn nếu giá lên tới đây: <b>${usd(M.cumS[i])}</b>`);
-      tip.hidden = false;
-      const px = (gx / M.Wd) * r.width, tw = tip.offsetWidth;
-      tip.style.left = Math.max(0, Math.min(r.width - tw, px + (px > r.width / 2 ? -tw - 12 : 12))) + "px";
-    };
-    svg.addEventListener("mousemove", (e) => show(e.clientX));
-    svg.addEventListener("mouseleave", () => { tip.hidden = true; guide.setAttribute("visibility", "hidden"); });
-    svg.addEventListener("touchstart", (e) => { if (e.touches[0]) show(e.touches[0].clientX); }, { passive: true });
-    svg.addEventListener("touchmove", (e) => { if (e.touches[0]) show(e.touches[0].clientX); }, { passive: true });
+    const el = $("hlm-ec"), D = HL.ec; if (!el || !D) return;
+    const sel = $("hlm-coin"); if (sel) sel.addEventListener("change", () => { HL.coin = sel.value; HL.zoom = null; renderWhales(); });
+    const rf = $("hlm-ref"); if (rf) rf.addEventListener("click", () => { HL.posT = 0; hlRefresh(); });
+    loadEcharts().then((ec) => {
+      if (!document.body.contains(el)) return;
+      el.innerHTML = "";
+      const ch = ec.init(el, null, { renderer: "canvas" }); HL.chart && HL.chart.dispose && HL.chart !== ch && (() => { try { HL.chart.dispose(); } catch (e) { /* bỏ qua */ } })(); HL.chart = ch;
+      const pIdx = D.cats.indexOf("P"), fmtC = (v) => v == null ? "–" : num(v, v >= 100 ? 0 : 2), lab = (k) => k === "P" ? num(D.P) : num(k);
+      const red = "#f6465d", green = "#2ebd85", axis = "#7d8792", grid = "#1f262d", narrow = el.clientWidth < 520;
+      ch.setOption({
+        backgroundColor: "#0b0e11", animation: false,
+        legend: { top: 4, textStyle: { color: "#c7ced6", fontSize: 11 }, itemWidth: 12, itemHeight: 8, data: ["Cộng dồn short", "Cộng dồn long", "Short", "Long"] },
+        title: { text: `Giá hiện tại: ${num(D.P)}`, left: "center", top: narrow ? 44 : 24, textStyle: { color: "#e6e9ec", fontSize: 11, fontWeight: "normal" } },
+        grid: { left: narrow ? 40 : 52, right: narrow ? 44 : 58, top: narrow ? 72 : 56, bottom: 64 },
+        tooltip: { trigger: "axis", confine: true, extraCssText: "white-space:normal;max-width:" + (narrow ? 250 : 360) + "px;", axisPointer: { type: "shadow" }, backgroundColor: "#1a2027", borderColor: "#2b333b", textStyle: { color: "#e6e9ec", fontSize: 12 },
+          formatter: (ps) => { const i = ps[0].dataIndex, k = D.cats[i]; if (k === "P") return `Giá hiện tại ${num(D.P)} $`;
+            const isL = D.long[i] > 0, c = isL ? D.long[i] : D.short[i], cum = isL ? D.cl[i] : D.cs[i], d = (k / D.P - 1) * 100;
+            return `<b>${num(k)}–${num(k + D.bk)} $</b> (${d >= 0 ? "+" : "−"}${num(Math.abs(d), 1)}%)<br><span style="color:${isL ? red : green}">●</span> ${isL ? "Long" : "Short"} bị thanh lý: <b>${fmtC(c)} ${D.coin}</b> ≈ ${usd(c * D.P)} (${D.cnt[i]} vị thế)<br>Cộng dồn nếu giá ${isL ? "xuống" : "lên"} tới đây: <b>${fmtC(cum)} ${D.coin}</b> ≈ ${usd(cum * D.P)}`; } },
+        xAxis: { type: "category", data: D.cats.map(lab), axisLine: { lineStyle: { color: "#2b333b" } }, axisLabel: { color: axis, fontSize: 10, hideOverlap: true }, axisTick: { show: false } },
+        yAxis: [{ type: "value", axisLabel: { color: axis, fontSize: 10, formatter: (v) => num(v) }, splitLine: { lineStyle: { color: grid } } },
+                { type: "value", axisLabel: { color: axis, fontSize: 10, formatter: (v) => num(v) }, splitLine: { show: false } }],
+        dataZoom: [{ type: "inside", start: HL.zoom ? HL.zoom[0] : 0, end: HL.zoom ? HL.zoom[1] : 100 },
+                   { type: "slider", height: 18, bottom: 10, start: HL.zoom ? HL.zoom[0] : 0, end: HL.zoom ? HL.zoom[1] : 100, borderColor: "#2b333b", backgroundColor: "#11161b", fillerColor: "rgba(80,120,200,.25)", textStyle: { color: axis }, dataBackground: { lineStyle: { color: "#3a4450" }, areaStyle: { color: "#1c232a" } } }],
+        series: [
+          { name: "Cộng dồn short", type: "line", yAxisIndex: 1, data: D.cs, showSymbol: false, lineStyle: { color: green, width: 1.5 }, itemStyle: { color: green }, areaStyle: { color: "rgba(46,189,133,.18)" }, connectNulls: false },
+          { name: "Cộng dồn long", type: "line", yAxisIndex: 1, data: D.cl, showSymbol: false, lineStyle: { color: red, width: 1.5 }, itemStyle: { color: red }, areaStyle: { color: "rgba(246,70,93,.18)" }, connectNulls: false },
+          { name: "Short", type: "bar", data: D.short, itemStyle: { color: green }, barCategoryGap: "20%", stack: "b" },
+          { name: "Long", type: "bar", data: D.long, itemStyle: { color: red }, stack: "b",
+            markLine: { symbol: ["none", "arrow"], silent: true, label: { show: false }, lineStyle: { color: red, type: "dashed", width: 1.5 }, data: [{ xAxis: pIdx }] } },
+        ],
+      });
+      ch.on("datazoom", () => { const o = ch.getOption().dataZoom[0]; HL.zoom = [o.start, o.end]; });
+      if (!HL.ecResize) { HL.ecResize = true; window.addEventListener("resize", () => { try { HL.chart && HL.chart.resize(); } catch (e) { /* bỏ qua */ } }); }
+    }).catch((e) => { el.innerHTML = `<div class="msg">${esc(e.message)}</div>`; });
   }
   function renderWhales() {
     const box = $("hl-box"); if (!box) return;
