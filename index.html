@@ -178,6 +178,13 @@ h4.ph { margin: 10px 0 6px; font-size: .9rem; display: flex; align-items: center
 h4.ph::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--z2); }
 h4.ph.pos::before { background: var(--good); } h4.ph.neg::before { background: var(--bad); }
 .post .meta .tagb { font-weight: 600; } .post .meta .nsrc { font-weight: 600; color: var(--ink); }
+.liq-verdict { border-left: 5px solid var(--line); background: var(--neutral-bg); border-radius: 10px; padding: 12px 16px; margin: 12px 0 6px; }
+.liq-verdict.neg { border-left-color: var(--bad); background: var(--bad-bg); } .liq-verdict.pos { border-left-color: var(--good); background: var(--good-bg); } .liq-verdict.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+.liq-verdict .big { font-family: inherit; font-size: 1.3rem; font-weight: 700; margin: 0 0 4px; }
+.liq-verdict p { margin: 4px 0; color: var(--ink); }
+.liq-verdict .mini { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 10px 0 6px; font-size: .85rem; color: var(--ink-2); }
+.liq-verdict .mini .bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--line); margin-top: 4px; }
+.liq-more { margin-top: 10px; } .liq-more > summary { cursor: pointer; font-weight: 600; color: var(--accent, var(--ink-2)); padding: 6px 0; }
 .evtbl.hlx td { vertical-align: middle; }
 .hbar { display: inline-block; width: 110px; height: 8px; border-radius: 4px; background: var(--neutral-bg); vertical-align: middle; margin-right: 8px; overflow: hidden; }
 .hbar.sm { width: 70px; } .hbar i { display: block; height: 100%; border-radius: 4px; }
@@ -385,6 +392,8 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <div class="seg" id="liq-tabs"><button type="button" data-coin="BTC" class="on">BTC</button><button type="button" data-coin="ETH">ETH</button></div>
       <div class="chips liq-src" id="liq-src"></div>
       <div class="msg" id="liq-alert" hidden style="margin-top:10px;font-weight:600"></div>
+      <div id="liq-verdict" class="liq-verdict"><p class="loading">Đang tổng hợp…</p></div>
+      <details class="liq-more"><summary>Xem số liệu chi tiết</summary>
       <h3>Gần đây</h3>
       <div class="kpis" id="liq-recent"></div>
       <p class="note" id="liq-recent-note" style="margin-top:4px"></p>
@@ -398,6 +407,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <h3>Lệnh bị thanh lý lớn (từ 50.000 $)</h3>
       <div class="feed" id="live-feed"><span class="loading">Đang kết nối…</span></div>
       <p class="note">Vì sao có hai phần: các sàn chỉ phát lệnh thanh lý theo thời gian thực, không có kho lịch sử miễn phí gộp nhiều sàn. Phần "Gần đây" là số máy chủ gom mỗi giờ từ Coinalyze (BTC: tổng 7 sàn lớn); ngay khi mở trang, trình duyệt lấy thêm lịch sử 4 giờ của OKX (sàn duy nhất cho đọc lại miễn phí) để lấp khoảng trống; phần "Trực tiếp" cộng gộp Bybit, OKX và Binance (nếu mạng của bạn vào được) từ lúc mở trang. Cách đọc: một phe bị thanh lý dồn dập là giá đang chạy bằng lệnh cưỡng bức; đợt thanh lý long rất lớn thường xuất hiện gần đáy ngắn hạn, short rất lớn gần đỉnh ngắn hạn.</p>
+      </details>
     </section>
     <section class="panel">
       <h2>Cá voi Hyperliquid: giá nào sẽ kích hoạt thanh lý</h2>
@@ -1983,8 +1993,54 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     if (v5 >= 3e6) return { side: s5, v: v5, win: "5 phút" };
     return null;
   }
+  // Kết luận ngắn: phe nào đang bị ép, mạnh hay nhẹ, và điều đó nghĩa là gì
+  function renderLiqVerdict(coin) {
+    const box = $("liq-verdict"); if (!box) return;
+    const A = S.mkt && S.mkt.liq_agg, gen = S.sv ? Date.parse(S.sv.L.generated_at) : Date.now(), useSv = coin === "BTC" && A && A.series && A.series.length;
+    const win = (h) => { if (useSv) { const o = { long: 0, short: 0 }; for (const [t, l, sh] of A.series) if (t + 3600e3 > gen - h * 3600e3) { o.long += l; o.short += sh; } return o; } const o = liqSum(coin, h * 3600e3); return { long: o.long, short: o.short }; };
+    const bfDone = LIQ.bf && LIQ.bf.st === "done";
+    if (!useSv && !bfDone) { box.className = "liq-verdict"; box.innerHTML = `<p class="loading">Đang tải lịch sử thanh lý…</p>`; return; }
+    const w4 = win(4), w24 = win(24), l1 = liqSum(coin, 3600e3), w1 = { long: l1.long, short: l1.short };
+    const side = (o, floor) => { const t = o.long + o.short; if (t < floor) return "quiet"; const r = o.long / t; return r >= 0.65 ? "long" : r <= 0.35 ? "short" : "both"; };
+    // mức độ: so giờ thanh lý lớn nhất trong 4 giờ qua với 30 ngày (chỉ có cho BTC gộp 7 sàn)
+    let lvl = null, lvlTxt = "";
+    if (useSv && A.hour_p95) {
+      const mxh = Math.max(0, ...A.series.filter(([t]) => t + 3600e3 > gen - 4 * 3600e3).map(([, l, sh]) => l + sh));
+      lvl = A.hour_p99 && mxh >= A.hour_p99 ? 3 : mxh >= A.hour_p95 ? 2 : mxh >= 0.4 * A.hour_p95 ? 1 : 0;
+      lvlTxt = ["nhẹ", "vừa", "mạnh (thuộc nhóm 5% giờ sôi động nhất 30 ngày)", "dữ dội: thanh lý dây chuyền"][lvl];
+    }
+    const floor4 = useSv && A.hour_p95 ? 0.6 * A.hour_p95 : 1.5e6, s4 = lvl === 0 ? "quiet" : side(w4, floor4), s24 = side(w24, floor4 * 3), s1 = side(w1, floor4 / 4);
+    const ratio = (o, sd) => { const a = sd === "long" ? o.long : o.short, b = sd === "long" ? o.short : o.long; return b > 0 ? a / b : null; };
+    const pct = (o) => { const t = o.long + o.short; return t ? Math.round(o.long / t * 100) : 50; };
+    let cls = "", head = "", why = "", mean = "";
+    if (s4 === "long") { cls = "neg"; head = "Long đang bị ép"; const r = ratio(w4, "long"); why = `4 giờ qua long bị thanh lý ${r ? `gấp ${num(r, 1)} lần` : "nhiều hơn hẳn"} short${lvlTxt ? `, mức ${lvlTxt}` : ""}.`; mean = "Lệnh bán cưỡng bức đang đạp giá xuống."; }
+    else if (s4 === "short") { cls = "pos"; head = "Short đang bị ép"; const r = ratio(w4, "short"); why = `4 giờ qua short bị thanh lý ${r ? `gấp ${num(r, 1)} lần` : "nhiều hơn hẳn"} long${lvlTxt ? `, mức ${lvlTxt}` : ""}.`; mean = "Lệnh mua cưỡng bức đang đẩy giá lên (short squeeze). Đà kiểu này thường hụt hơi nếu spot không mua theo."; }
+    else if (s4 === "both") { cls = "warn"; head = "Cả hai phe đều bị quét"; why = `4 giờ qua long chiếm ${pct(w4)}%, short ${100 - pct(w4)}%${lvlTxt ? `, mức ${lvlTxt}` : ""}.`; mean = "Giá giật hai chiều, quét đòn bẩy cả hai phía; chưa có hướng rõ."; }
+    else { head = "Không phe nào bị ép"; why = "4 giờ qua thanh lý ở mức thấp."; mean = "Thị trường yên. Xem bên dưới giá chạm đâu thì cá voi bị thanh lý, đó là những mốc dễ gây biến động."; }
+    if (lvl >= 2 && (s4 === "long" || s4 === "short")) {
+      const hx = ((S.sv && S.sv.L.history_test) || {}).liq_ext && S.sv.L.history_test.liq_ext[s4];
+      if (hx) mean += ` Lịch sử từ 2022: sau những ngày ${s4} bị thanh lý cực lớn, BTC 7 ngày sau tăng ở ${hx.up7}% số lần (mọi ngày khoảng 52%).`;
+    }
+    const ctx = [];
+    if (s24 !== "quiet" && s24 !== s4 && (s24 === "long" || s24 === "short")) ctx.push(`Tính cả 24 giờ thì ${s24 === "long" ? "long" : "short"} bị quét nhiều hơn (${s24 === "long" ? pct(w24) : 100 - pct(w24)}%), tức là thế trận vừa đổi chiều trong vài giờ gần đây.`);
+    if (s1 !== "quiet" && (s1 === "long" || s1 === "short") && s1 !== s4) ctx.push(`Ngay 60 phút gần nhất đang nghiêng sang ${s1} bị ép.`);
+    // mốc dễ kích hoạt tiếp theo: cụm thanh lý cá voi Hyperliquid gần nhất
+    const W = S.mkt && S.mkt.hl_whales && S.mkt.hl_whales[coin];
+    if (W && typeof hlDerive === "function") {
+      const D = hlDerive(W, HL.live[coin] || W.price), parts = [];
+      if (D.near_long && D.near_long.usd >= 5e6) parts.push(`giá xuống ${num(D.near_long.to)} thì long cá voi bắt đầu bị thanh lý`);
+      if (D.near_short && D.near_short.usd >= 5e6) parts.push(`giá lên ${num(D.near_short.from)} thì short cá voi bắt đầu bị thanh lý`);
+      if (parts.length) ctx.push("Mốc dễ kích hoạt tiếp (Hyperliquid): " + parts.join("; ") + ".");
+    }
+    const bar = (lab, o) => { const t = o.long + o.short, p = t ? o.long / t * 100 : 50; return `<div>${lab}: ${t ? `long ${Math.round(p)}%` : "gần như không có"}<div class="bar"><span style="width:${p}%;background:${t ? "var(--bad)" : "transparent"}"></span><span style="width:${100 - p}%;background:${t ? "var(--good)" : "transparent"}"></span></div></div>`; };
+    box.className = "liq-verdict " + cls;
+    box.innerHTML = `<p class="big">${coin}: ${head}</p><p>${why} ${mean}</p>${ctx.map((x) => `<p>${x}</p>`).join("")}
+      <div class="mini">${bar("60 phút", w1)}${bar("4 giờ", w4)}${bar("24 giờ", w24)}</div>
+      <p class="note" style="margin:0">Đỏ: long bị thanh lý · Xanh: short bị thanh lý. ${useSv ? "Số 4 và 24 giờ là tổng 7 sàn (máy chủ, cập nhật mỗi giờ); 60 phút là trực tiếp." : "Với ETH: lịch sử OKX + trực tiếp từ lúc mở trang."}</p>`;
+  }
   function renderLive() {
     const coin = LIQ.coin;
+    try { renderLiqVerdict(coin); } catch (e) { console.error(e); }
     document.querySelectorAll("#liq-tabs button").forEach((b) => b.classList.toggle("on", b.dataset.coin === coin));
     const stTxt = { open: ["pos", "đang nhận"], connecting: ["", "đang kết nối"], retry: ["warn", "đang thử lại"], fail: ["neg", "không kết nối được"] };
     const on = Object.keys(LIQ_EX).filter((k) => LIQ.st[k] === "open").length;
