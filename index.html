@@ -1690,37 +1690,11 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     if (!W) { box.innerHTML = `<div class="msg">${S.mkt ? "Máy chủ chưa lấy được vị thế cá voi Hyperliquid; sẽ thử lại ở lần chạy tới." : "Phần này do bộ thu thập trên GitHub lấy."}</div>`; return; }
     const tot = W.long_usd + W.short_usd, pl = tot ? W.long_usd / tot * 100 : 50, live = HL.live[HL.coin], P = live || W.price, D = hlDerive(W, P), P0 = W.price;
     const cl = (c, side) => c ? [`Cụm ${side} gần nhất`, usd(c.usd), `${side === "long" ? "nếu giá xuống" : "nếu giá lên"} ${num(c.from)}–${num(c.to)} (${side === "long" ? "−" : "+"}${c.pct - 1}–${c.pct}%)`, side === "long" ? "down" : "up"] : [`Cụm ${side} gần nhất`, "–", "không có trong ±10%"];
-    let h = `<div class="stats">` + statBoxes([
-      [`Tổng long (${W.n_acc} ví theo dõi)`, usd(W.long_usd), `${W.n_long} vị thế · ${num(pl)}% tổng`],
-      [`Tổng short`, usd(W.short_usd), `${W.n_short} vị thế · ${num(100 - pl)}% tổng`],
-      cl(D.near_long, "long"), cl(D.near_short, "short")]) + `</div>`;
+    let h = "";
     const st0 = HL.busy ? ` · đang đọc trực tiếp ${HL.prog || 0}/${HL.total || "…"} ví` : HL.liveErr ? ` · chưa đọc trực tiếp được (${esc(HL.liveErr)})` : "";
     h = `<p class="note" style="margin:0 0 8px">Giá hiện tại <b>${num(P)} $</b> ${live ? `(trực tiếp ${HL.liveSrc || "OKX"}, ${fmtClock(HL.liveT).slice(0, 5)})` : "(lúc máy chủ chạy; chưa lấy được giá trực tiếp)"} · ` +
       (W.live ? `<b>vị thế đọc trực tiếp từ Hyperliquid lúc ${fmtClock(HL.posT)}</b> (${HL.posN} ví)` : `vị thế cá voi đọc lúc ${fmtClock(Date.parse(S.sv.L.generated_at)).slice(0, 5)}, khi đó giá ${num(P0)} $`) + `${st0}.</p>` + h;
-    // Biểu đồ: mỗi cột là 1% giá; bên trái (dưới giá hiện tại) là long sẽ bị thanh lý, bên phải là short
-    const st = D.steps.slice(0, 15), lv = st.map((x, i) => x.long_liq - (i ? st[i - 1].long_liq : 0)), sv = st.map((x, i) => x.short_liq - (i ? st[i - 1].short_liq : 0));
-    const mx = Math.max(1, ...lv, ...sv), Wd = 720, Hh = 200, n = st.length, cw = (Wd - 40) / (2 * n), mid = Wd / 2, base = Hh - 34;
-    let g = `<line x1="${mid}" x2="${mid}" y1="6" y2="${base + 4}" stroke="var(--ink-2)" stroke-dasharray="3 3"/><text x="${mid}" y="${Hh - 4}" font-size="11" text-anchor="middle" fill="var(--ink-2)">giá hiện tại ${num(P)}</text>`;
-    for (let i = 0; i < n; i++) {
-      const hl = lv[i] / mx * (base - 34), hs = sv[i] / mx * (base - 34), xl = mid - (i + 1) * cw, xs = mid + i * cw;
-      const sm = (v) => v >= 1e9 ? num(v / 1e9, 1) + " tỷ" : num(v / 1e6, v >= 1e8 ? 0 : 1) + " tr";
-      if (lv[i] > 0) g += `<rect x="${(xl + 1).toFixed(1)}" y="${(base - hl).toFixed(1)}" width="${(cw - 2).toFixed(1)}" height="${Math.max(1, hl).toFixed(1)}" fill="var(--bad)" rx="1"><title>Giá ${num(st[i].down_px)}–${num(i ? st[i - 1].down_px : P)}: ${usd(lv[i])} long bị thanh lý</title></rect>`
-        + (lv[i] >= mx * 0.08 ? `<text x="${(xl + cw / 2).toFixed(1)}" y="${(base - hl - 4).toFixed(1)}" font-size="11" text-anchor="middle" fill="var(--bad)">${sm(lv[i])}</text>` : "");
-      if (sv[i] > 0) g += `<rect x="${(xs + 1).toFixed(1)}" y="${(base - hs).toFixed(1)}" width="${(cw - 2).toFixed(1)}" height="${Math.max(1, hs).toFixed(1)}" fill="var(--good)" rx="1"><title>Giá ${num(i ? st[i - 1].up_px : P)}–${num(st[i].up_px)}: ${usd(sv[i])} short bị thanh lý</title></rect>`
-        + (sv[i] >= mx * 0.08 ? `<text x="${(xs + cw / 2).toFixed(1)}" y="${(base - hs - 4).toFixed(1)}" font-size="11" text-anchor="middle" fill="var(--good)">${sm(sv[i])}</text>` : "");
-      if ((i + 1) % 5 === 0) g += `<text x="${(mid - (i + 1) * cw).toFixed(1)}" y="${base + 16}" font-size="11" text-anchor="middle" fill="var(--ink-3)">−${i + 1}%</text><text x="${(mid + (i + 1) * cw).toFixed(1)}" y="${base + 16}" font-size="11" text-anchor="middle" fill="var(--ink-3)">+${i + 1}%</text>`;
-    }
-    g += `<text x="4" y="14" font-size="11" fill="var(--bad)">long bị thanh lý nếu giá xuống</text><text x="${Wd - 4}" y="14" font-size="11" text-anchor="end" fill="var(--good)">short bị thanh lý nếu giá lên</text>`;
-    h += `<h3>Giá trị vị thế sẽ bị thanh lý theo từng mức giá (mỗi cột 1%)</h3>` + (mx > 1 ? `<div class="chart"><svg viewBox="0 0 ${Wd} ${Hh}" role="img" aria-label="Thanh lý cá voi theo mức giá">${g}</svg></div>`
-      : `<div class="msg">Không vị thế ${HL.coin} nào của nhóm ví này bị thanh lý nếu giá đi trong khoảng ±15%: cá voi đang dùng đòn bẩy thấp, nên vùng giá gần không có "bẫy thanh lý" của họ.</div>`);
     const mu = (v) => v >= 1e9 ? num(v / 1e9, 2) + " tỷ $" : v >= 1e6 ? num(v / 1e6, 1) + " tr $" : num(v / 1e3, 0) + " nghìn $";
-    // Bảng các mức giá có thanh lý (tới ±25%), gần giá hiện tại xếp trước
-    const lvAll = D.steps.map((x, i) => [x, x.long_liq - (i ? D.steps[i - 1].long_liq : 0), i ? D.steps[i - 1] : null]).filter((r) => r[1] > 0);
-    const svAll = D.steps.map((x, i) => [x, x.short_liq - (i ? D.steps[i - 1].short_liq : 0), i ? D.steps[i - 1] : null]).filter((r) => r[1] > 0);
-    const lvRow = ([x, v, pr]) => `<tr><td class="num">${num(x.down_px)}–${num(pr ? pr.down_px : P)}</td><td class="num">−${x.pct - 1}–${x.pct}%</td><td class="num down">${mu(v)}</td><td class="num">${mu(x.long_liq)}</td></tr>`;
-    const svRow = ([x, v, pr]) => `<tr><td class="num">${num(pr ? pr.up_px : P)}–${num(x.up_px)}</td><td class="num">+${x.pct - 1}–${x.pct}%</td><td class="num up">${mu(v)}</td><td class="num">${mu(x.short_liq)}</td></tr>`;
-    const lvlTbl = (rows, fn, empty) => rows.length ? `<div class="tbl-wrap"><table class="evtbl hlt"><thead><tr><th>Giá chạm vùng</th><th>Cách giá</th><th>Bị thanh lý</th><th>Cộng dồn</th></tr></thead><tbody>${rows.map(fn).join("")}</tbody></table></div>` : `<p class="note">${empty}</p>`;
-    h += `<div class="two"><div><h3>Long bị thanh lý nếu giá xuống</h3>${lvlTbl(lvAll, lvRow, "Không có trong 25% dưới giá hiện tại.")}</div><div><h3>Short bị thanh lý nếu giá lên</h3>${lvlTbl(svAll, svRow, "Không có trong 25% trên giá hiện tại.")}</div></div>`;
     // Hai bảng giống các trang theo dõi Hyperliquid: gộp vị thế theo bậc giá thanh lý (mặc định BTC 500 $, ETH 10 $), short trên giá, long dưới giá
     const STEPS = [1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000];
     const bk = HL.bucket[HL.coin] || (HL.coin === "BTC" ? 500 : 10);
