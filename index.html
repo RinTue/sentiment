@@ -185,6 +185,9 @@ h4.ph.pos::before { background: var(--good); } h4.ph.neg::before { background: v
 .liq-verdict .mini { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 10px 0 6px; font-size: .85rem; color: var(--ink-2); }
 .liq-verdict .mini .bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--line); margin-top: 4px; }
 .liq-more { margin-top: 10px; } .liq-more > summary { cursor: pointer; font-weight: 600; color: var(--accent, var(--ink-2)); padding: 6px 0; }
+.hlmap { position: relative; margin-top: 4px; }
+.hlmap svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+.hlm-tip { position: absolute; top: 28px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; font-size: .84rem; line-height: 1.45; box-shadow: 0 4px 14px rgba(0,0,0,.12); pointer-events: none; white-space: nowrap; z-index: 2; }
 .evtbl.hlx td { vertical-align: middle; }
 .hbar { display: inline-block; width: 110px; height: 8px; border-radius: 4px; background: var(--neutral-bg); vertical-align: middle; margin-right: 8px; overflow: hidden; }
 .hbar.sm { width: 70px; } .hbar i { display: block; height: 100%; border-radius: 4px; }
@@ -1607,7 +1610,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
 
 
   /* ---------- Cá voi Hyperliquid ---------- */
-  const HL = { coin: "BTC", sort: store.get("tamly-hl-sort2", "size"), bucket: store.get("tamly-hl-bucket", {}) || {}, live: {}, liveT: 0 };
+  const HL = { coin: "BTC", sort: store.get("tamly-hl-sort2", "size"), bucket: store.get("tamly-hl-bucket", {}) || {}, live: {}, liveT: 0, range: store.get("tamly-hl-range", 0.25) };
   // Giá trực tiếp (OKX) để tính khoảng cách tới giá thanh lý theo giá lúc xem trang, không theo giá lúc máy chủ chạy
   async function hlLive() {
     try {
@@ -1677,6 +1680,70 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     };
     return { steps, near_long: cluster(L, "long"), near_short: cluster(Sh, "short"), P0 };
   }
+  // Bản đồ thanh lý kiểu CoinGlass: cột = giá trị vị thế bị thanh lý ở từng bậc giá, đường = cộng dồn từ giá hiện tại ra xa; rê chuột để xem số
+  function hlMapHtml(W, P) {
+    if (!W.pos || !W.pos.length || !P) return "";
+    const R = HL.range || 0.25, lo = P * (1 - R), hi = P * (1 + R), P0 = W.price;
+    const NICE = [0.5, 1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000, 10000];
+    const bk = NICE.find((x) => (hi - lo) / x <= 120) || 10000, start = Math.floor(lo / bk) * bk, n = Math.ceil((hi - start) / bk);
+    const L = new Array(n).fill(0), Sh = new Array(n).fill(0), Lc = new Array(n).fill(0), Sc = new Array(n).fill(0);
+    for (const [sd, u, lq] of W.pos) {
+      if (lq < start || lq >= start + n * bk) continue;
+      const i = Math.floor((lq - start) / bk), v = u / P0 * P;
+      if (sd > 0 && lq < P) { L[i] += v; Lc[i]++; } else if (sd < 0 && lq > P) { Sh[i] += v; Sc[i]++; }
+    }
+    const pi = Math.floor((P - start) / bk), cumL = new Array(n).fill(0), cumS = new Array(n).fill(0);
+    for (let i = Math.min(pi, n - 1), acc = 0; i >= 0; i--) { acc += L[i]; cumL[i] = acc; }
+    for (let i = Math.max(pi, 0), acc = 0; i < n; i++) { acc += Sh[i]; cumS[i] = acc; }
+    const Wd = 900, Hh = 320, ml = 52, mr = 60, mt = 22, mb = 34, cw = (Wd - ml - mr) / n, ph = Hh - mt - mb;
+    const mxB = Math.max(1, ...L, ...Sh), mxC = Math.max(1, ...cumL, ...cumS);
+    const x = (i) => ml + i * cw, yB = (v) => mt + ph - v / mxB * ph, yC = (v) => mt + ph - v / mxC * ph;
+    const sm = (v) => v >= 1e9 ? num(v / 1e9, 1) + " tỷ" : v >= 1e6 ? num(v / 1e6, 0) + " tr" : num(v / 1e3, 0) + " k";
+    let g = "";
+    for (let k = 0; k <= 4; k++) { const yy = mt + ph * k / 4; g += `<line x1="${ml}" x2="${Wd - mr}" y1="${yy}" y2="${yy}" stroke="var(--line)"/><text x="${ml - 6}" y="${yy + 4}" font-size="11" text-anchor="end" fill="var(--ink-3)">${sm(mxB * (1 - k / 4))}</text><text x="${Wd - mr + 6}" y="${yy + 4}" font-size="11" fill="var(--ink-3)">${sm(mxC * (1 - k / 4))}</text>`; }
+    for (let i = 0; i < n; i++) {
+      if (L[i] > 0) g += `<rect x="${(x(i) + 0.5).toFixed(1)}" y="${yB(L[i]).toFixed(1)}" width="${Math.max(1, cw - 1).toFixed(1)}" height="${(mt + ph - yB(L[i])).toFixed(1)}" fill="var(--bad)" opacity=".85"/>`;
+      if (Sh[i] > 0) g += `<rect x="${(x(i) + 0.5).toFixed(1)}" y="${yB(Sh[i]).toFixed(1)}" width="${Math.max(1, cw - 1).toFixed(1)}" height="${(mt + ph - yB(Sh[i])).toFixed(1)}" fill="var(--good)" opacity=".85"/>`;
+    }
+    const lineL = [], lineS = [];
+    for (let i = 0; i <= Math.min(pi, n - 1); i++) lineL.push(`${(x(i) + cw / 2).toFixed(1)},${yC(cumL[i]).toFixed(1)}`);
+    for (let i = Math.max(pi, 0); i < n; i++) lineS.push(`${(x(i) + cw / 2).toFixed(1)},${yC(cumS[i]).toFixed(1)}`);
+    const base = (mt + ph).toFixed(1);
+    if (lineL.length > 1) g += `<polygon points="${lineL[0].split(",")[0]},${base} ${lineL.join(" ")} ${lineL.at(-1).split(",")[0]},${base}" fill="var(--bad)" opacity=".10"/><polyline points="${lineL.join(" ")}" fill="none" stroke="var(--bad)" stroke-width="2"/>`;
+    if (lineS.length > 1) g += `<polygon points="${lineS[0].split(",")[0]},${base} ${lineS.join(" ")} ${lineS.at(-1).split(",")[0]},${base}" fill="var(--good)" opacity=".10"/><polyline points="${lineS.join(" ")}" fill="none" stroke="var(--good)" stroke-width="2"/>`;
+    const xp = ml + (P - start) / bk * cw;
+    g += `<line x1="${xp.toFixed(1)}" x2="${xp.toFixed(1)}" y1="${mt - 6}" y2="${base}" stroke="var(--ink)" stroke-dasharray="4 4"/><text x="${xp.toFixed(1)}" y="${mt - 9}" font-size="11.5" text-anchor="middle" fill="var(--ink)">Giá hiện tại ${num(P)}</text>`;
+    for (let k = 0; k <= 6; k++) { const i = Math.round(k * (n - 1) / 6), v = start + i * bk; g += `<text x="${(x(i) + cw / 2).toFixed(1)}" y="${Hh - 12}" font-size="11" text-anchor="middle" fill="var(--ink-3)">${num(v)}</text>`; }
+    g += `<line id="hlm-guide" x1="0" x2="0" y1="${mt}" y2="${base}" stroke="var(--ink-2)" stroke-width="1" visibility="hidden"/>`;
+    HL.map = { start, bk, n, L, Sh, Lc, Sc, cumL, cumS, pi, P, ml, cw, Wd, coin: HL.coin };
+    const rs = [0.1, 0.25, 0.5].map((r) => `<button type="button" data-r="${r}" class="${Math.abs(r - R) < 1e-9 ? "on" : ""}">±${r * 100}%</button>`).join("");
+    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px"><h3 style="margin:0">Bản đồ thanh lý ${HL.coin}</h3><div class="seg" id="hl-range" style="margin:0">${rs}</div></div>
+      <div class="legend" style="margin-top:6px"><span><i class="sq" style="background:var(--bad)"></i>Long bị thanh lý ở bậc giá đó</span><span><i class="sq" style="background:var(--good)"></i>Short bị thanh lý ở bậc giá đó</span><span><i style="background:var(--bad)"></i>Cộng dồn long nếu giá xuống tới đó</span><span><i style="background:var(--good)"></i>Cộng dồn short nếu giá lên tới đó</span></div>
+      <div class="hlmap"><svg id="hlm-svg" viewBox="0 0 ${Wd} ${Hh}" role="img" aria-label="Bản đồ thanh lý Hyperliquid">${g}<rect id="hlm-hit" x="${ml}" y="${mt}" width="${Wd - ml - mr}" height="${ph}" fill="transparent"/></svg><div class="hlm-tip" id="hlm-tip" hidden></div></div>
+      <p class="note" style="margin-top:2px">Mỗi cột rộng ${num(bk)} $. Trục trái: giá trị bị thanh lý ở từng cột; trục phải: cộng dồn. Rê chuột hoặc chạm vào biểu đồ để xem số.</p>`;
+  }
+  function hlMapBind() {
+    const svg = $("hlm-svg"), tip = $("hlm-tip"), M = HL.map; if (!svg || !M) return;
+    document.querySelectorAll("#hl-range button").forEach((b) => b.addEventListener("click", () => { HL.range = +b.dataset.r; store.set("tamly-hl-range", HL.range); renderWhales(); }));
+    const guide = svg.querySelector("#hlm-guide");
+    const show = (clientX) => {
+      const r = svg.getBoundingClientRect(), vx = (clientX - r.left) / r.width * M.Wd, i = Math.floor((vx - M.ml) / M.cw);
+      if (i < 0 || i >= M.n) { tip.hidden = true; guide.setAttribute("visibility", "hidden"); return; }
+      const lo = M.start + i * M.bk, hi = lo + M.bk, below = lo < M.P, gx = M.ml + (i + 0.5) * M.cw;
+      guide.setAttribute("x1", gx); guide.setAttribute("x2", gx); guide.setAttribute("visibility", "visible");
+      const d = ((below ? hi : lo) / M.P - 1) * 100;
+      tip.innerHTML = `<b>${num(lo)}–${num(hi)} $</b> <span class="muted">(${d >= 0 ? "+" : "−"}${num(Math.abs(d), 1)}%)</span><br>` + (below
+        ? `<span class="down">Long bị thanh lý ở đây: ${usd(M.L[i])}</span>${M.Lc[i] ? ` (${M.Lc[i]} vị thế)` : ""}<br>Cộng dồn nếu giá xuống tới đây: <b>${usd(M.cumL[i])}</b>`
+        : `<span class="up">Short bị thanh lý ở đây: ${usd(M.Sh[i])}</span>${M.Sc[i] ? ` (${M.Sc[i]} vị thế)` : ""}<br>Cộng dồn nếu giá lên tới đây: <b>${usd(M.cumS[i])}</b>`);
+      tip.hidden = false;
+      const px = (gx / M.Wd) * r.width, tw = tip.offsetWidth;
+      tip.style.left = Math.max(0, Math.min(r.width - tw, px + (px > r.width / 2 ? -tw - 12 : 12))) + "px";
+    };
+    svg.addEventListener("mousemove", (e) => show(e.clientX));
+    svg.addEventListener("mouseleave", () => { tip.hidden = true; guide.setAttribute("visibility", "hidden"); });
+    svg.addEventListener("touchstart", (e) => { if (e.touches[0]) show(e.touches[0].clientX); }, { passive: true });
+    svg.addEventListener("touchmove", (e) => { if (e.touches[0]) show(e.touches[0].clientX); }, { passive: true });
+  }
   function renderWhales() {
     const box = $("hl-box"); if (!box) return;
     document.querySelectorAll("#hl-tabs button").forEach((b) => b.classList.toggle("on", b.dataset.coin === HL.coin));
@@ -1694,6 +1761,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const st0 = HL.busy ? ` · đang đọc trực tiếp ${HL.prog || 0}/${HL.total || "…"} ví` : HL.liveErr ? ` · chưa đọc trực tiếp được (${esc(HL.liveErr)})` : "";
     h = `<p class="note" style="margin:0 0 8px">Giá hiện tại <b>${num(P)} $</b> ${live ? `(trực tiếp ${HL.liveSrc || "OKX"}, ${fmtClock(HL.liveT).slice(0, 5)})` : "(lúc máy chủ chạy; chưa lấy được giá trực tiếp)"} · ` +
       (W.live ? `<b>vị thế đọc trực tiếp từ Hyperliquid lúc ${fmtClock(HL.posT)}</b> (${HL.posN} ví)` : `vị thế cá voi đọc lúc ${fmtClock(Date.parse(S.sv.L.generated_at)).slice(0, 5)}, khi đó giá ${num(P0)} $`) + `${st0}.</p>` + h;
+    h += hlMapHtml(W, P);
     const mu = (v) => v >= 1e9 ? num(v / 1e9, 2) + " tỷ $" : v >= 1e6 ? num(v / 1e6, 1) + " tr $" : num(v / 1e3, 0) + " nghìn $";
     // Hai bảng giống các trang theo dõi Hyperliquid: gộp vị thế theo bậc giá thanh lý (mặc định BTC 500 $, ETH 10 $), short trên giá, long dưới giá
     const STEPS = [1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000];
@@ -1731,6 +1799,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     h += `<h4 class="ph pos">Long bị thanh lý nếu giá xuống (dưới giá hiện tại ${num(P)} $)</h4>${liqTbl(rowsL, "long")}`;
     h += `<p class="note">${W.pos ? `Các vị thế có giá thanh lý trong cùng một bậc ${num(bk)} $ được cộng chung (giống cách các trang theo dõi Hyperliquid trình bày; giá ghi là đầu dưới của bậc). Bấm − hoặc + để đổi bậc. ` : ""}Hiện 10 dòng lớn nhất mỗi phe. Đưa chuột hoặc chạm vào một dòng để xem từng vị thế trong đó. Địa chỉ ví được ẩn. Đọc ${W.n_pos} vị thế ${HL.coin} của ${W.n_acc} ví; cập nhật ${fmtTime(Date.parse(S.sv.L.generated_at))}.</p>`;
     box.innerHTML = h;
+    hlMapBind();
     box.querySelectorAll("#hl-sort button").forEach((b) => b.addEventListener("click", () => { HL.sort = b.dataset.s; store.set("tamly-hl-sort2", HL.sort); renderWhales(); }));
     box.querySelectorAll("button[data-b]").forEach((b) => b.addEventListener("click", () => {
       const i = STEPS.indexOf(bk), j = Math.max(0, Math.min(STEPS.length - 1, (i < 0 ? 7 : i) + (b.dataset.b === "+" ? 1 : -1)));
