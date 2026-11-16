@@ -38,19 +38,22 @@ def old_prices() -> dict:
 
 
 def ohlc_bitstamp(since: int) -> dict:
-    """Giá cao nhất / thấp nhất trong ngày (Bitstamp, sàn có lịch sử dài nhất), để đáy và đỉnh khớp số người ta hay dùng."""
-    out, start = {}, since
+    """Giá cao nhất / thấp nhất trong ngày (Bitstamp, sàn có lịch sử dài nhất), để đáy và đỉnh khớp số người ta hay dùng.
+    Đi lùi từng đoạn 1.000 ngày bằng start + end (chỉ có start thì Bitstamp trả về đoạn mới nhất)."""
+    out = {}
+    end = int(time.time()) // DAY * DAY + DAY
     for _ in range(12):
-        j = _get("https://www.bitstamp.net/api/v2/ohlc/btcusd/", {"step": 86400, "limit": 1000, "start": start}, 40).json()
+        start = max(since, end - 999 * DAY)
+        j = _get("https://www.bitstamp.net/api/v2/ohlc/btcusd/", {"step": 86400, "limit": 1000, "start": start, "end": end}, 40).json()
         rows = (j.get("data") or {}).get("ohlc") or []
         if not rows:
             break
         for r in rows:
             out[int(r["timestamp"]) // DAY * DAY] = (float(r["high"]), float(r["low"]))
-        nxt = int(rows[-1]["timestamp"]) + DAY
-        if nxt <= start or len(rows) < 1000:
+        first = min(int(r["timestamp"]) for r in rows)
+        if first <= since or first >= end:
             break
-        start = nxt
+        end = first - DAY
         time.sleep(0.5)
     if len(out) < 30:
         raise RuntimeError("Bitstamp: thiếu dữ liệu")
@@ -132,7 +135,7 @@ def run() -> dict:
     hl = old.get("_hl") or {}
     hl_src = old.get("hl_src")
     try:
-        full = not hl or now - old.get("hl_full", 0) > 7 * DAY
+        full = len(hl) < 3000 or now - old.get("hl_full", 0) > 7 * DAY
         got, hl_src = ohlc(START if full else int(now) - 60 * DAY)
         hl.update({str(k): [round(a, 2), round(b, 2)] for k, (a, b) in got.items() if k >= START})
         if full:
