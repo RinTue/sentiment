@@ -1945,7 +1945,10 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const Hi = J.hi || [], Lo = J.lo || [], pHi = (i) => Hi[i] ?? P[i], pLo = (i) => Lo[i] ?? P[i];   // đáy/đỉnh theo giá thấp/cao nhất trong ngày
     const di = (s) => Math.round((Date.parse(s + "T00:00:00Z") - t0) / 864e5), ds = (i) => new Date(t0 + Math.round(i) * 864e5).toISOString().slice(0, 10);
     const ext = (a, b, mx) => { let k = -1, m = mx ? -Infinity : Infinity; for (let i = Math.max(0, Math.round(a)); i <= Math.min(Math.round(b), N - 1); i++) { const v = mx ? pHi(i) : pLo(i); if (v == null) continue; if (mx ? v > m : v < m) { m = v; k = i; } } return k; };
-    const H = J.halvings.map((h) => ({ ...h, i: di(h.date) })), past = H.filter((h) => h.i <= today);
+    // Halving tương lai: halving gần nhất + 210.000 khối × 10 phút (≈ 1.458 ngày), cách các trang chu kỳ hay dùng; ước tính theo tốc độ khối thật để ở ghi chú
+    const H0 = J.halvings.map((h) => ({ ...h, i: di(h.date) })), real = H0.filter((h) => !h.est), lastH = real.at(-1);
+    const H = real.concat(H0.filter((h) => h.est).map((h, k) => ({ ...h, live: h.date, i: lastH.i + Math.round((k + 1) * 210000 * 600 / 86400) })));
+    const past = H.filter((h) => h.i <= today);
     const peaks = past.map((h, k) => ext(h.i, Math.min(h.i + 1000, (H[k + 1] ? H[k + 1].i : N) - 1), true));
     const cyc = [];
     for (let k = 1; k < past.length; k++) {
@@ -1965,7 +1968,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const cur = cyc.at(-1), fut = H.filter((h) => h.i > today);
     const chain = (bear, rr) => {      // chuỗi dự phóng với một bộ giả định
       const out = []; let peak = cur.p;
-      for (const h of fut) { const bot = peak + bear, acc = h.i - bot, boom = acc * (1 - rr) / rr; out.push({ bot, h: h.i, peak: h.i + boom, acc, boom }); peak = h.i + boom; }
+      for (const h of fut) { const bot = peak + Math.round(bear), acc = h.i - bot, boom = Math.round(acc * (1 - rr) / rr); out.push({ bot, h: h.i, peak: h.i + boom, acc, boom }); peak = h.i + boom; }
       return out;
     };
     const mid = chain(bAvg, r), combos = [chain(bLo, rLo), chain(bLo, rHi), chain(bHi, rLo), chain(bHi, rHi)];
@@ -2026,7 +2029,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const v = `<div class="liq-verdict ${today > cur.p ? "neg" : "pos"}"><p class="big">Halving + ${hNow} ngày · ${phase}</p>
       <p>Đỉnh chu kỳ này: <b>${kUsd(M.pHi(cur.p))}</b> ngày ${d(cur.p)}, cách đây ${sincePeak} ngày. Giá hiện tại ${kUsd(P[today])}, thấp hơn đỉnh ${num(Math.abs(P[today] / M.pHi(cur.p) - 1) * 100, 0)}%.</p>
       <p><b>Kiểm tra dự phóng:</b> ${chk}</p>
-      <p class="note" style="margin:6px 0 0">Halving tới ước tính ${M.fut[0] ? d(M.fut[0].i) : "–"} (khối ${M.fut[0] ? num(M.fut[0].block) : "–"}, còn ${CY.J.blocks ? num(CY.J.blocks.next[0].blocks_left) : "–"} khối, mỗi khối khoảng ${CY.J.blocks ? num(CY.J.blocks.sec_per_block / 60, 1) : "10"} phút).</p></div>`;
+      <p class="note" style="margin:6px 0 0">Halving tới ${M.fut[0] ? d(M.fut[0].i) : "–"} nếu mỗi khối đúng 10 phút; theo tốc độ khối thực tế hiện nay là ${M.fut[0] && M.fut[0].live ? M.fut[0].live.split("-").reverse().join("/") : "–"} (khối ${M.fut[0] ? num(M.fut[0].block) : "–"}, còn ${CY.J.blocks ? num(CY.J.blocks.next[0].blocks_left) : "–"} khối, mỗi khối khoảng ${CY.J.blocks ? num(CY.J.blocks.sec_per_block / 60, 1) : "10"} phút).</p></div>`;
     const tog = `<div class="hlm-ctl etf-rg cy-tog"><button type="button" data-k="alt" class="${CY.alt ? "" : "on"}">Đỉnh ${d(cyModel(CY.J, false).cur.p)}</button><button type="button" data-k="alt2" class="${CY.alt ? "on" : ""}">Đỉnh ${d(cyModel(CY.J, true).cur.p)}</button><button type="button" data-k="proj" class="${CY.proj ? "on" : ""}">${CY.proj ? "Ẩn dự phóng" : "Hiện dự phóng"}</button></div>`;
     const card2 = `<div class="hlm-card"><div class="hlm-head etf-head"><b>Toàn cảnh các chu kỳ</b>${tog}</div>
       <div class="etf-sub">Giá đóng cửa theo ngày, thang log; đáy và đỉnh theo giá thấp/cao nhất trong ngày (${esc(CY.J.hl_src || "giá đóng cửa")}). Xanh: tích luỹ (đáy → halving) · cam: bùng nổ (halving → đỉnh) · đỏ: giảm giá (đỉnh → đáy). Đường đứt: hai kịch bản dự phóng, nối thẳng giữa các mốc (không phải đường giá dự báo); vạch chấm là mốc thời gian, vùng mờ là khoảng sai số.</div>
@@ -2049,7 +2052,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     // Cách dự phóng
     const m0 = M.mid[0], m1 = M.mid[1];
     const steps = `<ol class="cy-steps">
-      <li><b>Ngày halving</b>: theo số khối (cứ 210.000 khối một lần). Lần tới khoảng ${M.fut[0] ? d(M.fut[0].i) : "–"}${M.fut[1] ? `, lần sau khoảng ${my(M.fut[1].i)}` : ""}. Đây là phần chắc nhất, sai vài tuần.</li>
+      <li><b>Ngày halving</b>: halving gần nhất + 210.000 khối × 10 phút (khoảng 1.458 ngày). Lần tới khoảng ${M.fut[0] ? d(M.fut[0].i) : "–"}${M.fut[1] ? `, lần sau khoảng ${my(M.fut[1].i)}` : ""}. Đây là phần chắc nhất, sai vài tuần.</li>
       <li><b>Đáy = đỉnh + ${Math.round(M.bAvg)} ngày</b>: trung bình các pha giảm đã kết thúc (${M.bears.join(" và ")} ngày). Đỉnh ${d(cur.p)} → đáy dự phóng <b>${d(m0.bot)}</b>, khoảng ${d(M.early[0].bot)} – ${d(M.late[0].bot)} (±${err} ngày). Chỉ có ${M.bears.length} mẫu.</li>
       <li><b>Tích luỹ = từ đáy dự phóng tới halving</b>: ${Math.round(m0.acc)} ngày.</li>
       <li><b>Bùng nổ = tích luỹ × ${num(100 - M.r * 100, 1)}/${num(M.r * 100, 1)}</b> (tỷ lệ trung bình ${M.cyc.length} chu kỳ): ${Math.round(m0.boom)} ngày → đỉnh dự phóng <b>${my(m0.peak)}</b> (khoảng ${my(M.early[0].peak)} – ${my(M.late[0].peak)}).</li>
