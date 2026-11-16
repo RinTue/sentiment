@@ -57,11 +57,12 @@ def block_info() -> dict:
         pass
     now = time.time()
     nxt = []
+    adj = -(-h // 2016) * 2016          # mốc điều chỉnh độ khó kế tiếp; sau đó mạng tự kéo thời gian khối về 10 phút
     for target in NEXT:
-        t = now + (target - h) * spb
+        t = now + (adj - h) * spb + (target - adj) * 600
         nxt.append({"block": target, "date": datetime.fromtimestamp(t, timezone.utc).strftime("%Y-%m-%d"),
                     "blocks_left": target - h, "est": True})
-    return {"height": h, "sec_per_block": round(spb, 1), "next": nxt}
+    return {"height": h, "sec_per_block": round(spb, 1), "adj": adj, "next": nxt}
 
 
 def run() -> dict:
@@ -79,7 +80,7 @@ def run() -> dict:
         except Exception as ex:  # noqa: BLE001
             errs["blockchain_price"] = str(ex)[:150]
     blk = old.get("blocks")
-    if not blk or now - old.get("blocks_t", 0) > 6 * 3600:
+    if not blk or now - old.get("blocks_t", 0) > 6 * 3600 or "adj" not in blk:
         try:
             blk = block_info()
             old["blocks_t"] = now

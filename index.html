@@ -1966,8 +1966,17 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       for (const h of fut) { const bot = peak + bear, acc = h.i - bot, boom = acc * (1 - rr) / rr; out.push({ bot, h: h.i, peak: h.i + boom, acc, boom }); peak = h.i + boom; }
       return out;
     };
-    const mid = chain(bAvg, r), early = chain(bLo, rHi), late = chain(bHi, rLo);
-    return { P, N, today, t0, di, ds, H, cyc, cur, r, rLo, rHi, ratios, bears, bAvg, bLo, bHi, mid, early, late, fut };
+    const mid = chain(bAvg, r), combos = [chain(bLo, rLo), chain(bLo, rHi), chain(bHi, rLo), chain(bHi, rHi)];
+    // khoảng sai số: sớm nhất / muộn nhất của từng mốc trên mọi tổ hợp giả định (pha giảm ngắn/dài × tỷ lệ thấp/cao)
+    const pick = (fn) => mid.map((_, k) => ({ bot: fn(...combos.map((c) => c[k].bot)), peak: fn(...combos.map((c) => c[k].peak)) }));
+    const early = pick(Math.min), late = pick(Math.max);
+    // Kiểm tra ngược: đứng ở đỉnh chu kỳ trước, chỉ dùng các chu kỳ cũ hơn, cách này đoán đáy và đỉnh chu kỳ hiện tại sai bao nhiêu
+    let back = null;
+    if (cyc.length >= 3) {
+      const prev = cyc.at(-2), olderBears = cyc.slice(0, -2).filter((c) => c.bear != null).map((c) => c.bear), rr = mean(cyc.slice(0, -1).map((c) => c.ratio)) / 100;
+      if (olderBears.length) { const pb = prev.p + mean(olderBears), pp = cur.h + (cur.h - pb) * (1 - rr) / rr; back = { bot: Math.round(pb), peak: Math.round(pp), dBot: Math.round(cur.b - pb), dPeak: Math.round(cur.p - pp), n: olderBears.length }; }
+    }
+    return { P, N, today, t0, di, ds, H, cyc, cur, r, rLo, rHi, ratios, bears, bAvg, bLo, bHi, mid, early, late, fut, back };
   }
   function renderCycle() {
     const box = $("cy-box"); if (!box) return;
@@ -2017,7 +2026,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       <li><b>Bùng nổ = tích luỹ × ${num(100 - M.r * 100, 1)}/${num(M.r * 100, 1)}</b> (tỷ lệ trung bình ${M.cyc.length} chu kỳ): ${Math.round(m0.boom)} ngày → đỉnh dự phóng <b>${my(m0.peak)}</b> (khoảng ${my(M.early[0].peak)} – ${my(M.late[0].peak)}).</li>
       ${m1 ? `<li><b>Lặp lại</b>: đáy ${my(m1.bot)}, tích luỹ ${Math.round(m1.acc)} ngày, bùng nổ ${Math.round(m1.boom)} ngày → đỉnh ${my(m1.peak)} (khoảng ${my(M.early[1].peak)} – ${my(M.late[1].peak)}).</li>` : ""}
     </ol>
-    <p class="note">Khoảng sai số: phương án sớm dùng pha giảm ngắn nhất và tỷ lệ cao nhất đã thấy, phương án muộn ngược lại. Mỗi bước dựa trên bước trước nên sai số cộng dồn, mốc càng xa càng kém chắc. Đổi đỉnh ${d(cyModel(CY.J, false).cur.p)} sang ${d(cyModel(CY.J, true).cur.p)} (nút ở biểu đồ) thì mọi mốc dịch theo. Chỉ có ${M.cyc.length} chu kỳ để so, và thị trường nay đã khác (ETF, tổ chức): đây là ngoại suy từ quá khứ, không phải dự báo. Nguồn giá: ${esc(CY.J.source || "")}.</p>`;
+    ${M.back ? `<p><b>Thử lại với quá khứ:</b> nếu đứng ở đỉnh ${d(M.cyc.at(-2).p)} và chỉ dùng các chu kỳ trước đó, cách này đoán đáy ${d(M.back.bot)} (thật: ${d(cur.b)}, lệch ${Math.abs(M.back.dBot)} ngày) và đỉnh ${d(M.back.peak)} (thật: ${d(cyModel(CY.J, false).cur.p)}, lệch ${Math.abs(cur.p - M.back.peak)} ngày). Lần trước nó đúng khá sát; nhưng lần này đáy dự phóng đã lệch ${Math.max(0, Math.round(pb.bot - lowI))} ngày nếu đáy tháng ${+ds(lowI).slice(5, 7)}/${ds(lowI).slice(0, 4)} là đáy thật.</p>` : ""}
+    <p class="note">Khoảng sai số trông hẹp vì ngày halving cố định kéo các mốc về gần nhau; sai số thật lớn hơn nhiều nếu chu kỳ đổi tính. Khoảng sai số: lấy mốc sớm nhất và muộn nhất khi dùng pha giảm ngắn nhất/dài nhất và tỷ lệ thấp nhất/cao nhất đã thấy; nó chỉ phản ánh độ lệch giữa các chu kỳ cũ, không tính khả năng chu kỳ đổi hẳn. Mỗi bước dựa trên bước trước nên sai số cộng dồn, mốc càng xa càng kém chắc. Đổi đỉnh ${d(cyModel(CY.J, false).cur.p)} sang ${d(cyModel(CY.J, true).cur.p)} (nút ở biểu đồ) thì mọi mốc dịch theo. Chỉ có ${M.cyc.length} chu kỳ để so, và thị trường nay đã khác (ETF, tổ chức): đây là ngoại suy từ quá khứ, không phải dự báo. Nguồn giá: ${esc(CY.J.source || "")}.</p>`;
     box.innerHTML = v + card2 + card1 + tbl + `<h3 style="margin-top:16px">Dự phóng được tính thế nào</h3>` + steps;
     box.querySelectorAll(".cy-tog button").forEach((b) => b.addEventListener("click", () => {
       if (b.dataset.k === "proj") { CY.proj = !CY.proj; store.set("tamly-cy-proj", CY.proj); } else CY.alt = b.dataset.k === "alt2";
