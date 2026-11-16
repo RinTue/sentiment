@@ -188,6 +188,19 @@ h4.ph.pos::before { background: var(--good); } h4.ph.neg::before { background: v
 .hlm-card { background: #0b0e11; border-radius: 12px; padding: 10px 12px 4px; margin-top: 8px; }
 .hlm-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: #f1f3f5; font-size: 1rem; }
 .hlm-ctl { display: flex; gap: 8px; } .hlm-ctl select, .hlm-ctl button { background: #12171c; color: #e6e9ec; border: 1px solid #2b333b; border-radius: 6px; padding: 5px 10px; font: inherit; font-size: .85rem; cursor: pointer; }
+/* Chu kỳ */
+.cy-tl { display: flex; gap: 2px; margin-top: 8px; height: 22px; font-size: .66rem; }
+.cy-tl span { display: flex; align-items: center; justify-content: center; color: #14181b; font-weight: 600; border-radius: 2px; overflow: hidden; white-space: nowrap; min-width: 2px; }
+.cy-tl .a { background: #9ad84a; } .cy-tl .b { background: #f0a43a; } .cy-tl .r { background: #ef5b6b; color: #fff; }
+.cy-tl .pj { background-image: repeating-linear-gradient(135deg, rgba(0,0,0,.28) 0 4px, transparent 4px 9px); opacity: .75; } .cy-tl .live { outline: 1px solid #fff; }
+.cy-row { display: grid; grid-template-columns: 120px 1fr 92px 150px; gap: 8px 14px; align-items: center; padding: 10px 12px; margin-top: 8px; border: 1px solid #222a31; border-radius: 10px; background: #0f1418; color: #e6e9ec; }
+.cy-nm { font-weight: 650; font-size: .88rem; display: flex; align-items: center; gap: 8px; } .cy-nm i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.cy-bar { display: flex; height: 22px; border-radius: 4px; overflow: hidden; font-size: .7rem; } .cy-bar span { display: flex; align-items: center; padding: 0 8px; color: #14181b; white-space: nowrap; overflow: hidden; }
+.cy-bar .a { background: #b7f34d; } .cy-bar .b { background: #f5a524; flex: 1; justify-content: flex-end; }
+.cy-lb { display: flex; justify-content: space-between; font-size: .66rem; color: #8b949c; margin-top: 3px; gap: 6px; } .cy-lb span:nth-child(2) { color: #f5a524; }
+.cy-rt { text-align: right; font-size: .95rem; } .cy-rt small { color: #8b949c; } .cy-dd { font-size: .74rem; color: #ef6b78; text-align: right; }
+.cy-steps { padding-left: 20px; margin: 6px 0; } .cy-steps li { margin: 6px 0; }
+@media (max-width: 760px) { .cy-row { grid-template-columns: 1fr auto; } .cy-barw { grid-column: 1 / 3; grid-row: 2; } .cy-dd { grid-column: 1 / 3; text-align: left; } .cy-lb { font-size: .6rem; } .cy-lb span:nth-child(2) { display: none; } }
 /* La bàn thị trường */
 .cmp { --b0: #d64545; --b1: #e9a090; --b2: #ecd08a; --b3: #9fcf9a; --b4: #4f9e5b; }
 .cmp-top { display: grid; grid-template-columns: minmax(150px, 220px) 1fr auto; gap: 14px 22px; align-items: center; }
@@ -321,6 +334,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
     <button type="button" role="tab" data-tab="crowd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg><span>Đám đông</span></button>
     <button type="button" role="tab" data-tab="money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6 -6l4 4l8 -8"/><path d="M14 7l7 0l0 7"/></svg><span>Dòng tiền</span></button>
     <button type="button" role="tab" data-tab="macro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/></svg><span>Vĩ mô và lịch</span></button>
+    <button type="button" role="tab" data-tab="cycle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg><span>Chu kỳ</span></button>
     <button type="button" role="tab" data-tab="events"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/></svg><span>Sự kiện</span></button>
     <button type="button" role="tab" data-tab="method"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9h.01"/><path d="M11 12h1v4h1"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/></svg><span>Cách tính</span></button>
   </nav>
@@ -502,6 +516,13 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
   </div>
 
   <!-- ================= SỰ KIỆN ================= -->
+  <div class="tabpanel" data-panel="cycle" role="tabpanel" hidden>
+    <section class="panel">
+      <h2>Chu kỳ halving: đang ở đâu, các lần trước ra sao</h2>
+      <div id="cy-box"><p class="loading">Đang tải…</p></div>
+    </section>
+  </div>
+
   <div class="tabpanel" data-panel="events" role="tabpanel" hidden>
     <section class="panel">
       <h2>Số liệu vĩ mô Mỹ tác động BTC ra sao</h2>
@@ -1907,8 +1928,190 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     }));
   }
   document.querySelectorAll("#hl-tabs button").forEach((b) => b.addEventListener("click", () => { HL.coin = b.dataset.coin; renderWhales(); }));
+  /* ---------- Chu kỳ halving ---------- */
+  // Máy chủ chỉ lưu giá đóng cửa theo ngày (data/cycles.json) và ngày halving; đáy, đỉnh, tỷ lệ, dự phóng tính ở đây.
+  const CY = { J: null, loaded: false, err: null, proj: store.get("tamly-cy-proj", true) !== false, alt: false, c1: null, c2: null, pending: false };
+  const CYC = { g: "#c9ced6", o: "#f5a524", l: "#b7f34d", acc: "#9ad84a", boom: "#f0a43a", bear: "#ef5b6b" };
+  const kUsd = (v) => v == null ? "–" : v >= 1000 ? num(v / 1000, v >= 1e5 ? 0 : 1) + "K $" : num(v, v < 10 ? 2 : 0) + " $";
+  async function cyLoad() {
+    CY.loaded = true;
+    try { const r = await fetch("data/cycles.json?t=" + Date.now(), { cache: "no-store" }); if (!r.ok) throw new Error("HTTP " + r.status); CY.J = await r.json(); }
+    catch (e) { CY.err = e.message; }
+    renderCycle();
+  }
+  function cyModel(J, alt) {
+    const t0 = Date.parse(J.start + "T00:00:00Z"), P = J.close, N = P.length, today = N - 1;
+    const di = (s) => Math.round((Date.parse(s + "T00:00:00Z") - t0) / 864e5), ds = (i) => new Date(t0 + Math.round(i) * 864e5).toISOString().slice(0, 10);
+    const ext = (a, b, mx) => { let k = -1, m = mx ? -Infinity : Infinity; for (let i = Math.max(0, Math.round(a)); i <= Math.min(Math.round(b), N - 1); i++) { const v = P[i]; if (v == null) continue; if (mx ? v > m : v < m) { m = v; k = i; } } return k; };
+    const H = J.halvings.map((h) => ({ ...h, i: di(h.date) })), past = H.filter((h) => h.i <= today);
+    const peaks = past.map((h, k) => ext(h.i, Math.min(h.i + 1000, (H[k + 1] ? H[k + 1].i : N) - 1), true));
+    const cyc = [];
+    for (let k = 1; k < past.length; k++) {
+      const h = past[k].i, b = ext(peaks[k - 1], h, false);
+      let p = peaks[k];
+      const cur = k === past.length - 1, nextH = H[k + 1] && H[k + 1].i <= today ? H[k + 1].i : null;
+      if (cur && alt) { const a = ext(h, p - 30, true); if (a > 0) p = a; }
+      const e = nextH != null ? ext(p, nextH, false) : null, low = e == null ? ext(p, today, false) : null;
+      const acc = h - b, boom = p - h;
+      cyc.push({ name: "Chu kỳ " + past[k].date.slice(0, 4), year: +past[k].date.slice(0, 4), b, h, p, e, low, cur, acc, boom, bear: e != null ? e - p : null,
+        ratio: 100 * acc / (acc + boom), gain: P[p] / P[b], dd: e != null ? P[e] / P[p] - 1 : P[low] / P[p] - 1 });
+    }
+    const mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+    const ratios = cyc.map((c) => c.ratio), bears = cyc.filter((c) => c.bear != null).map((c) => c.bear);
+    const r = mean(ratios) / 100, rLo = Math.min(...ratios) / 100, rHi = Math.max(...ratios) / 100;
+    const bAvg = mean(bears), bLo = Math.min(...bears), bHi = Math.max(...bears);
+    const cur = cyc.at(-1), fut = H.filter((h) => h.i > today);
+    const chain = (bear, rr) => {      // chuỗi dự phóng với một bộ giả định
+      const out = []; let peak = cur.p;
+      for (const h of fut) { const bot = peak + bear, acc = h.i - bot, boom = acc * (1 - rr) / rr; out.push({ bot, h: h.i, peak: h.i + boom, acc, boom }); peak = h.i + boom; }
+      return out;
+    };
+    const mid = chain(bAvg, r), early = chain(bLo, rHi), late = chain(bHi, rLo);
+    return { P, N, today, t0, di, ds, H, cyc, cur, r, rLo, rHi, ratios, bears, bAvg, bLo, bHi, mid, early, late, fut };
+  }
+  function renderCycle() {
+    const box = $("cy-box"); if (!box) return;
+    if (!CY.J) { if (!CY.loaded) { cyLoad(); return; } box.innerHTML = `<div class="msg">Chưa có dữ liệu chu kỳ${CY.err ? " (" + esc(CY.err) + ")" : ""}. Bộ thu thập sẽ tạo ở lần chạy tới.</div>`; return; }
+    if (CY.J.error) { box.innerHTML = `<div class="msg">Bộ thu thập báo lỗi: ${esc(CY.J.error)}</div>`; return; }
+    const M = cyModel(CY.J, CY.alt), { cur, ds, P, today } = M, d = (i) => ds(i).split("-").reverse().join("/"), my = (i) => `${+ds(i).slice(5, 7)}/${ds(i).slice(0, 4)}`;
+    const hNow = today - cur.h, pb = M.mid[0], lowI = cur.low, sincePeak = today - cur.p;
+    const err = Math.round((M.late[0].bot - M.early[0].bot) / 2);
+    // Kiểm tra dự phóng
+    let chk;
+    if (today < pb.bot) chk = `Còn <b>${Math.round(pb.bot - today)} ngày</b> tới mốc đáy dự phóng (${d(pb.bot)}, khoảng ${d(M.early[0].bot)} – ${d(M.late[0].bot)}). Giá thấp nhất từ đỉnh tới nay: <b>${kUsd(P[lowI])}</b> ngày ${d(lowI)}.`;
+    else {
+      const gap = Math.round(pb.bot - lowI), past = Math.round(today - pb.bot);
+      chk = `Đã qua mốc đáy dự phóng (${d(pb.bot)}) <b>${past} ngày</b>. Giá thấp nhất từ đỉnh vẫn là <b>${kUsd(P[lowI])}</b> ngày ${d(lowI)} (đỉnh + ${lowI - cur.p} ngày)` +
+        (gap > 30 ? `, sớm hơn dự phóng ${gap} ngày. Nếu đó là đáy thật thì pha giảm lần này chỉ dài ${lowI - cur.p} ngày, ngắn hơn hẳn các lần trước (${M.bears.join(", ")} ngày): mô hình chu kỳ đang lệch. Nếu giá thủng ${kUsd(P[lowI])} thì đáy mới sẽ gần mốc dự phóng hơn.` : `, khớp với dự phóng. Đáy chỉ được xác nhận khi giá đã tăng trở lại rõ ràng.`);
+    }
+    const phase = today <= cur.p ? "Bùng nổ" : "Giảm giá (đáy chưa xác nhận)";
+    const v = `<div class="liq-verdict ${today > cur.p ? "neg" : "pos"}"><p class="big">Halving + ${hNow} ngày · ${phase}</p>
+      <p>Đỉnh chu kỳ này: <b>${kUsd(P[cur.p])}</b> ngày ${d(cur.p)} (giá đóng cửa ngày), cách đây ${sincePeak} ngày. Giá hiện tại ${kUsd(P[today])}, thấp hơn đỉnh ${num(Math.abs(P[today] / P[cur.p] - 1) * 100, 0)}%.</p>
+      <p><b>Kiểm tra dự phóng:</b> ${chk}</p>
+      <p class="note" style="margin:6px 0 0">Halving tới ước tính ${M.fut[0] ? d(M.fut[0].i) : "–"} (khối ${M.fut[0] ? num(M.fut[0].block) : "–"}, còn ${CY.J.blocks ? num(CY.J.blocks.next[0].blocks_left) : "–"} khối, mỗi khối khoảng ${CY.J.blocks ? num(CY.J.blocks.sec_per_block / 60, 1) : "10"} phút).</p></div>`;
+    const tog = `<div class="hlm-ctl etf-rg cy-tog"><button type="button" data-k="alt" class="${CY.alt ? "" : "on"}">Đỉnh ${d(cyModel(CY.J, false).cur.p)}</button><button type="button" data-k="alt2" class="${CY.alt ? "on" : ""}">Đỉnh ${d(cyModel(CY.J, true).cur.p)}</button><button type="button" data-k="proj" class="${CY.proj ? "on" : ""}">${CY.proj ? "Ẩn dự phóng" : "Hiện dự phóng"}</button></div>`;
+    const card2 = `<div class="hlm-card"><div class="hlm-head etf-head"><b>Toàn cảnh các chu kỳ</b>${tog}</div>
+      <div class="etf-sub">Giá đóng cửa theo ngày, thang log. Xanh: tích luỹ (đáy → halving) · cam: bùng nổ (halving → đỉnh) · đỏ: giảm giá (đỉnh → đáy). Đường chấm: mốc dự phóng thời gian, vùng mờ là khoảng sai số; không dự phóng giá.</div>
+      <div id="cy-c2" style="height:${innerWidth < 560 ? 340 : 440}px"></div><div id="cy-tl" class="cy-tl"></div></div>`;
+    const card1 = `<div class="hlm-card" style="margin-top:14px"><div class="hlm-head"><b>Chồng ${M.cyc.length} chu kỳ lên nhau</b></div>
+      <div class="etf-sub">Căn mọi chu kỳ về cùng ngày halving. Trục dọc: 0 là đáy, 1 là đỉnh của từng chu kỳ (thang log), để so hình dạng chứ không so giá. Tỷ lệ thời gian đáy → halving / halving → đỉnh trung bình ${num(M.r * 100, 1)} / ${num(100 - M.r * 100, 1)}.</div>
+      <div id="cy-c1" style="height:380px"></div></div>`;
+    // Bảng đo
+    const maxT = Math.max(...M.cyc.map((c) => c.acc + c.boom));
+    const rows = M.cyc.map((c) => { const w = 100 * (c.acc + c.boom) / maxT, a = 100 * c.acc / (c.acc + c.boom);
+      return `<div class="cy-row"><div class="cy-nm"><i style="background:${[CYC.g, CYC.o, CYC.l][M.cyc.indexOf(c) % 3]}"></i>${esc(c.name)}</div>
+        <div class="cy-barw"><div class="cy-bar" style="width:${w}%"><span class="a" style="width:${a}%">${c.acc} ngày</span><span class="b">${c.boom} ngày</span></div>
+        <div class="cy-lb" style="width:${w}%"><span>Đáy ${d(c.b)} · ${kUsd(P[c.b])}</span><span>₿ ${d(c.h)}</span><span>Đỉnh ${d(c.p)} · ${kUsd(P[c.p])}</span></div></div>
+        <div class="cy-rt"><b>${num(c.ratio, 1)} / ${num(100 - c.ratio, 1)}</b><br><small>tăng ×${num(c.gain, 0)}</small></div>
+        <div class="cy-dd">${c.bear != null ? `Đỉnh → đáy: ${c.bear} ngày · ${pct(c.dd * 100, 0)}` : `Đỉnh → đáy: đang diễn ra · thấp nhất ${pct(c.dd * 100, 0)}`}</div></div>`; }).join("");
+    const spread = Math.max(...M.ratios) - Math.min(...M.ratios);
+    const tbl = `<div class="hlm-card" style="margin-top:14px"><div class="hlm-head"><b>Đo lại từng chu kỳ</b></div>
+      <div class="etf-sub">Tỷ lệ đo được: ${M.ratios.map((x) => num(x, 1) + "%").join(" · ")}. Trung bình ${num(M.r * 100, 1)}%, chênh nhau tối đa ${num(spread, 1)} điểm %, tức khoảng ${Math.round(spread / 100 * (cur.acc + cur.boom))} ngày.</div>${rows}
+      <div class="etf-sub" style="margin-top:8px">Tỷ lệ thời gian lặp lại khá đều, nhưng độ lớn đợt tăng nhỏ dần qua mỗi chu kỳ (${M.cyc.map((c) => "×" + num(c.gain, 0)).join(" → ")}).</div></div>`;
+    // Cách dự phóng
+    const m0 = M.mid[0], m1 = M.mid[1];
+    const steps = `<ol class="cy-steps">
+      <li><b>Ngày halving</b>: theo số khối (cứ 210.000 khối một lần). Lần tới khoảng ${M.fut[0] ? d(M.fut[0].i) : "–"}${M.fut[1] ? `, lần sau khoảng ${my(M.fut[1].i)}` : ""}. Đây là phần chắc nhất, sai vài tuần.</li>
+      <li><b>Đáy = đỉnh + ${Math.round(M.bAvg)} ngày</b>: trung bình các pha giảm đã kết thúc (${M.bears.join(" và ")} ngày). Đỉnh ${d(cur.p)} → đáy dự phóng <b>${d(m0.bot)}</b>, khoảng ${d(M.early[0].bot)} – ${d(M.late[0].bot)} (±${err} ngày). Chỉ có ${M.bears.length} mẫu.</li>
+      <li><b>Tích luỹ = từ đáy dự phóng tới halving</b>: ${Math.round(m0.acc)} ngày.</li>
+      <li><b>Bùng nổ = tích luỹ × ${num(100 - M.r * 100, 1)}/${num(M.r * 100, 1)}</b> (tỷ lệ trung bình ${M.cyc.length} chu kỳ): ${Math.round(m0.boom)} ngày → đỉnh dự phóng <b>${my(m0.peak)}</b> (khoảng ${my(M.early[0].peak)} – ${my(M.late[0].peak)}).</li>
+      ${m1 ? `<li><b>Lặp lại</b>: đáy ${my(m1.bot)}, tích luỹ ${Math.round(m1.acc)} ngày, bùng nổ ${Math.round(m1.boom)} ngày → đỉnh ${my(m1.peak)} (khoảng ${my(M.early[1].peak)} – ${my(M.late[1].peak)}).</li>` : ""}
+    </ol>
+    <p class="note">Khoảng sai số: phương án sớm dùng pha giảm ngắn nhất và tỷ lệ cao nhất đã thấy, phương án muộn ngược lại. Mỗi bước dựa trên bước trước nên sai số cộng dồn, mốc càng xa càng kém chắc. Đổi đỉnh ${d(cyModel(CY.J, false).cur.p)} sang ${d(cyModel(CY.J, true).cur.p)} (nút ở biểu đồ) thì mọi mốc dịch theo. Chỉ có ${M.cyc.length} chu kỳ để so, và thị trường nay đã khác (ETF, tổ chức): đây là ngoại suy từ quá khứ, không phải dự báo. Nguồn giá: ${esc(CY.J.source || "")}.</p>`;
+    box.innerHTML = v + card2 + card1 + tbl + `<h3 style="margin-top:16px">Dự phóng được tính thế nào</h3>` + steps;
+    box.querySelectorAll(".cy-tog button").forEach((b) => b.addEventListener("click", () => {
+      if (b.dataset.k === "proj") { CY.proj = !CY.proj; store.set("tamly-cy-proj", CY.proj); } else CY.alt = b.dataset.k === "alt2";
+      renderCycle();
+    }));
+    CY.M = M; cyDraw();
+  }
+  function cyDraw() {
+    const e1 = $("cy-c1"), e2 = $("cy-c2"), M = CY.M; if (!e1 || !e2 || !M) return;
+    if (!e2.clientWidth) { CY.pending = true; return; }
+    CY.pending = false;
+    loadEcharts().then((ec) => {
+      const narrow = e2.clientWidth < 560, axis = "#7d8792", grid = "#1f262d", { P, ds, today, cyc, cur } = M;
+      const fix = (ch, el) => (ch && ch.getDom() === el ? ch : (ch && ch.dispose(), ec.init(el, null, { renderer: "canvas" })));
+      const d = (i) => ds(i).split("-").reverse().join("/"), my = (i) => `${+ds(i).slice(5, 7)}/${ds(i).slice(0, 4)}`;
+      const ts = (i) => M.t0 + Math.round(i) * 864e5;
+      // ---- Biểu đồ toàn cảnh
+      CY.c2 = fix(CY.c2, e2);
+      const first = cyc[0].b - 60, endProj = CY.proj && M.mid.length ? M.late.at(-1).peak + 60 : today + 60;
+      const seg = (a, b) => { const out = []; for (let i = Math.max(first, a); i <= b; i += 2) out.push([ts(i), P[i]]); if (b <= today) out.push([ts(b), P[b]]); return out; };
+      const acc = [], boom = [], bear = [];
+      const prevEnd = (k) => (k + 1 < cyc.length ? cyc[k + 1].b : today);
+      cyc.forEach((c, k) => { acc.push(...seg(c.b, c.h), [ts(c.h), null]); boom.push(...seg(c.h, c.p), [ts(c.p), null]); bear.push(...seg(c.p, k + 1 < cyc.length ? cyc[k + 1].b : today), [ts(prevEnd(k)) + 1, null]); });
+      const pts = [];
+      cyc.forEach((c) => {
+        pts.push({ coord: [ts(c.b), P[c.b]], name: `ĐÁY ${my(c.b)}\n${kUsd(P[c.b])}`, itemStyle: { color: CYC.acc }, label: { position: "bottom" } });
+        pts.push({ coord: [ts(c.p), P[c.p]], name: `ĐỈNH ${my(c.p)}\n${kUsd(P[c.p])} · ×${num(c.gain, 0)}`, itemStyle: { color: "#fff" }, label: { position: "top" } });
+        pts.push({ coord: [ts(c.h), P[c.h]], name: "₿", symbolSize: 18, itemStyle: { color: CYC.o }, label: { position: "inside", color: "#14181b", fontWeight: 700 } });
+        if (c.bear != null && cyc[cyc.indexOf(c) + 1]) { /* đáy kế tiếp đã vẽ ở chu kỳ sau */ }
+      });
+      const lines = [{ xAxis: ts(today), label: { formatter: narrow ? "Hôm nay" : `Bạn đang ở đây · ${d(today)}`, color: "#fff", position: "end", fontWeight: 600 }, lineStyle: { color: "#fff", type: "solid", width: 1.5 } }];
+      const areas = [];
+      if (CY.proj) {
+        const lab = (kind, i, lo, hi) => ({ xAxis: ts(i), label: { formatter: narrow ? `${kind} ~${my(i)}` : `${kind} ~${my(i)}\ndự phóng ±${Math.round((hi - lo) / 2)} ngày`, color: kind === "ĐÁY" ? CYC.acc : CYC.boom, fontSize: narrow ? 9 : 10, position: kind === "ĐÁY" ? "start" : "end" }, lineStyle: { color: kind === "ĐÁY" ? CYC.acc : CYC.boom, type: "dashed", width: 1.2 } });
+        M.mid.forEach((m, k) => {
+          if (m.bot > today) lines.push(lab("ĐÁY", m.bot, M.early[k].bot, M.late[k].bot));
+          lines.push({ xAxis: ts(m.h), label: { show: !narrow, formatter: "₿ ~" + my(m.h), color: CYC.o, fontSize: 10, position: "start" }, lineStyle: { color: CYC.o, type: "dotted", width: 1 } });
+          lines.push(lab("ĐỈNH", m.peak, M.early[k].peak, M.late[k].peak));
+          if (m.bot > today) areas.push([{ xAxis: ts(M.early[k].bot), itemStyle: { color: "rgba(154,216,74,.10)" } }, { xAxis: ts(M.late[k].bot) }]);
+          areas.push([{ xAxis: ts(M.early[k].peak), itemStyle: { color: "rgba(240,164,58,.12)" } }, { xAxis: ts(M.late[k].peak) }]);
+        });
+      }
+      const ser = (name, data, color) => ({ name, type: "line", data, showSymbol: false, connectNulls: false, lineStyle: { color, width: 1.8 }, itemStyle: { color }, areaStyle: { color: color + "22", origin: "start" } });
+      CY.c2.setOption({
+        backgroundColor: "#0b0e11", animation: false, grid: { left: narrow ? 44 : 60, right: narrow ? 30 : 40, top: 40, bottom: 44 },
+        tooltip: { trigger: "axis", confine: true, backgroundColor: "#1a2027", borderColor: "#2b333b", textStyle: { color: "#e6e9ec", fontSize: 12 },
+          formatter: (ps) => { const p = ps.find((x) => x.value && x.value[1] != null); if (!p) return ""; const i = Math.round((p.value[0] - M.t0) / 864e5); const c = cyc.slice().reverse().find((x) => i >= x.b) || cyc[0];
+            const ph = i < c.h ? "Tích luỹ" : i <= c.p ? "Bùng nổ" : "Giảm giá"; return `<b>${d(i)}</b><br>Giá: <b>${kUsd(P[i])}</b><br>${c.name} · ${ph}<br>Halving ${i - c.h >= 0 ? "+" : ""}${i - c.h} ngày`; } },
+        xAxis: { type: "time", min: ts(first), max: ts(endProj), axisLine: { lineStyle: { color: "#2b333b" } }, axisLabel: { color: axis, fontSize: 10 }, splitLine: { show: false } },
+        yAxis: { type: "log", logBase: 10, axisLabel: { color: axis, fontSize: 10, formatter: (v) => kUsd(v) }, splitLine: { lineStyle: { color: grid } }, min: 100 },
+        series: [ser("Tích luỹ", acc, CYC.acc), ser("Bùng nổ", boom, CYC.boom), ser("Giảm giá", bear, CYC.bear),
+          { type: "scatter", data: [], markPoint: { symbol: "circle", symbolSize: 10, data: pts, label: { show: true, formatter: (p) => narrow && p.name !== "₿" ? p.name.split("\n")[0] : p.name, color: "#e6e9ec", fontSize: narrow ? 8 : 10, backgroundColor: "rgba(11,14,17,.75)", padding: [2, 4], borderRadius: 4 } },
+            markLine: { symbol: "none", silent: true, data: lines }, markArea: { silent: true, data: areas } }],
+      }, true);
+      // Dải thời gian các pha
+      const tl = $("cy-tl");
+      if (tl) {
+        const parts = [];
+        cyc.forEach((c, k) => { parts.push(["a", c.acc], ["b", c.boom]); const nb = k + 1 < cyc.length ? cyc[k + 1].b : null; parts.push(["r", nb != null ? nb - c.p : today - c.p, nb == null]); });
+        if (CY.proj) { parts[parts.length - 1][1] = Math.round(M.mid[0].bot - cur.p); parts[parts.length - 1][3] = true; M.mid.forEach((m, k) => { parts.push(["a", Math.round(m.acc), false, true], ["b", Math.round(m.boom), false, true]); if (M.mid[k + 1]) parts.push(["r", Math.round(M.mid[k + 1].bot - m.peak), false, true]); }); }
+        const tot = parts.reduce((a, p) => a + p[1], 0);
+        tl.innerHTML = parts.map(([k, n, live, pj]) => `<span class="${k}${pj ? " pj" : ""}${live ? " live" : ""}" style="flex:${n}" title="${n} ngày${pj ? " (dự phóng)" : ""}">${n / tot > 0.035 ? n + (narrow ? "" : " ngày") : ""}</span>`).join("");
+      }
+      // ---- Biểu đồ chồng chu kỳ
+      CY.c1 = fix(CY.c1, e1);
+      const cols = [CYC.g, CYC.o, CYC.l];
+      const S1 = cyc.map((c, k) => {
+        const end = c.e != null ? c.e : today, lb = Math.log(P[c.b]), lp = Math.log(P[c.p]), data = [];
+        for (let i = c.b; i <= end; i += 2) data.push([i - c.h, (Math.log(P[i]) - lb) / (lp - lb)]);
+        data.push([end - c.h, (Math.log(P[end]) - lb) / (lp - lb)]);
+        return { name: c.name, type: "line", data, showSymbol: false, lineStyle: { color: cols[k % 3], width: c.cur ? 2.4 : 1.6 }, itemStyle: { color: cols[k % 3] }, z: c.cur ? 5 : 3 };
+      });
+      const accs = cyc.map((c) => c.acc), booms = cyc.map((c) => c.boom), cc = cur;
+      const lb = Math.log(P[cc.b]), lp = Math.log(P[cc.p]);
+      S1.push({ type: "scatter", data: [[today - cc.h, (Math.log(P[today]) - lb) / (lp - lb)]], symbolSize: 12, itemStyle: { color: "#fff", borderColor: CYC.l, borderWidth: 3 }, z: 9,
+        label: { show: true, position: "left", distance: 10, formatter: narrow ? `+${today - cc.h} ngày` : `Hôm nay: halving +${today - cc.h} ngày`, color: "#fff", fontSize: 10, backgroundColor: "rgba(11,14,17,.8)", padding: [2, 4] },
+        markArea: { silent: true, data: [
+          [{ xAxis: -Math.max(...accs), itemStyle: { color: "rgba(154,216,74,.12)" }, label: { show: true, position: "insideTop", formatter: narrow ? "Đáy" : `Đáy: −${Math.max(...accs)} → −${Math.min(...accs)} ngày`, color: CYC.acc, fontSize: 10 } }, { xAxis: -Math.min(...accs) }],
+          [{ xAxis: Math.min(...booms), itemStyle: { color: "rgba(240,164,58,.14)" }, label: { show: true, position: "insideTop", formatter: narrow ? "Đỉnh" : `Đỉnh: +${Math.min(...booms)} → +${Math.max(...booms)} ngày`, color: CYC.boom, fontSize: 10 } }, { xAxis: Math.max(...booms) }]] },
+        markLine: { symbol: "none", silent: true, data: [{ xAxis: 0, label: { formatter: "₿ Halving", color: CYC.o }, lineStyle: { color: CYC.o, width: 1.4, type: "solid" } }] } });
+      CY.c1.setOption({
+        backgroundColor: "#0b0e11", animation: false, grid: { left: narrow ? 36 : 44, right: 16, top: narrow ? 26 : 40, bottom: narrow ? 58 : 34 },
+        legend: narrow ? { bottom: 4, left: "center", textStyle: { color: "#c7ced6", fontSize: 10 }, itemWidth: 14, data: cyc.map((c) => c.name) } : { top: 4, right: 8, textStyle: { color: "#c7ced6", fontSize: 11 }, data: cyc.map((c) => c.name) },
+        tooltip: { trigger: "axis", confine: true, backgroundColor: "#1a2027", borderColor: "#2b333b", textStyle: { color: "#e6e9ec", fontSize: 12 },
+          formatter: (ps) => `Halving ${ps[0].value[0] >= 0 ? "+" : ""}${ps[0].value[0]} ngày<br>` + ps.filter((p) => p.seriesType === "line").map((p) => { const c = cyc[p.seriesIndex], i = c.h + p.value[0]; return `<span style="color:${p.color}">●</span> ${c.name}: ${kUsd(P[i])} (${d(i)})`; }).join("<br>") },
+        xAxis: { type: "value", min: -600, max: 960, interval: 300, axisLine: { lineStyle: { color: "#2b333b" } }, axisLabel: { color: axis, fontSize: 10, formatter: (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v) + (narrow ? "" : " ngày") }, splitLine: { show: false } },
+        yAxis: { type: "value", min: -0.05, max: 1.08, axisLabel: { color: axis, fontSize: 10, formatter: (v) => v === 0 ? "đáy" : v === 1 ? "đỉnh" : "" }, interval: 0.25, splitLine: { lineStyle: { color: grid } } },
+        series: S1,
+      }, true);
+      if (!CY.rs) { CY.rs = true; window.addEventListener("resize", () => { try { CY.c1 && CY.c1.resize(); CY.c2 && CY.c2.resize(); } catch (e) { /* bỏ qua */ } }); }
+    }).catch((e) => { e2.innerHTML = `<div class="msg">${esc(e.message)}</div>`; });
+  }
   /* ---------- Tab ---------- */
-  const TABS = ["overview", "crowd", "money", "macro", "events", "method"];
+  const TABS = ["overview", "crowd", "money", "macro", "cycle", "events", "method"];
   /* ---------- Dòng tiền ETF BTC ---------- */
   // Máy chủ lưu data/etf.json (nguồn TFTC); nếu tệp đó cũ hoặc thiếu, trình duyệt thử tự đọc TFTC.
   const ETF = { data: null, src: null, err: null, range: store.get("tamly-etf-range", "3T"), chart: null, busy: false, loaded: false, tried: false, pending: false };
@@ -2019,6 +2222,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     try { if (location.hash.slice(1) !== t) history.replaceState(null, "", "#" + t); } catch (e) { /* bỏ qua */ }
     if (scroll) window.scrollTo(0, 0);
     if (t === "money" && typeof hlRefresh === "function" && Date.now() - (HL.posT || 0) > 5 * 60e3) setTimeout(hlRefresh, 300);
+    if (t === "cycle") setTimeout(() => { if (CY.pending) cyDraw(); else try { CY.c1 && CY.c1.resize(); CY.c2 && CY.c2.resize(); } catch (e) { /* bỏ qua */ } }, 60);
     if (t === "money") setTimeout(() => { if (ETF.pending) etfDraw(); else if (ETF.chart) try { ETF.chart.resize(); } catch (e) { /* bỏ qua */ } }, 60);
   }
   document.querySelectorAll("#tabs button").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab, true)));
@@ -2115,7 +2319,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       $("p2").textContent = `giữ ${kept.length}, loại ${col.items.length - kept.length}`;
       S.mode = "lex"; ENGINE.score(S.kept, null);
     }
-    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, renderWhales, renderETF, renderEvents, renderHistTest, renderCompass, afterScore];
+    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, renderWhales, renderETF, renderCycle, renderEvents, renderHistTest, renderCompass, afterScore];
     steps.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
     const failed = keys.filter((k) => S.err[k]).map((k) => SRC_NAME[k]).concat(Object.keys(col.errs || {}));
     $("updated").textContent = failed.length ? `Không tải được: ${failed.join(", ")}` : "";

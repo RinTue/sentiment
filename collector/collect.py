@@ -1229,6 +1229,12 @@ def main() -> int:
         latest["attention"] = {"error": str(ex)[:200]}
         print("Lỗi phần chú ý nhỏ lẻ:", ex, file=sys.stderr)
     try:
+        import cycles
+        latest["cycles"] = cycles.run()
+    except Exception as ex:  # noqa: BLE001
+        latest["cycles"] = {"error": str(ex)[:200]}
+        print("Lỗi chu kỳ:", ex, file=sys.stderr)
+    try:
         import etf
         latest["etf"] = etf.run()
     except Exception as ex:  # noqa: BLE001
