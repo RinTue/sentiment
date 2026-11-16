@@ -169,6 +169,20 @@ def etf_line(latest: dict) -> str | None:
     return t + f"; 7 ngày {mflow(E['d7'])}, 30 ngày {mflow(E['d30'])}"
 
 
+def compass_line(latest: dict) -> str | None:
+    C = (latest.get("history_test") or {}).get("compass") or {}
+    hd = C.get("head")
+    if not hd:
+        return None
+    d = hd.get("d7")
+    t = f"La bàn thị trường: {hd['band']} {hd['score']}/100" + (f" ({'▲' if d > 0 else '▼'}{abs(d)} so với 7 ngày trước)" if d else "")
+    main = sorted((x for x in C.get("lenses", []) if x.get("main") and x.get("score") is not None), key=lambda x: x["score"])
+    if main:
+        lo, hi = main[0], main[-1]
+        t += f"; yếu nhất {lo['name'].lower()} {lo['score']} ({lo['band'].lower()}), khá nhất {hi['name'].lower()} {hi['score']}"
+    return t
+
+
 def summary_lines(latest: dict) -> list:
     M = latest.get("market") or {}
     a, nw, so = latest.get("all") or {}, latest.get("news") or {}, latest.get("social") or {}
@@ -195,6 +209,9 @@ def summary_lines(latest: dict) -> list:
     el = etf_line(latest)
     if el:
         L.append("• " + el)
+    cl = compass_line(latest)
+    if cl:
+        L.append("• " + cl)
     mac = latest.get("macro") or {}
     if mac.get("label") and mac.get("have", 1):
         L.append(f"• Vĩ mô: {mac['label']} (điểm {mac.get('score', 0):+d})")

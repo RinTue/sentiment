@@ -296,7 +296,8 @@ def run(force: bool = False) -> dict | None:
     except (OSError, json.JSONDecodeError):
         pass
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    if old and old.get("day") == today and (old.get("favor") or {}).get("v") == FAVOR_V and not force:
+    import compass
+    if old and old.get("day") == today and (old.get("favor") or {}).get("v") == FAVOR_V and (old.get("compass") or {}).get("v") == compass.COMPASS_V and not force:
         return old
     t0, errs = time.time(), {}
     def safe(name, fn):
@@ -344,6 +345,7 @@ def run(force: bool = False) -> dict | None:
         F["stable30"] = keep(trailing_pct(change(stab, 30), 365))
     # Chú ý của người mới: memecoin so với Bitcoin trên Wikipedia, tìm kiếm Google "buy bitcoin" và "mua bitcoin" (Việt Nam)
     doge, mc = safe("wiki_doge", lambda: wiki_hist("Dogecoin")), safe("wiki_meme", lambda: wiki_hist("Meme_coin"))
+    ratio = {}
     if wiki and doge:
         ratio = {d: (doge.get(d, 0) + mc.get(d, 0)) / wiki[d] for d in wiki if wiki[d] and d in doge}
         F["meme"] = keep(trailing_pct(rolling(ratio, lambda a: sum(a) / len(a), 7), 365))
@@ -422,7 +424,12 @@ def run(force: bool = False) -> dict | None:
         favor = favor_score(F, codes, f7, f30, NAMES)
     except Exception as ex:  # noqa: BLE001
         errs["favor"] = str(ex)[:120]
-    out = {"day": today, "start": START.strftime("%Y-%m-%d"), "base": base, "factors": factors, "drivers": drv, "favor": favor, "liq_ext": liq_ext,
+    comp_out = None
+    try:
+        comp_out = compass.run(px, fng, stab, prem, cz, wiki, ratio, trends_daily("global", 0), f7, f30)
+    except Exception as ex:  # noqa: BLE001
+        errs["compass"] = str(ex)[:160]
+    out = {"day": today, "start": START.strftime("%Y-%m-%d"), "base": base, "factors": factors, "drivers": drv, "favor": favor, "liq_ext": liq_ext, "compass": comp_out,
            "symbols": cz.get("symbols"), "errors": errs, "runtime_sec": round(time.time() - t0, 1)}
     with open(OUT_FILE, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)

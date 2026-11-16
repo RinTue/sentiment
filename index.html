@@ -188,6 +188,44 @@ h4.ph.pos::before { background: var(--good); } h4.ph.neg::before { background: v
 .hlm-card { background: #0b0e11; border-radius: 12px; padding: 10px 12px 4px; margin-top: 8px; }
 .hlm-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: #f1f3f5; font-size: 1rem; }
 .hlm-ctl { display: flex; gap: 8px; } .hlm-ctl select, .hlm-ctl button { background: #12171c; color: #e6e9ec; border: 1px solid #2b333b; border-radius: 6px; padding: 5px 10px; font: inherit; font-size: .85rem; cursor: pointer; }
+/* La bàn thị trường */
+.cmp { --b0: #d64545; --b1: #e9a090; --b2: #ecd08a; --b3: #9fcf9a; --b4: #4f9e5b; }
+.cmp-top { display: grid; grid-template-columns: minmax(150px, 220px) 1fr auto; gap: 14px 22px; align-items: center; }
+.cmp-kick { font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+.cmp-name { font-size: 2rem; font-weight: 750; letter-spacing: -.02em; line-height: 1.1; margin-top: 2px; }
+.cmp-score { text-align: right; white-space: nowrap; } .cmp-score b { font-size: 1.7rem; } .cmp-score small { color: var(--ink-3); }
+.cmp-d { white-space: nowrap; font-size: .75rem; font-weight: 700; margin-right: 6px; padding: 1px 6px; border-radius: 5px; } .cmp-d.up { color: #2f8a46; background: rgba(79,158,91,.14); } .cmp-d.down { color: #c0392b; background: rgba(214,69,69,.12); } .cmp-d.flat { color: var(--ink-3); background: var(--bg); }
+.cmp-bar { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; padding-top: 12px; }
+.cmp-bar span { height: 22px; display: flex; align-items: center; justify-content: center; font-size: .68rem; color: rgba(20,24,27,.45); background: var(--bc); opacity: .32; border-radius: 2px; overflow: hidden; white-space: nowrap; }
+.cmp-bar span.on { opacity: 1; color: #14181b; font-weight: 700; }
+.cmp-bar span:nth-child(1) { --bc: var(--b0); } .cmp-bar span:nth-child(2) { --bc: var(--b1); } .cmp-bar span:nth-child(3) { --bc: var(--b2); } .cmp-bar span:nth-child(4) { --bc: var(--b3); } .cmp-bar span:nth-child(5) { --bc: var(--b4); }
+.cmp-bar span.on:nth-child(1) { color: #fff; } .cmp-bar span.on:nth-child(5) { color: #fff; }
+.cmp-bar i { position: absolute; top: 0; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 9px solid var(--ink); transform: translateX(-6px); }
+.cmp-bar span { font-family: inherit; } .cmp-bar.sm span { height: 14px; font-size: .6rem; } .cmp-bar.sm span { color: transparent !important; } .cmp-bar.sm { padding-top: 10px; }
+.cmp-agree { grid-column: 2 / 4; } .cmp-agree .row2 { display: flex; justify-content: space-between; font-size: .72rem; color: var(--ink-3); margin-bottom: 5px; } .cmp-agree .row2 b { color: var(--ink); }
+.cmp-grad { position: relative; height: 4px; border-radius: 3px; background: linear-gradient(90deg, var(--b0), var(--b2), var(--b4)); margin: 6px 0 4px; }
+.cmp-grad u { position: absolute; top: -4px; width: 12px; height: 12px; border-radius: 50%; background: #1f4a7a; border: 2px solid var(--panel); transform: translateX(-6px); text-decoration: none; }
+.cmp-grid { align-items: start; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; } .cmp-grid.three { grid-template-columns: repeat(3, 1fr); }
+.cmp-card { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 10px 12px 12px; }
+.cmp-card summary { list-style: none; cursor: pointer; } .cmp-card summary::-webkit-details-marker { display: none; }
+.cmp-card .h { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-weight: 650; font-size: .9rem; }
+.cmp-card .m { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.cmp-pill { font-size: .74rem; font-weight: 650; padding: 2px 9px; border-radius: 999px; border: 1px solid; }
+.cmp-pill.z0 { color: #b03030; border-color: rgba(214,69,69,.45); background: rgba(214,69,69,.10); } .cmp-pill.z1 { color: #b5603f; border-color: rgba(233,160,144,.7); background: rgba(233,160,144,.15); }
+.cmp-pill.z2 { color: #9a7a1f; border-color: rgba(236,208,138,.9); background: rgba(236,208,138,.2); } .cmp-pill.z3 { color: #3f7f45; border-color: rgba(159,207,154,.9); background: rgba(159,207,154,.18); } .cmp-pill.z4 { color: #2f7a3b; border-color: rgba(79,158,91,.6); background: rgba(79,158,91,.14); }
+.cmp-card .sc b { font-size: 1.05rem; } .cmp-card .sc small { color: var(--ink-3); }
+.cmp-card .more-hint { font-size: .7rem; color: var(--ink-3); margin-top: 6px; } .cmp-card[open] .more-hint { display: none; }
+.cmp-items { margin: 10px 0 0; padding: 8px 0 0; border-top: 1px dashed var(--line); font-size: .78rem; display: grid; gap: 6px; }
+.cmp-items div { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; } .cmp-items .v { color: var(--ink-2); font-family: var(--mono); font-size: .74rem; }
+.cmp-items .pb { grid-column: 1 / 3; height: 3px; background: var(--line); border-radius: 2px; position: relative; } .cmp-items .pb i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; background: var(--ink-3); }
+.cmp-sub { font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; margin-top: 18px; } .cmp-sub span { text-transform: none; letter-spacing: 0; font-weight: 400; margin-left: 6px; }
+.cmp-sum { margin: 14px 0 0; font-size: .92rem; }
+.cmp-card.na { opacity: .6; }
+@media (prefers-color-scheme: dark) { .cmp-bar span { color: rgba(255,255,255,.5); } .cmp-pill.z0 { color: #ff8a80; } .cmp-pill.z1 { color: #f2b29f; } .cmp-pill.z2 { color: #f0d58f; } .cmp-pill.z3 { color: #a9dca4; } .cmp-pill.z4 { color: #7fd08b; } .cmp-grad u { background: #8fb8ff; } .cmp-d.up { color: #7fd08b; } .cmp-d.down { color: #ff8a80; } }
+@media (max-width: 900px) { .cmp-grid { grid-template-columns: repeat(2, 1fr); } .cmp-grid.three { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .cmp-top { grid-template-columns: 1fr auto; } .cmp-top .cmp-score { grid-row: 1; grid-column: 2; } .cmp-top .cmp-bar.lg { grid-column: 1 / 3; } .cmp-agree { grid-column: 1 / 3; } .cmp-name { font-size: 1.6rem; } .cmp-bar.lg span { font-size: .58rem; }
+  .cmp-grid, .cmp-grid.three { grid-template-columns: 1fr 1fr; gap: 8px; } .cmp-card { padding: 9px 10px 10px; } .cmp-card .h { font-size: .82rem; } .cmp-card .sc b { font-size: .95rem; } .cmp-pill { font-size: .68rem; padding: 1px 7px; }
+  .cmp-bar.sm span { color: transparent !important; height: 10px; } .cmp-card .more-hint { display: none; } .cmp-card[open] { grid-column: 1 / 3; } }
 .etf-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 8px 0 2px; color: #e6e9ec; }
 .etf-big { font-size: 1.9rem; font-weight: 700; letter-spacing: -.01em; margin-right: 4px; } .etf-big.neg { color: #f6465d; } .etf-big.pos { color: #2ebd85; }
 .etf-chip { font-size: .8rem; padding: 3px 8px; border-radius: 6px; background: #1a2027; color: #c7ced6; } .etf-chip.neg { color: #f6465d; background: rgba(246,70,93,.12); } .etf-chip.pos { color: #2ebd85; background: rgba(46,189,133,.12); }
@@ -305,7 +343,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
     </section>
     <div class="msg" id="ov-liq-alert" hidden style="font-weight:600"></div>
     <div class="kpis" id="kpis"></div>
-    <div class="kpi fav" id="fav-card"><div class="l"><span class="dot"></span>Điểm thuận lợi (theo lịch sử)</div><div class="s">Đang tải…</div></div>
+    <section class="panel cmp" id="compass"><p class="note">Đang tải la bàn thị trường…</p></section>
     <div class="kpi drv" id="drv-card"><div class="l"><span class="dot"></span>Đà giá đến từ đâu</div><div class="s">Đang tải…</div></div>
     <div class="nextev" id="next-ev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/></svg><span>Đang tải lịch kinh tế…</span></div>
     <section class="panel">
@@ -1550,24 +1588,66 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       ? `Đã kiểm tra trên dữ liệu ${F.split.slice(0, 4)}–nay (quy tắc chưa từng thấy): ngày Thuận lợi BTC tăng sau 30 ngày ${hi.up30}% số lần, ngày Bất lợi ${lo.up30}%.`
       : `Chưa đứng vững trên dữ liệu ${F.split.slice(0, 4)}–nay: ngày Thuận lợi tăng sau 30 ngày ${hi.up30}% số lần, ngày Bất lợi ${lo.up30}% (mọi ngày ${all.up30}%). Chỉ nên xem để tham khảo.` };
   }
-  function renderFavor() {
-    const box = $("fav-card"); if (!box) return;
-    const H = S.sv && S.sv.L.history_test, F = H && H.favor;
-    const head = (cls) => `<div class="l"><span class="dot ${cls || ""}"></span>Điểm thuận lợi (theo lịch sử)</div>`;
-    if (!F) { box.innerHTML = head() + `<div class="s">${S.sv ? "Bộ thu thập sẽ tính điểm này ở lần chạy tới (mỗi ngày một lần)." : "Phần này do bộ thu thập trên GitHub tính."}</div>`; return; }
-    const cls = F.zone === "Thuận lợi" ? "pos" : F.zone === "Bất lợi" ? "neg" : "mid", chk = favorCheck(F);
-    const z = (F.train || []).find((r) => r.name.startsWith(F.zone)), all = (F.train || [])[3];
-    const parts = (F.parts || []).filter((p) => Math.abs(p.edge) >= 0.5).slice(0, 4)
-      .map((p) => `<span>${esc(p.name.replace(/ \(.*\)$/, ""))}<b class="${p.edge > 0 ? "up" : "down"}">${p.edge > 0 ? "+" : "−"}${num(Math.abs(p.edge), 1)}</b></span>`).join("");
-    const weak = chk && !chk.ok;   // chưa qua kiểm tra: làm mờ con số để không bị đọc như tín hiệu
-    box.classList.toggle("weak", !!weak);
-    box.innerHTML = head(weak || cls === "mid" ? "" : cls) +
-      `<div class="row"><span class="big">${F.value}<small>/100</small></span><span class="zl ${cls}">${esc(F.zone)}</span><span class="s">số liệu ngày ${F.asof.split("-").reverse().join("/")}</span></div>
-      <div class="why">${weak ? "Đây là điểm theo quy tắc học từ 2022–2024. Quy tắc này chưa dự báo đúng giai đoạn sau đó, nên đừng dựa vào con số này để vào lệnh." : `So với các ngày 2022–2024 có tín hiệu giống hôm nay${z && all ? `: những ngày ${F.zone.toLowerCase()} như vậy, BTC tăng sau 30 ngày ở ${z.up30}% số lần (mọi ngày ${all.up30}%)` : ""}. Đây là xác suất nghiêng, không phải dự báo.`}</div>
-      ${parts ? `<div class="chips" style="margin-top:8px">${parts}</div>` : ""}
-      ${chk ? `<div class="trust ${chk.ok ? "ok" : "no"}">${esc(chk.msg)}</div>` : ""}
-      <div class="s" style="margin-top:6px"><a href="#method" data-go="method">Cách tính và bảng kiểm tra</a></div>`;
-    const a = box.querySelector("a[data-go]"); if (a) a.addEventListener("click", (e) => { e.preventDefault(); showTab("method", false); const el = $("fav-detail"); if (el) el.scrollIntoView({ behavior: "smooth" }); });
+  /* ---------- La bàn thị trường (thay Điểm thuận lợi) ---------- */
+  function cmpBar(score, bands, cls) {
+    const z = Math.min(4, Math.floor(score / 20));
+    return `<div class="cmp-bar ${cls || ""}">${bands.map((b, i) => `<span class="${i === z ? "on" : ""}">${esc(b)}</span>`).join("")}<i style="left:${Math.max(1, Math.min(99, score))}%"></i></div>`;
+  }
+  const cmpD = (d) => d == null ? "" : `<span class="cmp-d ${d > 0 ? "up" : d < 0 ? "down" : "flat"}" title="So với 7 ngày trước">${d > 0 ? "▲" : d < 0 ? "▼" : "="} ${Math.abs(d)}</span>`;
+  function cmpCard(Ls) {
+    if (Ls.score == null) return `<div class="cmp-card na"><div class="h">${esc(Ls.name)}</div><p class="note" style="margin:6px 0 0">Chưa có dữ liệu ở lần tính này.</p></div>`;
+    const z = Math.min(4, Math.floor(Ls.score / 20));
+    const items = (Ls.items || []).map((it) => `<div><span>${esc(it.name)}</span><span class="v">${esc(it.raw)}</span><span class="pb" title="Xếp hạng ${it.p}/100"><i style="width:${it.p}%"></i></span></div>`).join("");
+    return `<details class="cmp-card"><summary><div class="h"><span>${esc(Ls.name)}</span>${cmpD(Ls.d7)}</div>
+      <div class="m"><span class="cmp-pill z${z}">${esc(Ls.band)}</span><span class="sc"><b>${Ls.score}</b><small>/100</small></span></div>
+      ${cmpBar(Ls.score, Ls.bands, "sm")}<div class="more-hint">Bấm để xem từng chỉ báo</div></summary>
+      <div class="cmp-items"><p class="note" style="margin:0">${esc(Ls.desc)} Vạch dưới mỗi dòng: xếp hạng so với 3 năm trước, càng dài càng cao.</p>${items}</div></details>`;
+  }
+  const lc1 = (t) => t ? t[0].toLowerCase() + t.slice(1) : "";
+  function renderCompass() {
+    const box = $("compass"); if (!box) return;
+    const H = S.sv && S.sv.L.history_test, C = H && H.compass;
+    if (!C || C.error || !C.head) { box.innerHTML = `<div class="cmp-kick">La bàn thị trường</div><p class="note">${C && C.error ? "Chưa tính được: " + esc(C.error) : S.sv ? "Bộ thu thập sẽ tính la bàn ở lần chạy tới (mỗi ngày một lần)." : "Phần này do bộ thu thập trên GitHub tính."}</p>`; return; }
+    const hd = C.head, main = C.lenses.filter((l) => l.main), side = C.lenses.filter((l) => !l.main);
+    const dots = main.filter((l) => l.score != null).map((l) => `<u style="left:${l.score}%" title="${esc(l.name)}: ${l.score}"></u>`).join("");
+    const ok = main.filter((l) => l.score != null).sort((a, b) => a.score - b.score), weak = ok[0], strong = ok.at(-1);
+    let sum = `Tổng ${hd.score}/100: <b>${esc(hd.band)}</b>${hd.d7 != null ? ` (${hd.d7 > 0 ? "tăng" : hd.d7 < 0 ? "giảm" : "không đổi"}${hd.d7 ? " " + Math.abs(hd.d7) + " điểm" : ""} so với 7 ngày trước)` : ""}. Kéo xuống mạnh nhất là <b>${esc(lc1(weak.name))}</b> (${weak.score}, ${esc(lc1(weak.band))})` +
+      (strong !== weak ? `; khá nhất là <b>${esc(lc1(strong.name))}</b> (${strong.score}, ${esc(lc1(strong.band))})` : "") + ".";
+    const cyc = side.find((l) => l.key === "cycle"), der = side.find((l) => l.key === "deriv"), rot = side.find((l) => l.key === "rot");
+    const sideTxt = [cyc, der, rot].filter((l) => l && l.score != null).map((l) => `${lc1(l.name)} <b>${esc(lc1(l.band))}</b>`);
+    if (sideTxt.length) sum += ` Đọc riêng: ${sideTxt.join(", ")}.`;
+    const bt = C.bt || [], ba = C.bt_all || {}, zi = Math.min(4, Math.floor(hd.score / 20)), row = bt[zi];
+    const btTxt = row && row.d30 && ba.d30 ? `Từ ${C.bt_from.slice(0, 4)}, những ngày điểm tổng ở vùng ${esc(row.name)} như hôm nay (${row.days} ngày): BTC 30 ngày sau tăng ${row.d30.up}% số lần (trung vị ${pct(row.d30.med)}); tính mọi ngày là ${ba.d30.up}%.` : "";
+    const sgn = (v) => v == null ? "–" : `<span class="${v > 0 ? "up" : v < 0 ? "down" : ""}">${pct(v, 1)}</span>`;
+    const tbl = `<div class="tbl-wrap"><table class="evtbl"><thead><tr><th>Vùng điểm tổng</th><th>Số ngày</th><th>Tăng sau<br>7 ngày</th><th>Tăng sau<br>30 ngày</th><th>Trung vị<br>30 ngày</th></tr></thead><tbody>` +
+      bt.map((r) => `<tr${r === row ? ' style="background:var(--accent-bg)"' : ""}><td>${esc(r.name)} (${r.lo}–${r.hi})</td><td class="num">${r.days}</td><td class="num">${r.d7 ? r.d7.up + "%" : "–"}</td><td class="num">${r.d30 ? r.d30.up + "%" : "–"}</td><td class="num">${r.d30 ? sgn(r.d30.med) : "–"}</td></tr>`).join("") +
+      `<tr style="border-top:2px solid var(--line)"><td>Mọi ngày</td><td class="num">${ba.d30 ? ba.d30.n : "–"}</td><td class="num">${ba.d7 ? ba.d7.up + "%" : "–"}</td><td class="num">${ba.d30 ? ba.d30.up + "%" : "–"}</td><td class="num">${ba.d30 ? sgn(ba.d30.med) : "–"}</td></tr></tbody></table></div>`;
+    const errs = Object.entries(C.errors || {});
+    box.innerHTML = `<div class="cmp-top">
+      <div><div class="cmp-kick">La bàn thị trường</div><div class="cmp-name">${esc(hd.band)}</div></div>
+      ${cmpBar(hd.score, hd.bands, "lg")}
+      <div class="cmp-score">${cmpD(hd.d7)}<b>${hd.score}</b><small>/100</small></div>
+      <div class="cmp-agree"><div class="row2"><span>MỨC ĐỒNG THUẬN CỦA 4 NHÓM</span><span>Độ tin <b>${C.conviction.v}</b> · ${esc(C.conviction.label)}</span></div><div class="cmp-grad">${dots}</div></div>
+    </div>
+    <div class="cmp-grid">${main.map(cmpCard).join("")}</div>
+    <div class="cmp-sub">Đọc riêng<span>Thị trường đang ở đâu, không phải sắp đi đâu; không cộng vào điểm tổng.</span></div>
+    <div class="cmp-grid three">${side.map(cmpCard).join("")}</div>
+    <p class="cmp-sum">${sum}</p>
+    <details class="more" style="margin-top:8px"><summary>Cách tính, diễn biến 2 năm và kiểm chứng</summary>
+      <p class="note">Mỗi chỉ báo được xếp hạng 0–100 so với chính nó trong 3 năm trước đó (vị trí chu kỳ so với toàn bộ lịch sử từ 2018), chỉ dùng số liệu có đến ngày đó. Điểm nhóm là trung bình các chỉ báo; điểm tổng là trung bình 4 nhóm chính. Mũi tên là thay đổi so với 7 ngày trước. Độ tin cao khi 4 nhóm cho điểm gần nhau. Ý tưởng theo Market Compass của Glassnode nhưng dựng bằng nguồn miễn phí; riêng nhóm Hành vi nhà đầu tư dùng tâm lý đám đông, vì Glassnode dùng hành vi người giữ coin lâu năm trên chuỗi (số liệu trả phí). Nguồn: FRED, DefiLlama, TFTC, Coinbase, OKX, alternative.me, Google Trends, Wikipedia, blockchain.com, Coinalyze. Cập nhật mỗi ngày một lần; số liệu ngày ${C.asof.split("-").reverse().join("/")}.</p>
+      <div class="legend"><span><i style="background:var(--ink)"></i>Điểm tổng</span><span><i style="background:var(--s1)"></i>Vĩ mô</span><span><i style="background:var(--s2)"></i>Dòng tiền</span><span><i style="background:#c08a2b"></i>Hành vi</span><span><i style="background:#7a62b8"></i>Nền tảng</span></div>
+      <div class="chart" id="c-compass"></div>
+      <h3 style="font-size:.95rem;margin-top:10px">Kiểm chứng: điểm tổng ở từng vùng, BTC sau đó thế nào</h3>${tbl}
+      <p class="note">${btTxt} La bàn mô tả trạng thái, không được xây để dự báo; bảng này chỉ cho biết mỗi vùng thường đi kèm điều gì. Các ngày liền nhau gần giống nhau nên số ngày lớn trông chắc hơn thực tế.</p>
+      ${errs.length ? `<p class="note">Nguồn lỗi ở lần tính gần nhất (nhóm liên quan tính bằng các chỉ báo còn lại): ${esc(errs.map(([k, v]) => k + ": " + v).join("; ").slice(0, 300))}</p>` : ""}
+    </details>`;
+    const el = $("c-compass");
+    if (el && C.series && C.series.length > 5) {
+      const t = C.series.map((r) => r[0]), col = (i) => C.series.map((r) => r[i]), f = (v) => v == null ? "–" : num(v, 0);
+      lineChart(el, { t, H: 200, band: [40, 60], yfmt: (v) => num(v, 0), series: [
+        { name: "Điểm tổng", v: col(1), color: "var(--ink)", fmt: f }, { name: "Vĩ mô", v: col(2), color: "var(--s1)", fmt: f },
+        { name: "Dòng tiền", v: col(3), color: "var(--s2)", fmt: f }, { name: "Hành vi", v: col(4), color: "#c08a2b", fmt: f }, { name: "Nền tảng", v: col(5), color: "#7a62b8", fmt: f }] });
+    }
   }
   function favorDetail(F) {
     if (!F) return "";
@@ -1575,7 +1655,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const tbl = (rows) => `<div class="tbl-wrap"><table class="evtbl"><thead><tr><th>Nhóm điểm</th><th>Ngày</th><th>Tăng sau<br>30 ngày</th><th>Trung vị<br>30 ngày</th></tr></thead><tbody>` +
       rows.map((r) => `<tr${r.name === "Mọi ngày" ? ' style="border-top:2px solid var(--line)"' : ""}><td>${esc(r.name.replace(" (", "<br>(")).replace("&lt;br&gt;", "<br>")}</td><td class="num">${r.n}</td><td class="num">${r.up30 == null ? "–" : r.up30 + "%"}</td><td class="num">${sgn(r.med30)}</td></tr>`).join("") + `</tbody></table></div>`;
     const chk = favorCheck(F), y = F.split.slice(0, 4);
-    return `<div id="fav-detail"><h3>Điểm thuận lợi</h3>
+    return `<div id="fav-detail"><h3>Điểm thuận lợi (thí nghiệm đã dừng)</h3>
+      <div class="msg" style="margin:0 0 8px">Thẻ này đã được thay bằng <b>La bàn thị trường</b> ở tab Tổng quan, vì nó không dự báo đúng trên dữ liệu chưa dùng để học. Giữ lại đây để xem bằng chứng.</div>
       <p style="margin:0 0 8px">Điểm hôm nay <b>${F.value}/100 (${esc(F.zone)})</b>. Cách làm: với từng chỉ báo, máy chủ xem trong giai đoạn 2022–${+y - 1} mỗi mức của nó đi trước BTC tăng 30 ngày nhiều hơn hay ít hơn bình thường bao nhiêu điểm %, rồi cộng các mức chênh của hôm nay lại (nhóm ít ngày bị co về 0 cho khỏi thổi phồng; kiểu đà giá hôm qua tính nửa trọng số). Tổng được đổi ra thang 0–100 theo các ngày 2022–${+y - 1}: từ 70 là Thuận lợi, đến 30 là Bất lợi.</p>
       <div class="two"><div><h3 style="font-size:.95rem">Giai đoạn học (2022–${+y - 1})</h3>${tbl(F.train)}<p class="note">Quy tắc được xây từ chính những ngày này nên kết quả ở đây luôn đẹp; không dùng để tin.</p></div>
       <div><h3 style="font-size:.95rem">Giai đoạn kiểm tra (${y}–nay)</h3>${tbl(F.test)}<p class="note">Quy tắc chưa từng thấy những ngày này. Đây mới là bảng đáng tin.</p></div></div>
@@ -2034,7 +2115,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       $("p2").textContent = `giữ ${kept.length}, loại ${col.items.length - kept.length}`;
       S.mode = "lex"; ENGINE.score(S.kept, null);
     }
-    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, renderWhales, renderETF, renderEvents, renderHistTest, renderFavor, afterScore];
+    const steps = [renderFilter, renderAttention, renderPositioning, renderBTC, renderCal, renderMacro, renderReliability, renderAlertNote, renderModelCompare, renderDrivers, renderLiq24, renderWhales, renderETF, renderEvents, renderHistTest, renderCompass, afterScore];
     steps.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
     const failed = keys.filter((k) => S.err[k]).map((k) => SRC_NAME[k]).concat(Object.keys(col.errs || {}));
     $("updated").textContent = failed.length ? `Không tải được: ${failed.join(", ")}` : "";
