@@ -190,8 +190,8 @@ h4.ph.pos::before { background: var(--good); } h4.ph.neg::before { background: v
 .hlm-ctl { display: flex; gap: 8px; } .hlm-ctl select, .hlm-ctl button { background: #12171c; color: #e6e9ec; border: 1px solid #2b333b; border-radius: 6px; padding: 5px 10px; font: inherit; font-size: .85rem; cursor: pointer; }
 /* Chu kỳ */
 .cy-px { margin-top: 14px; } .cy-px small { color: var(--ink-3); }
-.cy-tl { display: flex; gap: 2px; margin-top: 8px; height: 22px; font-size: .66rem; }
-.cy-tl span { display: flex; align-items: center; justify-content: center; color: #14181b; font-weight: 600; border-radius: 2px; overflow: hidden; white-space: nowrap; min-width: 2px; }
+.cy-tl { position: relative; margin-top: 6px; height: 22px; font-size: .66rem; }
+.cy-tl span { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; color: #14181b; font-weight: 600; border-radius: 2px; overflow: hidden; white-space: nowrap; min-width: 2px; }
 .cy-tl .a { background: #9ad84a; } .cy-tl .b { background: #f0a43a; } .cy-tl .r { background: #ef5b6b; color: #fff; }
 .cy-tl .pj { background-image: repeating-linear-gradient(135deg, rgba(0,0,0,.28) 0 4px, transparent 4px 9px); opacity: .75; } .cy-tl .live { outline: 1px solid #fff; }
 .cy-row { display: grid; grid-template-columns: 120px 1fr 92px 150px; gap: 8px 14px; align-items: center; padding: 10px 12px; margin-top: 8px; border: 1px solid #222a31; border-radius: 10px; background: #0f1418; color: #e6e9ec; }
@@ -2046,7 +2046,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const tog = `<div class="hlm-ctl etf-rg cy-tog"><button type="button" data-k="alt" class="${CY.alt ? "" : "on"}">Đỉnh ${d(cyModel(CY.J, false).cur.p)}</button><button type="button" data-k="alt2" class="${CY.alt ? "on" : ""}">Đỉnh ${d(cyModel(CY.J, true).cur.p)}</button><button type="button" data-k="proj" class="${CY.proj ? "on" : ""}">${CY.proj ? "Ẩn dự phóng" : "Hiện dự phóng"}</button></div>`;
     const card2 = `<div class="hlm-card"><div class="hlm-head etf-head"><b>Toàn cảnh các chu kỳ</b>${tog}</div>
       <div class="etf-sub">Giá đóng cửa theo ngày, thang log; đáy và đỉnh theo giá thấp/cao nhất trong ngày (${esc(CY.J.hl_src || "giá đóng cửa")}). Xanh: tích luỹ (đáy → halving) · cam: bùng nổ (halving → đỉnh) · đỏ: giảm giá (đỉnh → đáy). Đường đứt: các kịch bản dự phóng, nối thẳng giữa các mốc (không phải đường giá dự báo); vạch chấm là mốc thời gian, vùng mờ là khoảng sai số.</div>
-      <div id="cy-c2" style="height:${innerWidth < 560 ? 340 : 440}px"></div><div id="cy-tl" class="cy-tl"></div></div>`;
+      <div id="cy-c2" style="height:${innerWidth < 560 ? 340 : 440}px"></div><div id="cy-tl" class="cy-tl"></div><div class="etf-sub" style="margin-top:4px">Số ngày của từng pha, thẳng hàng với trục thời gian phía trên; ô sọc là dự phóng, ô viền trắng là pha đang diễn ra.</div></div>`;
     const card1 = `<div class="hlm-card" style="margin-top:14px"><div class="hlm-head"><b>Chồng ${M.cyc.length} chu kỳ lên nhau</b></div>
       <div class="etf-sub">Căn mọi chu kỳ về cùng ngày halving. Trục dọc: 0 là đáy, 1 là đỉnh của từng chu kỳ (thang log), để so hình dạng chứ không so giá. Tỷ lệ thời gian đáy → halving / halving → đỉnh trung bình ${num(M.r * 100, 1)} / ${num(100 - M.r * 100, 1)}.</div>
       <div id="cy-c1" style="height:380px"></div></div>`;
@@ -2152,14 +2152,21 @@ if (typeof module !== "undefined") module.exports = ENGINE;
           { type: "scatter", data: [], markPoint: { symbol: "circle", symbolSize: 10, data: pts, label: { show: true, formatter: (p) => narrow && p.name !== "₿" ? p.name.split("\n")[0] : p.name, color: "#e6e9ec", fontSize: narrow ? 8 : 10, backgroundColor: "rgba(11,14,17,.75)", padding: [2, 4], borderRadius: 4 } },
             markLine: { symbol: "none", silent: true, data: lines }, markArea: { silent: true, data: areas } }],
       }, true);
-      // Dải thời gian các pha
+      // Dải thời gian các pha: mỗi ô đặt đúng vị trí ngày của nó trên trục thời gian của biểu đồ phía trên
       const tl = $("cy-tl");
       if (tl) {
-        const parts = [];
-        cyc.forEach((c, k) => { parts.push(["a", c.acc], ["b", c.boom]); const nb = k + 1 < cyc.length ? cyc[k + 1].b : null; parts.push(["r", nb != null ? nb - c.p : today - c.p, nb == null]); });
-        if (CY.proj) { parts[parts.length - 1][1] = Math.round(M.mid[0].bot - cur.p); parts[parts.length - 1][3] = true; M.mid.forEach((m, k) => { parts.push(["a", Math.round(m.acc), false, true], ["b", Math.round(m.boom), false, true]); if (M.mid[k + 1]) parts.push(["r", Math.round(M.mid[k + 1].bot - m.peak), false, true]); }); }
-        const tot = parts.reduce((a, p) => a + p[1], 0);
-        tl.innerHTML = parts.map(([k, n, live, pj]) => `<span class="${k}${pj ? " pj" : ""}${live ? " live" : ""}" style="flex:${n}" title="${n} ngày${pj ? " (dự phóng)" : ""}">${n / tot > 0.035 ? n + (narrow ? "" : " ngày") : ""}</span>`).join("");
+        const parts = [];   // [loại, ngày bắt đầu, ngày kết thúc, đang diễn ra, dự phóng]
+        cyc.forEach((c, k) => { parts.push(["a", c.b, c.h], ["b", c.h, c.p]); const nb = k + 1 < cyc.length ? cyc[k + 1].b : null; parts.push(["r", c.p, nb != null ? nb : today, nb == null]); });
+        if (CY.proj && M.mid.length) {
+          const last = parts[parts.length - 1]; last[2] = M.mid[0].bot; last[4] = true;
+          M.mid.forEach((m, k) => { parts.push(["a", m.bot, m.h, false, true], ["b", m.h, m.peak, false, true]); if (M.mid[k + 1]) parts.push(["r", m.peak, M.mid[k + 1].bot, false, true]); });
+        }
+        const place = () => {
+          const px = (i) => CY.c2.convertToPixel({ xAxisIndex: 0 }, ts(i));
+          tl.innerHTML = parts.map(([k, a, b, live, pj]) => { const x0 = px(a), x1 = px(b), w = x1 - x0 - 2, n = Math.round(b - a);
+            return `<span class="${k}${pj ? " pj" : ""}${live ? " live" : ""}" style="left:${x0 + 1}px;width:${Math.max(1, w)}px" title="${n} ngày${pj ? " (dự phóng)" : live ? " (đang diễn ra)" : ""}">${w > 22 ? n : ""}</span>`; }).join("");
+        };
+        place(); CY.place = place;
       }
       // ---- Biểu đồ chồng chu kỳ
       CY.c1 = fix(CY.c1, e1);
@@ -2187,7 +2194,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
         yAxis: { type: "value", min: -0.05, max: 1.08, axisLabel: { color: axis, fontSize: 10, formatter: (v) => v === 0 ? "đáy" : v === 1 ? "đỉnh" : "" }, interval: 0.25, splitLine: { lineStyle: { color: grid } } },
         series: S1,
       }, true);
-      if (!CY.rs) { CY.rs = true; window.addEventListener("resize", () => { try { CY.c1 && CY.c1.resize(); CY.c2 && CY.c2.resize(); } catch (e) { /* bỏ qua */ } }); }
+      if (!CY.rs) { CY.rs = true; window.addEventListener("resize", () => { try { CY.c1 && CY.c1.resize(); CY.c2 && CY.c2.resize(); CY.place && CY.place(); } catch (e) { /* bỏ qua */ } }); }
     }).catch((e) => { e2.innerHTML = `<div class="msg">${esc(e.message)}</div>`; });
   }
   /* ---------- Tab ---------- */
@@ -2302,7 +2309,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     try { if (location.hash.slice(1) !== t) history.replaceState(null, "", "#" + t); } catch (e) { /* bỏ qua */ }
     if (scroll) window.scrollTo(0, 0);
     if (t === "money" && typeof hlRefresh === "function" && Date.now() - (HL.posT || 0) > 5 * 60e3) setTimeout(hlRefresh, 300);
-    if (t === "cycle") setTimeout(() => { if (CY.pending) cyDraw(); else try { CY.c1 && CY.c1.resize(); CY.c2 && CY.c2.resize(); } catch (e) { /* bỏ qua */ } }, 60);
+    if (t === "cycle") setTimeout(() => { if (CY.pending) cyDraw(); else try { CY.c1 && CY.c1.resize(); CY.c2 && CY.c2.resize(); CY.place && CY.place(); } catch (e) { /* bỏ qua */ } }, 60);
     if (t === "money") setTimeout(() => { if (ETF.pending) etfDraw(); else if (ETF.chart) try { ETF.chart.resize(); } catch (e) { /* bỏ qua */ } }, 60);
   }
   document.querySelectorAll("#tabs button").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab, true)));
