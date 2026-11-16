@@ -189,6 +189,7 @@ h4.ph.pos::before { background: var(--good); } h4.ph.neg::before { background: v
 .hlm-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: #f1f3f5; font-size: 1rem; }
 .hlm-ctl { display: flex; gap: 8px; } .hlm-ctl select, .hlm-ctl button { background: #12171c; color: #e6e9ec; border: 1px solid #2b333b; border-radius: 6px; padding: 5px 10px; font: inherit; font-size: .85rem; cursor: pointer; }
 /* Chu kỳ */
+.cy-px { margin-top: 14px; } .cy-px small { color: var(--ink-3); }
 .cy-tl { display: flex; gap: 2px; margin-top: 8px; height: 22px; font-size: .66rem; }
 .cy-tl span { display: flex; align-items: center; justify-content: center; color: #14181b; font-weight: 600; border-radius: 2px; overflow: hidden; white-space: nowrap; min-width: 2px; }
 .cy-tl .a { background: #9ad84a; } .cy-tl .b { background: #f0a43a; } .cy-tl .r { background: #ef5b6b; color: #fff; }
@@ -1941,8 +1942,9 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   }
   function cyModel(J, alt) {
     const t0 = Date.parse(J.start + "T00:00:00Z"), P = J.close, N = P.length, today = N - 1;
+    const Hi = J.hi || [], Lo = J.lo || [], pHi = (i) => Hi[i] ?? P[i], pLo = (i) => Lo[i] ?? P[i];   // đáy/đỉnh theo giá thấp/cao nhất trong ngày
     const di = (s) => Math.round((Date.parse(s + "T00:00:00Z") - t0) / 864e5), ds = (i) => new Date(t0 + Math.round(i) * 864e5).toISOString().slice(0, 10);
-    const ext = (a, b, mx) => { let k = -1, m = mx ? -Infinity : Infinity; for (let i = Math.max(0, Math.round(a)); i <= Math.min(Math.round(b), N - 1); i++) { const v = P[i]; if (v == null) continue; if (mx ? v > m : v < m) { m = v; k = i; } } return k; };
+    const ext = (a, b, mx) => { let k = -1, m = mx ? -Infinity : Infinity; for (let i = Math.max(0, Math.round(a)); i <= Math.min(Math.round(b), N - 1); i++) { const v = mx ? pHi(i) : pLo(i); if (v == null) continue; if (mx ? v > m : v < m) { m = v; k = i; } } return k; };
     const H = J.halvings.map((h) => ({ ...h, i: di(h.date) })), past = H.filter((h) => h.i <= today);
     const peaks = past.map((h, k) => ext(h.i, Math.min(h.i + 1000, (H[k + 1] ? H[k + 1].i : N) - 1), true));
     const cyc = [];
@@ -1954,7 +1956,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       const e = nextH != null ? ext(p, nextH, false) : null, low = e == null ? ext(p, today, false) : null;
       const acc = h - b, boom = p - h;
       cyc.push({ name: "Chu kỳ " + past[k].date.slice(0, 4), year: +past[k].date.slice(0, 4), b, h, p, e, low, cur, acc, boom, bear: e != null ? e - p : null,
-        ratio: 100 * acc / (acc + boom), gain: P[p] / P[b], dd: e != null ? P[e] / P[p] - 1 : P[low] / P[p] - 1 });
+        ratio: 100 * acc / (acc + boom), gain: pHi(p) / pLo(b), dd: e != null ? pLo(e) / pHi(p) - 1 : pLo(low) / pHi(p) - 1 });
     }
     const mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
     const ratios = cyc.map((c) => c.ratio), bears = cyc.filter((c) => c.bear != null).map((c) => c.bear);
@@ -1976,7 +1978,29 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       const prev = cyc.at(-2), olderBears = cyc.slice(0, -2).filter((c) => c.bear != null).map((c) => c.bear), rr = mean(cyc.slice(0, -1).map((c) => c.ratio)) / 100;
       if (olderBears.length) { const pb = prev.p + mean(olderBears), pp = cur.h + (cur.h - pb) * (1 - rr) / rr; back = { bot: Math.round(pb), peak: Math.round(pp), dBot: Math.round(cur.b - pb), dPeak: Math.round(cur.p - pp), n: olderBears.length }; }
     }
-    return { P, N, today, t0, di, ds, H, cyc, cur, r, rLo, rHi, ratios, bears, bAvg, bLo, bHi, mid, early, late, fut, back };
+    // Dự phóng giá (ngoại suy rất thô): mức tăng mỗi chu kỳ (theo log) chỉ còn một phần của lần trước; mức giảm từ đỉnh nhỏ dần
+    const LG = cyc.map((c) => Math.log(c.gain)), dec = LG.slice(1).map((x, i) => x / LG[i]);
+    const decM = mean(dec), decLo = Math.min(...dec), decHi = Math.max(...dec);
+    const dds = [pLo(cyc[0].b) / pHi(peaks[0]) - 1].concat(cyc.filter((c) => c.bear != null).map((c) => c.dd));
+    const ddLast = dds.at(-1), ddTr = dds.length >= 2 ? ddLast + (ddLast - dds.at(-2)) : ddLast;
+    const pk = pHi(cur.p), lowPx = pLo(cur.low ?? cur.p);
+    const botLo = pk * (1 + Math.min(ddLast, ddTr)), botHi = pk * (1 + Math.max(ddLast, ddTr)), botMid = Math.sqrt(botLo * botHi);
+    const nextGain = (dd) => Math.exp(LG.at(-1) * dd);
+    const A = { bot: botMid, botLo, botHi, peak: botMid * nextGain(decM), peakLo: botLo * nextGain(decLo), peakHi: botHi * nextGain(decHi) };
+    A.bot2 = A.peak * (1 + Math.max(-0.95, ddTr + (ddTr - ddLast)));
+    const B = { bot: lowPx, peak: lowPx * nextGain(decM), peakLo: lowPx * nextGain(decLo), peakHi: lowPx * nextGain(decHi) };
+    B.bot2 = B.peak * (1 + Math.max(-0.95, ddTr + (ddTr - ddLast)));
+    const aDone = lowPx <= botHi;
+    if (fut[0] && cur.low != null) { const acc = fut[0].i - cur.low, pkI = fut[0].i + acc * (1 - r) / r; B.botI = cur.low; B.peakI = pkI; B.bot2I = pkI + bAvg; }   // giá đã xuống tới vùng đáy kịch bản A
+    // thử lại: đứng ở đáy chu kỳ trước, đoán đỉnh chu kỳ hiện tại; đứng ở đỉnh chu kỳ trước, đoán đáy
+    let pback = null;
+    if (cyc.length >= 3 && dds.length >= 3) {
+      const g = Math.exp(LG.at(-2) * (LG.at(-2) / LG.at(-3))), predPeak = pLo(cur.b) * g;
+      const dtr = dds.at(-2) + (dds.at(-2) - dds.at(-3)), predBot = pHi(cyc.at(-2).p) * (1 + dtr);
+      pback = { predPeak, realPeak: pk, predBot, realBot: pLo(cur.b), dtr };
+    }
+    return { P, N, today, t0, di, ds, H, cyc, cur, r, rLo, rHi, ratios, bears, bAvg, bLo, bHi, mid, early, late, fut, back, pHi, pLo,
+      dec, decM, dds, ddLast, ddTr, A, B, aDone, lowPx, pback };
   }
   function renderCycle() {
     const box = $("cy-box"); if (!box) return;
@@ -1987,20 +2011,20 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const err = Math.round((M.late[0].bot - M.early[0].bot) / 2);
     // Kiểm tra dự phóng
     let chk;
-    if (today < pb.bot) chk = `Còn <b>${Math.round(pb.bot - today)} ngày</b> tới mốc đáy dự phóng (${d(pb.bot)}, khoảng ${d(M.early[0].bot)} – ${d(M.late[0].bot)}). Giá thấp nhất từ đỉnh tới nay: <b>${kUsd(P[lowI])}</b> ngày ${d(lowI)}.`;
+    if (today < pb.bot) chk = `Còn <b>${Math.round(pb.bot - today)} ngày</b> tới mốc đáy dự phóng (${d(pb.bot)}, khoảng ${d(M.early[0].bot)} – ${d(M.late[0].bot)}). Giá thấp nhất từ đỉnh tới nay: <b>${kUsd(M.lowPx)}</b> ngày ${d(lowI)}.`;
     else {
       const gap = Math.round(pb.bot - lowI), past = Math.round(today - pb.bot);
-      chk = `Đã qua mốc đáy dự phóng (${d(pb.bot)}) <b>${past} ngày</b>. Giá thấp nhất từ đỉnh vẫn là <b>${kUsd(P[lowI])}</b> ngày ${d(lowI)} (đỉnh + ${lowI - cur.p} ngày)` +
-        (gap > 30 ? `, sớm hơn dự phóng ${gap} ngày. Nếu đó là đáy thật thì pha giảm lần này chỉ dài ${lowI - cur.p} ngày, ngắn hơn hẳn các lần trước (${M.bears.join(", ")} ngày): mô hình chu kỳ đang lệch. Nếu giá thủng ${kUsd(P[lowI])} thì đáy mới sẽ gần mốc dự phóng hơn.` : `, khớp với dự phóng. Đáy chỉ được xác nhận khi giá đã tăng trở lại rõ ràng.`);
+      chk = `Đã qua mốc đáy dự phóng (${d(pb.bot)}) <b>${past} ngày</b>. Giá thấp nhất từ đỉnh vẫn là <b>${kUsd(M.lowPx)}</b> ngày ${d(lowI)} (đỉnh + ${lowI - cur.p} ngày)` +
+        (gap > 30 ? `, sớm hơn dự phóng ${gap} ngày. Nếu đó là đáy thật thì pha giảm lần này chỉ dài ${lowI - cur.p} ngày, ngắn hơn hẳn các lần trước (${M.bears.join(", ")} ngày): mô hình chu kỳ đang lệch. Nếu giá thủng ${kUsd(M.lowPx)} thì đáy mới sẽ gần mốc dự phóng hơn.` : `, khớp với dự phóng. Đáy chỉ được xác nhận khi giá đã tăng trở lại rõ ràng.`);
     }
     const phase = today <= cur.p ? "Bùng nổ" : "Giảm giá (đáy chưa xác nhận)";
     const v = `<div class="liq-verdict ${today > cur.p ? "neg" : "pos"}"><p class="big">Halving + ${hNow} ngày · ${phase}</p>
-      <p>Đỉnh chu kỳ này: <b>${kUsd(P[cur.p])}</b> ngày ${d(cur.p)} (giá đóng cửa ngày), cách đây ${sincePeak} ngày. Giá hiện tại ${kUsd(P[today])}, thấp hơn đỉnh ${num(Math.abs(P[today] / P[cur.p] - 1) * 100, 0)}%.</p>
+      <p>Đỉnh chu kỳ này: <b>${kUsd(M.pHi(cur.p))}</b> ngày ${d(cur.p)}, cách đây ${sincePeak} ngày. Giá hiện tại ${kUsd(P[today])}, thấp hơn đỉnh ${num(Math.abs(P[today] / M.pHi(cur.p) - 1) * 100, 0)}%.</p>
       <p><b>Kiểm tra dự phóng:</b> ${chk}</p>
       <p class="note" style="margin:6px 0 0">Halving tới ước tính ${M.fut[0] ? d(M.fut[0].i) : "–"} (khối ${M.fut[0] ? num(M.fut[0].block) : "–"}, còn ${CY.J.blocks ? num(CY.J.blocks.next[0].blocks_left) : "–"} khối, mỗi khối khoảng ${CY.J.blocks ? num(CY.J.blocks.sec_per_block / 60, 1) : "10"} phút).</p></div>`;
     const tog = `<div class="hlm-ctl etf-rg cy-tog"><button type="button" data-k="alt" class="${CY.alt ? "" : "on"}">Đỉnh ${d(cyModel(CY.J, false).cur.p)}</button><button type="button" data-k="alt2" class="${CY.alt ? "on" : ""}">Đỉnh ${d(cyModel(CY.J, true).cur.p)}</button><button type="button" data-k="proj" class="${CY.proj ? "on" : ""}">${CY.proj ? "Ẩn dự phóng" : "Hiện dự phóng"}</button></div>`;
     const card2 = `<div class="hlm-card"><div class="hlm-head etf-head"><b>Toàn cảnh các chu kỳ</b>${tog}</div>
-      <div class="etf-sub">Giá đóng cửa theo ngày, thang log. Xanh: tích luỹ (đáy → halving) · cam: bùng nổ (halving → đỉnh) · đỏ: giảm giá (đỉnh → đáy). Đường chấm: mốc dự phóng thời gian, vùng mờ là khoảng sai số; không dự phóng giá.</div>
+      <div class="etf-sub">Giá đóng cửa theo ngày, thang log; đáy và đỉnh theo giá thấp/cao nhất trong ngày (${esc(CY.J.hl_src || "giá đóng cửa")}). Xanh: tích luỹ (đáy → halving) · cam: bùng nổ (halving → đỉnh) · đỏ: giảm giá (đỉnh → đáy). Đường đứt: hai kịch bản dự phóng, nối thẳng giữa các mốc (không phải đường giá dự báo); vạch chấm là mốc thời gian, vùng mờ là khoảng sai số.</div>
       <div id="cy-c2" style="height:${innerWidth < 560 ? 340 : 440}px"></div><div id="cy-tl" class="cy-tl"></div></div>`;
     const card1 = `<div class="hlm-card" style="margin-top:14px"><div class="hlm-head"><b>Chồng ${M.cyc.length} chu kỳ lên nhau</b></div>
       <div class="etf-sub">Căn mọi chu kỳ về cùng ngày halving. Trục dọc: 0 là đáy, 1 là đỉnh của từng chu kỳ (thang log), để so hình dạng chứ không so giá. Tỷ lệ thời gian đáy → halving / halving → đỉnh trung bình ${num(M.r * 100, 1)} / ${num(100 - M.r * 100, 1)}.</div>
@@ -2010,7 +2034,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const rows = M.cyc.map((c) => { const w = 100 * (c.acc + c.boom) / maxT, a = 100 * c.acc / (c.acc + c.boom);
       return `<div class="cy-row"><div class="cy-nm"><i style="background:${[CYC.g, CYC.o, CYC.l][M.cyc.indexOf(c) % 3]}"></i>${esc(c.name)}</div>
         <div class="cy-barw"><div class="cy-bar" style="width:${w}%"><span class="a" style="width:${a}%">${c.acc} ngày</span><span class="b">${c.boom} ngày</span></div>
-        <div class="cy-lb" style="width:${w}%"><span>Đáy ${d(c.b)} · ${kUsd(P[c.b])}</span><span>₿ ${d(c.h)}</span><span>Đỉnh ${d(c.p)} · ${kUsd(P[c.p])}</span></div></div>
+        <div class="cy-lb" style="width:${w}%"><span>Đáy ${d(c.b)} · ${kUsd(M.pLo(c.b))}</span><span>₿ ${d(c.h)}</span><span>Đỉnh ${d(c.p)} · ${kUsd(M.pHi(c.p))}</span></div></div>
         <div class="cy-rt"><b>${num(c.ratio, 1)} / ${num(100 - c.ratio, 1)}</b><br><small>tăng ×${num(c.gain, 0)}</small></div>
         <div class="cy-dd">${c.bear != null ? `Đỉnh → đáy: ${c.bear} ngày · ${pct(c.dd * 100, 0)}` : `Đỉnh → đáy: đang diễn ra · thấp nhất ${pct(c.dd * 100, 0)}`}</div></div>`; }).join("");
     const spread = Math.max(...M.ratios) - Math.min(...M.ratios);
@@ -2028,7 +2052,17 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     </ol>
     ${M.back ? `<p><b>Thử lại với quá khứ:</b> nếu đứng ở đỉnh ${d(M.cyc.at(-2).p)} và chỉ dùng các chu kỳ trước đó, cách này đoán đáy ${d(M.back.bot)} (thật: ${d(cur.b)}, lệch ${Math.abs(M.back.dBot)} ngày) và đỉnh ${d(M.back.peak)} (thật: ${d(cyModel(CY.J, false).cur.p)}, lệch ${Math.abs(cur.p - M.back.peak)} ngày). Lần trước nó đúng khá sát; nhưng lần này đáy dự phóng đã lệch ${Math.max(0, Math.round(pb.bot - lowI))} ngày nếu đáy tháng ${+ds(lowI).slice(5, 7)}/${ds(lowI).slice(0, 4)} là đáy thật.</p>` : ""}
     <p class="note">Khoảng sai số trông hẹp vì ngày halving cố định kéo các mốc về gần nhau; sai số thật lớn hơn nhiều nếu chu kỳ đổi tính. Khoảng sai số: lấy mốc sớm nhất và muộn nhất khi dùng pha giảm ngắn nhất/dài nhất và tỷ lệ thấp nhất/cao nhất đã thấy; nó chỉ phản ánh độ lệch giữa các chu kỳ cũ, không tính khả năng chu kỳ đổi hẳn. Mỗi bước dựa trên bước trước nên sai số cộng dồn, mốc càng xa càng kém chắc. Đổi đỉnh ${d(cyModel(CY.J, false).cur.p)} sang ${d(cyModel(CY.J, true).cur.p)} (nút ở biểu đồ) thì mọi mốc dịch theo. Chỉ có ${M.cyc.length} chu kỳ để so, và thị trường nay đã khác (ETF, tổ chức): đây là ngoại suy từ quá khứ, không phải dự báo. Nguồn giá: ${esc(CY.J.source || "")}.</p>`;
-    box.innerHTML = v + card2 + card1 + tbl + `<h3 style="margin-top:16px">Dự phóng được tính thế nào</h3>` + steps;
+    const A = M.A, B = M.B, rng = (a, b) => `${kUsd(Math.min(a, b))} – ${kUsd(Math.max(a, b))}`;
+    const pb2 = M.pback;
+    const priceBox = `<div class="cy-px"><h3 style="margin:0 0 6px">Dự phóng giá: 2 kịch bản (ngoại suy thô)</h3>
+      <div class="tbl-wrap"><table class="evtbl"><thead><tr><th></th><th>A. Đáy theo xu hướng mức giảm</th><th>B. Đáy đã qua (${d(lowI)})</th></tr></thead><tbody>
+      <tr><td>Đáy chu kỳ này</td><td>~${my(M.mid[0].bot)}: <b>${rng(A.botLo, A.botHi)}</b><br><small>giảm ${num(-M.ddLast * 100, 0)}–${num(-M.ddTr * 100, 0)}% từ đỉnh</small></td><td><b>${kUsd(M.lowPx)}</b><br><small>giảm ${num((1 - M.lowPx / M.pHi(cur.p)) * 100, 0)}%, nhỏ nhất lịch sử</small></td></tr>
+      <tr><td>Đỉnh kế tiếp</td><td>~${my(M.mid[0].peak)}: <b>${rng(A.peakLo, A.peakHi)}</b></td><td>${B.peakI ? "~" + my(B.peakI) + ": " : ""}<b>${rng(B.peakLo, B.peakHi)}</b></td></tr>
+      <tr><td>Đáy sau đó</td><td>~${M.mid[1] ? my(M.mid[1].bot) : "–"}: ${kUsd(A.bot2)}</td><td>${B.bot2I ? "~" + my(B.bot2I) + ": " : ""}${kUsd(B.bot2)}</td></tr>
+      </tbody></table></div>
+      <p class="note">Cách tính: mức tăng từ đáy lên đỉnh ${M.cyc.map((c) => "×" + num(c.gain, 0)).join(" → ")}; tính theo log, mỗi chu kỳ chỉ còn ${M.dec.map((x) => num(x, 2)).join(" và ")} lần chu kỳ trước, nên lần tới khoảng ×${num(Math.exp(Math.log(M.cyc.at(-1).gain) * M.decM), 1)} (từ ×${num(Math.exp(Math.log(M.cyc.at(-1).gain) * Math.min(...M.dec)), 1)} đến ×${num(Math.exp(Math.log(M.cyc.at(-1).gain) * Math.max(...M.dec)), 1)}). Mức giảm từ đỉnh xuống đáy ${M.dds.map((x) => num(x * 100, 0) + "%").join(" → ")}, kéo tiếp xu hướng ra khoảng ${num(M.ddTr * 100, 0)}%. ${M.aDone ? "Giá đã xuống tới vùng đáy của kịch bản A." : `Kịch bản A cần giá giảm thêm ${num((1 - A.botHi / P[today]) * 100, 0)}–${num((1 - A.botLo / P[today]) * 100, 0)}% từ giá hiện tại; nếu giá không thủng ${kUsd(M.lowPx)} thì kịch bản B đúng hơn.`}</p>
+      ${pb2 ? `<p class="note"><b>Thử lại với quá khứ:</b> đứng ở đáy ${d(cur.b)}, cách này đoán đỉnh chu kỳ này khoảng ${kUsd(pb2.predPeak)} (thật ${kUsd(pb2.realPeak)}, lệch ${num((pb2.predPeak / pb2.realPeak - 1) * 100, 0)}%); đứng ở đỉnh ${d(M.cyc.at(-2).p)}, đoán đáy khoảng ${kUsd(pb2.predBot)} (thật ${kUsd(pb2.realBot)}, lệch ${num((pb2.predBot / pb2.realBot - 1) * 100, 0)}%). Giá sai nhiều hơn thời gian; chỉ có 3–4 điểm để kéo xu hướng, nên coi đây là vùng tham khảo, không phải mục tiêu giá.</p>` : ""}</div>`;
+    box.innerHTML = v + card2 + priceBox + card1 + tbl + `<h3 style="margin-top:16px">Dự phóng thời gian được tính thế nào</h3>` + steps;
     box.querySelectorAll(".cy-tog button").forEach((b) => b.addEventListener("click", () => {
       if (b.dataset.k === "proj") { CY.proj = !CY.proj; store.set("tamly-cy-proj", CY.proj); } else CY.alt = b.dataset.k === "alt2";
       renderCycle();
@@ -2053,8 +2087,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       cyc.forEach((c, k) => { acc.push(...seg(c.b, c.h), [ts(c.h), null]); boom.push(...seg(c.h, c.p), [ts(c.p), null]); bear.push(...seg(c.p, k + 1 < cyc.length ? cyc[k + 1].b : today), [ts(prevEnd(k)) + 1, null]); });
       const pts = [];
       cyc.forEach((c) => {
-        pts.push({ coord: [ts(c.b), P[c.b]], name: `ĐÁY ${my(c.b)}\n${kUsd(P[c.b])}`, itemStyle: { color: CYC.acc }, label: { position: "bottom" } });
-        pts.push({ coord: [ts(c.p), P[c.p]], name: `ĐỈNH ${my(c.p)}\n${kUsd(P[c.p])} · ×${num(c.gain, 0)}`, itemStyle: { color: "#fff" }, label: { position: "top" } });
+        pts.push({ coord: [ts(c.b), M.pLo(c.b)], name: `ĐÁY ${my(c.b)}\n${kUsd(M.pLo(c.b))}`, itemStyle: { color: CYC.acc }, label: { position: "bottom" } });
+        pts.push({ coord: [ts(c.p), M.pHi(c.p)], name: `ĐỈNH ${my(c.p)}\n${kUsd(M.pHi(c.p))} · ×${num(c.gain, 0)}`, itemStyle: { color: "#fff" }, label: { position: "top" } });
         pts.push({ coord: [ts(c.h), P[c.h]], name: "₿", symbolSize: 18, itemStyle: { color: CYC.o }, label: { position: "inside", color: "#14181b", fontWeight: 700 } });
         if (c.bear != null && cyc[cyc.indexOf(c) + 1]) { /* đáy kế tiếp đã vẽ ở chu kỳ sau */ }
       });
@@ -2070,15 +2104,24 @@ if (typeof module !== "undefined") module.exports = ENGINE;
           areas.push([{ xAxis: ts(M.early[k].peak), itemStyle: { color: "rgba(240,164,58,.12)" } }, { xAxis: ts(M.late[k].peak) }]);
         });
       }
+      const paths = [];
+      if (CY.proj) {
+        const A = M.A, B = M.B, mid = M.mid, lab = (pos) => ({ show: true, position: pos, formatter: (p) => kUsd(p.value[1]), color: "#e6e9ec", fontSize: narrow ? 9 : 10, backgroundColor: "rgba(11,14,17,.75)", padding: [1, 3] });
+        const pa = [[ts(today), P[today]], [ts(mid[0].bot), A.bot], [ts(mid[0].peak), A.peak]].concat(mid[1] ? [[ts(mid[1].bot), A.bot2]] : []);
+        paths.push({ name: "Kịch bản A", type: "line", data: pa.map((x, k) => ({ value: x, label: k ? lab(k % 2 ? "bottom" : "top") : { show: false } })), symbol: "circle", symbolSize: (v, p) => (p.dataIndex ? 7 : 0), lineStyle: { color: "#e6e9ec", type: "dashed", width: 1.4 }, itemStyle: { color: "#e6e9ec" }, z: 6 });
+        if (B.peakI) { const pbp = [[ts(today), P[today]], [ts(B.peakI), B.peak], [ts(B.bot2I), B.bot2]];
+          paths.push({ name: "Kịch bản B", type: "line", data: pbp.map((x, k) => ({ value: x, label: k ? lab(k === 1 ? "top" : "bottom") : { show: false } })), symbol: "circle", symbolSize: (v, p) => (p.dataIndex ? 7 : 0), lineStyle: { color: "#7fb3ff", type: "dashed", width: 1.4 }, itemStyle: { color: "#7fb3ff" }, z: 6 }); }
+      }
       const ser = (name, data, color) => ({ name, type: "line", data, showSymbol: false, connectNulls: false, lineStyle: { color, width: 1.8 }, itemStyle: { color }, areaStyle: { color: color + "22", origin: "start" } });
       CY.c2.setOption({
         backgroundColor: "#0b0e11", animation: false, grid: { left: narrow ? 44 : 60, right: narrow ? 30 : 40, top: 40, bottom: 44 },
         tooltip: { trigger: "axis", confine: true, backgroundColor: "#1a2027", borderColor: "#2b333b", textStyle: { color: "#e6e9ec", fontSize: 12 },
-          formatter: (ps) => { const p = ps.find((x) => x.value && x.value[1] != null); if (!p) return ""; const i = Math.round((p.value[0] - M.t0) / 864e5); const c = cyc.slice().reverse().find((x) => i >= x.b) || cyc[0];
+          formatter: (ps) => { const p = ps.find((x) => x.seriesType === "line" && !String(x.seriesName).startsWith("Kịch bản") && x.value && x.value[1] != null); if (!p) return ""; const i = Math.round((p.value[0] - M.t0) / 864e5); const c = cyc.slice().reverse().find((x) => i >= x.b) || cyc[0];
             const ph = i < c.h ? "Tích luỹ" : i <= c.p ? "Bùng nổ" : "Giảm giá"; return `<b>${d(i)}</b><br>Giá: <b>${kUsd(P[i])}</b><br>${c.name} · ${ph}<br>Halving ${i - c.h >= 0 ? "+" : ""}${i - c.h} ngày`; } },
         xAxis: { type: "time", min: ts(first), max: ts(endProj), axisLine: { lineStyle: { color: "#2b333b" } }, axisLabel: { color: axis, fontSize: 10 }, splitLine: { show: false } },
         yAxis: { type: "log", logBase: 10, axisLabel: { color: axis, fontSize: 10, formatter: (v) => kUsd(v) }, splitLine: { lineStyle: { color: grid } }, min: 100 },
-        series: [ser("Tích luỹ", acc, CYC.acc), ser("Bùng nổ", boom, CYC.boom), ser("Giảm giá", bear, CYC.bear),
+        legend: CY.proj ? { top: 2, left: narrow ? 6 : 64, data: ["Kịch bản A", "Kịch bản B"], textStyle: { color: "#c7ced6", fontSize: 10 }, itemWidth: 16 } : undefined,
+        series: [ser("Tích luỹ", acc, CYC.acc), ser("Bùng nổ", boom, CYC.boom), ser("Giảm giá", bear, CYC.bear), ...paths,
           { type: "scatter", data: [], markPoint: { symbol: "circle", symbolSize: 10, data: pts, label: { show: true, formatter: (p) => narrow && p.name !== "₿" ? p.name.split("\n")[0] : p.name, color: "#e6e9ec", fontSize: narrow ? 8 : 10, backgroundColor: "rgba(11,14,17,.75)", padding: [2, 4], borderRadius: 4 } },
             markLine: { symbol: "none", silent: true, data: lines }, markArea: { silent: true, data: areas } }],
       }, true);
@@ -2095,13 +2138,13 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       CY.c1 = fix(CY.c1, e1);
       const cols = [CYC.g, CYC.o, CYC.l];
       const S1 = cyc.map((c, k) => {
-        const end = c.e != null ? c.e : today, lb = Math.log(P[c.b]), lp = Math.log(P[c.p]), data = [];
+        const end = c.e != null ? c.e : today, lb = Math.log(M.pLo(c.b)), lp = Math.log(M.pHi(c.p)), data = [];
         for (let i = c.b; i <= end; i += 2) data.push([i - c.h, (Math.log(P[i]) - lb) / (lp - lb)]);
         data.push([end - c.h, (Math.log(P[end]) - lb) / (lp - lb)]);
         return { name: c.name, type: "line", data, showSymbol: false, lineStyle: { color: cols[k % 3], width: c.cur ? 2.4 : 1.6 }, itemStyle: { color: cols[k % 3] }, z: c.cur ? 5 : 3 };
       });
       const accs = cyc.map((c) => c.acc), booms = cyc.map((c) => c.boom), cc = cur;
-      const lb = Math.log(P[cc.b]), lp = Math.log(P[cc.p]);
+      const lb = Math.log(M.pLo(cc.b)), lp = Math.log(M.pHi(cc.p));
       S1.push({ type: "scatter", data: [[today - cc.h, (Math.log(P[today]) - lb) / (lp - lb)]], symbolSize: 12, itemStyle: { color: "#fff", borderColor: CYC.l, borderWidth: 3 }, z: 9,
         label: { show: true, position: "left", distance: 10, formatter: narrow ? `+${today - cc.h} ngày` : `Hôm nay: halving +${today - cc.h} ngày`, color: "#fff", fontSize: 10, backgroundColor: "rgba(11,14,17,.8)", padding: [2, 4] },
         markArea: { silent: true, data: [

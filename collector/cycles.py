@@ -37,6 +37,56 @@ def old_prices() -> dict:
     return {int(v["x"]) // DAY * DAY: float(v["y"]) for v in j.get("values", []) if v.get("y")}
 
 
+def ohlc_bitstamp(since: int) -> dict:
+    """Giá cao nhất / thấp nhất trong ngày (Bitstamp, sàn có lịch sử dài nhất), để đáy và đỉnh khớp số người ta hay dùng."""
+    out, start = {}, since
+    for _ in range(12):
+        j = _get("https://www.bitstamp.net/api/v2/ohlc/btcusd/", {"step": 86400, "limit": 1000, "start": start}, 40).json()
+        rows = (j.get("data") or {}).get("ohlc") or []
+        if not rows:
+            break
+        for r in rows:
+            out[int(r["timestamp"]) // DAY * DAY] = (float(r["high"]), float(r["low"]))
+        nxt = int(rows[-1]["timestamp"]) + DAY
+        if nxt <= start or len(rows) < 1000:
+            break
+        start = nxt
+        time.sleep(0.5)
+    if len(out) < 30:
+        raise RuntimeError("Bitstamp: thiếu dữ liệu")
+    return out
+
+
+def ohlc_cryptocompare(since: int) -> dict:
+    out, to = {}, int(time.time())
+    for _ in range(4):
+        j = _get("https://min-api.cryptocompare.com/data/v2/histoday", {"fsym": "BTC", "tsym": "USD", "limit": 2000, "toTs": to}, 40).json()
+        rows = ((j.get("Data") or {}).get("Data")) or []
+        if not rows:
+            break
+        for r in rows:
+            if r.get("high"):
+                out[int(r["time"]) // DAY * DAY] = (float(r["high"]), float(r["low"]))
+        to = int(rows[0]["time"]) - DAY
+        if to < since:
+            break
+        time.sleep(0.5)
+    if len(out) < 30:
+        raise RuntimeError("CryptoCompare: thiếu dữ liệu")
+    return out
+
+
+def ohlc(since: int) -> tuple[dict, str]:
+    try:
+        return ohlc_bitstamp(since), "Bitstamp"
+    except Exception as ex:  # noqa: BLE001
+        first = str(ex)[:100]
+    try:
+        return ohlc_cryptocompare(since), "CryptoCompare"
+    except Exception as ex:  # noqa: BLE001
+        raise RuntimeError(f"{first}; {str(ex)[:100]}") from None
+
+
 def recent_prices() -> dict:
     out = {}
     with open(os.path.join(DATA, "btc_daily.csv"), encoding="utf-8") as f:
@@ -79,6 +129,16 @@ def run() -> dict:
             old["fetched"] = now
         except Exception as ex:  # noqa: BLE001
             errs["blockchain_price"] = str(ex)[:150]
+    hl = old.get("_hl") or {}
+    hl_src = old.get("hl_src")
+    try:
+        full = not hl or now - old.get("hl_full", 0) > 7 * DAY
+        got, hl_src = ohlc(START if full else int(now) - 60 * DAY)
+        hl.update({str(k): [round(a, 2), round(b, 2)] for k, (a, b) in got.items() if k >= START})
+        if full:
+            old["hl_full"] = now
+    except Exception as ex:  # noqa: BLE001
+        errs["ohlc"] = str(ex)[:200]
     blk = old.get("blocks")
     if not blk or now - old.get("blocks_t", 0) > 6 * 3600 or "adj" not in blk:
         try:
@@ -98,22 +158,27 @@ def run() -> dict:
     if not px:
         return {"error": "; ".join(f"{k}: {v}" for k, v in errs.items()) or "chưa có giá"}
     d0, d1 = min(px), max(px)
-    arr, last = [], None
+    arr, hi, lo, last = [], [], [], None
+    rnd = lambda v: None if v is None else (round(v, 2) if v < 1000 else round(v))  # noqa: E731
     d = d0
     while d <= d1:            # lấp ngày trống bằng giá hôm trước
         v = px.get(d, last)
-        arr.append(None if v is None else (round(v, 2) if v < 1000 else round(v)))
+        arr.append(rnd(v))
         last = v if v is not None else last
+        x = hl.get(str(d))
+        hi.append(rnd(x[0]) if x else None)
+        lo.append(rnd(x[1]) if x else None)
         d += DAY
     halv = [{"date": dt, "block": b} for dt, b in HALVINGS]
     if blk:
         halv += [{"date": n["date"], "block": n["block"], "est": True} for n in blk["next"]]
-    out = {"start": datetime.fromtimestamp(d0, timezone.utc).strftime("%Y-%m-%d"), "close": arr, "halvings": halv,
+    out = {"start": datetime.fromtimestamp(d0, timezone.utc).strftime("%Y-%m-%d"), "close": arr, "hi": hi, "lo": lo, "hl_src": hl_src, "halvings": halv,
            "blocks": blk, "split": datetime.fromtimestamp(first_rec, timezone.utc).strftime("%Y-%m-%d") if first_rec else None,
            "updated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "errors": errs,
            "source": "blockchain.com (giá trung bình theo ngày, trước " + (datetime.fromtimestamp(first_rec, timezone.utc).strftime("%d/%m/%Y") if first_rec else "?") + "), giá đóng cửa ngày UTC sau đó"}
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
     with open(CACHE, "w", encoding="utf-8") as f:
-        json.dump({"_hist": hist, "fetched": old.get("fetched", 0), "blocks": blk, "blocks_t": old.get("blocks_t", 0)}, f, separators=(",", ":"))
-    return {"start": out["start"], "days": len(arr), "blocks": blk, "errors": errs}
+        json.dump({"_hist": hist, "fetched": old.get("fetched", 0), "blocks": blk, "blocks_t": old.get("blocks_t", 0),
+                   "_hl": hl, "hl_src": hl_src, "hl_full": old.get("hl_full", 0)}, f, separators=(",", ":"))
+    return {"start": out["start"], "days": len(arr), "hl_days": sum(1 for x in hi if x), "hl_src": hl_src, "blocks": blk, "errors": errs}
