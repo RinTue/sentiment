@@ -21,7 +21,7 @@ import requests
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
 DAY = 86400
-COMPASS_V = 1
+COMPASS_V = 2
 UA = "sentiment-dashboard (github.com/RinTue/sentiment)"
 WIN = 1095          # 3 năm
 ALTS = ["ETH", "SOL", "XRP", "BNB", "DOGE", "ADA", "LINK", "AVAX"]
@@ -180,6 +180,7 @@ def run(px: dict, fng: dict, stab: dict, prem_daily: dict, cz: dict, wiki: dict,
     IND: dict = {}      # key -> (lens, tên, phân vị theo ngày, giá trị gốc theo ngày, cách hiển thị)
 
     def add(lens, key, name, score, raw, fmt):
+        score = {d: v for d, v in score.items() if d <= last_px}     # bỏ ngày "tương lai" (Google Trends theo tuần, nến hôm nay chưa đóng)
         if score:
             IND[key] = (lens, name, score, raw, fmt)
 
