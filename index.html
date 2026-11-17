@@ -1625,6 +1625,14 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       ${cmpBar(Ls.score, Ls.bands, "sm")}<div class="more-hint">Bấm để xem từng chỉ báo</div></summary>
       <div class="cmp-items"><p class="note" style="margin:0">${esc(Ls.desc)} Vạch dưới mỗi dòng: xếp hạng so với 3 năm trước, càng dài càng cao.</p>${items}</div></details>`;
   }
+  function cmpRef(C) {     // so với Glassnode (số chép tay từ ảnh mẫu)
+    const R = C.ref || []; if (!R.length) return "";
+    const rows = [["head", "Điểm tổng"]].concat(C.lenses.map((l) => [l.key, l.name]));
+    const cell = (g, o) => g == null || o == null ? "–" : `${g} / <b>${o}</b> <small class="${Math.abs(o - g) > 15 ? "down" : ""}">(${o - g > 0 ? "+" : ""}${o - g})</small>`;
+    return `<h3 style="font-size:.95rem;margin-top:10px">So với Glassnode (số chép từ ảnh mẫu)</h3><div class="tbl-wrap"><table class="evtbl"><thead><tr><th>Ô</th>${R.map((r) => `<th>${r.date.split("-").reverse().slice(0, 2).join("/")}<br><small>Glassnode / mình</small></th>`).join("")}<th>Lệch trung bình</th></tr></thead><tbody>` +
+      rows.map(([k, n]) => `<tr><td>${esc(n)}</td>${R.map((r) => `<td class="num">${cell(r.gn[k], r.ours[k])}</td>`).join("")}<td class="num">${C.ref_mae && C.ref_mae[k] != null ? C.ref_mae[k] + " điểm" : "–"}</td></tr>`).join("") +
+      `</tbody></table></div><p class="note">Glassnode không công bố công thức và trọng số, nên không thể trùng hẳn. Bảng này để biết la bàn của mình đáng tin đến đâu so với bản gốc; gửi thêm ảnh mẫu thì tôi thêm cột mới.</p>`;
+  }
   const lc1 = (t) => t ? t[0].toLowerCase() + t.slice(1) : "";
   function renderCompass() {
     const box = $("compass"); if (!box) return;
@@ -1648,7 +1656,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     box.innerHTML = `<div class="cmp-top">
       <div><div class="cmp-kick">La bàn thị trường</div><div class="cmp-name">${esc(hd.band)}</div></div>
       ${cmpBar(hd.score, hd.bands, "lg")}
-      <div class="cmp-score">${cmpD(hd.d7)}<b>${hd.score}</b><small>/100</small></div>
+      <div class="cmp-score">${cmpD(hd.d7)}<b>${hd.score}</b><small>/100</small>${hd.mean != null ? `<div class="cmp-kick" style="margin-top:2px;text-transform:none;letter-spacing:0;font-weight:400">trung bình 4 nhóm ${hd.mean}, xếp hạng so với lịch sử</div>` : ""}</div>
       <div class="cmp-agree"><div class="row2"><span>MỨC ĐỒNG THUẬN CỦA 4 NHÓM</span><span>Độ tin <b>${C.conviction.v}</b> · ${esc(C.conviction.label)}</span></div><div class="cmp-grad">${dots}</div></div>
     </div>
     <div class="cmp-grid">${main.map(cmpCard).join("")}</div>
@@ -1656,9 +1664,10 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     <div class="cmp-grid three">${side.map(cmpCard).join("")}</div>
     <p class="cmp-sum">${sum}</p>
     <details class="more" style="margin-top:8px"><summary>Cách tính, diễn biến 2 năm và kiểm chứng</summary>
-      <p class="note">Mỗi chỉ báo được xếp hạng 0–100 so với chính nó trong 3 năm trước đó (vị trí chu kỳ so với toàn bộ lịch sử từ 2018), chỉ dùng số liệu có đến ngày đó. Điểm nhóm là trung bình các chỉ báo; điểm tổng là trung bình 4 nhóm chính. Mũi tên là thay đổi so với 7 ngày trước. Độ tin cao khi 4 nhóm cho điểm gần nhau. Ý tưởng theo Market Compass của Glassnode nhưng dựng bằng nguồn miễn phí; riêng nhóm Hành vi nhà đầu tư dùng tâm lý đám đông, vì Glassnode dùng hành vi người giữ coin lâu năm trên chuỗi (số liệu trả phí). Nguồn: FRED, DefiLlama, TFTC, Coinbase, OKX, alternative.me, Google Trends, Wikipedia, blockchain.com, Coinalyze. Cập nhật mỗi ngày một lần; số liệu ngày ${C.asof.split("-").reverse().join("/")}.</p>
+      <p class="note">Mỗi chỉ báo được xếp hạng 0–100 so với chính nó trong 3 năm trước đó (vị trí chu kỳ so với toàn bộ lịch sử từ 2018), chỉ dùng số liệu có đến ngày đó. Điểm nhóm là trung bình các chỉ báo. Điểm tổng làm như Glassnode: lấy trung bình 4 nhóm chính rồi xếp hạng so với lịch sử nhiều năm của chính nó, nên khi cả 4 nhóm cùng xấu thì điểm tổng xuống rất thấp. Mũi tên là thay đổi so với 7 ngày trước. Độ tin cao khi 4 nhóm cho điểm gần nhau. Các chỉ báo bám theo danh sách Glassnode công bố, thay bằng nguồn miễn phí; riêng nhóm Hành vi nhà đầu tư dùng dòng BTC ra/vào sàn và số địa chỉ có BTC, vì số người giữ dài/ngắn hạn của Glassnode là số liệu trả phí. Nguồn: FRED, DefiLlama, TFTC, Coin Metrics Community, Coinbase, OKX, Deribit, alternative.me, blockchain.com, Coinalyze. Cập nhật mỗi ngày một lần; số liệu ngày ${C.asof.split("-").reverse().join("/")}.</p>
       <div class="legend"><span><i style="background:var(--ink)"></i>Điểm tổng</span><span><i style="background:var(--s1)"></i>Vĩ mô</span><span><i style="background:var(--s2)"></i>Dòng tiền</span><span><i style="background:#c08a2b"></i>Hành vi</span><span><i style="background:#7a62b8"></i>Nền tảng</span></div>
       <div class="chart" id="c-compass"></div>
+      ${cmpRef(C)}
       <h3 style="font-size:.95rem;margin-top:10px">Kiểm chứng: điểm tổng ở từng vùng, BTC sau đó thế nào</h3>${tbl}
       <p class="note">${btTxt} La bàn mô tả trạng thái, không được xây để dự báo; bảng này chỉ cho biết mỗi vùng thường đi kèm điều gì. Các ngày liền nhau gần giống nhau nên số ngày lớn trông chắc hơn thực tế.</p>
       ${errs.length ? `<p class="note">Nguồn lỗi ở lần tính gần nhất (nhóm liên quan tính bằng các chỉ báo còn lại): ${esc(errs.map(([k, v]) => k + ": " + v).join("; ").slice(0, 300))}</p>` : ""}

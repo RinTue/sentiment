@@ -13,7 +13,7 @@ Nhờ Claude dựng lại hoặc làm tiếp: xem `PROMPT_CLAUDE.md` (lời nh�
 - `collector/events.py`: lịch sự kiện vĩ mô và đo phản ứng giá BTC từ 2022.
 - `collector/history_test.py`: kiểm chứng lịch sử các chỉ báo từ 2022 (mỗi ngày một lần); Điểm thuận lợi cũ giữ lại làm bằng chứng (không qua kiểm tra 2025–nay).
 - `collector/cycles.py`: giá BTC theo ngày từ 2011 (blockchain.com trước 2018, sau đó `btc_daily.csv`) và ngày halving tới ước tính theo số khối, lưu `data/cycles.json`; trang tự tìm đáy/đỉnh, đo tỷ lệ và dự phóng thời gian (tab Chu kỳ).
-- `collector/compass.py`: La bàn thị trường (theo ý Market Compass của Glassnode, nguồn miễn phí): 4 nhóm chính Vĩ mô, Dòng tiền, Hành vi nhà đầu tư, Nền tảng on-chain và 3 mục đọc riêng Chu kỳ, Phái sinh, Luân chuyển; mỗi chỉ báo xếp hạng so với 3 năm trước.
+- `collector/compass.py`: La bàn thị trường (theo ý Market Compass của Glassnode, nguồn miễn phí): 4 nhóm chính Vĩ mô, Dòng tiền, Hành vi nhà đầu tư, Nền tảng on-chain và 3 mục đọc riêng Chu kỳ, Phái sinh, Luân chuyển; chỉ báo theo danh sách Glassnode công bố, nguồn miễn phí (FRED, Coin Metrics Community, blockchain.com, Deribit, OKX); so với số Glassnode trong `data/glassnode_ref.json`.
 - `collector/alerts.py`: cảnh báo Telegram (bản tin sáng, vùng cực đoan, funding bất thường, giá chạy mạnh, thanh lý dây chuyền, dòng tiền ETF bất thường, sự kiện vĩ mô cấp 1).
 - `collector/cryptobert.py`: thử nghiệm so sánh mô hình; không ảnh hưởng điểm chính.
 - `.github/workflows/collect.yml`: lịch chạy mỗi giờ (phút 17, giờ UTC).

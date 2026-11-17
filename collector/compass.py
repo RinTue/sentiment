@@ -21,27 +21,32 @@ import requests
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
 DAY = 86400
-COMPASS_V = 2
+COMPASS_V = 3
 UA = "sentiment-dashboard (github.com/RinTue/sentiment)"
 WIN = 1095          # 3 năm
 ALTS = ["ETH", "SOL", "XRP", "BNB", "DOGE", "ADA", "LINK", "AVAX"]
+# Rổ altcoin cho chỉ số mùa altcoin (các đồng lớn có trên OKX, không tính stablecoin)
+ALTS_ALL = ALTS + ["TRX", "SUI", "XLM", "TON", "HBAR", "BCH", "LTC", "DOT", "UNI", "NEAR", "APT", "ICP", "ETC", "AAVE", "FIL",
+                   "ATOM", "ARB", "OP", "INJ", "PEPE", "SHIB", "WLD", "SEI", "TIA", "ALGO", "ENA", "ONDO", "POL", "CRV", "LDO",
+                   "STX", "IMX"]
+CACHE = os.path.join(DATA, "compass_cache.json")
 
 LENSES = [
     # key, tên, chính?, 5 vùng từ thấp đến cao, giải thích ngắn
     ("macro", "Vĩ mô", True, ["Thắt chặt", "Hạn chế", "Trung tính", "Hỗ trợ", "Nới lỏng"],
-     "Đồng đô la, lợi suất trái phiếu, thanh khoản của Fed, chênh lệch lãi suất trái phiếu rủi ro."),
+     "Như Glassnode: đồng đô la so với trung bình 200 ngày, đường cong lợi suất, kỳ vọng lãi suất Fed (FRED)."),
     ("flows", "Dòng tiền", True, ["Cạn kiệt", "Yếu", "Cân bằng", "Dồi dào", "Tràn ngập"],
-     "Nguồn stablecoin, dòng tiền ETF Bitcoin, Coinbase Premium (người Mỹ mua hay bán)."),
+     "Như Glassnode: stablecoin 30 ngày, số BTC nằm trên sàn (Coin Metrics), lực mua spot (Coinbase Premium thay cho mua ròng spot), ETF Mỹ."),
     ("behav", "Hành vi nhà đầu tư", True, ["Rút lui", "Dè dặt", "Trung tính", "Hăng hái", "Hưng phấn"],
-     "Fear & Greed, người mới tìm cách mua Bitcoin trên Google, độ quan tâm tới memecoin."),
+     "Tích luỹ hay phân phối: BTC rút ròng khỏi sàn, số địa chỉ có BTC (Coin Metrics), kèm Fear & Greed. Glassnode dùng số người giữ dài/ngắn hạn (trả phí) nên nhóm này dễ lệch nhất."),
     ("fund", "Nền tảng on-chain", True, ["Co hẹp", "Yếu", "Ổn định", "Mở rộng", "Sôi động"],
-     "Số địa chỉ hoạt động, số giao dịch, phí mạng, sức mạnh đào (hashrate) của Bitcoin."),
+     "Như Glassnode: đà phí mạng, mức tham gia, thanh toán và độ đầy khối (trung bình 30 ngày so với 90 ngày, blockchain.com)."),
     ("cycle", "Vị trí chu kỳ", False, ["Đầu hàng", "Tích luỹ", "Giữa chu kỳ", "Phân phối", "Hưng phấn"],
-     "Giá so với trung bình 200 ngày và 200 tuần, mức giảm từ đỉnh, lãi 1 năm (so với toàn bộ lịch sử từ 2018)."),
+     "Giá so với giá vốn thực trên chuỗi (MVRV, Coin Metrics, trễ khoảng 1 tháng nhưng giá vốn đổi chậm), trung bình 200 ngày và 200 tuần (so với toàn bộ lịch sử)."),
     ("deriv", "Phái sinh", False, ["Xả đòn bẩy", "Nhẹ", "Cân bằng", "Nóng", "Quá nóng"],
-     "Funding, open interest so với quá khứ, tốc độ tăng open interest."),
+     "Như Glassnode: funding, open interest so với vốn hoá, độ biến động kỳ vọng DVOL (Deribit). Chưa có chênh lệch hợp đồng quý và độ lệch quyền chọn."),
     ("rot", "Luân chuyển", False, ["Mùa BTC", "Nghiêng BTC", "Cân bằng", "Nghiêng altcoin", "Mùa altcoin"],
-     "Altcoin lớn chạy hơn hay thua BTC trong 30 ngày, ETH/BTC 90 ngày."),
+     "Chỉ số mùa altcoin (bao nhiêu altcoin lớn thắng BTC trong 90 ngày) và 8 altcoin lớn nhất so với BTC 30 ngày."),
 ]
 HEAD_BANDS = ["Né rủi ro", "Phòng thủ", "Trung tính", "Tích cực", "Ưa rủi ro"]
 
@@ -97,6 +102,79 @@ def okx_daily(sym: str, since: float) -> dict:
             break
         time.sleep(0.15)
     return out
+
+
+def coinmetrics(metrics: list, start: str = "2017-01-01") -> dict:
+    """Coin Metrics Community API (miễn phí, không cần mã): {metric: {ngày: giá trị}}."""
+    out = {m: {} for m in metrics}
+    url = "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics"
+    params = {"assets": "btc", "metrics": ",".join(metrics), "frequency": "1d", "start_time": start, "page_size": 10000}
+    for _ in range(10):
+        j = _get(url, params, 60)
+        for r in j.get("data", []):
+            d = day_of(datetime.strptime(r["time"][:10], "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp())
+            for m in metrics:
+                if r.get(m) not in (None, ""):
+                    out[m][d] = float(r[m])
+        url, params = j.get("next_page_url"), None
+        if not url:
+            break
+        time.sleep(0.6)
+    if not any(out.values()):
+        raise RuntimeError("Coin Metrics: không có dữ liệu")
+    return {m: v for m, v in out.items() if v}
+
+
+def dvol() -> dict:
+    """Chỉ số độ biến động kỳ vọng BTC của Deribit theo ngày."""
+    out, end = {}, int(time.time() * 1000)
+    start_all = int(datetime(2021, 4, 1, tzinfo=timezone.utc).timestamp() * 1000)
+    for _ in range(8):
+        st = max(start_all, end - 900 * DAY * 1000)
+        j = _get("https://www.deribit.com/api/v2/public/get_volatility_index_data",
+                 {"currency": "BTC", "start_timestamp": st, "end_timestamp": end, "resolution": "1D"}, 40)
+        rows = (j.get("result") or {}).get("data") or []
+        for r in rows:
+            out[day_of(r[0] / 1000)] = float(r[4])
+        if st <= start_all or not rows:
+            break
+        end = st - 1
+        time.sleep(0.3)
+    if len(out) < 100:
+        raise RuntimeError("DVOL: thiếu dữ liệu")
+    return out
+
+
+def alt_closes(errs: dict) -> dict:
+    """Giá đóng cửa ngày của rổ altcoin; lưu đệm ở data/compass_cache.json, mỗi ngày chỉ tải thêm đoạn mới."""
+    try:
+        cache = json.load(open(CACHE, encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        cache = {}
+    al = cache.get("alts") or {}
+    since = datetime(2020, 6, 1, tzinfo=timezone.utc).timestamp()
+    fails, t0, skipped = [], time.time(), 0
+    for a in ALTS_ALL:
+        old = {int(k): v for k, v in (al.get(a) or {}).items()}
+        if not old and time.time() - t0 > 180:      # lần đầu tải toàn bộ lịch sử khá lâu: chia ra nhiều ngày
+            skipped += 1
+            continue
+        try:
+            new = okx_daily(a, (max(old) - 5 * DAY) if old else since)
+            old.update(new)
+        except Exception as ex:  # noqa: BLE001
+            fails.append(f"{a}: {str(ex)[:40]}")
+        if old:
+            al[a] = {str(k): v for k, v in sorted(old.items())}
+        time.sleep(0.1)
+    if fails:
+        errs["okx_alts"] = "; ".join(fails)[:200]
+    if skipped:
+        errs["okx_alts_later"] = f"{skipped} altcoin sẽ tải ở lần tính sau"
+    cache["alts"] = al
+    with open(CACHE, "w", encoding="utf-8") as f:
+        json.dump(cache, f, separators=(",", ":"))
+    return {a: {int(k): v for k, v in s.items()} for a, s in al.items() if len(s) > 100}
 
 
 def etf_daily() -> dict:
@@ -184,115 +262,113 @@ def run(px: dict, fng: dict, stab: dict, prem_daily: dict, cz: dict, wiki: dict,
         if score:
             IND[key] = (lens, name, score, raw, fmt)
 
-    # Vĩ mô
+    # Vĩ mô (đúng 3 thứ Glassnode nêu: đô la so với MA200, đường cong lợi suất, kỳ vọng lãi suất Fed)
     usd = ffill(safe("fred_usd", lambda: fred("DTWEXBGS")), last_px)
+    curve = ffill(safe("fred_curve", lambda: fred("T10Y2Y")), last_px)
     y2 = ffill(safe("fred_y2", lambda: fred("DGS2")), last_px)
-    real = ffill(safe("fred_real", lambda: fred("DFII10")), last_px)
-    hy = ffill(safe("fred_hy", lambda: fred("BAMLH0A0HYM2")), last_px)
-    walcl = ffill(safe("fred_walcl", lambda: fred("WALCL")), last_px)
-    tga = ffill(safe("fred_tga", lambda: fred("WTREGEN")), last_px)
-    rrp = ffill(safe("fred_rrp", lambda: fred("RRPONTSYD")), last_px)
+    ff = ffill(safe("fred_ff", lambda: fred("DFF")), last_px)
     if usd:
-        c = chg(usd, 63)
-        add("macro", "usd", "Đồng đô la (thay đổi 3 tháng)", rank(c, invert=True), c, "pct")
-    if y2:
-        c = chg(y2, 63, pct=False)
-        add("macro", "y2", "Lợi suất 2 năm, theo kỳ vọng lãi suất Fed (thay đổi 3 tháng)", rank(c, invert=True), {d: v * 100 for d, v in c.items()}, "bp")
-    if real:
-        add("macro", "real", "Lợi suất thực 10 năm (mức)", rank(real, invert=True), real, "pct_lvl")
-    if walcl and tga and rrp:
-        nl = {d: walcl[d] / 1000 - tga[d] / 1000 - rrp[d] for d in walcl if d in tga and d in rrp}
-        c = chg(nl, 91)
-        add("macro", "netliq", "Thanh khoản ròng của Fed (thay đổi 13 tuần)", rank(c), c, "pct")
-    if hy:
-        add("macro", "hy", "Chênh lệch lãi suất trái phiếu rủi ro (mức)", rank(hy, invert=True), hy, "pct_lvl")
+        m = sma(usd, 200)
+        r = {d: (usd[d] / m[d] - 1) * 100 for d in m}
+        add("macro", "usd", "Đồng đô la so với trung bình 200 ngày", rank(r, invert=True), r, "pct")
+    if curve:
+        add("macro", "curve", "Đường cong lợi suất (10 năm trừ 2 năm)", rank(curve), curve, "pp2")
+    if y2 and ff:
+        pp = {d: y2[d] - ff[d] for d in y2 if d in ff}
+        add("macro", "path", "Kỳ vọng lãi suất Fed (lợi suất 2 năm trừ lãi suất Fed)", rank(pp, invert=True), pp, "pp2")
 
-    # Dòng tiền
+    # Dữ liệu on-chain miễn phí của Coin Metrics (cung trên sàn, tiền vào/ra sàn, số địa chỉ có số dư, MVRV)
+    cm = safe("coinmetrics", lambda: coinmetrics(["SplyExNtv", "FlowInExNtv", "FlowOutExNtv", "AdrBalCnt", "CapMVRVCur", "PriceUSD", "SplyCur"]))
+
+    # Dòng tiền: stablecoin 30 ngày, số dư trên sàn, lực mua spot, ETF Mỹ
     if stab:
         st = ffill(stab, last_px)
         c = chg(st, 30)
         add("flows", "stable", "Nguồn stablecoin (thay đổi 30 ngày)", rank(c), c, "pct")
+    if cm.get("SplyExNtv"):
+        c = chg(ffill(cm["SplyExNtv"], last_px, 5), 30)
+        add("flows", "exbal", "BTC nằm trên sàn (thay đổi 30 ngày; giảm là tốt)", rank(c, invert=True), c, "pct")
+    if prem_daily:
+        p7 = sma(prem_daily, 7)
+        add("flows", "prem", "Lực mua spot của người Mỹ (Coinbase Premium 7 ngày)", rank(p7), p7, "pct3")
     etf = etf_daily()
     if etf:
         ds = sorted(etf)
         s20 = {ds[i]: sum(etf[x] for x in ds[i - 19:i + 1]) for i in range(19, len(ds))}
         s20 = ffill(s20, last_px, 4)
         add("flows", "etf", "ETF Bitcoin ở Mỹ (tổng 20 phiên)", rank(s20, min_n=120), s20, "musd")
-    if prem_daily:
-        p7 = sma(prem_daily, 7)
-        add("flows", "prem", "Coinbase Premium (trung bình 7 ngày)", rank(p7), p7, "pct3")
 
-    # Hành vi nhà đầu tư (tâm lý đám đông)
+    # Hành vi nhà đầu tư: tích luỹ hay phân phối (rút khỏi sàn, người giữ mới) + tâm lý đám đông
+    if cm.get("FlowInExNtv") and cm.get("FlowOutExNtv"):
+        net = {d: cm["FlowOutExNtv"][d] - cm["FlowInExNtv"][d] for d in cm["FlowOutExNtv"] if d in cm["FlowInExNtv"]}
+        n30 = sma(ffill(net, last_px, 5), 30)
+        add("behav", "netout", "BTC rút ròng khỏi sàn mỗi ngày (trung bình 30 ngày; dương là gom)", rank(n30), n30, "btcd")
+    if cm.get("AdrBalCnt"):
+        c = chg(ffill(cm["AdrBalCnt"], last_px, 5), 30)
+        add("behav", "holders", "Số địa chỉ có BTC (thay đổi 30 ngày)", rank(c), c, "pct2")
     if fng:
         f7a = sma(ffill(fng, last_px), 7)
         add("behav", "fng", "Fear & Greed (trung bình 7 ngày)", rank(f7a), f7a, "int")
-    if trends:
-        add("behav", "trends", "Google: tìm \"buy bitcoin\" toàn cầu", rank(trends), trends, "int")
-    if meme_ratio:
-        m7 = sma(meme_ratio, 7)
-        add("behav", "meme", "Quan tâm memecoin so với Bitcoin (Wikipedia)", rank(m7), m7, "ratio")
 
-    # Nền tảng on-chain
-    for key, chart, name, mode in (("addr", "n-unique-addresses", "Địa chỉ hoạt động (trung bình 30 ngày)", "lvl"),
-                                   ("tx", "n-transactions", "Số giao dịch (trung bình 30 ngày)", "lvl"),
-                                   ("fees", "transaction-fees-usd", "Phí mạng, $ (trung bình 30 ngày)", "lvl"),
-                                   ("hash", "hash-rate", "Hashrate (thay đổi 30 ngày)", "chg")):
+    # Nền tảng on-chain: đà (trung bình 30 ngày so với 90 ngày) của phí, mức tham gia, thanh toán, độ đầy khối
+    for key, chart, name in (("fees", "transaction-fees-usd", "Đà phí mạng"),
+                             ("addr", "n-unique-addresses", "Đà địa chỉ hoạt động (mức tham gia)"),
+                             ("vol", "estimated-transaction-volume-usd", "Đà khối lượng chuyển trên chuỗi (thanh toán)"),
+                             ("block", "avg-block-size", "Đà độ đầy khối"),
+                             ("tx", "n-transactions", "Đà số giao dịch")):
         s = safe("chain_" + key, lambda c=chart: chain(c))
         if not s:
             continue
         s = ffill(s, last_px, 5)
-        if mode == "lvl":
-            m = sma(s, 30)
-            add("fund", key, name, rank(m), m, "usd" if key == "fees" else "int")
-        else:
-            m = chg(sma(s, 7), 30)
-            add("fund", key, name, rank(m), m, "pct")
+        a, b = sma(s, 30), sma(s, 90)
+        mo = {d: a[d] / b[d] for d in b if b[d]}
+        add("fund", key, name + " (30 ngày / 90 ngày)", rank(mo), mo, "x3")
         time.sleep(1)
 
-    # Vị trí chu kỳ (toàn bộ lịch sử giá từ 2018)
+    # Vị trí chu kỳ: giá so với giá vốn thực (MVRV) và các đường dài hạn
     p = dict(px)
+    if cm.get("CapMVRVCur") and cm.get("PriceUSD"):
+        rp = {d: cm["PriceUSD"][d] / v for d, v in cm["CapMVRVCur"].items() if v and cm["PriceUSD"].get(d)}
+        rpf = ffill(rp, last_px, 75)      # giá vốn thực đổi chậm; bản miễn phí trễ khoảng 1 tháng nên giữ giá trị gần nhất
+        mv = {d: p[d] / rpf[d] for d in p if d in rpf}
+        add("cycle", "mvrv", f"Giá / giá vốn thực trên chuỗi (giá vốn khoảng {rpf[max(rpf)]:,.0f} $)".replace(",", "."), rank(mv, None, 365), mv, "x")
     m200 = sma(p, 200)
     mayer = {d: p[d] / m200[d] for d in m200}
     add("cycle", "mayer", "Giá / trung bình 200 ngày", rank(mayer, None, 365), mayer, "x")
     w200 = sma(p, 1400)
     r200w = {d: p[d] / w200[d] for d in w200}
     add("cycle", "w200", "Giá / trung bình 200 tuần", rank(r200w, None, 120), r200w, "x")
-    ath, mx = {}, 0.0
-    for d in sorted(p):
-        mx = max(mx, p[d])
-        ath[d] = (p[d] / mx - 1) * 100
-    add("cycle", "dd", "Cách đỉnh cao nhất", rank({d: v for d, v in ath.items() if d >= since + 365 * DAY}, None, 365), ath, "pct")
-    r365 = chg(p, 365)
-    add("cycle", "r365", "Lãi/lỗ 1 năm", rank(r365, None, 365), r365, "pct")
 
-    # Phái sinh
+    # Phái sinh: funding, open interest so với vốn hoá, độ biến động kỳ vọng (DVOL)
     if cz.get("funding"):
         fd = sma(cz["funding"], 7)
         add("deriv", "funding", "Funding (trung bình 7 ngày)", rank(fd), {d: v * 100 for d, v in fd.items()}, "pct4")
-    oi_btc = {d: v / px[d] for d, v in (cz.get("oi_usd") or {}).items() if px.get(d)}
-    if oi_btc:
-        add("deriv", "oi", "Open interest tính theo BTC (mức)", rank(oi_btc, min_n=120), oi_btc, "btc")
-        c = chg(oi_btc, 30)
-        add("deriv", "oi30", "Open interest (thay đổi 30 ngày)", rank(c, min_n=120), c, "pct")
+    sply = ffill(cm.get("SplyCur") or {}, last_px, 40)
+    oi_m = {d: v / (px[d] * (sply.get(d) or 19.9e6)) * 100 for d, v in (cz.get("oi_usd") or {}).items() if px.get(d)}
+    if oi_m:
+        add("deriv", "oi", "Open interest so với vốn hoá BTC", rank(oi_m, min_n=120), oi_m, "pct2l")
+    dv = safe("dvol", dvol)
+    if dv:
+        add("deriv", "dvol", "Độ biến động kỳ vọng DVOL (Deribit)", rank(ffill(dv, last_px, 3)), dv, "int")
 
-    # Luân chuyển
-    alts = {}
-    for a in ALTS:
-        s = safe("okx_" + a, lambda a=a: okx_daily(a, since))
-        if s:
-            alts[a] = s
+    # Luân chuyển: chỉ số mùa altcoin (bao nhiêu altcoin lớn thắng BTC trong 90 ngày) + altcoin lớn so với BTC 30 ngày
+    alts = safe("okx_alts", lambda: alt_closes(errs))
     if alts:
-        b30 = chg(p, 30)
-        rel = {}
+        b90, b30 = chg(p, 90), chg(p, 30)
+        season, rel = {}, {}
+        for d in b90:
+            xs = [chg_one(alts[a], d, 90) for a in alts]
+            xs = [x for x in xs if x is not None]
+            if len(xs) >= 12:
+                season[d] = 100 * sum(1 for x in xs if x > b90[d]) / len(xs)
         for d in b30:
-            xs = [chg_one(alts[a], d, 30) - b30[d] for a in alts if chg_one(alts[a], d, 30) is not None]
-            if len(xs) >= max(3, len(alts) // 2):
+            xs = [chg_one(alts[a], d, 30) - b30[d] for a in ALTS if a in alts and chg_one(alts[a], d, 30) is not None]
+            if len(xs) >= 4:
                 rel[d] = statistics.median(xs)
-        add("rot", "alt30", f"{len(alts)} altcoin lớn so với BTC (trung vị, 30 ngày)", rank(rel), rel, "pp")
-        if "ETH" in alts:
-            eb = {d: alts["ETH"][d] / p[d] for d in alts["ETH"] if p.get(d)}
-            c = chg(eb, 90)
-            add("rot", "ethbtc", "ETH/BTC (thay đổi 90 ngày)", rank(c), c, "pct")
+        if season:
+            add("rot", "season", f"Mùa altcoin: % trong {len(alts)} altcoin thắng BTC 90 ngày", rank(season), season, "int")
+        if rel:
+            add("rot", "alt30", f"{len(ALTS)} altcoin lớn nhất so với BTC (trung vị, 30 ngày)", rank(rel), rel, "pp")
 
     # Gộp theo nhóm
     by_lens: dict = {}
@@ -315,6 +391,9 @@ def run(px: dict, fng: dict, stab: dict, prem_daily: dict, cz: dict, wiki: dict,
             v = [L[k][d] for k in mains if d in L[k]]
             if len(v) >= max(2, len(mains) - 1):
                 head[d] = sum(v) / len(v)
+    # Điểm tổng: như Glassnode, trung bình 4 nhóm rồi xếp hạng so với lịch sử nhiều năm của chính nó
+    hmean = head
+    head = rank(hmean, None, 365)
     if not head:
         return {"v": COMPASS_V, "error": "không đủ dữ liệu", "errors": errs}
     last = max(head)
@@ -329,6 +408,16 @@ def run(px: dict, fng: dict, stab: dict, prem_daily: dict, cz: dict, wiki: dict,
             return "–"
         if kind == "pct":
             return f"{v:+.1f}%"
+        if kind == "pct2":
+            return f"{v:+.2f}%"
+        if kind == "pct2l":
+            return f"{v:.2f}%"
+        if kind == "pp2":
+            return f"{v:+.2f} điểm %"
+        if kind == "x3":
+            return f"{v:.3f}"
+        if kind == "btcd":
+            return f"{v:+,.0f} BTC/ngày"
         if kind == "pct3":
             return f"{v:+.3f}%"
         if kind == "pct4":
@@ -376,9 +465,8 @@ def run(px: dict, fng: dict, stab: dict, prem_daily: dict, cz: dict, wiki: dict,
     # Độ đồng thuận giữa 4 nhóm chính
     mv = [L[k][last] for k in mains if last in L[k]]
     sd = statistics.pstdev(mv) if len(mv) > 1 else 0
-    conv = max(0, min(100, round(100 - 2.2 * sd)))
-    above, below = sum(1 for x in mv if x > 55), sum(1 for x in mv if x < 45)
-    conv_lbl = "Đồng thuận" if (above == 0 or below == 0) and conv >= 60 else "Lệch nhau" if above and below else "Khá đồng thuận"
+    conv = max(0, min(100, round(100 - 3 * sd)))
+    conv_lbl = "Đồng thuận" if conv >= 70 else "Lẫn lộn" if conv >= 50 else "Lệch nhau"
 
     # Kiểm chứng: điểm tổng ở từng vùng, BTC 7 và 30 ngày sau thế nào
     def stats(sel, f):
@@ -392,16 +480,34 @@ def run(px: dict, fng: dict, stab: dict, prem_daily: dict, cz: dict, wiki: dict,
         bt.append({"name": nm, "lo": i * 20, "hi": i * 20 + 20, "days": len(sel), "d7": stats(sel, f7), "d30": stats(sel, f30)})
     allb = {"d7": stats(list(head), f7), "d30": stats(list(head), f30)}
 
+    KEYS = ("macro", "flows", "behav", "fund", "cycle", "deriv", "rot")
     series = []
     for d in sorted(head):
         if d >= last - 730 * DAY:
-            series.append([d * 1000, round(head[d])] + [round(L[k][d]) if d in L.get(k, {}) else None for k in ("macro", "flows", "behav", "fund")])
+            series.append([d * 1000, round(head[d])] + [round(L[k][d]) if d in L.get(k, {}) else None for k in KEYS])
+    # So với Glassnode (số chép tay từ ảnh): mình lệch bao nhiêu điểm ở từng ô
+    ref, mae = [], {}
+    try:
+        rows = json.load(open(os.path.join(DATA, "glassnode_ref.json"), encoding="utf-8")).get("rows") or []
+    except (OSError, json.JSONDecodeError):
+        rows = []
+    for r in rows:
+        d = day_of(datetime.strptime(r["date"], "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp())
+        dd = max((x for x in head if x <= d), default=None)
+        if dd is None:
+            continue
+        ours = {"head": round(head[dd]), **{k: round(L[k][dd]) for k in KEYS if dd in L.get(k, {})}}
+        ref.append({"date": r["date"], "gn": {k: r.get(k) for k in ("head",) + KEYS}, "ours": ours})
+        for k, v in ours.items():
+            if r.get(k) is not None:
+                mae.setdefault(k, []).append(abs(v - r[k]))
+    mae = {k: round(sum(v) / len(v)) for k, v in mae.items()}
     hv = head[last]
     out = {"v": COMPASS_V, "asof": datetime.fromtimestamp(last, timezone.utc).strftime("%Y-%m-%d"),
-           "head": {"score": round(hv), "band": band(hv, HEAD_BANDS), "bands": HEAD_BANDS, "d7": d7(head), "n_main": len(mains)},
+           "head": {"score": round(hv), "band": band(hv, HEAD_BANDS), "bands": HEAD_BANDS, "d7": d7(head), "n_main": len(mains), "mean": round(hmean[last])},
            "conviction": {"v": conv, "label": conv_lbl}, "lenses": lenses, "bt": bt, "bt_all": allb,
            "bt_from": datetime.fromtimestamp(min(head), timezone.utc).strftime("%Y-%m-%d"),
-           "series": series, "errors": errs, "runtime_sec": round(time.time() - t0, 1)}
+           "series": series, "ref": ref, "ref_mae": mae, "errors": errs, "runtime_sec": round(time.time() - t0, 1)}
     return out
 
 
