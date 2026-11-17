@@ -2,6 +2,7 @@
 
 Hệ thống phân tích tâm lý và dòng tiền thị trường crypto theo 5 tầng (thu thập → lọc → chấm điểm → tổng hợp → hiển thị), chạy miễn phí trên GitHub.
 Trang: https://rintue.github.io/sentiment/ · Tài liệu đầy đủ: tệp PDF "Hướng dẫn chi tiết" trong gói sao lưu.
+Nhờ Claude dựng lại hoặc làm tiếp: xem `PROMPT_CLAUDE.md` (lời nhắn soạn sẵn và bối cảnh kỹ thuật).
 
 ## Các phần
 - `index.html`: trang web (tầng 5). Đọc dữ liệu trong `data/`; khi mở trang lấy thêm trực tiếp Bybit, OKX, Deribit, thanh lý theo thời gian thực (Bybit, OKX, Binance) và lịch Investing.com.
