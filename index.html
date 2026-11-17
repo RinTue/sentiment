@@ -2265,7 +2265,11 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       <div class="etf-sub">Tiền vào/ra ròng mỗi phiên · phiên gần nhất ${ddmm(E.date)}/${E.date.slice(0, 4)}${ETF.src === "browser" ? " · trình duyệt đọc trực tiếp TFTC" : D.updated ? ` · máy chủ kiểm tra lúc ${fmtTime(Date.parse(D.updated))}` : ""}</div>
       <div id="etf-ec" style="height:340px"><p class="loading" style="color:#9aa4ad;padding:20px">Đang vẽ biểu đồ…</p></div></div>
       <p class="note" style="margin-top:4px">Cột xanh: tiền vào ròng; cột đỏ: tiền ra ròng (trục trái, triệu $). Đường vàng: giá BTC đóng cửa (trục phải). Rê chuột hoặc chạm vào một cột để xem số và các quỹ đóng góp; kéo thanh bên dưới để xem giai đoạn khác.${D.err && ETF.src === "server" ? ` Lần kiểm tra gần nhất không tải được nguồn (${esc(D.err.slice(0, 120))}), đang dùng bản đã lưu.` : ""}</p>`;
-    box.innerHTML = v + card;
+    // Phiên Mỹ đã đóng cửa quá 12 giờ mà nguồn chưa có số: báo rõ là nguồn chậm, không phải trang hỏng
+    const miss = [];
+    for (let t = Date.parse(E.date + "T00:00:00Z") + 864e5; t + 33 * 3600e3 < Date.now(); t += 864e5) { const wd = new Date(t).getUTCDay(); if (wd > 0 && wd < 6) miss.push(new Date(t).toISOString().slice(0, 10)); }
+    const stale = miss.length ? `<div class="msg" style="margin:0 0 10px">Nguồn TFTC chưa công bố số của phiên ${miss.map(ddmm).join(", ")} (bình thường có vào sáng hôm sau giờ Việt Nam). Hệ thống vẫn tự kiểm tra lại 2 giờ một lần${D.updated ? `, lần gần nhất lúc ${fmtTime(Date.parse(D.updated))}` : ""}; có số là trang tự cập nhật. Nếu hôm đó là ngày lễ ở Mỹ thì không có phiên.</div>` : "";
+    box.innerHTML = stale + v + card;
     box.querySelectorAll(".etf-rg button").forEach((b) => b.addEventListener("click", () => { ETF.range = b.dataset.r; store.set("tamly-etf-range", ETF.range); box.querySelectorAll(".etf-rg button").forEach((x) => x.classList.toggle("on", x === b)); etfDraw(); }));
     etfDraw();
   }
