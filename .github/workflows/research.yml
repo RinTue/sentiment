@@ -1,11 +1,12 @@
 name: Nghiên cứu dự báo
 
-# Dựng bảng chỉ số theo ngày và sàng lọc khả năng dự báo xu hướng 30/90 ngày (collector/research.py).
+# Dựng bảng chỉ số theo ngày, sàng lọc khả năng dự báo xu hướng 30/90 ngày (collector/research.py)
+# và tính Bối cảnh thị trường cho trang Tổng quan (collector/context.py).
 # Chạy riêng để không làm chậm bộ thu thập hằng giờ; không bao giờ báo lỗi đỏ (script luôn thoát mã 0).
 on:
   workflow_dispatch:
   schedule:
-    - cron: "41 2 * * 0"     # Chủ nhật 09:41 giờ Việt Nam
+    - cron: "41 23 * * *"    # 06:41 sáng giờ Việt Nam, mỗi ngày (sau khi Mỹ đóng cửa và ETF công bố)
 
 permissions:
   contents: write
@@ -30,13 +31,15 @@ jobs:
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           COINALYZE_API_KEY: ${{ secrets.COINALYZE_API_KEY }}
+      - name: Tính bối cảnh thị trường
+        run: python collector/context.py
       - name: Lưu kết quả
         run: |
           git config user.name "sentiment-bot"
           git config user.email "sentiment-bot@users.noreply.github.com"
-          git add data/research.json data/research_features.csv data/compass_cache.json || true
+          git add data/research.json data/research_features.csv data/compass_cache.json data/context.json || true
           if git diff --cached --quiet; then echo "Không có thay đổi."; exit 0; fi
-          git commit -m "Nghiên cứu dự báo $(date -u +%Y-%m-%d)"
+          git commit -m "Bối cảnh thị trường $(date -u +%Y-%m-%d)"
           for i in 1 2 3 4; do
             git pull --rebase -X theirs && git push && exit 0
             git rebase --abort 2>/dev/null || true

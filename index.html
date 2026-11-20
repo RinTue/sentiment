@@ -316,6 +316,82 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   header.top .btn { padding: 7px 11px; font-size: .82rem; }
 }
 footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height: 1.7; }
+/* ===== Bối cảnh thị trường (tab Tổng quan) ===== */
+.ctx { display: grid; gap: 14px; }
+.ctx-sub { color: var(--ink-3); font-size: .82rem; margin: 0; }
+.ctx-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+.ctx-hz { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ctx-hz .ctx-card { border-left: 5px solid var(--z2); }
+.ctx-hz .l { color: var(--ink-3); font-size: .82rem; }
+.ctx-hz .v { font-size: 1.5rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.25; margin: 2px 0 4px; }
+.ctx-hz .w { font-size: .86rem; color: var(--ink-2); }
+.ctx-hz .s { font-size: .78rem; color: var(--ink-3); margin-top: 4px; }
+.tone-good { color: var(--good); } .tone-bad { color: var(--bad); } .tone-warn { color: var(--warn); } .tone-neutral { color: var(--ink-2); }
+.ctx-g4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.ctx-g4 .n { font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.ctx-g4 .q { font-size: .8rem; color: var(--ink-3); min-height: 2.4em; margin-top: 2px; }
+.ctx-g4 .big2 { font-size: 2.3rem; font-weight: 800; line-height: 1; margin: 10px 0 2px; font-variant-numeric: tabular-nums; }
+.ctx-g4 .big2 small { font-size: .9rem; color: var(--ink-3); font-weight: 600; }
+.ctx-g4 .st { font-size: 1rem; font-weight: 700; }
+.ctx-g4 .d7 { display: block; font-size: .74rem; color: var(--ink-3); font-weight: 500; }
+.ctx-sc { position: relative; height: 8px; border-radius: 4px; margin: 12px 0 3px; }
+.ctx-sc i { position: absolute; top: -5px; width: 4px; height: 18px; background: var(--ink); border-radius: 2px; transform: translateX(-50%); box-shadow: 0 0 0 2px var(--panel); }
+.ctx-ends { display: flex; justify-content: space-between; font-size: .7rem; color: var(--ink-3); }
+.ctx-mean { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: .84rem; }
+.ctx-star { font-size: .66rem; font-weight: 700; color: var(--good); background: var(--good-bg); border-radius: 99px; padding: 1px 7px; letter-spacing: 0; text-transform: none; }
+.ctx-ph { display: flex; gap: 3px; margin: 12px 0 3px; }
+.ctx-ph span { flex: 1; height: 8px; border-radius: 3px; opacity: .3; }
+.ctx-ph span.on { opacity: 1; outline: 2px solid var(--ink); outline-offset: 1px; }
+.ctx-pl { display: flex; gap: 3px; font-size: .62rem; color: var(--ink-3); line-height: 1.2; }
+.ctx-pl span { flex: 1; text-align: center; } .ctx-pl span.on { color: var(--ink); font-weight: 700; }
+.ctx-sigh { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ctx-sigh b { font-size: 1rem; }
+.ctx-sigh .bar { flex: 1; min-width: 120px; height: 10px; border-radius: 5px; background: var(--neutral-bg); overflow: hidden; }
+.ctx-sigh .bar i { display: block; height: 100%; background: var(--good); border-radius: 5px; }
+.ctx-sig { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+.ctx-sig > div { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: flex; gap: 10px; align-items: center; }
+.ctx-sig .ic { font-size: 1.2rem; font-weight: 700; width: 22px; text-align: center; }
+.ctx-sig .t { font-weight: 600; font-size: .9rem; } .ctx-sig .d { font-size: .78rem; color: var(--ink-3); }
+.ctx-sig > div.ok { border-color: var(--good); background: var(--good-bg); }
+details.ctx-more > summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+.ctx-sec { display: flex; align-items: center; gap: 8px; margin: 18px 0 8px; font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); }
+.ctx-sec:after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.ctx-p5 { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-top: 6px; }
+.ctx-p5 > div { border: 1px solid var(--line); border-top-width: 3px; border-radius: 9px; padding: 8px 9px; font-size: .74rem; position: relative; }
+.ctx-p5 .t { font-weight: 700; font-size: .84rem; } .ctx-p5 .d { color: var(--ink-3); margin: 2px 0 6px; min-height: 3.6em; }
+.ctx-p5 .k { display: flex; justify-content: space-between; color: var(--ink-3); } .ctx-p5 .k b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.ctx-p5 > div.now { border-width: 2px; border-top-width: 3px; }
+.ctx-p5 > div.now:before { content: "HIỆN TẠI"; position: absolute; top: -9px; left: 8px; color: #fff; font-size: .6rem; font-weight: 800; padding: 0 6px; border-radius: 99px; background: var(--pc); }
+.ctx-cond { display: grid; grid-template-columns: 20px minmax(0, 1fr) minmax(80px, 34%) 44px; gap: 8px; align-items: center; padding: 7px 0; border-bottom: 1px dashed var(--line); font-size: .86rem; }
+.ctx-cond:last-child { border-bottom: 0; }
+.ctx-cond .x { font-size: .74rem; color: var(--ink-3); }
+.ctx-bar { position: relative; height: 8px; border-radius: 4px; background: var(--neutral-bg); }
+.ctx-bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; }
+.ctx-bar u { position: absolute; top: -4px; width: 2px; height: 16px; background: var(--ink); }
+.ctx-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ctx-g3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.ctx-vb { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; align-items: end; height: 64px; margin-top: 16px; }
+.ctx-vb div { border-radius: 3px 3px 0 0; background: var(--neutral-bg); position: relative; min-height: 2px; }
+.ctx-vb div.cur { outline: 2px solid var(--ink); outline-offset: 1px; }
+.ctx-vb div span { position: absolute; top: -15px; left: 0; right: 0; text-align: center; font-size: .66rem; color: var(--ink); }
+.ctx-vl { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; font-size: .62rem; color: var(--ink-3); text-align: center; margin-top: 3px; }
+.ctx-rel { font-size: .66rem; font-weight: 700; padding: 1px 7px; border-radius: 99px; white-space: nowrap; letter-spacing: 0; text-transform: none; }
+.ctx-mk { display: grid; grid-template-columns: 1fr auto; font-size: .76rem; color: var(--ink-3); margin-top: 8px; row-gap: 1px; }
+.ctx-mk b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.ctx-tbl { width: 100%; border-collapse: collapse; font-size: .82rem; }
+.ctx-tbl td, .ctx-tbl th { padding: 6px 5px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+.ctx-tbl th { color: var(--ink-3); font-weight: 500; font-size: .74rem; }
+.ctx-tbl .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ctx-rk { display: inline-block; width: 52px; height: 6px; border-radius: 3px; background: var(--neutral-bg); position: relative; vertical-align: middle; margin-right: 5px; }
+.ctx-rk i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; }
+.ctx-tag { font-size: .64rem; padding: 0 6px; border-radius: 99px; background: var(--good-bg); color: var(--good); margin-left: 4px; white-space: nowrap; }
+.ctx-chart { width: 100%; height: 300px; }
+.ctx-chart.tall { height: 430px; }
+.ctx-leg { display: flex; gap: 12px; flex-wrap: wrap; font-size: .76rem; color: var(--ink-3); margin-top: 4px; }
+.ctx-cyc { width: 100%; height: auto; display: block; }
+@media (max-width: 860px) { .ctx-g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ctx-p5 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .ctx-g3 { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .ctx-hz, .ctx-sig, .ctx-two { grid-template-columns: 1fr; } .ctx-p5 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ctx-hz .v { font-size: 1.25rem; } }
+@media (max-width: 420px) { .ctx-g4 { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -332,17 +408,17 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
 
   <nav class="tabs" id="tabs" role="tablist" aria-label="Các mục">
     <button type="button" role="tab" data-tab="overview" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M12 12l3 -3"/></svg><span>Tổng quan</span></button>
-    <button type="button" role="tab" data-tab="crowd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg><span>Đám đông</span></button>
-    <button type="button" role="tab" data-tab="money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6 -6l4 4l8 -8"/><path d="M14 7l7 0l0 7"/></svg><span>Dòng tiền</span></button>
-    <button type="button" role="tab" data-tab="macro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/></svg><span>Vĩ mô và lịch</span></button>
-    <button type="button" role="tab" data-tab="cycle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg><span>Chu kỳ</span></button>
-    <button type="button" role="tab" data-tab="events"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/></svg><span>Sự kiện</span></button>
-    <button type="button" role="tab" data-tab="method"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9h.01"/><path d="M11 12h1v4h1"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/></svg><span>Cách tính</span></button>
+    <button type="button" role="tab" data-tab="money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6 -6l4 4l8 -8"/><path d="M14 7l7 0l0 7"/></svg><span>Cá mập &amp; phái sinh</span></button>
+    <button type="button" role="tab" data-tab="macro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/></svg><span>Vĩ mô &amp; lịch</span></button>
+    <button type="button" role="tab" data-tab="cycle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg><span>Dài hạn</span></button>
+    <button type="button" role="tab" data-tab="crowd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg><span>Tin tức</span></button>
   </nav>
 
   <!-- ================= TỔNG QUAN ================= -->
   <div class="tabpanel" data-panel="overview" role="tabpanel">
-    <section class="panel" aria-live="polite">
+    <div id="ctx-box" aria-live="polite"><p class="loading">Đang tải bối cảnh thị trường…</p></div>
+    <div id="ov-legacy" hidden>
+    <section class="panel">
       <div class="hero">
         <div class="g">
           <div id="ci-gauge" role="img" aria-label="Đồng hồ chỉ số tâm lý"></div>
@@ -356,12 +432,10 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
         </div>
       </div>
     </section>
-    <div class="msg" id="ov-liq-alert" hidden style="font-weight:600"></div>
-    <div class="kpis" id="kpis"></div>
+        <div class="kpis" id="kpis"></div>
     <section class="panel cmp" id="compass"><p class="note">Đang tải la bàn thị trường…</p></section>
     <div class="kpi drv" id="drv-card"><div class="l"><span class="dot"></span>Đà giá đến từ đâu</div><div class="s">Đang tải…</div></div>
-    <div class="nextev" id="next-ev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/></svg><span>Đang tải lịch kinh tế…</span></div>
-    <section class="panel">
+        <section class="panel">
       <h2 id="hist-title">Lịch sử chỉ số</h2>
       <div class="legend"><span><i style="background:var(--s1)"></i>Chỉ số tổng hợp</span><span><i style="background:var(--s2)"></i>Tâm lý văn bản</span></div>
       <div class="chart" id="c-hist"></div>
@@ -385,12 +459,16 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
         <div class="tbl-wrap" id="ci-table" style="margin-top:10px"><p class="loading">Đang tính…</p></div>
       </details>
     </section>
+    </div>
+    <div class="msg" id="ov-liq-alert" hidden style="font-weight:600"></div>
+    <div class="nextev" id="next-ev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/></svg><span>Đang tải lịch kinh tế…</span></div>
   </div>
 
   <!-- ================= ĐÁM ĐÔNG ================= -->
   <div class="tabpanel" data-panel="crowd" role="tabpanel" hidden>
     <section class="panel">
-      <h2>Đám đông đang nói gì</h2>
+      <h2>Tin tức và bàn luận</h2>
+      <div hidden>
       <div class="row"><div class="big" id="tx-big">–</div><div id="tx-label" style="font-weight:600"></div><div class="note" id="tx-sub" style="margin:0"></div></div>
       <div class="split" id="tx-split" aria-hidden="true"></div>
       <div class="legend"><span><i class="sq" style="background:var(--good)"></i>Tích cực</span><span><i class="sq" style="background:var(--z2)"></i>Trung tính</span><span><i class="sq" style="background:var(--bad)"></i>Tiêu cực</span></div>
@@ -399,6 +477,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
         <div><h3>Theo nguồn</h3><div class="tbl-wrap" id="tx-src"></div></div>
       </div>
       <p class="note" id="tx-trans" style="margin-top:14px"></p>
+      </div>
       <h3 style="margin-bottom:2px">Tin nổi bật</h3>
       <p class="note" style="margin-top:0">Chỉ lấy từ báo crypto và kênh tin Telegram, xếp theo độ quan trọng: một sự kiện càng nhiều nơi cùng đưa, càng liên quan BTC, ETH, Fed, luật, hack… thì càng lên đầu.</p>
       <div class="two">
@@ -421,7 +500,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
         <p class="note" id="tx-note">Khi mở từ đường link GitHub, văn bản đến từ bộ thu thập chạy mỗi giờ: 8 báo crypto, Reddit, Stocktwits, Bluesky, YouTube, Telegram, Mastodon, Lemmy, Hacker News. Khi mở file trên máy, trang tự đọc Mastodon, Lemmy và Hacker News, là cộng đồng thiên về công nghệ và thường hoài nghi crypto, nên hãy chú ý mức thay đổi hơn con số tuyệt đối.</p>
       </details>
     </section>
-    <section class="panel">
+    <section class="panel" hidden>
       <h2>Mức chú ý của nhỏ lẻ</h2>
       <div class="stats" id="att-stats"><p class="loading">Đang tải…</p></div>
       <div class="two">
@@ -491,7 +570,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <h2>Đà giá đến từ đâu: spot, đòn bẩy hay short bị ép</h2>
       <div id="drv-detail"><p class="loading">Đang tải…</p></div>
     </section>
-    <section class="panel">
+    <section class="panel" hidden>
       <h2>Giá BTC 180 ngày</h2>
       <div class="legend"><span><i style="background:var(--s1)"></i>Giá đóng cửa</span><span><i style="background:var(--s2)"></i>SMA 50</span><span><i style="background:var(--s3)"></i>SMA 200</span></div>
       <div class="chart" id="c-btc"><p class="loading">Đang tải…</p></div>
@@ -514,17 +593,6 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <div id="cal-box"><p class="loading">Đang tải lịch…</p></div>
       <p class="note">"Tốt cho USD" nghĩa là số liệu khiến USD mạnh lên (lạm phát cao, việc làm mạnh…), thường bất lợi cho crypto trong ngắn hạn. Xem thêm: <a href="https://www.investing.com/economic-calendar/" target="_blank" rel="noopener">Investing.com</a>, <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener">Forex Factory</a>.</p>
     </section>
-  </div>
-
-  <!-- ================= SỰ KIỆN ================= -->
-  <div class="tabpanel" data-panel="cycle" role="tabpanel" hidden>
-    <section class="panel">
-      <h2>Chu kỳ halving: đang ở đâu, các lần trước ra sao</h2>
-      <div id="cy-box"><p class="loading">Đang tải…</p></div>
-    </section>
-  </div>
-
-  <div class="tabpanel" data-panel="events" role="tabpanel" hidden>
     <section class="panel">
       <h2>Số liệu vĩ mô Mỹ tác động BTC ra sao</h2>
       <p class="note" style="margin:0 0 12px">Với mỗi lần công bố CPI, NFP, lãi suất Fed, PCE, PPI, bán lẻ, GDP từ 2022: lấy giá BTC (Coinbase) ngay trước giờ công bố, so với sau 15 phút, 1 giờ, 24 giờ, và so với mức dao động bình thường. Lịch công bố lấy từ FRED; kết quả "tốt hay xấu cho USD" so với dự báo lấy từ Investing.com.</p>
@@ -532,9 +600,23 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
     </section>
   </div>
 
+  <!-- ================= DÀI HẠN (chu kỳ + định giá) ================= -->
+  <div class="tabpanel" data-panel="cycle" role="tabpanel" hidden>
+    <section class="panel">
+      <h2>Định giá on-chain: rẻ hay đắt cho 1–2 năm</h2>
+      <div id="lt-val"><p class="loading">Đang tải…</p></div>
+    </section>
+    <section class="panel">
+      <h2>Chu kỳ halving: đang ở đâu, các lần trước ra sao</h2>
+      <div id="cy-box"><p class="loading">Đang tải…</p></div>
+    </section>
+  </div>
+
+  <div class="tabpanel" data-panel="events" role="tabpanel" hidden></div>
+
   <!-- ================= CÁCH TÍNH ================= -->
   <div class="tabpanel" data-panel="method" role="tabpanel" hidden>
-    <section class="panel">
+    <section class="panel" hidden>
       <h2>Năm tầng xử lý, lần tải này</h2>
       <div class="pipe" aria-label="Năm tầng xử lý">
         <div><b>1 · THU THẬP</b><span id="p1">đang chạy…</span></div>
@@ -552,7 +634,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
       <h2>Độ tin cậy: Fear &amp; Greed đã báo trước giá BTC ra sao</h2>
       <div id="rel-box"><p class="loading">Đang tải…</p></div>
     </section>
-    <section class="panel">
+    <section class="panel" hidden>
       <h2>Thử nghiệm: CryptoBERT so với mô hình đang dùng</h2>
       <div id="mc-model"></div>
     </section>
@@ -571,7 +653,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
     </section>
   </div>
 
-  <footer><span id="alert-note"></span><br>Thông tin tham khảo, không phải lời khuyên đầu tư. Dữ liệu tải khi mở trang hoặc bấm làm mới.</footer>
+  <footer><span id="alert-note"></span><br><a href="#method">Cách tính và kiểm chứng</a> · Thông tin tham khảo, không phải lời khuyên đầu tư. Dữ liệu tải khi mở trang hoặc bấm làm mới.</footer>
 </div>
 
 <script>
@@ -2206,6 +2288,204 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       if (!CY.rs) { CY.rs = true; window.addEventListener("resize", () => { try { CY.c1 && CY.c1.resize(); CY.c2 && CY.c2.resize(); CY.place && CY.place(); } catch (e) { /* bỏ qua */ } }); }
     }).catch((e) => { e2.innerHTML = `<div class="msg">${esc(e.message)}</div>`; });
   }
+  /* ---------- Bối cảnh thị trường (tab Tổng quan): data/context.json do collector/context.py tính mỗi sáng ---------- */
+  const CTX = { C: null, drawn: false, c1: null, c2: null };
+  const PH_COL = { apa: "#3fb950", rec: "#58a6ff", eu: "#f85149", wk: "#db6d28", pan: "#a371f7" };
+  const ctxB = (v) => Math.min(4, Math.max(0, Math.floor(v / 20)));
+  const ctxState = {
+    macro: [["Tiền đắt · gió ngược", "bad"], ["Hơi thắt chặt", "warn"], ["Trung tính", "neutral"], ["Nới lỏng · gió thuận", "good"], ["Rất thuận lợi", "good"]],
+    whale: [["Bán mạnh", "bad"], ["Đang bán", "bad"], ["Trung tính", "neutral"], ["Đang gom", "good"], ["Gom mạnh", "good"]],
+    value: [["Rẻ", "good"], ["Hơi rẻ", "good"], ["Trung bình", "neutral"], ["Hơi đắt", "warn"], ["Đắt", "bad"]],
+  };
+  const ctxGrad = { macro: "linear-gradient(90deg,var(--bad),var(--neutral-bg) 50%,var(--good))", whale: "linear-gradient(90deg,var(--bad),var(--neutral-bg) 50%,var(--good))",
+    value: "linear-gradient(90deg,var(--good),var(--neutral-bg) 50%,var(--bad))" };
+  const ctxEnds = { macro: ["Thắt chặt", "Nới lỏng"], whale: ["Bán mạnh", "Gom mạnh"], value: ["Rẻ", "Đắt"] };
+  const ctxQ = { macro: "Tiền trên thế giới đang rẻ hay đắt?", whale: "Tiền lớn đang mua hay bán?", value: "BTC đang rẻ hay đắt so với giá vốn?" };
+  const ctxShort = { macro: "Vĩ mô", whale: "Cá mập", value: "Định giá" };
+  const ctxNext = { pan: "Kế tiếp thường là <b>Chán nản</b> = vùng gom.", apa: "Đang ở <b>vùng gom</b>. Kế tiếp là Hồi phục.",
+    rec: "Kế tiếp là Hưng phấn: theo dõi khi giá thành đắt.", eu: "Gần đỉnh. Kế tiếp thường là <b>Suy yếu</b>.", wk: "Kế tiếp thường là Hoảng loạn rồi Chán nản." };
+  const vnN = (x, d = 0) => (x == null || !isFinite(x)) ? "–" : Number(x).toLocaleString("vi-VN", { maximumFractionDigits: d, minimumFractionDigits: d });
+  const ctxDate = (s) => s ? `${+s.slice(8, 10)}/${+s.slice(5, 7)}/${s.slice(0, 4)}` : "";
+  const ctxMY = (s) => s ? `${s.slice(5, 7)}/${s.slice(0, 4)}` : "";
+  function ctxMeaning(g, C) {
+    const sc = C.scores[g], b = sc.verify[ctxB(sc.score)] || {};
+    if (g === "macro") return b.up90 != null ? `Ở mức này: <b>${b.up90}%</b> số lần giá cao hơn sau 3 tháng (bình thường ${C.base90}%).` : "";
+    if (g === "whale") return sc.score >= 60 ? "Tiền lớn đang gom: thuận cho xu hướng tăng." : "Chú ý khi <b>vượt 60</b>: tiền lớn quay lại gom.";
+    return sc.score < 40 ? "Tốt cho giữ 1–2 năm. <b>Không</b> báo giá vài tuần tới." : sc.score < 60 ? "Giá trung bình so với giá vốn. Không báo giá vài tuần tới." : "Đắt: rủi ro đỉnh cao hơn cho 1–2 năm.";
+  }
+  function ctxCard(g, C) {
+    const sc = C.scores[g], st = ctxState[g][ctxB(sc.score)];
+    const d7 = sc.d7 == null ? "" : `<span class="d7">${sc.d7 > 0 ? "▲" : sc.d7 < 0 ? "▼" : "•"} ${Math.abs(sc.d7)} / 7 ngày</span>`;
+    return `<div class="ctx-card"><div class="n">${esc(g === "whale" ? "Cá mập" : g === "value" ? "Định giá" : "Vĩ mô")}${g === "macro" ? '<span class="ctx-star">★ quan trọng nhất</span>' : ""}</div>
+      <div class="q">${ctxQ[g]}</div><div class="big2 tone-${st[1]}">${sc.score}<small>/100</small></div>
+      <div class="st tone-${st[1]}">${st[0]}${d7}</div>
+      <div class="ctx-sc" style="background:${ctxGrad[g]}"><i style="left:${sc.score}%"></i></div><div class="ctx-ends"><span>${ctxEnds[g][0]}</span><span>${ctxEnds[g][1]}</span></div>
+      <div class="ctx-mean">${ctxMeaning(g, C)}</div></div>`;
+  }
+  function ctxPhaseCard(C) {
+    const P = C.phase, o = P.order;
+    return `<div class="ctx-card"><div class="n">Tâm lý đám đông</div><div class="q">Đám đông đang ở giai đoạn nào?</div>
+      <div class="big2" style="color:${PH_COL[P.key]};font-size:1.75rem;margin-top:14px">${esc(P.name)}</div>
+      <div class="st" style="color:var(--ink-3);font-size:.82rem;font-weight:500">từ ${ctxDate(P.since)}</div>
+      <div class="ctx-ph">${o.map((k) => `<span class="${k === P.key ? "on" : ""}" style="background:${PH_COL[k]}"></span>`).join("")}</div>
+      <div class="ctx-pl">${o.map((k) => `<span class="${k === P.key ? "on" : ""}">${esc(P.names[k][0])}</span>`).join("")}</div>
+      <div class="ctx-mean">${ctxNext[P.key]}</div></div>`;
+  }
+  function ctxCycleSvg(P) {
+    const pos = { apa: [130, 166], rec: [351, 97], eu: [585, 24], wk: [819, 80], pan: [1088, 181] }[P.key];
+    const ink = "currentColor";
+    return `<svg class="ctx-cyc" viewBox="0 -24 1170 240" role="img" aria-label="Vòng tâm lý thị trường, hiện ở pha ${esc(P.name)}" style="color:var(--ink)">
+      <path d="M20,170 C120,175 180,165 234,150" stroke="${PH_COL.apa}" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M234,150 C320,125 400,70 468,45" stroke="${PH_COL.rec}" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M468,45 C520,25 600,18 702,40" stroke="${PH_COL.eu}" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M702,40 C780,60 850,95 936,120" stroke="${PH_COL.wk}" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M936,120 C1000,140 1060,185 1150,178" stroke="${PH_COL.pan}" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M1150,192 C900,214 300,214 40,190" stroke="${ink}" stroke-opacity=".35" stroke-width="1.5" fill="none" stroke-dasharray="5 5"/>
+      <path d="M48,184 L36,190 L48,196" stroke="${ink}" stroke-opacity=".35" stroke-width="1.5" fill="none"/>
+      <g font-size="22" font-weight="700" font-family="inherit">
+        <text x="120" y="140" fill="${PH_COL.apa}" text-anchor="middle">① Chán nản</text><text x="120" y="116" fill="${PH_COL.apa}" text-anchor="middle" font-size="17" font-weight="500">(vùng gom)</text>
+        <text x="300" y="72" fill="${PH_COL.rec}" text-anchor="middle">② Hồi phục</text>
+        <text x="585" y="0" dy="0" fill="${PH_COL.eu}" text-anchor="middle" transform="translate(0,14)">③ Hưng phấn</text>
+        <text x="870" y="58" fill="${PH_COL.wk}" text-anchor="middle">④ Suy yếu</text>
+        <text x="1010" y="118" fill="${PH_COL.pan}" text-anchor="middle">⑤ Hoảng loạn</text>
+      </g>
+      <circle cx="${pos[0]}" cy="${pos[1]}" r="13" fill="${PH_COL[P.key]}" stroke="${ink}" stroke-width="4"/>
+      <text x="${pos[0]}" y="${pos[1] + (P.key === "eu" ? 40 : -22)}" fill="${ink}" font-size="19" font-weight="800" text-anchor="middle">BẠN Ở ĐÂY</text>
+    </svg>`;
+  }
+  function ctxVerifyCard(g, C) {
+    const sc = C.scores[g], h = g === "value" ? 365 : 90, cur = ctxB(sc.score), st = ctxState[g][cur];
+    const rel = g === "macro" ? ["Đáng tin nhất", "var(--good)", "var(--good-bg)"] : g === "whale" ? ["Yếu", "var(--warn)", "var(--warn-bg)"] : ["Cho 1–2 năm", "var(--ink-2)", "var(--neutral-bg)"];
+    const col = g === "macro" ? "var(--warn)" : g === "whale" ? "var(--good)" : "#a371f7";
+    const vals = sc.verify.map((b) => b["up" + h]);
+    const mk = sc.marks || {};
+    return `<div class="ctx-card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><b>${esc(sc.name)}</b><div class="note" style="margin:0">${ctxQ[g]}</div></div>
+      <span class="ctx-rel" style="color:${rel[1]};background:${rel[2]}">${rel[0]}</span></div>
+      <div style="font-size:1.6rem;font-weight:800;margin-top:6px" class="tone-${st[1]}">${sc.score} <span style="font-size:.85rem;font-weight:600">${st[0]}</span></div>
+      <div class="ctx-mk"><span>Đỉnh 11/2021</span><b>${mk.top21 ?? "–"}</b><span>Đáy 11/2022</span><b>${mk.bot22 ?? "–"}</b><span>Đỉnh 10/2025</span><b>${mk.top25 ?? "–"}</b></div>
+      <div class="note" style="margin-top:10px">Kiểm chứng từ 2015: % số lần giá cao hơn sau ${h === 365 ? "1 năm" : "3 tháng"}, theo mức điểm</div>
+      <div class="ctx-vb">${vals.map((v, i) => `<div class="${i === cur ? "cur" : ""}" style="height:${v == null ? 2 : Math.max(3, v * .75)}%;${i === cur ? "background:" + col : ""}"><span>${v == null ? "–" : v + "%"}</span></div>`).join("")}</div>
+      <div class="ctx-vl"><span>0–20</span><span>20–40</span><span>40–60</span><span>60–80</span><span>80–100</span></div></div>`;
+  }
+  function ctxItems(g, C) {
+    const sc = C.scores[g], lab = g === "value" ? "Hạng 4 năm" : "Hạng 1 năm";
+    const note = g === "value" ? "Hạng thấp = rẻ so với 4 năm qua." : "Hạng đã đảo chiều: cao = thuận cho BTC.";
+    return `<div class="ctx-card"><b>${esc(sc.name)}</b> <span class="note">· ${note}</span>
+      <div class="tbl-wrap"><table class="ctx-tbl"><tr><th>Chỉ số</th><th class="num">Giá trị</th><th>${lab}</th></tr>
+      ${sc.items.map((it) => { const r = it.rank, c = r == null ? "var(--z2)" : g === "value" ? (r < 34 ? "var(--good)" : r > 66 ? "var(--bad)" : "var(--z2)") : (r < 34 ? "var(--bad)" : r > 66 ? "var(--good)" : "var(--z2)");
+        return `<tr><td>${esc(it.name)}${it.tested ? '<span class="ctx-tag">kiểm chứng</span>' : ""}</td><td class="num">${esc(it.val)}</td><td style="white-space:nowrap"><span class="ctx-rk"><i style="width:${r ?? 0}%;background:${c}"></i></span>${r ?? "–"}</td></tr>`; }).join("")}
+      </table></div></div>`;
+  }
+  function ctxRender() {
+    const C = CTX.C, el = $("ctx-box");
+    if (!C || !C.scores) { el.innerHTML = `<div class="msg">Chưa có số liệu bối cảnh (data/context.json). Máy chủ tính mỗi sáng lúc 6:41.</div>`; return; }
+    const age = (Date.now() - Date.parse(C.asof + "T00:00:00Z")) / 864e5;
+    const H = C.horizons, P = C.phase;
+    const hz = (h) => `<div class="ctx-card" style="border-left-color:var(--${h.tone === "neutral" ? "z2" : h.tone})"><div class="l">${esc(h.title)}</div>
+      <div class="v tone-${h.tone}">${esc(h.label)}</div><div class="w">${esc(h.why)}</div>${h.stat ? `<div class="s">${esc(h.stat)}</div>` : ""}</div>`;
+    const sig = C.signals.map((s) => `<div class="${s.ok ? "ok" : ""}"><span class="ic ${s.ok ? "tone-good" : "tone-bad"}">${s.ok ? "✓" : "✗"}</span><div><div class="t">${esc(s.name)}</div><div class="d">${esc(s.now)}</div></div></div>`).join("");
+    const st = P.stats;
+    const p5 = P.order.map((k) => { const s = st[k] || {};
+      return `<div class="${k === P.key ? "now" : ""}" style="border-top-color:${PH_COL[k]};--pc:${PH_COL[k]};${k === P.key ? "border-color:" + PH_COL[k] : ""}">
+        <div class="t" style="color:${PH_COL[k]}">${esc(P.names[k][0])}</div><div class="d">${esc(P.names[k][1])}</div>
+        <div class="k"><span>Sau 3 tháng tăng</span><b>${s.up90 ?? "–"}%</b></div><div class="k"><span>Sau 6 tháng tăng</span><b>${s.up180 ?? "–"}%</b></div>
+        <div class="k"><span>Trung vị 6 tháng</span><b>${s.med180 == null ? "–" : (s.med180 > 0 ? "+" : "") + s.med180 + "%"}</b></div>
+        <div class="k"><span>Tệ nhất 3 tháng</span><b>${s.worst90 == null ? "–" : s.worst90 + "%"}</b></div></div>`; }).join("");
+    const cond = P.cond.map((c) => { const pct = Math.min(100, c.now / c.max * 100), thr = c.thr / c.max * 100;
+      return `<div class="ctx-cond"><span class="${c.ok ? "tone-good" : "tone-bad"}" style="font-weight:700">${c.ok ? "✓" : "✗"}</span><div>${esc(c.name)}<div class="x">${esc(c.desc)}</div></div>
+        <div class="ctx-bar"><i style="width:${pct}%;background:${c.ok ? "var(--good)" : PH_COL[P.key]}"></i><u style="left:${thr}%"></u></div><div class="num" style="text-align:right">${vnN(c.now, c.key === "cheap" ? 2 : 0)}</div></div>`; }).join("");
+    const nCond = P.cond.filter((c) => c.ok).length;
+    const eps = P.episodes.map((e) => `<tr><td>${ctxMY(e.from)}</td><td class="num">${vnN(e.px / 1000, 1)}K</td><td class="num ${e.f180 == null ? "" : e.f180 >= 0 ? "tone-good" : "tone-bad"}">${e.f180 == null ? "chưa đủ 6 tháng" : (e.f180 > 0 ? "+" : "") + e.f180 + "%"}</td></tr>`).join("");
+    el.innerHTML = `<div class="ctx">
+      <p class="ctx-sub">Số liệu đến ${ctxDate(C.asof)} · BTC ${vnN(C.price)} $ · chỉ dùng dữ liệu ngoài biểu đồ giá, bổ trợ cho phân tích kỹ thuật</p>
+      ${age > 3 ? `<div class="msg">Số liệu bối cảnh đã cũ ${Math.floor(age)} ngày: lần tính hằng ngày gần đây chưa chạy được.</div>` : ""}
+      <div class="ctx-hz">${hz(H.short)}${hz(H.long)}</div>
+      <div class="ctx-g4">${ctxCard("macro", C)}${ctxCard("whale", C)}${ctxCard("value", C)}${ctxPhaseCard(C)}</div>
+      <div class="ctx-card"><div class="ctx-sigh"><b>Dấu hiệu xu hướng đổi chiều đi lên</b><div class="bar"><i style="width:${Math.max(3, C.n_ok / 3 * 100)}%"></i></div><b>${C.n_ok} / 3</b></div>
+        <div class="ctx-sig">${sig}</div>
+        <p class="note">Càng nhiều dấu hiệu bật, khả năng xu hướng tăng bắt đầu càng cao. Có thay đổi sẽ báo qua Telegram.</p></div>
+      <div class="ctx-card"><details class="ctx-more" id="ctx-more"><summary>Xem chi tiết: kiểm chứng, lịch sử, từng chỉ số</summary>
+        <div class="ctx-sec">1 · Tâm lý đám đông theo lý thuyết Dow</div>
+        ${ctxCycleSvg(P)}
+        <div class="ctx-p5">${p5}</div>
+        <p class="note">Kết quả giá sau đó, tính từ 2018. Bình thường (mọi ngày từ 2015): ${C.base90}% số lần giá cao hơn sau 3 tháng. Theo Dow, vùng gom thật đến khi thị trường lặng xuống sau hoảng loạn.</p>
+        <div class="ctx-two" style="margin-top:12px">
+          <div class="ctx-card"><b>Còn bao xa để sang pha Chán nản (vùng gom)?</b> <span class="note">${nCond}/3 điều kiện</span>${cond}
+            <p class="note">Vạch đậm là ngưỡng. Pha chỉ đổi khi giữ nguyên 5 ngày liền.</p></div>
+          <div class="ctx-card"><b>Các lần vào pha Chán nản trước đây</b><div class="tbl-wrap"><table class="ctx-tbl"><tr><th>Thời điểm</th><th class="num">Giá lúc vào</th><th class="num">6 tháng sau</th></tr>${eps}</table></div>
+            <p class="note">Mẫu nhỏ. Vùng gom là nơi xác suất tốt hơn, không phải đáy chắc chắn.</p></div>
+        </div>
+        <h3>Các pha trên biểu đồ giá BTC, từ 2018</h3><div class="ctx-chart" id="ctx-c1"></div>
+        <div class="ctx-leg">${P.order.map((k) => `<span><b style="color:${PH_COL[k]}">■</b> ${esc(P.names[k][0])}</span>`).join("")}</div>
+        <div class="ctx-sec">2 · Ba lực chi phối: điểm và kiểm chứng</div>
+        <div class="ctx-g3">${ctxVerifyCard("macro", C)}${ctxVerifyCard("whale", C)}${ctxVerifyCard("value", C)}</div>
+        <h3>Diễn biến điểm số và giá BTC, từ 2021</h3><div class="ctx-chart tall" id="ctx-c2"></div>
+        <p class="note">Đáng chú ý là lúc điểm quay lên trước giá: cuối 2022, điểm Vĩ mô đã leo từ dưới 20 lên trên 70 khi giá vẫn ở đáy.</p>
+        <div class="ctx-sec">3 · Chi tiết từng chỉ số</div>
+        <div style="display:grid;gap:12px">${ctxItems("whale", C)}${ctxItems("macro", C)}${ctxItems("value", C)}</div>
+        <p class="note">Điểm 0–100 là thứ hạng của hôm nay so với lịch sử (Vĩ mô, Cá mập: 1 năm; Định giá: 4 năm), trung bình các chỉ số trong nhóm. Ngưỡng và cách tính cố định, xem collector/context.py. Xác suất từ lịch sử, mỗi mức chỉ có vài giai đoạn độc lập. Cập nhật ${fmtTime(Date.parse(C.updated))}.</p>
+      </details></div></div>`;
+    CTX.drawn = false;
+    const det = $("ctx-more");
+    det.addEventListener("toggle", () => { if (det.open) ctxDraw(); });
+  }
+  function ctxDraw() {
+    const C = CTX.C; if (!C || CTX.drawn) return;
+    CTX.drawn = true;
+    loadEcharts().then((ec) => {
+      const cs = getComputedStyle(document.documentElement), ink3 = cs.getPropertyValue("--ink-3").trim() || "#888", line = cs.getPropertyValue("--line").trim() || "#ddd", ink = cs.getPropertyValue("--ink").trim() || "#111";
+      const yr = (v) => v.slice(5) === "01-01" ? v.slice(0, 4) : "";
+      // 1) pha trên giá
+      const PH = C.phase_hist, areas = []; let s = 0;
+      for (let i = 1; i <= PH.t.length; i++) if (i === PH.t.length || PH.ph[i] !== PH.ph[s]) { areas.push([{ xAxis: PH.t[s], itemStyle: { color: PH_COL[PH.ph[s]], opacity: .22 } }, { xAxis: PH.t[i - 1] }]); s = i; }
+      if (CTX.c1) CTX.c1.dispose();
+      CTX.c1 = ec.init($("ctx-c1"), null, { renderer: "svg" });
+      CTX.c1.setOption({ animation: false, grid: { left: 46, right: 12, top: 10, bottom: 24 },
+        tooltip: { trigger: "axis", formatter: (p) => `${ctxDate(p[0].axisValue)}<br>BTC ${vnN(p[0].value)} $<br>Pha: ${C.phase.names[PH.ph[p[0].dataIndex]][0]}` },
+        xAxis: { type: "category", data: PH.t, axisLabel: { color: ink3, interval: 0, formatter: yr }, axisTick: { show: false }, axisLine: { lineStyle: { color: line } } },
+        yAxis: { type: "log", min: 3000, max: 150000, axisLabel: { color: ink3, formatter: (v) => v >= 1000 ? v / 1000 + "K" : v }, splitLine: { lineStyle: { color: line } } },
+        series: [{ type: "line", data: PH.px, showSymbol: false, lineStyle: { color: ink, width: 1.3 }, markArea: { silent: true, data: areas } }] });
+      // 2) điểm 3 nhóm
+      const Hh = C.hist, G = [["macro", "Vĩ mô (thắt ↔ nới)", "#d29922"], ["whale", "Cá mập (bán ↔ gom)", "#3fb950"], ["value", "Định giá (rẻ ↔ đắt)", "#a371f7"]];
+      const grid = [], xA = [], yA = [], ser = [], h = 92, gap = 44, T0 = 30;
+      const marks = [["2021-11-10", "Đỉnh"], ["2022-11-21", "Đáy"], ["2025-10-06", "Đỉnh"]];
+      G.forEach((p, i) => {
+        grid.push({ left: 34, right: 52, top: T0 + i * (h + gap), height: h });
+        xA.push({ type: "category", data: Hh.t, gridIndex: i, axisLabel: { show: i === 2, color: ink3, interval: 0, formatter: yr }, axisTick: { show: false }, axisLine: { lineStyle: { color: line } } });
+        yA.push({ gridIndex: i, min: 0, max: 100, interval: 50, axisLabel: { color: ink3, fontSize: 10 }, splitLine: { lineStyle: { color: line } }, name: p[1], nameLocation: "end", nameGap: 8, nameTextStyle: { color: p[2], fontWeight: 600, align: "left" } });
+        yA.push({ gridIndex: i, type: "log", position: "right", min: 10000, max: 150000, axisLabel: { color: ink3, fontSize: 10, formatter: (v) => v >= 1000 ? v / 1000 + "K" : v }, splitLine: { show: false } });
+        ser.push({ type: "line", xAxisIndex: i, yAxisIndex: 2 * i + 1, data: Hh.px, showSymbol: false, lineStyle: { color: ink3, width: 1, opacity: .7 }, z: 1, silent: true });
+        const last = Hh[p[0]].length - 1;
+        ser.push({ type: "line", xAxisIndex: i, yAxisIndex: 2 * i, data: Hh[p[0]], showSymbol: false, lineStyle: { color: p[2], width: 1.8 }, areaStyle: { color: p[2], opacity: .08 }, z: 3,
+          markLine: { silent: true, symbol: "none", label: { show: i === 2, position: "start", color: ink3, fontSize: 10, formatter: (x) => x.name }, lineStyle: { color: ink3, type: "dashed", opacity: .6 }, data: marks.map((m) => ({ xAxis: m[0], name: m[1] })) },
+          markPoint: { symbol: "circle", symbolSize: 8, itemStyle: { color: p[2] }, label: { show: true, position: "right", color: p[2], fontWeight: 700, formatter: (x) => Math.round(x.value) }, data: [{ coord: [Hh.t[last], Hh[p[0]][last]], value: Hh[p[0]][last] }] } });
+      });
+      if (CTX.c2) CTX.c2.dispose();
+      CTX.c2 = ec.init($("ctx-c2"), null, { renderer: "svg" });
+      CTX.c2.setOption({ animation: false, grid, xAxis: xA, yAxis: yA, series: ser,
+        tooltip: { trigger: "axis", formatter: (ps) => { const i = ps[0].dataIndex; return `${ctxDate(Hh.t[i])}<br>BTC ${vnN(Hh.px[i])} $<br>Vĩ mô ${vnN(Hh.macro[i])} · Cá mập ${vnN(Hh.whale[i])} · Định giá ${vnN(Hh.value[i])}`; } } });
+      if (!CTX.rs) { CTX.rs = true; window.addEventListener("resize", () => { try { CTX.c1 && CTX.c1.resize(); CTX.c2 && CTX.c2.resize(); } catch (e) { /* bỏ qua */ } }); }
+    }).catch((e) => { CTX.drawn = false; const x = $("ctx-c1"); if (x) x.innerHTML = `<div class="msg">${esc(e.message)}</div>`; });
+  }
+  function ltRender() {      // tab Dài hạn: định giá on-chain
+    const C = CTX.C, el = $("lt-val"); if (!el) return;
+    if (!C || !C.scores) { el.innerHTML = `<p class="loading">Chưa có số liệu.</p>`; return; }
+    const v = C.scores.value, L = C.horizons.long, st = ctxState.value[ctxB(v.score)];
+    el.innerHTML = `<div class="ctx-two"><div class="ctx-card" style="border-left:5px solid var(--${L.tone === "neutral" ? "z2" : L.tone})"><div class="note" style="margin:0">${esc(L.title)}</div>
+        <div style="font-size:1.4rem;font-weight:700" class="tone-${L.tone}">${esc(L.label)}</div><div style="font-size:.88rem;color:var(--ink-2)">${esc(L.why)}</div>${L.stat ? `<div class="note" style="margin-top:4px">${esc(L.stat)}</div>` : ""}
+        <div style="margin-top:10px;font-size:.88rem">Điểm định giá <b class="tone-${st[1]}">${v.score}/100 · ${st[0]}</b> · giá ÷ trung bình 200 tuần <b>${esc(L.ratio || "–")}</b></div></div>
+      ${ctxVerifyCard("value", C)}</div><div style="margin-top:12px">${ctxItems("value", C)}</div>
+      <p class="note">Định giá cho biết rẻ hay đắt cho tầm 1–2 năm, không cho biết giá vài tuần tới. MVRV = giá ÷ giá vốn trung bình của mọi BTC (giá lần cuối di chuyển); dưới 1 nghĩa là đa số người nắm giữ đang lỗ.</p>`;
+  }
+  async function ctxLoad() {
+    try {
+      const r = await fetch("data/context.json?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      CTX.C = await r.json();
+    } catch (e) { CTX.C = null; }
+    try { ctxRender(); } catch (e) { console.error(e); $("ctx-box").innerHTML = `<div class="msg">Lỗi hiển thị bối cảnh: ${esc(e.message)}</div>`; }
+    try { ltRender(); } catch (e) { console.error(e); }
+  }
   /* ---------- Tab ---------- */
   const TABS = ["overview", "crowd", "money", "macro", "cycle", "events", "method"];
   /* ---------- Dòng tiền ETF BTC ---------- */
@@ -2317,6 +2597,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     }).catch((e) => { el.innerHTML = `<div class="msg">${esc(e.message)}</div>`; });
   }
   function showTab(t, scroll) {
+    if (t === "events") t = "macro";
     if (!TABS.includes(t)) t = "overview";
     document.querySelectorAll("#tabs button").forEach((b) => { const on = b.dataset.tab === t; b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false"); });
     document.querySelectorAll(".tabpanel").forEach((p) => { p.hidden = p.dataset.panel !== t; });
@@ -2325,6 +2606,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     if (scroll) window.scrollTo(0, 0);
     if (t === "money" && typeof hlRefresh === "function" && Date.now() - (HL.posT || 0) > 5 * 60e3) setTimeout(hlRefresh, 300);
     if (t === "cycle") setTimeout(() => { if (CY.pending) cyDraw(); else try { CY.c1 && CY.c1.resize(); CY.c2 && CY.c2.resize(); CY.place && CY.place(); } catch (e) { /* bỏ qua */ } }, 60);
+    if (t === "overview") setTimeout(() => { try { CTX.c1 && CTX.c1.resize(); CTX.c2 && CTX.c2.resize(); } catch (e) { /* bỏ qua */ } }, 60);
     if (t === "money") setTimeout(() => { if (ETF.pending) etfDraw(); else if (ETF.chart) try { ETF.chart.resize(); } catch (e) { /* bỏ qua */ } }, 60);
   }
   document.querySelectorAll("#tabs button").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab, true)));
@@ -2332,6 +2614,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   $("next-ev").style.cursor = "pointer";
   $("next-ev").addEventListener("click", () => showTab("macro", true));
   showTab(TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : store.get("tamly-tab", "overview"), false);
+  ctxLoad();
 
   function renderVerdict(ci) {
     if (ci.value == null) { try { renderOverview(ci, null); } catch (e) { console.error(e); } $("headline").textContent = "Chưa đủ dữ liệu để kết luận"; $("lede").textContent = "Hầu hết nguồn không tải được. Kiểm tra kết nối mạng rồi bấm Làm mới dữ liệu."; $("points").innerHTML = ""; return; }
@@ -2438,6 +2721,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     if (aiOn() && S.mode !== "server") runAI();
   }
   $("refresh").addEventListener("click", load);
+  $("refresh").addEventListener("click", ctxLoad);
 
   /* ---------- thanh lý trực tiếp ---------- */
   /* ---------- Thanh lý trực tiếp, gộp nhiều sàn ---------- */

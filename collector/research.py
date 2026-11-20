@@ -1,7 +1,7 @@
 """Nghiên cứu dự báo xu hướng chính BTC: dựng bảng chỉ số theo ngày (không nhìn trước tương lai), sàng lọc từng chỉ số
 và từng nhóm bằng kiểm tra cuốn chiếu (walk-forward), so với mốc "lúc nào cũng đoán tăng".
 
-Chạy riêng bằng workflow "Nghiên cứu dự báo" (bấm tay hoặc mỗi tuần), ghi data/research.json và data/research_features.csv.
+Chạy riêng bằng workflow "Nghiên cứu dự báo" (bấm tay hoặc mỗi ngày, kèm collector/context.py), ghi data/research.json và data/research_features.csv.
 Không bao giờ làm hỏng lần chạy: nguồn nào lỗi thì bỏ nhóm đó và ghi lỗi.
 
 Quy tắc chống nhìn trước: mỗi chỉ số được dời theo độ trễ công bố thật (FRED ngày +1, số dư Fed tuần +2, M2 tháng +35,
@@ -243,8 +243,7 @@ def build() -> tuple[pd.DataFrame, pd.Series]:
     # Tâm lý
     fg = S(safe("fng", ht.fng_hist))
     add("mood", "fng", "Fear & Greed (7 ngày)", daily(fg.rolling(7).mean(), idx, 1, 3))
-    tr = S(ht.trends_daily("global", 0))
-    add("mood", "trends", "Google: \"buy bitcoin\"", daily(tr, idx, 0, 10))
+    # Google Trends đã bỏ: mỗi lần tải, Google chuẩn hoá lại cả chuỗi 5 năm theo đỉnh mới nhất, nên số cũ "biết trước" tương lai.
 
     X = pd.DataFrame({k: v[2] for k, v in FEAT.items()}, index=idx)
     return X, px

@@ -220,6 +220,36 @@ def summary_lines(latest: dict) -> list:
     return L
 
 
+def load_ctx() -> dict:
+    """Bối cảnh thị trường do collector/context.py tính mỗi sáng (data/context.json)."""
+    try:
+        C = json.load(open(os.path.join(os.path.dirname(STATE_FILE), "context.json"), encoding="utf-8"))
+        return C if C.get("scores") else {}
+    except (OSError, ValueError):
+        return {}
+
+
+CTX_STATE = {
+    "macro": ["tiền đắt, gió ngược", "hơi thắt chặt", "trung tính", "nới lỏng, gió thuận", "rất thuận lợi"],
+    "whale": ["bán mạnh", "đang bán", "trung tính", "đang gom", "gom mạnh"],
+    "value": ["rẻ", "hơi rẻ", "trung bình", "hơi đắt", "đắt"],
+}
+
+
+def ctx_lines(C: dict) -> list:
+    if not C:
+        return []
+    b = lambda v: min(4, max(0, int(v // 20)))  # noqa: E731
+    H, S, P = C["horizons"], C["scores"], C["phase"]
+    L = [f"• 1–3 tháng tới: <b>{html.escape(H['short']['label'])}</b> ({html.escape(H['short']['why'].rstrip('.').lower())})",
+         f"• 1–2 năm tới: <b>{html.escape(H['long']['label'])}</b>",
+         f"• Vĩ mô {S['macro']['score']}/100 ({CTX_STATE['macro'][b(S['macro']['score'])]}) · Cá mập {S['whale']['score']} ({CTX_STATE['whale'][b(S['whale']['score'])]})"
+         f" · Định giá {S['value']['score']} ({CTX_STATE['value'][b(S['value']['score'])]})",
+         f"• Tâm lý đám đông: pha <b>{html.escape(P['name'])}</b>",
+         f"• Dấu hiệu xu hướng đổi chiều đi lên: <b>{C['n_ok']}/3</b> (" + ", ".join(("✅ " if x["ok"] else "▫️ ") + html.escape(x["name"]) for x in C["signals"]) + ")"]
+    return L
+
+
 ZONES = [(20, "Sợ hãi cực độ"), (40, "Sợ hãi"), (60, "Trung tính"), (80, "Tham lam"), (101, "Tham lam cực độ")]
 
 
@@ -247,8 +277,8 @@ def run(latest: dict) -> dict:
     def recently(key: str, hours: float) -> bool:
         return time.time() - st["sent"].get(key, 0) < hours * 3600
 
-    # 1) vùng cực đoan của chỉ số tổng hợp
-    if ci is not None:
+    # 1) vùng cực đoan của chỉ số tâm lý tổng hợp cũ: đã tắt (trang Tổng quan nay dùng Bối cảnh thị trường)
+    if False and ci is not None:
         prev = st["bands"].get("ci")
         b = ci_band(ci, prev)
         st["bands"]["ci"] = b
@@ -264,7 +294,7 @@ def run(latest: dict) -> dict:
             msgs.append(("market", f"{head}\n\n" + "\n".join(summary_lines(latest)) + f"\n\n{tip}"))
 
     # 2) thay đổi mạnh trong 24 giờ
-    if ci is not None and rows:
+    if False and ci is not None and rows:      # đã tắt cùng chỉ số tổng hợp cũ
         ref = [v for t, v in rows if t <= time.time() - 23 * 3600]
         if ref and abs(ci - ref[-1]) >= 15 and not recently("move", 12):
             d = ci - ref[-1]
@@ -334,7 +364,7 @@ def run(latest: dict) -> dict:
 
     # 3) funding bất thường
     fd = M.get("funding")
-    if fd:
+    if False and fd:                           # đã tắt: cảnh báo lẻ, funding nằm trong tab Cá mập & phái sinh
         prev = st["bands"].get("funding")
         b = fund_band(fd["pct"], prev)
         st["bands"]["funding"] = b
@@ -342,6 +372,24 @@ def run(latest: dict) -> dict:
             txt = ("Phe long đang rất đông và trả phí cao. Nếu giá giảm, các lệnh long dễ bị thanh lý dây chuyền."
                    if b == "hi" else "Phe short đang rất đông. Nếu giá tăng, short có thể bị ép mua lại (short squeeze).")
             msgs.append(("market:funding", f"⚠️ Funding BTC ở phân vị <b>{vn(fd['pct'])}%</b> của 90 ngày ({vn(fd['last'] * 100, 4, True)}% mỗi 8 giờ, {fd['src']})\n\n{txt}"))
+
+    # 3b) Bối cảnh thị trường: một dấu hiệu đổi chiều bật/tắt, hoặc chuyển pha tâm lý (số tính mỗi sáng)
+    C = load_ctx()
+    if C:
+        old = st.get("ctx") or {}
+        now_sig = {x["key"]: bool(x["ok"]) for x in C["signals"]}
+        now_ph = C["phase"]["key"]
+        if old and old.get("asof") != C["asof"]:
+            ch = []
+            for x in C["signals"]:
+                if x["key"] in old.get("sig", {}) and old["sig"][x["key"]] != now_sig[x["key"]]:
+                    ch.append(f"{'✅ Bật' if now_sig[x['key']] else '↩️ Tắt'}: <b>{html.escape(x['name'])}</b> ({html.escape(x['now'])})")
+            if old.get("phase") and old["phase"] != now_ph:
+                pn = C["phase"]["names"]
+                ch.append(f"🔄 Tâm lý đám đông chuyển pha: {html.escape(pn[old['phase']][0])} → <b>{html.escape(pn[now_ph][0])}</b>. {html.escape(pn[now_ph][1])}")
+            if ch:
+                msgs.append(("ctx", "🧭 <b>Bối cảnh thị trường thay đổi</b>\n" + "\n".join(ch) + "\n\n" + "\n".join(ctx_lines(C))))
+        st["ctx"] = {"asof": C["asof"], "sig": now_sig, "phase": now_ph}
 
     # 4) sự kiện vĩ mô cấp 1 trong 3 giờ tới
     try:
@@ -374,18 +422,23 @@ def run(latest: dict) -> dict:
 
     # 6) bản tin buổi sáng
     if vnow.hour >= 7 and st.get("brief_day") != vday:
-        L = [f"☀️ <b>Bản tin tâm lý crypto {vnow:%d/%m}</b>"]
-        if ci is not None:
-            ref = [v for t, v in rows if t <= time.time() - 23 * 3600]
-            L.append(f"Chỉ số tổng hợp: <b>{ci}/100 ({zone(ci)})</b>" + (f", {vn(ci - ref[-1], 0, True)} điểm so với hôm qua" if ref else ""))
-        L += summary_lines(latest)
+        L = [f"☀️ <b>Bản tin thị trường {vnow:%d/%m}</b>"]
+        if M.get("btc"):
+            L.append(f"BTC {vn(M['btc']['price'])} $" + (f" (24h {vn(M['btc']['ch24'], 1, True)}%)" if M["btc"].get("ch24") is not None else ""))
+        cl = ctx_lines(C)
+        if cl:
+            L.append("\n<b>Bối cảnh</b>" + (f" (số liệu đến {C['asof'][8:10]}/{C['asof'][5:7]})" if C.get("asof") else ""))
+            L += cl
+        el = etf_line(latest)
+        if el:
+            L.append("• " + el)
         today = [e for e in cal if e["t"].astimezone(VN).strftime("%Y-%m-%d") == vday and e["t"] > now]
         if today:
             L.append("\nSự kiện cấp 1 hôm nay: " + "; ".join(f"{e['vi']} lúc {e['t'].astimezone(VN):%H:%M}" for e in today))
         msgs.append(("brief", "\n".join(L)))
 
     if token and chat and not st.get("welcomed"):
-        msgs.insert(0, ("welcome", "✅ Đã kết nối cảnh báo của Sentiment Analysis.\nBạn sẽ nhận: bản tin mỗi sáng (khoảng 7–8 giờ), cảnh báo khi tâm lý vào vùng cực đoan, funding bất thường, và nhắc trước các số liệu vĩ mô lớn của Mỹ."))
+        msgs.insert(0, ("welcome", "✅ Đã kết nối cảnh báo của Sentiment Analysis.\nBạn sẽ nhận: bản tin mỗi sáng (khoảng 7–8 giờ), báo khi bối cảnh thị trường đổi (dấu hiệu đổi chiều bật/tắt, chuyển pha tâm lý), thanh lý dây chuyền, dòng tiền ETF bất thường, và nhắc trước các số liệu vĩ mô lớn của Mỹ."))
 
     status = {"configured": bool(token and chat), "sent": [], "skipped": []}
     for kind, text in msgs:
