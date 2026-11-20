@@ -174,6 +174,33 @@ def summarize(days: list, funds: dict) -> dict:
             "cum": round(sum(flows) / 1e3, 2), "n_days": len(days)}
 
 
+def backup(data: dict, now: float) -> None:
+    """TFTC chậm đăng phiên mới: lấy tạm tổng dòng tiền (tính bằng BTC) từ BGeometrics, đổi ra USD theo giá đóng cửa ngày.
+    Khi TFTC có số, lần tải TFTC sau sẽ ghi đè các ngày này."""
+    days = data["days"]
+    last = datetime.strptime(days[-1][0], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    miss, t = [], last + timedelta(days=1)
+    while t.timestamp() + 33 * 3600 < now:
+        if t.weekday() < 5:
+            miss.append(t.strftime("%Y-%m-%d"))
+        t += timedelta(days=1)
+    data["backup"] = [r[0] for r in days if r[0] in (data.get("backup") or [])]
+    if not miss or now - data.get("bg_t", 0) < 6 * 3600:
+        return
+    data["bg_t"] = now
+    r = requests.get("https://bitcoin-data.com/v1/etf-flow-btc", params={"startday": miss[0]}, headers={"User-Agent": UA}, timeout=40)
+    r.raise_for_status()
+    rows = r.json()
+    rows = rows if isinstance(rows, list) else [rows]
+    px = _prices()
+    for row in rows:
+        d = (row.get("d") or "")[:10]
+        if d in miss and px.get(d) and row.get("etfFlow") not in (None, ""):
+            days.append([d, round(float(row["etfFlow"]) * px[d] / 1e6, 1), None, round(px[d])])
+            data["backup"].append(d)
+    days.sort(key=lambda r: r[0])
+
+
 def run() -> dict:
     old = _load()
     now = time.time()
@@ -188,6 +215,10 @@ def run() -> dict:
             data = dict(old)
     if not data.get("days"):
         return {"error": err or "chưa có dữ liệu"}
+    try:
+        backup(data, now)
+    except Exception as ex:  # noqa: BLE001
+        data["backup_err"] = str(ex)[:200]
     data["summary"] = summarize(data["days"], data.get("funds") or {})
     data["hist"] = history(data["days"])
     data["err"] = err
@@ -195,5 +226,5 @@ def run() -> dict:
     data["source"] = "The Commoner Bitcoin ETF Tracker by TFTC, tftc.io/bitcoin-etf-flows (CC BY 4.0)"
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
-    out = {k: data.get(k) for k in ("summary", "hist", "through", "src_time", "via", "err", "warn", "fetched")}
+    out = {k: data.get(k) for k in ("summary", "hist", "through", "src_time", "via", "err", "warn", "fetched", "backup", "backup_err")}
     return out

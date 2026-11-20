@@ -457,7 +457,7 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
     <section class="panel">
       <h2>Dòng tiền ETF Bitcoin ở Mỹ: quỹ lớn đang mua hay bán</h2>
       <div id="etf-box"><p class="loading">Đang tải…</p></div>
-      <p class="note">Các quỹ ETF Bitcoin giao ngay (IBIT của BlackRock, FBTC của Fidelity, GBTC…) là kênh để tổ chức, quỹ hưu trí và nhà đầu tư qua tài khoản chứng khoán mua BTC; tiền vào ròng thì quỹ phải mua BTC thật, tiền ra ròng thì quỹ bán. Số mỗi phiên có sau khi thị trường Mỹ đóng cửa, tức sáng hôm sau giờ Việt Nam; thứ Bảy, Chủ nhật và ngày lễ Mỹ không có phiên. Hợp để xem xu hướng vài ngày đến vài tuần, không dùng để vào lệnh trong ngày. Nguồn: <a href="https://www.tftc.io/bitcoin-etf-flows" target="_blank" rel="noopener">The Commoner Bitcoin ETF Tracker của TFTC</a> (CC BY 4.0), tổng hợp từ SoSoValue và số công bố của các quỹ.</p>
+      <p class="note">Các quỹ ETF Bitcoin giao ngay (IBIT của BlackRock, FBTC của Fidelity, GBTC…) là kênh để tổ chức, quỹ hưu trí và nhà đầu tư qua tài khoản chứng khoán mua BTC; tiền vào ròng thì quỹ phải mua BTC thật, tiền ra ròng thì quỹ bán. Số mỗi phiên có sau khi thị trường Mỹ đóng cửa, tức sáng hôm sau giờ Việt Nam; thứ Bảy, Chủ nhật và ngày lễ Mỹ không có phiên. Hợp để xem xu hướng vài ngày đến vài tuần, không dùng để vào lệnh trong ngày. Nguồn: <a href="https://www.tftc.io/bitcoin-etf-flows" target="_blank" rel="noopener">The Commoner Bitcoin ETF Tracker của TFTC</a> (CC BY 4.0), tổng hợp từ SoSoValue và số công bố của các quỹ; khi TFTC chậm thì lấy tạm từ BGeometrics.</p>
     </section>
     <section class="panel">
       <h2>Thanh lý: phe nào đang bị ép</h2>
@@ -2278,7 +2278,9 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const miss = [];
     for (let t = Date.parse(E.date + "T00:00:00Z") + 864e5; t + 33 * 3600e3 < Date.now(); t += 864e5) { const wd = new Date(t).getUTCDay(); if (wd > 0 && wd < 6) miss.push(new Date(t).toISOString().slice(0, 10)); }
     const stale = miss.length ? `<div class="msg" style="margin:0 0 10px">Nguồn TFTC chưa công bố số của phiên ${miss.map(ddmm).join(", ")} (bình thường có vào sáng hôm sau giờ Việt Nam). Hệ thống vẫn tự kiểm tra lại 2 giờ một lần${D.updated ? `, lần gần nhất lúc ${fmtTime(Date.parse(D.updated))}` : ""}; có số là trang tự cập nhật. Nếu hôm đó là ngày lễ ở Mỹ thì không có phiên.</div>` : "";
-    box.innerHTML = stale + v + card;
+    const bk = (D.backup || []).filter((x) => D.days.some((r) => r[0] === x));
+    const bkNote = bk.length ? `<div class="msg" style="margin:0 0 10px">Phiên ${bk.map(ddmm).join(", ")} lấy tạm từ BGeometrics (tổng BTC vào/ra nhân giá đóng cửa ngày, chưa có chi tiết từng quỹ) vì TFTC chưa đăng; khi TFTC có số sẽ tự thay.</div>` : "";
+    box.innerHTML = stale + bkNote + v + card;
     box.querySelectorAll(".etf-rg button").forEach((b) => b.addEventListener("click", () => { ETF.range = b.dataset.r; store.set("tamly-etf-range", ETF.range); box.querySelectorAll(".etf-rg button").forEach((x) => x.classList.toggle("on", x === b)); etfDraw(); }));
     etfDraw();
   }
