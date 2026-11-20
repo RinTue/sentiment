@@ -465,6 +465,18 @@ header.top .sub { font-size: .76rem; }
 .ctx-kpi { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; }
 .ctx-kpi .ctx-card .v { font-size: 1.45rem; font-weight: 700; margin: 4px 0 2px; }
 @media (max-width: 860px) { .ctx-kpi { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+.fl-grid { display: grid; grid-template-columns: 1.15fr .9fr 1fr; gap: 22px; margin-top: 10px; }
+.fl-grid h4 { margin: 0 0 8px; font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+.fl-row { display: grid; grid-template-columns: minmax(0,1.3fr) minmax(60px,1fr) 58px; gap: 8px; align-items: center; padding: 5px 0; font-size: .84rem; border-bottom: 1px solid var(--line); }
+.fl-row small, .fl-io small { display: block; font-size: .7rem; color: var(--ink-3); }
+.fl-row > b { text-align: right; }
+.fl-bar { position: relative; height: 10px; background: var(--panel-2); border-radius: 3px; }
+.fl-bar::after { content: ""; position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--ink-3); }
+.fl-bar i { position: absolute; top: 0; bottom: 0; border-radius: 2px; } .fl-bar i.u { background: var(--good); } .fl-bar i.d { background: var(--bad); }
+.fl-io { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: .86rem; }
+.fl-back { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--panel-2); }
+.fl-chk { font-size: .84rem; padding: 3px 0; color: var(--ink-3); } .fl-chk.on { color: var(--good); font-weight: 600; }
+@media (max-width: 860px) { .fl-grid { grid-template-columns: 1fr; gap: 16px; } }
 @media (max-width: 600px) { .tk { margin-inline: -16px; } header.top h1 { font-size: 1rem; }
   .ctx-card, .ctx-sec, details { overflow-x: auto; } .ctx-hm td, .ctx-tbl td, .ctx-tbl th { padding: 5px 4px; } }
 </style>
@@ -2737,17 +2749,9 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const ev14 = ev.filter((e) => days(e.d) >= 0 && days(e.d) <= 14).sort((a, b) => a.d < b.d ? -1 : 1);
     const cEl = $("ctx-cal");
     if (cEl) cEl.innerHTML = `<div class="ctx-lbl">Lịch 14 ngày tới<span class="t">tự động</span></div>` + (ev14.length ? ev14.map((e) => `<div class="ctx-cal"><b>${e.d.slice(8)}/${e.d.slice(5, 7)}</b><div>${e.t}<div class="note" style="margin:0">${e.s}</div></div><span class="ctx-exlvl" style="color:${e.k[1]};background:${e.k[2]}">${e.k[0]}</span></div>`).join("") : `<p class="note">Không có sự kiện lớn trong 14 ngày tới.</p>`) + `<p class="note">Lịch đầy đủ ở tab <a href="#macro">Vĩ mô &amp; lịch</a>.</p>`;
-    // Dải toàn thị trường crypto
+    // Dòng tiền đang đi đâu (thay dải toàn thị trường)
     const el = $("ctx-ev");
-    if (el) {
-      el.hidden = !(M && M.head);
-      if (M && M.head) el.innerHTML = `<div class="ctx-lbl">Toàn thị trường crypto<span class="t">${esc({ coingecko: "CoinGecko", coinpaprika: "CoinPaprika" }[M.src] || M.src)} · ${fmtTime(Date.parse(D.updated))}</span></div>
-        <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-top:8px;font-size:.86rem"><span class="ctx-exlvl" style="color:${M.tone === "bad" ? "var(--bad)" : M.tone === "good" ? "var(--good)" : "var(--warn)"};background:${M.tone === "bad" ? "var(--bad-bg)" : M.tone === "good" ? "var(--good-bg)" : "var(--warn-bg)"}">${esc(M.head.replace(/\.$/, ""))}</span>
-        <span class="note" style="margin:0">7 ngày <b style="color:var(--ink)">${M.breadth.c7.down}/${M.breadth.c7.n}</b> đồng giảm</span>${M.ch30 != null ? `<span class="note" style="margin:0">Vốn hoá 30 ngày ${mwPct(M.ch30)}</span>` : ""}
-        ${M.st_dom != null ? `<span class="note" style="margin:0">Tỷ trọng stablecoin <b style="color:var(--ink)">${vnN(M.st_dom, 1)}%</b>${M.st_dom30 != null ? ` (30 ngày trước ${vnN(M.st_dom30, 1)}%)` : ""}</span>` : ""}
-        ${(M.sectors || []).length ? `<span class="note" style="margin:0">Mạnh nhất: ${esc(M.sectors[0].name)} ${mwPct(M.sectors[0].c30)} · Yếu nhất: ${esc(M.sectors[M.sectors.length - 1].name)} ${mwPct(M.sectors[M.sectors.length - 1].c30)}</span>` : ""}
-        <a href="#money" style="font-size:.84rem">xem</a></div>`;
-    }
+    if (el) { const h = flowHtml(M, W); el.hidden = !h; if (h) el.innerHTML = h; }
     // Hôm nay cần chú ý
     const tEl = $("ctx-today");
     if (tEl && C) {
@@ -2760,6 +2764,53 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       if (C.exit && C.exit.active && C.exit.k >= 1) pts.push(`<b class="tone-bad">dấu hiệu chốt lời ${C.exit.k}/4</b>`);
       tEl.innerHTML = `<b class="k">Hôm nay cần chú ý</b><span>${pts.join(" · ")}.</span>`;
     }
+  }
+  /* ---------- Dòng tiền đang đi đâu: giữa các thị trường, vào/ra crypto, bên trong crypto (30 ngày) ---------- */
+  function flowHtml(M, W) {
+    const L = S.sv && S.sv.L; if (!M && !(W && W.items)) return "";
+    const wi = (k) => W && W.items ? W.items.find((x) => x.key === k) : null;
+    const bar = (x, mx) => { const w = Math.min(50, Math.abs(x) / mx * 50); return `<span class="fl-bar"><i class="${x < 0 ? "d" : "u"}" style="${x < 0 ? `right:50%` : `left:50%`};width:${w}%"></i></span>`; };
+    const row = (n, x, mx, s) => `<div class="fl-row"><span>${n}${s ? `<small>${s}</small>` : ""}</span>${bar(x, mx)}${mwPct(x)}</div>`;
+    // 1. Giữa các thị trường
+    const mk = [];
+    for (const [k, n] of [["spx", "Chứng khoán Mỹ (S&P 500)"], ["ndx", "Công nghệ Mỹ (Nasdaq)"], ["nikkei", "Chứng khoán Nhật"], ["gold", "Vàng"], ["oil", "Dầu"], ["usd", "Đô la Mỹ (USD)"]]) { const x = wi(k); if (x && x.c30 != null) mk.push([n, x.c30, ""]); }
+    const y = wi("us10"); if (y && y.c30 != null) mk.push(["Trái phiếu Mỹ 10 năm", -8 * y.c30, `ước tính từ lợi suất ${y.c30 > 0 ? "+" : ""}${vnN(y.c30, 2)} điểm %`]);
+    if (M && M.ch30 != null) mk.push(["Crypto (tổng vốn hoá)", M.ch30, ""]);
+    mk.sort((p, q) => q[1] - p[1]);
+    const mx1 = Math.max(5, ...mk.map((r) => Math.abs(r[1])));
+    // 2. Vào / ra crypto
+    const ST = L && L.market && L.market.stable, E = L && L.etf && L.etf.summary, P = L && L.market && L.market.premium;
+    const io = [], back = [];
+    if (ST && ST.ch30 != null) { io.push(["Lượng stablecoin", `${ST.ch30 > 0 ? "+" : ""}${vnN(ST.ch30, 1)}%`, ST.ch30 >= 0, ST.ch30 >= 0 ? "tiền mới vào chờ mua" : "tiền rút hẳn khỏi crypto"]); back.push(["Stablecoin tăng lại (30 ngày)", ST.ch30 > 0]); }
+    if (E && E.d30 != null) { io.push(["Quỹ ETF Bitcoin", `${E.d30 > 0 ? "+" : ""}${vnN(E.d30 / 1000, 2)} tỷ $`, E.d30 >= 0, E.d30 >= 0 ? "quỹ lớn đang mua" : "quỹ lớn đang bán"]); back.push(["ETF có tiền vào (5 phiên)", E.s5 > 0]); }
+    const pv = P ? (P.avg7d != null ? P.avg7d : P.last) : null;
+    if (pv != null) { io.push(["Coinbase Premium 7 ngày", `${vnN(pv, 2)}%`, pv >= 0, pv >= 0 ? "người Mỹ mua" : "người Mỹ bán"]); back.push(["Coinbase Premium dương", pv > 0]); }
+    const outN = io.filter((r) => !r[2]).length, nb = back.filter((r) => r[1]).length;
+    // 3. Bên trong crypto
+    const sec = (M && M.sectors || []).slice().sort((p, q) => q.c30 - p.c30);
+    const inn = [];
+    if (M && M.btc_c30 != null) inn.push(["Bitcoin", M.btc_c30, ""]);
+    if (M && M.alt_ch30 != null) inn.push(["Altcoin (gộp)", M.alt_ch30, ""]);
+    for (const x of sec) inn.push([x.name, x.c30, ""]);
+    const mx3 = Math.max(5, ...inn.map((r) => Math.abs(r[1])));
+    // Kết luận
+    const parts = [];
+    if (io.length) parts.push(outN >= 2 ? "Tiền đang rút khỏi crypto" : outN === 0 ? "Tiền đang vào crypto" : "Tiền vào/ra crypto lẫn lộn");
+    const u = wi("usd"), sp = wi("spx");
+    if (u && y && sp && u.c30 > 0 && y.c30 < 0 && sp.c30 < 0) parts.push("về tiền mặt USD và trái phiếu Mỹ");
+    else if (mk.length) parts.push(`mạnh nhất 30 ngày: ${mk[0][0].replace(/ \(.*\)$/, "")}`);
+    let inside = "";
+    if (M && M.btc_c30 != null && M.alt_ch30 != null) { const d = M.alt_ch30 - M.btc_c30; inside = d > 5 ? "Trong crypto, tiền nghiêng sang altcoin." : d < -5 ? "Trong crypto, tiền nghiêng về BTC (altcoin yếu hơn rõ)." : "Trong crypto, BTC và altcoin đi như nhau: chưa có nhóm nào hút tiền."; }
+    const tone = outN >= 2 ? "bad" : outN === 0 ? "good" : "warn";
+    return `<div class="ctx-lbl">Dòng tiền đang đi đâu<span class="t">30 ngày · tự động</span></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0 2px"><span class="ctx-exlvl" style="color:var(--${tone});background:var(--${tone}-bg)">${esc(parts.join(", "))}</span><span class="note" style="margin:0">${esc(inside)}</span></div>
+      <div class="fl-grid">
+        <div><h4>Giữa các thị trường</h4>${mk.map((r) => row(r[0], r[1], mx1, r[2])).join("")}</div>
+        <div><h4>Vào / ra crypto</h4>${io.map((r) => `<div class="fl-io"><span>${r[0]}<small>${r[3]}</small></span><b class="tone-${r[2] ? "good" : "bad"}">${r[2] ? "▲" : "▼"} ${r[1]}</b></div>`).join("")}
+          <div class="fl-back"><div class="ctx-lbl" style="margin-bottom:6px">Dấu hiệu tiền quay lại<span class="t">${nb} / ${back.length}</span></div>${back.map((r) => `<div class="fl-chk ${r[1] ? "on" : ""}">${r[1] ? "✓" : "✕"} ${r[0]}</div>`).join("")}</div></div>
+        <div><h4>Bên trong crypto</h4>${inn.map((r) => row(r[0], r[1], mx3, r[2])).join("")}${M && M.st_dom != null ? `<p class="note">Tỷ trọng stablecoin ${vnN(M.st_dom, 1)}% (30 ngày trước ${vnN(M.st_dom30, 1)}%): tăng = tiền đứng ngoài chờ.</p>` : ""}</div>
+      </div>
+      <p class="note">Mô tả tiền đã đi đâu trong 30 ngày qua, không phải dự báo. Trái phiếu tính gần đúng từ lợi suất 10 năm (lợi suất giảm = giá trái phiếu tăng). Chi tiết ở tab <a href="#money">Cá mập</a> và <a href="#macro">Vĩ mô</a>.</p>`;
   }
   function tickerRender() {
     const el = $("tk"); if (!el) return;
