@@ -566,11 +566,11 @@ def _toks(t: str) -> set:
 
 BIG_CAT = [   # nhãn cho "Tin lớn 48 giờ": xét theo thứ tự, nhãn đầu tiên khớp được dùng
     ("hack", re.compile(r"\b(hack|hacked|hacker|exploit|stolen|drain|breach|attacker|heist|compromis|outage|halts? withdrawals?|insolven|bankrupt)", re.I)),
-    ("law", re.compile(r"\b(SEC|CFTC|DOJ|regulat|lawsuit|court|judge|sue[sd]?\b|charges?|bill\b|senate|congress|legislat|ban(s|ned)?\b|sanction|MiCA|license|tax)", re.I)),
+    ("law", re.compile(r"\b(SEC|CFTC|DOJ|regulat|lawsuit|court|judge|sue[sd]?\b|charges?|bill\b|senate|congress|legislat|ban(s|ned)?\b|sanction|MiCA|licen[cs]e|charter|tax)", re.I)),
     ("etf", re.compile(r"\b(ETFs?|ETPs?|inflows?|outflows?)\b", re.I)),
     ("macro", re.compile(r"\b(Fed|FOMC|Powell|rate (cut|hike)s?|interest rates?|CPI|inflation|jobs report|payrolls|Treasury|tariff|recession|yields?)\b", re.I)),
     ("corp", re.compile(r"\b(Strategy|MicroStrategy|Saylor|treasury|IPO|acquir|merger|Coinbase|BlackRock|Tesla|Metaplanet|listing|delist|MSCI|stock)", re.I)),
-    ("market", re.compile(r"\b(price|rall(y|ies)|surge|jump|soar|falls?|drops?|plunge|slump|crash|liquidat|record|high|low)\b", re.I)),
+    ("market", re.compile(r"\b(price|rall(y|ies)|surge|jump|soar|falls?|drops?|plunge|slump|crash|liquidat|record|high|low|hovers?|trades?|holds?|steady|slides?|tumbles?|rebounds?)\b", re.I)),
 ]
 
 
