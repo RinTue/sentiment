@@ -1,0 +1,1632 @@
+{
+ "updated": "2026-11-20T05:17:20Z",
+ "test_from": "2019-01-01",
+ "split": "2023-01-01",
+ "groups_name": {
+  "price": "Cấu trúc giá",
+  "liq": "Thanh khoản",
+  "macro": "Vĩ mô",
+  "cot": "Cá mập CME (COT)",
+  "inst": "Tổ chức (ETF, Coinbase)",
+  "micro": "Vi mô và phái sinh",
+  "chain": "On-chain",
+  "mood": "Tâm lý"
+ },
+ "features": [
+  {
+   "key": "dd",
+   "group": "price",
+   "name": "Cách đỉnh cao nhất",
+   "from": "2013-01-01",
+   "now": -0.70034,
+   "rho30_tr": 0.097,
+   "rho30_te": -0.236,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 54.2,
+    "base": 56.2,
+    "edge": -2.0,
+    "skill": -1.2,
+    "acc_strong": 33.7,
+    "share_strong": 6
+   },
+   "rho90_tr": 0.107,
+   "rho90_te": -0.358,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 54.1,
+    "base": 58.4,
+    "edge": -4.3,
+    "skill": -4.5,
+    "acc_strong": 41.1,
+    "share_strong": 46
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "w200",
+   "group": "price",
+   "name": "Giá / trung bình 200 tuần",
+   "from": "2016-10-31",
+   "now": -0.09466,
+   "rho30_tr": -0.024,
+   "rho30_te": -0.273,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 55.9,
+    "base": 56.2,
+    "edge": -0.3,
+    "skill": 0.5,
+    "acc_strong": 57.5,
+    "share_strong": 59
+   },
+   "rho90_tr": -0.098,
+   "rho90_te": -0.432,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 60.3,
+    "base": 58.4,
+    "edge": 1.8,
+    "skill": -0.1,
+    "acc_strong": 62.0,
+    "share_strong": 85
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "d200",
+   "group": "price",
+   "name": "Giá / trung bình 200 ngày",
+   "from": "2013-07-19",
+   "now": -0.15972,
+   "rho30_tr": 0.114,
+   "rho30_te": -0.085,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 56.2,
+    "base": 56.2,
+    "edge": 0.0,
+    "skill": -0.4,
+    "acc_strong": null,
+    "share_strong": 1
+   },
+   "rho90_tr": 0.17,
+   "rho90_te": -0.06,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 55.8,
+    "base": 58.4,
+    "edge": -2.6,
+    "skill": -2.0,
+    "acc_strong": 30.7,
+    "share_strong": 27
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "r90",
+   "group": "price",
+   "name": "Lãi/lỗ 90 ngày",
+   "from": "2013-04-01",
+   "now": -0.23515,
+   "rho30_tr": 0.082,
+   "rho30_te": -0.056,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 56.0,
+    "base": 56.2,
+    "edge": -0.2,
+    "skill": -0.4,
+    "acc_strong": 66.7,
+    "share_strong": 6
+   },
+   "rho90_tr": 0.076,
+   "rho90_te": -0.007,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 58.5,
+    "base": 58.4,
+    "edge": 0.0,
+    "skill": -1.0,
+    "acc_strong": 40.3,
+    "share_strong": 31
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "r365",
+   "group": "price",
+   "name": "Lãi/lỗ 1 năm",
+   "from": "2014-01-01",
+   "now": -0.39019,
+   "rho30_tr": -0.026,
+   "rho30_te": -0.059,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 57.0,
+    "base": 56.2,
+    "edge": 0.8,
+    "skill": 0.2,
+    "acc_strong": 60.5,
+    "share_strong": 23
+   },
+   "rho90_tr": -0.093,
+   "rho90_te": -0.009,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 61.7,
+    "base": 58.4,
+    "edge": 3.3,
+    "skill": -0.0,
+    "acc_strong": 56.2,
+    "share_strong": 48
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "vol30",
+   "group": "price",
+   "name": "Độ biến động 30 ngày",
+   "from": "2013-01-31",
+   "now": 0.02301,
+   "rho30_tr": 0.047,
+   "rho30_te": 0.087,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 55.2,
+    "base": 56.2,
+    "edge": -1.0,
+    "skill": -0.5,
+    "acc_strong": null,
+    "share_strong": 0
+   },
+   "rho90_tr": -0.076,
+   "rho90_te": 0.084,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 57.7,
+    "base": 58.4,
+    "edge": -0.7,
+    "skill": -1.5,
+    "acc_strong": 55.3,
+    "share_strong": 77
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "range60",
+   "group": "price",
+   "name": "Độ rộng biên giá 60 ngày (nén = thấp)",
+   "from": "2013-03-01",
+   "now": 0.33551,
+   "rho30_tr": 0.056,
+   "rho30_te": 0.069,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 56.2,
+    "base": 56.2,
+    "edge": 0.0,
+    "skill": -0.7,
+    "acc_strong": 42.7,
+    "share_strong": 5
+   },
+   "rho90_tr": -0.008,
+   "rho90_te": 0.129,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 58.5,
+    "base": 58.4,
+    "edge": 0.1,
+    "skill": -1.5,
+    "acc_strong": 52.4,
+    "share_strong": 67
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "netliq",
+   "group": "liq",
+   "name": "Thanh khoản ròng của Fed (thay đổi 13 tuần)",
+   "from": "2013-04-02",
+   "now": 0.00833,
+   "rho30_tr": 0.108,
+   "rho30_te": 0.134,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 56.2,
+    "base": 56.2,
+    "edge": 0.0,
+    "skill": -1.1,
+    "acc_strong": 29.0,
+    "share_strong": 5
+   },
+   "rho90_tr": 0.154,
+   "rho90_te": 0.238,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 54.8,
+    "base": 58.4,
+    "edge": -3.7,
+    "skill": 1.4,
+    "acc_strong": 59.9,
+    "share_strong": 27
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "m2",
+   "group": "liq",
+   "name": "Cung tiền M2 Mỹ (thay đổi 6 tháng)",
+   "from": "2013-07-02",
+   "now": 0.02973,
+   "rho30_tr": 0.05,
+   "rho30_te": -0.181,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 55.6,
+    "base": 56.2,
+    "edge": -0.6,
+    "skill": -1.1,
+    "acc_strong": 59.0,
+    "share_strong": 11
+   },
+   "rho90_tr": 0.059,
+   "rho90_te": -0.389,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 48.3,
+    "base": 58.4,
+    "edge": -10.1,
+    "skill": -6.5,
+    "acc_strong": 50.3,
+    "share_strong": 49
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "usd",
+   "group": "liq",
+   "name": "Đồng đô la (thay đổi 3 tháng)",
+   "from": "2013-03-05",
+   "now": 0.03088,
+   "rho30_tr": -0.203,
+   "rho30_te": 0.064,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 53.6,
+    "base": 56.2,
+    "edge": -2.6,
+    "skill": -0.7,
+    "acc_strong": 58.5,
+    "share_strong": 33
+   },
+   "rho90_tr": -0.343,
+   "rho90_te": -0.174,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 58.1,
+    "base": 58.4,
+    "edge": -0.3,
+    "skill": 6.0,
+    "acc_strong": 64.5,
+    "share_strong": 60
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "stable",
+   "group": "liq",
+   "name": "Nguồn stablecoin (thay đổi 30 ngày)",
+   "from": "2017-12-30",
+   "now": -0.05514,
+   "rho30_tr": 0.113,
+   "rho30_te": -0.117,
+   "wf30": {
+    "n": 2638,
+    "from": "2019-08-01",
+    "acc": 52.8,
+    "base": 49.6,
+    "edge": 3.2,
+    "skill": -0.0,
+    "acc_strong": null,
+    "share_strong": 0
+   },
+   "rho90_tr": 0.02,
+   "rho90_te": -0.246,
+   "wf90": {
+    "n": 2517,
+    "from": "2019-10-01",
+    "acc": 40.6,
+    "base": 42.4,
+    "edge": -1.7,
+    "skill": 0.2,
+    "acc_strong": 29.9,
+    "share_strong": 10
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "path",
+   "group": "macro",
+   "name": "Kỳ vọng lãi suất Fed (2 năm − lãi suất Fed)",
+   "from": "2013-01-01",
+   "now": 0.92,
+   "rho30_tr": -0.252,
+   "rho30_te": -0.073,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 59.8,
+    "base": 56.2,
+    "edge": 3.5,
+    "skill": -1.6,
+    "acc_strong": 61.3,
+    "share_strong": 72
+   },
+   "rho90_tr": -0.319,
+   "rho90_te": -0.206,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 64.4,
+    "base": 58.4,
+    "edge": 6.0,
+    "skill": -0.5,
+    "acc_strong": 67.0,
+    "share_strong": 87
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "real",
+   "group": "macro",
+   "name": "Lợi suất thực 10 năm (thay đổi 3 tháng)",
+   "from": "2013-03-05",
+   "now": 0.2,
+   "rho30_tr": -0.087,
+   "rho30_te": 0.105,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 56.2,
+    "base": 56.2,
+    "edge": 0.0,
+    "skill": -0.7,
+    "acc_strong": 22.9,
+    "share_strong": 3
+   },
+   "rho90_tr": -0.197,
+   "rho90_te": -0.111,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 59.2,
+    "base": 58.4,
+    "edge": 0.8,
+    "skill": 2.7,
+    "acc_strong": 59.5,
+    "share_strong": 39
+   },
+   "pass": true,
+   "short": false
+  },
+  {
+   "key": "hy",
+   "group": "macro",
+   "name": "Chênh lệch lãi suất trái phiếu rủi ro",
+   "from": "2023-11-21",
+   "now": 3.47,
+   "rho30_tr": null,
+   "rho30_te": 0.285,
+   "wf30": {
+    "n": 477,
+    "from": "2025-07-01",
+    "acc": 44.9,
+    "base": 45.9,
+    "edge": -1.0,
+    "skill": -0.0,
+    "acc_strong": 45.6,
+    "share_strong": 45
+   },
+   "rho90_tr": null,
+   "rho90_te": 0.41,
+   "wf90": {
+    "n": 355,
+    "from": "2025-09-01",
+    "acc": 40.3,
+    "base": 33.2,
+    "edge": 7.0,
+    "skill": -1.2,
+    "acc_strong": 31.9,
+    "share_strong": 71
+   },
+   "pass": false,
+   "short": true
+  },
+  {
+   "key": "ndx",
+   "group": "macro",
+   "name": "Nasdaq so với trung bình 200 ngày",
+   "from": "2013-05-30",
+   "now": -0.06733,
+   "rho30_tr": 0.135,
+   "rho30_te": -0.354,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 56.4,
+    "base": 56.2,
+    "edge": 0.2,
+    "skill": -0.9,
+    "acc_strong": null,
+    "share_strong": 1
+   },
+   "rho90_tr": 0.172,
+   "rho90_te": -0.422,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 51.4,
+    "base": 58.4,
+    "edge": -7.1,
+    "skill": -6.2,
+    "acc_strong": 42.8,
+    "share_strong": 52
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "vix",
+   "group": "macro",
+   "name": "Chỉ số sợ hãi chứng khoán VIX",
+   "from": "2013-01-01",
+   "now": 24.56,
+   "rho30_tr": -0.073,
+   "rho30_te": 0.173,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 54.9,
+    "base": 56.2,
+    "edge": -1.3,
+    "skill": -1.1,
+    "acc_strong": 55.5,
+    "share_strong": 21
+   },
+   "rho90_tr": -0.088,
+   "rho90_te": 0.095,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 55.3,
+    "base": 58.4,
+    "edge": -3.2,
+    "skill": -5.8,
+    "acc_strong": 48.3,
+    "share_strong": 45
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "curve",
+   "group": "macro",
+   "name": "Đường cong lợi suất 10 năm − 2 năm",
+   "from": "2013-01-01",
+   "now": 0.27,
+   "rho30_tr": 0.067,
+   "rho30_te": -0.164,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 56.2,
+    "base": 56.2,
+    "edge": 0.0,
+    "skill": -1.0,
+    "acc_strong": 29.9,
+    "share_strong": 3
+   },
+   "rho90_tr": 0.078,
+   "rho90_te": -0.41,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 54.9,
+    "base": 58.4,
+    "edge": -3.5,
+    "skill": -3.2,
+    "acc_strong": 43.3,
+    "share_strong": 52
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "cot_lev",
+   "group": "cot",
+   "name": "Quỹ đầu cơ CME: long − short (theo OI)",
+   "from": "2018-04-13",
+   "now": -0.06452,
+   "rho30_tr": 0.066,
+   "rho30_te": 0.113,
+   "wf30": {
+    "n": 2516,
+    "from": "2019-12-01",
+    "acc": 50.4,
+    "base": 53.3,
+    "edge": -2.8,
+    "skill": -2.3,
+    "acc_strong": 47.2,
+    "share_strong": 16
+   },
+   "rho90_tr": 0.137,
+   "rho90_te": 0.166,
+   "wf90": {
+    "n": 2394,
+    "from": "2020-02-01",
+    "acc": 41.1,
+    "base": 44.6,
+    "edge": -3.5,
+    "skill": -4.9,
+    "acc_strong": 49.1,
+    "share_strong": 22
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "cot_am",
+   "group": "cot",
+   "name": "Quỹ quản lý tài sản CME: long − short",
+   "from": "2018-04-13",
+   "now": 0.10153,
+   "rho30_tr": -0.064,
+   "rho30_te": 0.029,
+   "wf30": {
+    "n": 2516,
+    "from": "2019-12-01",
+    "acc": 49.2,
+    "base": 53.3,
+    "edge": -4.1,
+    "skill": -7.1,
+    "acc_strong": 44.2,
+    "share_strong": 20
+   },
+   "rho90_tr": -0.065,
+   "rho90_te": 0.201,
+   "wf90": {
+    "n": 2394,
+    "from": "2020-02-01",
+    "acc": 44.6,
+    "base": 44.6,
+    "edge": -0.0,
+    "skill": -17.4,
+    "acc_strong": 47.7,
+    "share_strong": 38
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "cot_lev4",
+   "group": "cot",
+   "name": "Quỹ đầu cơ CME: thay đổi 4 tuần",
+   "from": "2018-05-11",
+   "now": 0.21709,
+   "rho30_tr": 0.062,
+   "rho30_te": 0.055,
+   "wf30": {
+    "n": 2485,
+    "from": "2020-01-01",
+    "acc": 52.5,
+    "base": 54.1,
+    "edge": -1.6,
+    "skill": -0.6,
+    "acc_strong": 18.4,
+    "share_strong": 4
+   },
+   "rho90_tr": -0.059,
+   "rho90_te": 0.093,
+   "wf90": {
+    "n": 2394,
+    "from": "2020-02-01",
+    "acc": 46.6,
+    "base": 48.1,
+    "edge": -1.5,
+    "skill": -0.5,
+    "acc_strong": 37.8,
+    "share_strong": 9
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "cot_am4",
+   "group": "cot",
+   "name": "Quỹ quản lý tài sản CME: thay đổi 4 tuần",
+   "from": "2018-05-11",
+   "now": -0.07397,
+   "rho30_tr": -0.03,
+   "rho30_te": -0.074,
+   "wf30": {
+    "n": 2485,
+    "from": "2020-01-01",
+    "acc": 51.8,
+    "base": 54.1,
+    "edge": -2.3,
+    "skill": -1.1,
+    "acc_strong": 41.8,
+    "share_strong": 7
+   },
+   "rho90_tr": 0.05,
+   "rho90_te": -0.034,
+   "wf90": {
+    "n": 2394,
+    "from": "2020-02-01",
+    "acc": 49.2,
+    "base": 48.1,
+    "edge": 1.1,
+    "skill": -4.1,
+    "acc_strong": 36.3,
+    "share_strong": 15
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "etf20",
+   "group": "inst",
+   "name": "ETF Bitcoin Mỹ (tổng 20 phiên)",
+   "from": "2024-02-08",
+   "now": -3861.5,
+   "rho30_tr": null,
+   "rho30_te": -0.05,
+   "wf30": {
+    "n": 415,
+    "from": "2025-09-01",
+    "acc": 47.7,
+    "base": 47.2,
+    "edge": 0.5,
+    "skill": -1.7,
+    "acc_strong": 50.3,
+    "share_strong": 35
+   },
+   "rho90_tr": null,
+   "rho90_te": -0.133,
+   "wf90": {
+    "n": 294,
+    "from": "2025-11-01",
+    "acc": 39.8,
+    "base": 28.9,
+    "edge": 10.9,
+    "skill": -18.0,
+    "acc_strong": 34.3,
+    "share_strong": 49
+   },
+   "pass": false,
+   "short": true
+  },
+  {
+   "key": "prem",
+   "group": "inst",
+   "name": "Coinbase Premium (7 ngày)",
+   "from": "2021-09-15",
+   "now": -0.0994,
+   "rho30_tr": -0.099,
+   "rho30_te": 0.022,
+   "wf30": {
+    "n": 1269,
+    "from": "2023-05-01",
+    "acc": 48.3,
+    "base": 48.5,
+    "edge": -0.2,
+    "skill": -0.4,
+    "acc_strong": null,
+    "share_strong": 0
+   },
+   "rho90_tr": -0.357,
+   "rho90_te": -0.069,
+   "wf90": {
+    "n": 1148,
+    "from": "2023-07-01",
+    "acc": 38.9,
+    "base": 40.9,
+    "edge": -2.1,
+    "skill": -0.3,
+    "acc_strong": 15.0,
+    "share_strong": 13
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "funding",
+   "group": "micro",
+   "name": "Funding (7 ngày)",
+   "from": "2022-10-18",
+   "now": 4e-05,
+   "rho30_tr": null,
+   "rho30_te": 0.013,
+   "wf30": {
+    "n": 872,
+    "from": "2024-06-01",
+    "acc": 53.8,
+    "base": 53.8,
+    "edge": 0.0,
+    "skill": -0.4,
+    "acc_strong": 52.0,
+    "share_strong": 79
+   },
+   "rho90_tr": null,
+   "rho90_te": 0.01,
+   "wf90": {
+    "n": 751,
+    "from": "2024-08-01",
+    "acc": 51.7,
+    "base": 51.7,
+    "edge": 0.0,
+    "skill": -3.9,
+    "acc_strong": 51.7,
+    "share_strong": 100
+   },
+   "pass": false,
+   "short": true
+  },
+  {
+   "key": "oi",
+   "group": "micro",
+   "name": "Open interest so với giá (mức đòn bẩy)",
+   "from": "2023-04-29",
+   "now": 0.11862,
+   "rho30_tr": null,
+   "rho30_te": -0.103,
+   "wf30": {
+    "n": 689,
+    "from": "2024-12-01",
+    "acc": 47.8,
+    "base": 50.1,
+    "edge": -2.3,
+    "skill": 0.8,
+    "acc_strong": 45.2,
+    "share_strong": 27
+   },
+   "rho90_tr": null,
+   "rho90_te": -0.262,
+   "wf90": {
+    "n": 567,
+    "from": "2025-02-01",
+    "acc": 42.5,
+    "base": 48.5,
+    "edge": -6.0,
+    "skill": 5.1,
+    "acc_strong": 50.6,
+    "share_strong": 71
+   },
+   "pass": false,
+   "short": true
+  },
+  {
+   "key": "oi30",
+   "group": "micro",
+   "name": "Open interest thay đổi 30 ngày",
+   "from": "2022-11-11",
+   "now": 0.118,
+   "rho30_tr": null,
+   "rho30_te": 0.064,
+   "wf30": {
+    "n": 842,
+    "from": "2024-07-01",
+    "acc": 53.0,
+    "base": 54.3,
+    "edge": -1.3,
+    "skill": -3.1,
+    "acc_strong": 49.1,
+    "share_strong": 54
+   },
+   "rho90_tr": null,
+   "rho90_te": -0.141,
+   "wf90": {
+    "n": 720,
+    "from": "2024-09-01",
+    "acc": 49.4,
+    "base": 49.6,
+    "edge": -0.1,
+    "skill": 1.4,
+    "acc_strong": 49.9,
+    "share_strong": 84
+   },
+   "pass": false,
+   "short": true
+  },
+  {
+   "key": "liq7",
+   "group": "micro",
+   "name": "Thanh lý 7 ngày: short so với long",
+   "from": "2022-10-10",
+   "now": -1.44698,
+   "rho30_tr": null,
+   "rho30_te": 0.094,
+   "wf30": {
+    "n": 872,
+    "from": "2024-06-01",
+    "acc": 55.7,
+    "base": 53.8,
+    "edge": 1.9,
+    "skill": 0.7,
+    "acc_strong": 48.1,
+    "share_strong": 47
+   },
+   "rho90_tr": null,
+   "rho90_te": 0.092,
+   "wf90": {
+    "n": 782,
+    "from": "2024-07-01",
+    "acc": 52.7,
+    "base": 53.2,
+    "edge": -0.5,
+    "skill": -1.3,
+    "acc_strong": 51.3,
+    "share_strong": 93
+   },
+   "pass": false,
+   "short": true
+  },
+  {
+   "key": "spotnet",
+   "group": "micro",
+   "name": "Lực mua spot ròng (30 ngày, so với khối lượng)",
+   "from": "2019-07-01",
+   "now": -0.01298,
+   "rho30_tr": 0.201,
+   "rho30_te": 0.206,
+   "wf30": {
+    "n": 2088,
+    "from": "2021-02-01",
+    "acc": 52.2,
+    "base": 50.0,
+    "edge": 2.2,
+    "skill": 1.2,
+    "acc_strong": 52.1,
+    "share_strong": 25
+   },
+   "rho90_tr": 0.281,
+   "rho90_te": 0.16,
+   "wf90": {
+    "n": 1969,
+    "from": "2021-04-01",
+    "acc": 52.8,
+    "base": 47.7,
+    "edge": 5.0,
+    "skill": 0.3,
+    "acc_strong": 46.4,
+    "share_strong": 45
+   },
+   "pass": true,
+   "short": false
+  },
+  {
+   "key": "spotperp",
+   "group": "micro",
+   "name": "Khối lượng spot so với hợp đồng vĩnh cửu (30 ngày)",
+   "from": "2019-10-12",
+   "now": -2.05295,
+   "rho30_tr": 0.057,
+   "rho30_te": 0.012,
+   "wf30": {
+    "n": 1968,
+    "from": "2021-06-01",
+    "acc": 49.9,
+    "base": 52.9,
+    "edge": -2.9,
+    "skill": -2.1,
+    "acc_strong": 45.7,
+    "share_strong": 12
+   },
+   "rho90_tr": 0.239,
+   "rho90_te": 0.1,
+   "wf90": {
+    "n": 1847,
+    "from": "2021-08-01",
+    "acc": 43.5,
+    "base": 52.7,
+    "edge": -9.2,
+    "skill": -11.2,
+    "acc_strong": 34.9,
+    "share_strong": 51
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "cvdgap",
+   "group": "micro",
+   "name": "Lệch pha: mua ròng spot − mua ròng phái sinh",
+   "from": "2019-10-12",
+   "now": 0.00198,
+   "rho30_tr": 0.045,
+   "rho30_te": -0.132,
+   "wf30": {
+    "n": 1968,
+    "from": "2021-06-01",
+    "acc": 51.5,
+    "base": 52.9,
+    "edge": -1.4,
+    "skill": -4.6,
+    "acc_strong": 42.2,
+    "share_strong": 28
+   },
+   "rho90_tr": 0.144,
+   "rho90_te": -0.396,
+   "wf90": {
+    "n": 1847,
+    "from": "2021-08-01",
+    "acc": 50.1,
+    "base": 52.7,
+    "edge": -2.5,
+    "skill": -16.2,
+    "acc_strong": 39.7,
+    "share_strong": 63
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "dvol",
+   "group": "micro",
+   "name": "Độ biến động kỳ vọng DVOL",
+   "from": "2021-04-02",
+   "now": 45.7,
+   "rho30_tr": 0.166,
+   "rho30_te": 0.091,
+   "wf30": {
+    "n": 1450,
+    "from": "2022-11-01",
+    "acc": 50.6,
+    "base": 43.4,
+    "edge": 7.1,
+    "skill": -3.0,
+    "acc_strong": 41.5,
+    "share_strong": 23
+   },
+   "rho90_tr": 0.263,
+   "rho90_te": 0.114,
+   "wf90": {
+    "n": 1329,
+    "from": "2023-01-01",
+    "acc": 52.5,
+    "base": 41.7,
+    "edge": 10.8,
+    "skill": -14.5,
+    "acc_strong": 42.7,
+    "share_strong": 60
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "exbal",
+   "group": "chain",
+   "name": "BTC trên sàn (thay đổi 30 ngày)",
+   "from": "2014-02-01",
+   "now": 0.01142,
+   "rho30_tr": -0.192,
+   "rho30_te": 0.114,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 57.4,
+    "base": 56.2,
+    "edge": 1.2,
+    "skill": 0.2,
+    "acc_strong": 54.0,
+    "share_strong": 45
+   },
+   "rho90_tr": -0.284,
+   "rho90_te": 0.308,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 59.0,
+    "base": 58.4,
+    "edge": 0.5,
+    "skill": -1.6,
+    "acc_strong": 56.0,
+    "share_strong": 74
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "netout",
+   "group": "chain",
+   "name": "BTC rút ròng khỏi sàn (30 ngày)",
+   "from": "2014-01-31",
+   "now": 2658.12801,
+   "rho30_tr": 0.182,
+   "rho30_te": -0.12,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 57.5,
+    "base": 56.2,
+    "edge": 1.3,
+    "skill": -0.1,
+    "acc_strong": 56.0,
+    "share_strong": 46
+   },
+   "rho90_tr": 0.273,
+   "rho90_te": -0.296,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 59.2,
+    "base": 58.4,
+    "edge": 0.8,
+    "skill": -2.3,
+    "acc_strong": 56.1,
+    "share_strong": 69
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "mvrv",
+   "group": "chain",
+   "name": "MVRV (giá / giá vốn thực)",
+   "from": "2014-01-02",
+   "now": 0.16228,
+   "rho30_tr": 0.015,
+   "rho30_te": -0.204,
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 55.6,
+    "base": 56.2,
+    "edge": -0.6,
+    "skill": 0.1,
+    "acc_strong": null,
+    "share_strong": 0
+   },
+   "rho90_tr": 0.033,
+   "rho90_te": -0.284,
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 55.1,
+    "base": 58.4,
+    "edge": -3.3,
+    "skill": -2.0,
+    "acc_strong": 32.1,
+    "share_strong": 8
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "sthmvrv",
+   "group": "chain",
+   "name": "MVRV người giữ ngắn hạn",
+   "from": "2022-12-09",
+   "now": -0.02133,
+   "rho30_tr": null,
+   "rho30_te": -0.103,
+   "wf30": {
+    "n": 842,
+    "from": "2024-07-01",
+    "acc": 55.2,
+    "base": 54.3,
+    "edge": 1.0,
+    "skill": -3.6,
+    "acc_strong": 56.9,
+    "share_strong": 82
+   },
+   "rho90_tr": null,
+   "rho90_te": -0.019,
+   "wf90": {
+    "n": 720,
+    "from": "2024-09-01",
+    "acc": 49.6,
+    "base": 49.6,
+    "edge": 0.0,
+    "skill": -12.9,
+    "acc_strong": 48.5,
+    "share_strong": 97
+   },
+   "pass": false,
+   "short": true
+  },
+  {
+   "key": "rpl",
+   "group": "chain",
+   "name": "Tỷ lệ lãi / lỗ đã chốt (7 ngày)",
+   "from": "2022-12-08",
+   "now": -1.86973,
+   "rho30_tr": null,
+   "rho30_te": -0.056,
+   "wf30": {
+    "n": 842,
+    "from": "2024-07-01",
+    "acc": 49.6,
+    "base": 54.3,
+    "edge": -4.6,
+    "skill": -2.8,
+    "acc_strong": 52.9,
+    "share_strong": 64
+   },
+   "rho90_tr": null,
+   "rho90_te": -0.124,
+   "wf90": {
+    "n": 720,
+    "from": "2024-09-01",
+    "acc": 48.5,
+    "base": 49.6,
+    "edge": -1.1,
+    "skill": -4.7,
+    "acc_strong": 47.5,
+    "share_strong": 83
+   },
+   "pass": false,
+   "short": true
+  },
+  {
+   "key": "lth30",
+   "group": "chain",
+   "name": "Tỷ lệ cung người giữ dài hạn (thay đổi 30 ngày)",
+   "from": "2023-01-01",
+   "now": -0.61984,
+   "rho30_tr": null,
+   "rho30_te": 0.243,
+   "wf30": {
+    "n": 811,
+    "from": "2024-08-01",
+    "acc": 57.1,
+    "base": 55.0,
+    "edge": 2.1,
+    "skill": 4.7,
+    "acc_strong": 60.0,
+    "share_strong": 72
+   },
+   "rho90_tr": null,
+   "rho90_te": 0.395,
+   "wf90": {
+    "n": 690,
+    "from": "2024-10-01",
+    "acc": 53.6,
+    "base": 47.4,
+    "edge": 6.2,
+    "skill": 14.8,
+    "acc_strong": 58.3,
+    "share_strong": 89
+   },
+   "pass": false,
+   "short": true
+  },
+  {
+   "key": "fng",
+   "group": "mood",
+   "name": "Fear & Greed (7 ngày)",
+   "from": "2018-02-08",
+   "now": 14.85714,
+   "rho30_tr": 0.071,
+   "rho30_te": -0.058,
+   "wf30": {
+    "n": 2607,
+    "from": "2019-09-01",
+    "acc": 48.2,
+    "base": 53.6,
+    "edge": -5.4,
+    "skill": -2.6,
+    "acc_strong": 40.9,
+    "share_strong": 7
+   },
+   "rho90_tr": 0.144,
+   "rho90_te": -0.034,
+   "wf90": {
+    "n": 2486,
+    "from": "2019-11-01",
+    "acc": 44.4,
+    "base": 42.8,
+    "edge": 1.6,
+    "skill": -3.4,
+    "acc_strong": 42.9,
+    "share_strong": 32
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "trends",
+   "group": "mood",
+   "name": "Google: \"buy bitcoin\"",
+   "from": "2021-11-21",
+   "now": 14.0,
+   "rho30_tr": 0.075,
+   "rho30_te": -0.326,
+   "wf30": {
+    "n": 1208,
+    "from": "2023-07-01",
+    "acc": 56.5,
+    "base": 48.4,
+    "edge": 8.0,
+    "skill": 0.8,
+    "acc_strong": 65.3,
+    "share_strong": 31
+   },
+   "rho90_tr": -0.03,
+   "rho90_te": -0.526,
+   "wf90": {
+    "n": 1086,
+    "from": "2023-09-01",
+    "acc": 77.3,
+    "base": 42.5,
+    "edge": 34.7,
+    "skill": 26.3,
+    "acc_strong": 76.9,
+    "share_strong": 75
+   },
+   "pass": true,
+   "short": false
+  }
+ ],
+ "groups": {
+  "price": {
+   "cols": [
+    "dd",
+    "w200",
+    "d200",
+    "r90",
+    "r365",
+    "vol30",
+    "range60"
+   ],
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 55.4,
+    "base": 56.2,
+    "edge": -0.8,
+    "skill": -8.4,
+    "acc_strong": 57.8,
+    "share_strong": 68
+   },
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 54.8,
+    "base": 58.4,
+    "edge": -3.6,
+    "skill": -28.5,
+    "acc_strong": 56.9,
+    "share_strong": 85
+   }
+  },
+  "liq": {
+   "cols": [
+    "netliq",
+    "m2",
+    "usd",
+    "stable"
+   ],
+   "wf30": {
+    "n": 2638,
+    "from": "2019-08-01",
+    "acc": 44.8,
+    "base": 49.6,
+    "edge": -4.8,
+    "skill": -10.6,
+    "acc_strong": 38.9,
+    "share_strong": 20
+   },
+   "wf90": {
+    "n": 2517,
+    "from": "2019-10-01",
+    "acc": 54.9,
+    "base": 42.4,
+    "edge": 12.5,
+    "skill": -8.2,
+    "acc_strong": 58.1,
+    "share_strong": 69
+   }
+  },
+  "macro": {
+   "cols": [
+    "real"
+   ],
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 56.2,
+    "base": 56.2,
+    "edge": 0.0,
+    "skill": -0.7,
+    "acc_strong": 22.9,
+    "share_strong": 3
+   },
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 59.2,
+    "base": 58.4,
+    "edge": 0.8,
+    "skill": 2.7,
+    "acc_strong": 59.5,
+    "share_strong": 39
+   }
+  },
+  "cot": {
+   "cols": [
+    "cot_lev",
+    "cot_am",
+    "cot_lev4",
+    "cot_am4"
+   ],
+   "wf30": {
+    "n": 2485,
+    "from": "2020-01-01",
+    "acc": 49.4,
+    "base": 54.1,
+    "edge": -4.7,
+    "skill": -11.7,
+    "acc_strong": 52.1,
+    "share_strong": 38
+   },
+   "wf90": {
+    "n": 2394,
+    "from": "2020-02-01",
+    "acc": 45.0,
+    "base": 48.1,
+    "edge": -3.0,
+    "skill": -23.4,
+    "acc_strong": 47.4,
+    "share_strong": 50
+   }
+  },
+  "inst": {
+   "cols": [
+    "etf20",
+    "prem"
+   ],
+   "wf30": {
+    "n": 415,
+    "from": "2025-09-01",
+    "acc": 35.4,
+    "base": 47.2,
+    "edge": -11.8,
+    "skill": -4.3,
+    "acc_strong": 41.9,
+    "share_strong": 36
+   },
+   "wf90": {
+    "n": 294,
+    "from": "2025-11-01",
+    "acc": 33.0,
+    "base": 28.9,
+    "edge": 4.1,
+    "skill": -22.0,
+    "acc_strong": 27.8,
+    "share_strong": 45
+   }
+  },
+  "micro": {
+   "cols": [
+    "spotnet"
+   ],
+   "wf30": {
+    "n": 2088,
+    "from": "2021-02-01",
+    "acc": 52.2,
+    "base": 50.0,
+    "edge": 2.2,
+    "skill": 1.2,
+    "acc_strong": 52.1,
+    "share_strong": 25
+   },
+   "wf90": {
+    "n": 1969,
+    "from": "2021-04-01",
+    "acc": 52.8,
+    "base": 47.7,
+    "edge": 5.0,
+    "skill": 0.3,
+    "acc_strong": 46.4,
+    "share_strong": 45
+   }
+  },
+  "chain": {
+   "cols": [
+    "exbal",
+    "netout",
+    "mvrv",
+    "sthmvrv",
+    "rpl",
+    "lth30"
+   ],
+   "wf30": {
+    "n": 811,
+    "from": "2024-08-01",
+    "acc": 48.3,
+    "base": 55.0,
+    "edge": -6.7,
+    "skill": -17.9,
+    "acc_strong": 50.2,
+    "share_strong": 82
+   },
+   "wf90": {
+    "n": 690,
+    "from": "2024-10-01",
+    "acc": 50.7,
+    "base": 47.4,
+    "edge": 3.3,
+    "skill": 12.7,
+    "acc_strong": 53.0,
+    "share_strong": 73
+   }
+  },
+  "mood": {
+   "cols": [
+    "trends"
+   ],
+   "wf30": {
+    "n": 1208,
+    "from": "2023-07-01",
+    "acc": 56.5,
+    "base": 48.4,
+    "edge": 8.0,
+    "skill": 0.8,
+    "acc_strong": 65.3,
+    "share_strong": 31
+   },
+   "wf90": {
+    "n": 1086,
+    "from": "2023-09-01",
+    "acc": 77.3,
+    "base": 42.5,
+    "edge": 34.7,
+    "skill": 26.3,
+    "acc_strong": 76.9,
+    "share_strong": 75
+   }
+  }
+ },
+ "models": {
+  "full": {
+   "cols": [
+    "real",
+    "spotnet",
+    "trends"
+   ],
+   "wf30": {
+    "n": 1208,
+    "from": "2023-07-01",
+    "acc": 57.3,
+    "base": 48.4,
+    "edge": 8.9,
+    "skill": 1.2,
+    "acc_strong": 61.2,
+    "share_strong": 45
+   },
+   "wf90": {
+    "n": 1086,
+    "from": "2023-09-01",
+    "acc": 72.7,
+    "base": 42.5,
+    "edge": 30.1,
+    "skill": 25.1,
+    "acc_strong": 74.1,
+    "share_strong": 84
+   }
+  },
+  "long": {
+   "cols": [
+    "real"
+   ],
+   "wf30": {
+    "n": 2850,
+    "from": "2019-01-01",
+    "acc": 56.2,
+    "base": 56.2,
+    "edge": 0.0,
+    "skill": -0.7,
+    "acc_strong": 22.9,
+    "share_strong": 3
+   },
+   "wf90": {
+    "n": 2790,
+    "from": "2019-01-01",
+    "acc": 59.2,
+    "base": 58.4,
+    "edge": 0.8,
+    "skill": 2.7,
+    "acc_strong": 59.5,
+    "share_strong": 39
+   }
+  }
+ },
+ "ablation": {
+  "macro": {
+   "n": 1086,
+   "from": "2023-09-01",
+   "acc": 70.4,
+   "base": 42.5,
+   "edge": 27.9,
+   "skill": 22.1,
+   "acc_strong": 72.3,
+   "share_strong": 75
+  },
+  "micro": {
+   "n": 1086,
+   "from": "2023-09-01",
+   "acc": 73.4,
+   "base": 42.5,
+   "edge": 30.8,
+   "skill": 28.5,
+   "acc_strong": 77.3,
+   "share_strong": 84
+  },
+  "mood": {
+   "n": 1969,
+   "from": "2021-04-01",
+   "acc": 54.0,
+   "base": 47.7,
+   "edge": 6.3,
+   "skill": 3.9,
+   "acc_strong": 59.1,
+   "share_strong": 60
+  }
+ },
+ "now": {
+  "p30": 54.9,
+  "asof30": "2026-11-19",
+  "contrib30": {
+   "real": 0.003,
+   "spotnet": 0.007,
+   "trends": 0.077
+  },
+  "base30": 52.7,
+  "p90": 62.6,
+  "asof90": "2026-11-19",
+  "contrib90": {
+   "real": -0.103,
+   "spotnet": 0.013,
+   "trends": 0.503
+  },
+  "base90": 52.9
+ },
+ "errors": {
+  "coinmetrics_whales": "403 Client Error: Forbidden for url: https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=AdrBalNtv1KCnt&frequency=1d&start_time="
+ },
+ "runtime_sec": 74
+}
