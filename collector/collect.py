@@ -716,12 +716,34 @@ VI_FIX = [
     (r"\bnhững con gấu\b", "phe giảm giá"), (r"dòng chảy ra", "dòng tiền rút ra"), (r"dòng chảy vào", "dòng tiền vào"),
     (r"\bsàn giao dịch trao đổi\b", "sàn giao dịch"), (r"\bmã thông báo\b", "token"), (r"tiền điện tử ổn định", "stablecoin"),
     (r"\bsổ cái\b", "Ledger"), (r"\$ ?([A-Z]{2,5})\.X(?=\w)", r"$\1.X "), (r"\$ ([A-Z]{2,5})\.X", r"$\1.X"), (r"\bbẫy tăng giá\b", "bẫy giá tăng (bull trap)"),
+    # Thuật ngữ tài chính theo cách báo chí tài chính Việt Nam hay dùng
+    (r"tiền điện tử", "tiền mã hoá"), (r"dòng tiền ròng chảy ra", "dòng tiền rút ròng"), (r"dòng tiền chảy ra khỏi", "dòng tiền rút khỏi"),
+    (r"dòng tiền chảy ra", "dòng tiền rút ra"), (r"dòng tiền chảy vào", "dòng tiền vào"), (r"dòng vốn chảy ra", "dòng tiền rút ra"),
+    (r"khối lượng vốn hóa|khối lượng vốn hoá|khối lượng vốn\b", "vốn hoá"), (r"giá trị vốn hóa thị trường", "vốn hoá thị trường"),
+    (r"hợp đồng tương lai vĩnh cửu", "hợp đồng vĩnh cửu (perpetual)"), (r"cổ phiếu ưu đãi vĩnh viễn", "cổ phiếu ưu đãi không kỳ hạn"),
+    (r"lãi suất mở|lợi ích mở|hợp đồng mở", "vị thế mở (OI)"), (r"tỷ lệ tài trợ|tỷ lệ cấp vốn", "funding rate"),
+    (r"phí bảo hiểm Coinbase|mức phí bảo hiểm của Coinbase", "Coinbase Premium"), (r"kiểm tra lại mức", "kiểm định lại mốc"),
+    (r"mức cao nhất mọi thời đại|đỉnh cao mọi thời đại|mức cao kỷ lục mọi thời đại", "đỉnh lịch sử (ATH)"),
+    (r"thị trường gấu", "thị trường giá xuống"), (r"thị trường bò", "thị trường giá lên"), (r"giai đoạn giảm giá", "giai đoạn thị trường giá xuống"),
+    (r"\bbán phá giá\b", "xả hàng"), (r"\bkéo thảm\b", "rug pull (ôm tiền bỏ trốn)"), (r"nhà đầu tư bán lẻ", "nhà đầu tư nhỏ lẻ"),
+    (r"quỹ giao dịch trao đổi|quỹ hoán đổi danh mục", "quỹ ETF"), (r"cắt giảm tỷ lệ lãi suất|cắt giảm tỷ lệ", "cắt giảm lãi suất"),
+    (r"tỷ lệ lãi suất", "lãi suất"), (r"lãi suất quỹ liên bang", "lãi suất điều hành của Fed"), (r"tỷ lệ băm", "hashrate (sức đào)"),
+    (r"chỉ số giá tiêu dùng", "lạm phát CPI"), (r"bảng lương phi nông nghiệp", "bảng lương phi nông nghiệp (NFP)"),
+    (r"\bcác cuộc trao đổi\b|\bcác sàn trao đổi\b", "các sàn giao dịch"), (r"bị vượt qua", "bị xuyên thủng"),
+    (r"giảm giá mạnh", "giảm mạnh"), (r"vụ cướp trên đường cao tốc", "vụ \"cướp giữa ban ngày\""),
+    # Viết tiền theo kiểu Việt Nam: "$ 460 triệu" -> "460 triệu $", "3.1B" -> "3,1 tỷ $"
+    (r"\$ ?(\d[\d.,]*) ?(triệu|tỷ|nghìn)\b", r"\1 \2 $"), (r"\b(\d+)\.(\d+)B\b", r"\1,\2 tỷ $"), (r"\b(\d+)B\b", r"\1 tỷ $"),
 ]
 
 
 def fix_vi(t: str) -> str:
+    def keep_case(rep_):
+        def f(m):
+            out = m.expand(rep_)
+            return out[:1].upper() + out[1:] if m.group(0)[:1].isupper() and out[:1].islower() else out
+        return f
     for pat, rep_ in VI_FIX:
-        t = re.sub(pat, rep_, t, flags=re.I)
+        t = re.sub(pat, keep_case(rep_), t, flags=re.I)
     return t
 
 
