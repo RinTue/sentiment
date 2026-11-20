@@ -553,6 +553,10 @@ details.ctx-more > summary { cursor: pointer; font-weight: 600; color: var(--acc
       <p class="note">Các quỹ ETF Bitcoin giao ngay (IBIT của BlackRock, FBTC của Fidelity, GBTC…) là kênh để tổ chức, quỹ hưu trí và nhà đầu tư qua tài khoản chứng khoán mua BTC; tiền vào ròng thì quỹ phải mua BTC thật, tiền ra ròng thì quỹ bán. Số mỗi phiên có sau khi thị trường Mỹ đóng cửa, tức sáng hôm sau giờ Việt Nam; thứ Bảy, Chủ nhật và ngày lễ Mỹ không có phiên. Hợp để xem xu hướng vài ngày đến vài tuần, không dùng để vào lệnh trong ngày. Nguồn: <a href="https://www.tftc.io/bitcoin-etf-flows" target="_blank" rel="noopener">The Commoner Bitcoin ETF Tracker của TFTC</a> (CC BY 4.0), tổng hợp từ SoSoValue và số công bố của các quỹ; khi TFTC chậm thì lấy tạm từ BGeometrics.</p>
     </section>
     <section class="panel">
+      <h2>Toàn cảnh thị trường crypto</h2>
+      <div id="mw-box"><p class="loading">Đang tải…</p></div>
+    </section>
+    <section class="panel">
       <h2>Dòng tiền giữa BTC và altcoin</h2>
       <div id="rot-box"><p class="loading">Đang tải…</p></div>
     </section>
@@ -612,9 +616,12 @@ details.ctx-more > summary { cursor: pointer; font-weight: 600; color: var(--acc
       <p class="note">"Tốt cho USD" nghĩa là số liệu khiến USD mạnh lên (lạm phát cao, việc làm mạnh…), thường bất lợi cho crypto trong ngắn hạn. Xem thêm: <a href="https://www.investing.com/economic-calendar/" target="_blank" rel="noopener">Investing.com</a>, <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener">Forex Factory</a>.</p>
     </section>
     <section class="panel">
-      <h2>Sự kiện crypto và luật lệ</h2>
-      <div id="evm-box"><p class="loading">Đang tải…</p></div>
-      <p class="note">Không có nguồn miễn phí tự cập nhật các sự kiện này (quyết định chỉ số, hạn chót luật, mở khoá token…), nên danh sách được nhập tay trong data/events_manual.json: nhờ Claude thêm khi có tin. Telegram nhắc trước 3 ngày.</p>
+      <h2>Lịch crypto tự động</h2>
+      <div id="ccal-box"><p class="loading">Đang tải…</p></div>
+    </section>
+    <section class="panel">
+      <h2>Tin lớn 48 giờ qua</h2>
+      <div id="big-box"><p class="loading">Đang tải…</p></div>
     </section>
     <section class="panel">
       <h2>Số liệu vĩ mô Mỹ tác động BTC ra sao</h2>
@@ -2524,14 +2531,56 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       ${ctxVerifyCard("value", C)}</div><div style="margin-top:12px">${ctxItems("value", C)}</div>
       <p class="note">Định giá cho biết rẻ hay đắt cho tầm 1–2 năm, không cho biết giá vài tuần tới. MVRV = giá ÷ giá vốn trung bình của mọi BTC (giá lần cuối di chuyển); dưới 1 nghĩa là đa số người nắm giữ đang lỗ.</p>`;
   }
-  function evmRender() {
-    const el = $("evm-box"); if (!el) return;
-    const E = CTX.ev || [], today = new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10);
-    const rows = E.filter((e) => e.date >= new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10)).sort((a, b) => a.date < b.date ? -1 : 1);
-    if (!rows.length) { el.innerHTML = `<p class="note">Chưa có sự kiện nào trong danh sách.</p>`; return; }
-    el.innerHTML = `<div style="display:grid;gap:10px">${rows.map((e) => { const past = e.date < today, dd = Math.round((Date.parse(e.date) - Date.parse(today)) / 864e5);
-      return `<div class="ctx-card" style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;${past ? "opacity:.55" : ""}"><div><b>${ctxDate(e.date)}</b><div class="note" style="margin:0">${past ? "đã qua" : dd === 0 ? "hôm nay" : "còn " + dd + " ngày"}</div></div>
-        <div><b>${esc(e.title)}</b>${e.time ? `<div class="note" style="margin:0">${esc(e.time)}</div>` : ""}<div style="font-size:.88rem;margin-top:4px">${esc(e.note || "")}${e.src ? ` <a href="${esc(e.src)}" target="_blank" rel="noopener">Nguồn</a>` : ""}</div></div></div>`; }).join("")}</div>`;
+  const BIGCAT = { hack: ["🔴 Hack / sự cố sàn", "var(--bad)", "var(--bad-bg)"], law: ["⚖️ Luật lệ", "var(--accent)", "var(--accent-bg)"], etf: ["📊 ETF", "var(--warn)", "var(--warn-bg)"],
+    macro: ["🏛 Vĩ mô / Fed", "var(--accent)", "var(--accent-bg)"], corp: ["🏢 Doanh nghiệp", "var(--ink-2)", "var(--neutral-bg)"], market: ["📈 Thị trường", "var(--good)", "var(--good-bg)"], other: ["📰 Khác", "var(--ink-2)", "var(--neutral-bg)"] };
+  const mwPct = (x, d = 1) => x == null ? "–" : `<b class="${x < 0 ? "tone-bad" : "tone-good"}">${x > 0 ? "+" : ""}${vnN(x, d)}%</b>`;
+  const usdB = (x) => x == null ? "–" : x >= 1e12 ? vnN(x / 1e12, 2) + " nghìn tỷ $" : vnN(x / 1e9, 0) + " tỷ $";
+  function mwRender() {
+    const el = $("mw-box"), D = CTX.mw, M = D && D.mkt; if (!el) return;
+    if (!M) { el.innerHTML = `<p class="note">Chưa có số liệu.</p>`; return; }
+    const tone = { bad: ["var(--bad)", "var(--bad-bg)"], good: ["var(--good)", "var(--good-bg)"], warn: ["var(--warn)", "var(--warn-bg)"], neutral: ["var(--ink-2)", "var(--neutral-bg)"] }[M.tone] || ["var(--ink-2)", "var(--neutral-bg)"];
+    const B = M.breadth || {}, brow = (k, lab) => { const b = B[k]; if (!b || !b.n) return ""; const d = b.down / b.n * 100;
+      return `<div style="display:grid;grid-template-columns:62px minmax(0,1fr) 92px;gap:8px;align-items:center;font-size:.84rem;margin:6px 0"><span>${lab}</span><div style="height:12px;border-radius:6px;background:var(--good-bg);overflow:hidden"><div style="width:${d}%;height:100%;background:var(--bad)"></div></div><span><b>${b.down}/${b.n}</b> giảm</span></div>`; };
+    const mx = Math.max(10, ...(M.sectors || []).map((s) => Math.abs(s.c30)));
+    const sec = (M.sectors || []).map((s) => `<div style="display:grid;grid-template-columns:150px minmax(0,1fr) 64px;gap:8px;align-items:center;font-size:.84rem;margin:5px 0"><span>${esc(s.name)}</span>
+      <div style="height:10px;background:var(--neutral-bg);border-radius:5px;position:relative"><i style="position:absolute;top:0;bottom:0;${s.c30 < 0 ? "right:50%" : "left:50%"};width:${Math.abs(s.c30) / mx * 50}%;background:${s.c30 < 0 ? "var(--bad)" : "var(--good)"};border-radius:5px"></i></div><span style="text-align:right">${mwPct(s.c30)}</span></div>`).join("");
+    const tile = (l, v, s) => `<div class="ctx-card"><div class="note" style="margin:0">${l}</div><div style="font-size:1.35rem;font-weight:800;margin:2px 0">${v}</div><div style="font-size:.8rem">${s}</div></div>`;
+    const tiles = M.total == null ? "" : `<div class="ctx-g4" style="margin-top:12px">
+      ${tile("Tổng vốn hoá crypto", usdB(M.total), `24 giờ ${mwPct(M.ch24)} · 7 ngày ${mwPct(M.ch7)} · 30 ngày ${mwPct(M.ch30)}`)}
+      ${tile("Altcoin (không tính BTC)", usdB(M.alt_cap), `7 ngày ${mwPct(M.alt_ch7)} · 30 ngày ${mwPct(M.alt_ch30)}`)}
+      ${tile("Tỷ trọng BTC", vnN(M.btc_dom, 1) + "%", M.btc_dom30 != null ? `30 ngày trước ${vnN(M.btc_dom30, 1)}%` : "")}
+      ${tile("Tỷ trọng stablecoin", vnN(M.st_dom, 1) + "%" + (M.st_dom30 != null && M.st_dom - M.st_dom30 >= 1 ? ' <span class="tone-bad" style="font-size:.9rem">▲</span>' : ""), M.st_dom30 != null ? `30 ngày trước ${vnN(M.st_dom30, 1)}% · tăng = tiền đứng ngoài` : "")}</div>`;
+    const srcName = { coingecko: "CoinGecko", coinpaprika: "CoinPaprika", "okx-39": "39 altcoin lớn trên OKX (dự phòng)" }[M.src] || M.src;
+    el.innerHTML = `<div style="border-left:5px solid ${tone[0]};background:${tone[1]};padding:10px 14px;border-radius:10px"><b>${esc(M.head)}</b> ${esc(M.detail)}</div>${tiles}
+      <div class="ctx-two" style="margin-top:12px"><div><b>Độ rộng: bao nhiêu đồng đang giảm</b>${brow("c1", "24 giờ")}${brow("c7", "7 ngày")}${brow("c30", "30 ngày")}
+        <p class="note">Đỏ là số đồng giảm, xanh là số đồng tăng. Trên 80% cùng giảm nghĩa là cả thị trường giảm; dưới 50% là chỉ một nhóm yếu.</p></div>
+      <div><b>Nhóm ngành, 30 ngày</b> <span class="note">(trung vị)</span>${sec}
+        <p class="note">Giữ giá tốt nhất: ${(M.best || []).map((x) => `${esc(x.sym)} ${vnN(x.c30, 0)}%`).join(", ")}. Yếu nhất: ${(M.worst || []).map((x) => `${esc(x.sym)} ${vnN(x.c30, 0)}%`).join(", ")}.</p></div></div>
+      <p class="note">Nguồn: ${esc(srcName)}, ${M.n} đồng lớn nhất (bỏ stablecoin và token bọc). Cập nhật ${fmtTime(Date.parse(D.updated))}. Mô tả trạng thái, không phải tín hiệu dự báo.</p>`;
+  }
+  function calRender() {
+    const el = $("ccal-box"), C = CTX.mw && CTX.mw.cal; if (!el) return;
+    if (!C) { el.innerHTML = `<p class="note">Chưa có số liệu.</p>`; return; }
+    const today = new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10), days = (d) => Math.round((Date.parse(d) - Date.parse(today)) / 864e5);
+    const opt = (o, cur) => o ? `${cur}: khoảng <b>${o.usd >= 1e9 ? vnN(o.usd / 1e9, 1) + " tỷ $" : vnN(o.usd / 1e6, 0) + " triệu $"}</b> đáo hạn · put/call ${vnN(o.pc, 2)} · max pain ${vnN(o.max_pain)} $` : `${cur}: chưa đọc được số`;
+    const rows = (C.expiries || []).map((e) => { const q = e.kind === "quarter", d = days(e.date);
+      return { date: e.date, html: `<div class="ctx-card" style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px"><div><b>${ctxDate(e.date)}</b><div class="note" style="margin:0">thứ Sáu · 15:00 giờ VN${d >= 0 ? (d === 0 ? " · hôm nay" : " · còn " + d + " ngày") : ""}</div></div>
+        <div><span class="ctx-tag" style="${q ? "background:var(--warn-bg);color:var(--warn)" : "background:var(--accent-bg);color:var(--accent)"};margin:0 6px 0 0">${q ? "Đáo hạn quý · lớn" : "Đáo hạn tháng"}</span><b>Quyền chọn BTC và ETH trên Deribit</b>
+        <div style="font-size:.86rem;margin-top:3px">${opt(e.btc, "BTC")}<br>${opt(e.eth, "ETH")}</div>${e.cme ? `<div class="note" style="margin:2px 0 0">Cùng ngày: hợp đồng tương lai BTC tháng ${+e.date.slice(5, 7)} của CME hết hạn.</div>` : ""}</div></div>` }; });
+    (C.manual || []).forEach((e) => rows.push({ date: e.date, html: `<div class="ctx-card" style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px"><div><b>${ctxDate(e.date)}</b><div class="note" style="margin:0">còn ${days(e.date)} ngày</div></div>
+      <div><span class="ctx-tag" style="background:var(--neutral-bg);color:var(--ink-2);margin:0 6px 0 0">Nhập tay</span><b>${esc(e.title)}</b>${e.time ? `<div class="note" style="margin:0">${esc(e.time)}</div>` : ""}<div style="font-size:.86rem;margin-top:3px">${esc(e.note || "")}${e.src ? ` <a href="${esc(e.src)}" target="_blank" rel="noopener">Nguồn</a>` : ""}</div></div></div>` }));
+    rows.sort((a, b) => a.date < b.date ? -1 : 1);
+    el.innerHTML = `<div style="display:grid;gap:10px">${rows.map((r) => r.html).join("")}</div>
+      <p class="note">Ngày đáo hạn tự tính (thứ Sáu cuối tháng; tháng 3, 6, 9, 12 là đáo hạn quý). Giá trị, put/call và max pain đọc từ Deribit mỗi giờ. Max pain là mức giá khiến người mua quyền chọn lỗ nhiều nhất; niềm tin "giá bị hút về max pain" có bằng chứng yếu, điều chắc hơn là quanh kỳ đáo hạn lớn biến động thường tăng.${C.opt_err ? " Lần đọc gần nhất lỗi: " + esc(C.opt_err) : ""}</p>`;
+  }
+  function bigRender() {
+    const el = $("big-box"), N = (CTX.mw && CTX.mw.news) || []; if (!el) return;
+    if (!N.length) { el.innerHTML = `<p class="note">Chưa có tin nào được từ 2 báo trở lên cùng đưa trong 48 giờ qua.</p>`; return; }
+    el.innerHTML = N.map((p) => { const c = BIGCAT[p.cat] || BIGCAT.other, h = Math.max(0, Math.round((Date.now() - p.t) / 3600e3));
+      return `<div style="display:grid;grid-template-columns:160px minmax(0,1fr) 92px;gap:10px;align-items:start;padding:9px 0;border-bottom:1px solid var(--line);font-size:.88rem">
+        <span><span class="ctx-tag" style="background:${c[2]};color:${c[1]};margin:0">${c[0]}</span></span>
+        <span>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener" style="color:inherit">${esc(p.vi || p.text)}</a>` : esc(p.vi || p.text)}<div class="note" style="margin:0">${esc(p.outlet || "")}</div></span>
+        <span class="note" style="margin:0;text-align:right">${p.n_src} báo · ${h < 1 ? "vừa xong" : h + " giờ trước"}</span></div>`; }).join("") + `<p class="note">Tự gom từ tin tức: tin được từ 2 báo trở lên cùng đưa, gắn nhãn theo từ khoá trong tiêu đề. Bấm tiêu đề để đọc bài gốc.</p>`;
   }
   function rotRender() {
     const el = $("rot-box"), R = CTX.C && CTX.C.rot; if (!el) return;
@@ -2559,16 +2608,21 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     try { ctxRender(); } catch (e) { console.error(e); $("ctx-box").innerHTML = `<div class="msg">Lỗi hiển thị bối cảnh: ${esc(e.message)}</div>`; }
     try { ltRender(); } catch (e) { console.error(e); }
     try { rotRender(); } catch (e) { console.error(e); }
-    try { const r = await fetch("data/events_manual.json?t=" + Date.now(), { cache: "no-store" }); CTX.ev = r.ok ? ((await r.json()).events || []) : []; } catch (e) { CTX.ev = []; }
-    try { evmRender(); ctxEvLine(); } catch (e) { console.error(e); }
+    try { const r = await fetch("data/marketwide.json?t=" + Date.now(), { cache: "no-store" }); CTX.mw = r.ok ? await r.json() : null; } catch (e) { CTX.mw = null; }
+    for (const f of [mwRender, calRender, bigRender, ctxEvLine]) { try { f(); } catch (e) { console.error(e); } }
   }
   function ctxEvLine() {
     const el = $("ctx-ev"); if (!el) return;
-    const today = new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10), lim = new Date(Date.now() + 15 * 864e5).toISOString().slice(0, 10);
-    const up = (CTX.ev || []).filter((e) => e.date >= today && e.date <= lim);
-    el.hidden = !up.length;
-    el.innerHTML = up.length ? "📌 Sự kiện crypto sắp tới: " + up.map((e) => `<b>${esc(e.title)}</b> (${ctxDate(e.date)})`).join("; ") + ` · <a href="#macro">xem</a>` : "";
+    const D = CTX.mw || {}, M = D.mkt, C = D.cal || {}, today = new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10);
+    const days = (d) => Math.round((Date.parse(d) - Date.parse(today)) / 864e5), parts = [];
+    if (M && M.head) parts.push(`🌐 <b>${esc(M.head)}</b> ${esc(M.detail)} <a href="#money">xem</a>`);
+    const up = (C.expiries || []).filter((e) => days(e.date) >= 0 && days(e.date) <= 7).map((e) => `đáo hạn quyền chọn ${e.kind === "quarter" ? "quý" : "tháng"} ${ctxDate(e.date)}${e.btc ? ` (BTC ~${vnN(e.btc.usd / 1e9, 1)} tỷ $)` : ""}`)
+      .concat((C.manual || []).filter((e) => days(e.date) >= 0 && days(e.date) <= 15).map((e) => `${esc(e.title)} (${ctxDate(e.date)})`));
+    if (up.length) parts.push(`📅 Sắp tới: ${up.join("; ")} · <a href="#macro">lịch</a>`);
+    el.hidden = !parts.length;
+    el.innerHTML = parts.join("<br>");
   }
+
   /* ---------- Tab ---------- */
   const TABS = ["overview", "crowd", "money", "macro", "cycle", "events", "method"];
   /* ---------- Dòng tiền ETF BTC ---------- */

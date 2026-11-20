@@ -238,6 +238,20 @@ def manual_events() -> list:
         return []
 
 
+def load_mw() -> dict:
+    try:
+        return json.load(open(os.path.join(os.path.dirname(STATE_FILE), "marketwide.json"), encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def expiry_text(e: dict) -> str:
+    b = e.get("btc") or {}
+    q = e.get("kind") == "quarter"
+    return (f"đáo hạn quyền chọn {'quý' if q else 'tháng'} {e['date'][8:10]}/{e['date'][5:7]} (15:00 giờ VN)"
+            + (f": BTC khoảng {vn(b['usd'] / 1e9, 1)} tỷ $, max pain {vn(b['max_pain'])} $" if b.get("usd") else ""))
+
+
 CTX_STATE = {
     "macro": ["rất thắt chặt", "thắt chặt", "trung tính", "nới lỏng", "rất nới lỏng"],
     "whale": ["phân phối mạnh", "phân phối", "trung tính", "tích luỹ", "tích luỹ mạnh"],
@@ -420,6 +434,17 @@ def run(latest: dict) -> dict:
             msgs.append(("event", f"📌 <b>{html.escape(e['title'])}</b> · {e['date'][8:10]}/{e['date'][5:7]}" + (f" ({html.escape(e['time'])})" if e.get("time") else "")
                          + (f", còn {dd} ngày" if dd else ", hôm nay") + (f"\n{html.escape(e['note'])}" if e.get("note") else "")))
 
+    # 3e) đáo hạn quyền chọn lớn: đáo hạn quý nhắc trước 2 ngày, đáo hạn tháng từ 3 tỷ $ nhắc trước 1 ngày
+    MW = load_mw()
+    for e in (MW.get("cal") or {}).get("expiries", []):
+        dd = (datetime.strptime(e["date"], "%Y-%m-%d").date() - vnow.date()).days
+        big = e.get("kind") == "quarter" or ((e.get("btc") or {}).get("usd") or 0) >= 3e9
+        key = f"exp|{e['date']}"
+        if big and 0 <= dd <= (2 if e.get("kind") == "quarter" else 1) and key not in st["events"]:
+            st["events"].append(key)
+            msgs.append(("event", f"📅 <b>Sắp {html.escape(expiry_text(e))}</b>" + (f", còn {dd} ngày" if dd else ", hôm nay")
+                         + ". Quanh kỳ đáo hạn lớn giá thường biến động mạnh hơn."))
+
     # 3d) tin thử khi bấm chạy tay với tuỳ chọn "Gửi tin Telegram thử"
     if os.environ.get("TELEGRAM_TEST", "").lower() == "true" and C:
         msgs.append(("test", "🧪 <b>Tin thử</b> (bấm chạy tay). Khi bối cảnh đổi, tin sẽ trông như sau:\n\n🧭 <b>Bối cảnh thị trường thay đổi</b>\n"
@@ -472,6 +497,12 @@ def run(latest: dict) -> dict:
         el = etf_line(latest)
         if el:
             L.append("• " + el)
+        M_ = (load_mw().get("mkt") or {})
+        if M_.get("head"):
+            L.append(f"• Toàn thị trường: {html.escape(M_['head'])} {html.escape(M_.get('detail') or '')}")
+        for e in (load_mw().get("cal") or {}).get("expiries", []):
+            if 0 <= (datetime.strptime(e["date"], "%Y-%m-%d").date() - vnow.date()).days <= 3:
+                L.append("• Sắp " + html.escape(expiry_text(e)))
         soon_m = [e for e in manual_events() if 0 <= (datetime.strptime(e["date"], "%Y-%m-%d").date() - vnow.date()).days <= 7]
         if soon_m:
             L.append("• Sự kiện crypto sắp tới: " + "; ".join(f"{html.escape(e['title'])} ({e['date'][8:10]}/{e['date'][5:7]})" for e in soon_m))

@@ -564,6 +564,19 @@ def _toks(t: str) -> set:
     return {w.strip(".") for w in WORD_RE.findall(t.lower()) if len(w.strip(".")) >= 3 and w.strip(".") not in CLUSTER_STOP}
 
 
+BIG_CAT = [   # nhãn cho "Tin lớn 48 giờ": xét theo thứ tự, nhãn đầu tiên khớp được dùng
+    ("hack", re.compile(r"\b(hack|hacked|hacker|exploit|stolen|drain|breach|attacker|heist|compromis|outage|halts? withdrawals?|insolven|bankrupt)", re.I)),
+    ("law", re.compile(r"\b(SEC|CFTC|DOJ|regulat|lawsuit|court|judge|sue[sd]?\b|charges?|bill\b|senate|congress|legislat|ban(s|ned)?\b|sanction|MiCA|license|tax)", re.I)),
+    ("etf", re.compile(r"\b(ETFs?|ETPs?|inflows?|outflows?)\b", re.I)),
+    ("macro", re.compile(r"\b(Fed|FOMC|Powell|rate (cut|hike)s?|interest rates?|CPI|inflation|jobs report|payrolls|Treasury|tariff|recession|yields?)\b", re.I)),
+    ("corp", re.compile(r"\b(Strategy|MicroStrategy|Saylor|treasury|IPO|acquir|merger|Coinbase|BlackRock|Tesla|Metaplanet|listing|delist|MSCI|stock)", re.I)),
+    ("market", re.compile(r"\b(price|rall(y|ies)|surge|jump|soar|falls?|drops?|plunge|slump|crash|liquidat|record|high|low)\b", re.I)),
+]
+
+
+NEWS_BIG: list = []
+
+
 def news_highlights(base: list, n: int = 4) -> tuple[list, list]:
     pool = []
     for x in base:
@@ -602,6 +615,16 @@ def news_highlights(base: list, n: int = 4) -> tuple[list, list]:
                 "t": int(c["t"] * 1000), "s": round(c["s"], 3), "text": c["title"], "url": c["x"].get("url")}
     good = [post(c) for c in out if c["s"] >= 0.12][:n]
     bad = [post(c) for c in out if c["s"] <= -0.12][:n]
+    big = []
+    for c in out:                      # tin lớn: nhiều báo cùng đưa, trong 48 giờ
+        if len(c["outlets"]) < 2 or NOW - c["t"] > 48 * 3600:
+            continue
+        p = post(c)
+        p["cat"] = next((k for k, rx in BIG_CAT if rx.search(c["title"])), "other")
+        big.append(p)
+        if len(big) >= 8:
+            break
+    NEWS_BIG[:] = big
     return good, bad
 
 
@@ -702,7 +725,7 @@ def aggregate(kept: list) -> dict:
         "sources": [{"src": k, "n": len(a), "score": round(wmean(a), 4)} for k, a in sorted(by_src.items(), key=lambda t: -len(t[1]))],
         "keywords": [[w, n] for w, n in wc.most_common(14) if n >= 3],
         "coins": [[c, n] for c, n in coins if n],
-        "news_pos": news_pos, "news_neg": news_neg, "crowd_pos": crowd_pos, "crowd_neg": crowd_neg,
+        "news_pos": news_pos, "news_neg": news_neg, "crowd_pos": crowd_pos, "crowd_neg": crowd_neg, "news_big": list(NEWS_BIG),
         "tag_check": tag_check(base),
     }
 
@@ -1214,7 +1237,7 @@ def main() -> int:
     if store and with_ai:
         model_status = f"AI + từ điển ({round(100 * with_ai / len(store))}% số bài có điểm AI)" + ("" if not model_status.startswith("từ điển (AI lỗi") else "; lần chạy này AI lỗi")
     agg = aggregate(list(store.values()))
-    agg["translation"] = translate_posts(agg["news_pos"] + agg["news_neg"] + agg["crowd_pos"] + agg["crowd_neg"])
+    agg["translation"] = translate_posts(agg["news_pos"] + agg["news_neg"] + agg["crowd_pos"] + agg["crowd_neg"] + agg.get("news_big", []))
     agg["stocktwits"] = stocktwits_summary(store)
     try:
         agg["macro"] = macro()
@@ -1262,6 +1285,12 @@ def main() -> int:
     except Exception as ex:  # noqa: BLE001
         latest["etf"] = {"error": str(ex)[:200]}
         print("Lỗi dòng tiền ETF:", ex, file=sys.stderr)
+    try:
+        import marketwide
+        latest["marketwide"] = marketwide.run(latest)
+    except Exception as ex:  # noqa: BLE001
+        latest["marketwide"] = {"error": str(ex)[:200]}
+        print("Lỗi toàn cảnh thị trường:", ex, file=sys.stderr)
     try:
         import events
         latest["events"] = events.run(latest, store)
