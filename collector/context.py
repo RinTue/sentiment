@@ -239,7 +239,8 @@ def run() -> dict:
     vb = sc["macro"]["verify"][bucket(m)]
     st_short = [("Nghiêng giảm / đi ngang", "bad"), ("Hơi xấu, dễ đi ngang", "warn"), ("Trung tính", "neutral"),
                 ("Nghiêng tăng", "good"), ("Thuận lợi", "good")][bucket(m)]
-    mword = ["vĩ mô xấu", "vĩ mô hơi xấu", "vĩ mô trung tính", "vĩ mô thuận", "vĩ mô rất thuận"][bucket(m)]
+    mword = ["điều kiện tài chính rất thắt chặt", "điều kiện tài chính thắt chặt", "điều kiện tài chính trung tính",
+             "điều kiện tài chính nới lỏng", "điều kiện tài chính rất nới lỏng"][bucket(m)]
     pword = {"pan": "thị trường còn hoảng loạn", "apa": "thị trường đang chán nản (vùng gom)", "rec": "thị trường đang hồi phục",
              "eu": "thị trường hưng phấn", "wk": "thị trường suy yếu sau đỉnh"}[ph]
     w = float(lr.w)
@@ -266,7 +267,7 @@ def run() -> dict:
     }
     signals = [
         {"key": "macro", "name": f"Vĩ mô vượt {SIG_MACRO}", "now": f"hiện {sc['macro']['score']}", "ok": sc["macro"]["score"] > SIG_MACRO},
-        {"key": "whale", "name": f"Cá mập vượt {SIG_WHALE}", "now": f"hiện {sc['whale']['score']}", "ok": sc["whale"]["score"] > SIG_WHALE},
+        {"key": "whale", "name": f"Cá mập vượt {SIG_WHALE} (tích luỹ)", "now": f"hiện {sc['whale']['score']}", "ok": sc["whale"]["score"] > SIG_WHALE},
         {"key": "phase", "name": "Tâm lý sang \"Chán nản\"", "now": f"hiện {PHASES[ph][0]}", "ok": ph in ("apa", "rec")},
     ]
 

@@ -2293,14 +2293,14 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   const PH_COL = { apa: "#3fb950", rec: "#58a6ff", eu: "#f85149", wk: "#db6d28", pan: "#a371f7" };
   const ctxB = (v) => Math.min(4, Math.max(0, Math.floor(v / 20)));
   const ctxState = {
-    macro: [["Tiền đắt · gió ngược", "bad"], ["Hơi thắt chặt", "warn"], ["Trung tính", "neutral"], ["Nới lỏng · gió thuận", "good"], ["Rất thuận lợi", "good"]],
-    whale: [["Bán mạnh", "bad"], ["Đang bán", "bad"], ["Trung tính", "neutral"], ["Đang gom", "good"], ["Gom mạnh", "good"]],
-    value: [["Rẻ", "good"], ["Hơi rẻ", "good"], ["Trung bình", "neutral"], ["Hơi đắt", "warn"], ["Đắt", "bad"]],
+    macro: [["Rất thắt chặt", "bad", "risk-off"], ["Thắt chặt", "warn", "risk-off"], ["Trung tính", "neutral"], ["Nới lỏng", "good", "risk-on"], ["Rất nới lỏng", "good", "risk-on"]],
+    whale: [["Phân phối mạnh", "bad", "tiền lớn bán ra"], ["Phân phối", "bad", "tiền lớn bán ra"], ["Trung tính", "neutral"], ["Tích luỹ", "good", "tiền lớn gom vào"], ["Tích luỹ mạnh", "good", "tiền lớn gom vào"]],
+    value: [["Định giá thấp", "good"], ["Hơi thấp", "good"], ["Hợp lý", "neutral"], ["Hơi cao", "warn"], ["Định giá cao", "bad"]],
   };
   const ctxGrad = { macro: "linear-gradient(90deg,var(--bad),var(--neutral-bg) 50%,var(--good))", whale: "linear-gradient(90deg,var(--bad),var(--neutral-bg) 50%,var(--good))",
     value: "linear-gradient(90deg,var(--good),var(--neutral-bg) 50%,var(--bad))" };
-  const ctxEnds = { macro: ["Thắt chặt", "Nới lỏng"], whale: ["Bán mạnh", "Gom mạnh"], value: ["Rẻ", "Đắt"] };
-  const ctxQ = { macro: "Tiền trên thế giới đang rẻ hay đắt?", whale: "Tiền lớn đang mua hay bán?", value: "BTC đang rẻ hay đắt so với giá vốn?" };
+  const ctxEnds = { macro: ["Thắt chặt", "Nới lỏng"], whale: ["Phân phối", "Tích luỹ"], value: ["Thấp", "Cao"] };
+  const ctxQ = { macro: "Điều kiện tài chính: tiền đang đắt hay rẻ?", whale: "Tiền lớn đang bán ra hay gom vào?", value: "BTC đang rẻ hay đắt so với giá vốn?" };
   const ctxShort = { macro: "Vĩ mô", whale: "Cá mập", value: "Định giá" };
   const ctxNext = { pan: "Kế tiếp thường là <b>Chán nản</b> = vùng gom.", apa: "Đang ở <b>vùng gom</b>. Kế tiếp là Hồi phục.",
     rec: "Kế tiếp là Hưng phấn: theo dõi khi giá thành đắt.", eu: "Gần đỉnh. Kế tiếp thường là <b>Suy yếu</b>.", wk: "Kế tiếp thường là Hoảng loạn rồi Chán nản." };
@@ -2310,15 +2310,15 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   function ctxMeaning(g, C) {
     const sc = C.scores[g], b = sc.verify[ctxB(sc.score)] || {};
     if (g === "macro") return b.up90 != null ? `Ở mức này: <b>${b.up90}%</b> số lần giá cao hơn sau 3 tháng (bình thường ${C.base90}%).` : "";
-    if (g === "whale") return sc.score >= 60 ? "Tiền lớn đang gom: thuận cho xu hướng tăng." : "Chú ý khi <b>vượt 60</b>: tiền lớn quay lại gom.";
+    if (g === "whale") return sc.score >= 60 ? "Tiền lớn đang tích luỹ: thuận cho xu hướng tăng." : "Chú ý khi <b>vượt 60</b>: tiền lớn chuyển sang tích luỹ.";
     return sc.score < 40 ? "Tốt cho giữ 1–2 năm. <b>Không</b> báo giá vài tuần tới." : sc.score < 60 ? "Giá trung bình so với giá vốn. Không báo giá vài tuần tới." : "Đắt: rủi ro đỉnh cao hơn cho 1–2 năm.";
   }
   function ctxCard(g, C) {
     const sc = C.scores[g], st = ctxState[g][ctxB(sc.score)];
-    const d7 = sc.d7 == null ? "" : `<span class="d7">${sc.d7 > 0 ? "▲" : sc.d7 < 0 ? "▼" : "•"} ${Math.abs(sc.d7)} / 7 ngày</span>`;
+    const d7 = sc.d7 == null ? "" : `<span class="d7">${sc.d7 === 0 ? "không đổi so với tuần trước" : `${sc.d7 > 0 ? "▲ tăng" : "▼ giảm"} ${Math.abs(sc.d7)} điểm so với tuần trước`}</span>`;
     return `<div class="ctx-card"><div class="n">${esc(g === "whale" ? "Cá mập" : g === "value" ? "Định giá" : "Vĩ mô")}${g === "macro" ? '<span class="ctx-star">★ quan trọng nhất</span>' : ""}</div>
       <div class="q">${ctxQ[g]}</div><div class="big2 tone-${st[1]}">${sc.score}<small>/100</small></div>
-      <div class="st tone-${st[1]}">${st[0]}${d7}</div>
+      <div class="st tone-${st[1]}">${st[0]}${st[2] ? ` <span style="font-size:.72rem;font-weight:600;opacity:.8">· ${st[2]}</span>` : ""}${d7}</div>
       <div class="ctx-sc" style="background:${ctxGrad[g]}"><i style="left:${sc.score}%"></i></div><div class="ctx-ends"><span>${ctxEnds[g][0]}</span><span>${ctxEnds[g][1]}</span></div>
       <div class="ctx-mean">${ctxMeaning(g, C)}</div></div>`;
   }

@@ -230,9 +230,9 @@ def load_ctx() -> dict:
 
 
 CTX_STATE = {
-    "macro": ["tiền đắt, gió ngược", "hơi thắt chặt", "trung tính", "nới lỏng, gió thuận", "rất thuận lợi"],
-    "whale": ["bán mạnh", "đang bán", "trung tính", "đang gom", "gom mạnh"],
-    "value": ["rẻ", "hơi rẻ", "trung bình", "hơi đắt", "đắt"],
+    "macro": ["rất thắt chặt", "thắt chặt", "trung tính", "nới lỏng", "rất nới lỏng"],
+    "whale": ["phân phối mạnh", "phân phối", "trung tính", "tích luỹ", "tích luỹ mạnh"],
+    "value": ["định giá thấp", "hơi thấp", "hợp lý", "hơi cao", "định giá cao"],
 }
 
 
