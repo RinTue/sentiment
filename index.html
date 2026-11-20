@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sentiment Analysis</title>
-<script>try { const t = JSON.parse(localStorage.getItem("tamly-theme") || "null"); if (t) document.documentElement.dataset.theme = t; } catch (e) { /* bỏ qua */ }</script>
+<script>try { const t = JSON.parse(localStorage.getItem("tamly-theme2") || "null"); if (t) document.documentElement.dataset.theme = t; } catch (e) { /* bỏ qua */ }</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -186,16 +186,16 @@ h4.ph.pos::before { background: var(--good); } h4.ph.neg::before { background: v
 .liq-verdict .mini { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 10px 0 6px; font-size: .85rem; color: var(--ink-2); }
 .liq-verdict .mini .bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--line); margin-top: 4px; }
 .liq-more { margin-top: 10px; } .liq-more > summary { cursor: pointer; font-weight: 600; color: var(--accent, var(--ink-2)); padding: 6px 0; }
-.hlm-card { background: #0b0e11; border-radius: 12px; padding: 10px 12px 4px; margin-top: 8px; }
+.hlm-card { background: #2d333b; border-radius: 12px; padding: 10px 12px 4px; margin-top: 8px; }
 .hlm-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: #f1f3f5; font-size: 1rem; }
-.hlm-ctl { display: flex; gap: 8px; } .hlm-ctl select, .hlm-ctl button { background: #12171c; color: #e6e9ec; border: 1px solid #2b333b; border-radius: 6px; padding: 5px 10px; font: inherit; font-size: .85rem; cursor: pointer; }
+.hlm-ctl { display: flex; gap: 8px; } .hlm-ctl select, .hlm-ctl button { background: #323942; color: #e6e9ec; border: 1px solid #444c56; border-radius: 6px; padding: 5px 10px; font: inherit; font-size: .85rem; cursor: pointer; }
 /* Chu kỳ */
 .cy-px { margin-top: 14px; } .cy-px small { color: var(--ink-3); }
 .cy-tl { position: relative; margin-top: 6px; height: 22px; font-size: .66rem; }
 .cy-tl span { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; color: #14181b; font-weight: 600; border-radius: 2px; overflow: hidden; white-space: nowrap; min-width: 2px; }
 .cy-tl .a { background: #9ad84a; } .cy-tl .b { background: #f0a43a; } .cy-tl .r { background: #ef5b6b; color: #fff; }
 .cy-tl .pj { background-image: repeating-linear-gradient(135deg, rgba(0,0,0,.28) 0 4px, transparent 4px 9px); opacity: .75; } .cy-tl .live { outline: 1px solid #fff; }
-.cy-row { display: grid; grid-template-columns: 120px 1fr 92px 150px; gap: 8px 14px; align-items: center; padding: 10px 12px; margin-top: 8px; border: 1px solid #222a31; border-radius: 10px; background: #0f1418; color: #e6e9ec; }
+.cy-row { display: grid; grid-template-columns: 120px 1fr 92px 150px; gap: 8px 14px; align-items: center; padding: 10px 12px; margin-top: 8px; border: 1px solid #444c56; border-radius: 10px; background: #323942; color: #e6e9ec; }
 .cy-nm { font-weight: 650; font-size: .88rem; display: flex; align-items: center; gap: 8px; } .cy-nm i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
 .cy-bar { display: flex; height: 22px; border-radius: 4px; overflow: hidden; font-size: .7rem; } .cy-bar span { display: flex; align-items: center; padding: 0 8px; color: #14181b; white-space: nowrap; overflow: hidden; }
 .cy-bar .a { background: #b7f34d; } .cy-bar .b { background: #f5a524; flex: 1; justify-content: flex-end; }
@@ -236,14 +236,14 @@ h4.ph.pos::before { background: var(--good); } h4.ph.neg::before { background: v
 .cmp-sub { font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; margin-top: 18px; } .cmp-sub span { text-transform: none; letter-spacing: 0; font-weight: 400; margin-left: 6px; }
 .cmp-sum { margin: 14px 0 0; font-size: .92rem; }
 .cmp-card.na { opacity: .6; }
-@media (prefers-color-scheme: dark) { .cmp-bar span { color: rgba(255,255,255,.5); } .cmp-pill.z0 { color: #ff8a80; } .cmp-pill.z1 { color: #f2b29f; } .cmp-pill.z2 { color: #f0d58f; } .cmp-pill.z3 { color: #a9dca4; } .cmp-pill.z4 { color: #7fd08b; } .cmp-grad u { background: #8fb8ff; } .cmp-d.up { color: #7fd08b; } .cmp-d.down { color: #ff8a80; } }
+@media (prefers-color-scheme: dark) and (min-width: 99999px) { .cmp-bar span { color: rgba(255,255,255,.5); } .cmp-pill.z0 { color: #ff8a80; } .cmp-pill.z1 { color: #f2b29f; } .cmp-pill.z2 { color: #f0d58f; } .cmp-pill.z3 { color: #a9dca4; } .cmp-pill.z4 { color: #7fd08b; } .cmp-grad u { background: #8fb8ff; } .cmp-d.up { color: #7fd08b; } .cmp-d.down { color: #ff8a80; } }
 @media (max-width: 900px) { .cmp-grid { grid-template-columns: repeat(2, 1fr); } .cmp-grid.three { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .cmp-top { grid-template-columns: 1fr auto; } .cmp-top .cmp-score { grid-row: 1; grid-column: 2; } .cmp-top .cmp-bar.lg { grid-column: 1 / 3; } .cmp-agree { grid-column: 1 / 3; } .cmp-name { font-size: 1.6rem; } .cmp-bar.lg span { font-size: .58rem; }
   .cmp-grid, .cmp-grid.three { grid-template-columns: 1fr 1fr; gap: 8px; } .cmp-card { padding: 9px 10px 10px; } .cmp-card .h { font-size: .82rem; } .cmp-card .sc b { font-size: .95rem; } .cmp-pill { font-size: .68rem; padding: 1px 7px; }
   .cmp-bar.sm span { color: transparent !important; height: 10px; } .cmp-card .more-hint { display: none; } .cmp-card[open] { grid-column: 1 / 3; } }
 .etf-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 8px 0 2px; color: #e6e9ec; }
 .etf-big { font-size: 1.9rem; font-weight: 700; letter-spacing: -.01em; margin-right: 4px; } .etf-big.neg { color: #f6465d; } .etf-big.pos { color: #2ebd85; }
-.etf-chip { font-size: .8rem; padding: 3px 8px; border-radius: 6px; background: #1a2027; color: #c7ced6; } .etf-chip.neg { color: #f6465d; background: rgba(246,70,93,.12); } .etf-chip.pos { color: #2ebd85; background: rgba(46,189,133,.12); }
+.etf-chip { font-size: .8rem; padding: 3px 8px; border-radius: 6px; background: #22272e; color: #c7ced6; } .etf-chip.neg { color: #f6465d; background: rgba(246,70,93,.12); } .etf-chip.pos { color: #2ebd85; background: rgba(46,189,133,.12); }
 .etf-px { margin-left: auto; font-size: .82rem; color: #c7ced6; } .etf-px i { display: inline-block; width: 16px; height: 2px; background: #f0b90b; vertical-align: middle; margin-right: 6px; }
 .etf-sub { font-size: .76rem; color: #7d8792; }
 .etf-head { flex-wrap: wrap; } .hlm-ctl.etf-rg { flex-wrap: wrap; gap: 6px; } .hlm-ctl.etf-rg button { white-space: nowrap; }
@@ -407,23 +407,25 @@ details.ctx-more > summary { cursor: pointer; font-weight: 600; color: var(--acc
 .ctx-exlvl { font-weight: 800; font-size: .86rem; padding: 2px 10px; border-radius: 99px; }
 @media (max-width: 860px) { .ctx-ex4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .ctx-ex4, .ctx-lv { grid-template-columns: 1fr; } }
-/* ===== Giao diện chuyên nghiệp (20/11/2026): nền tối mặc định, một bộ quy ước cho mọi tab ===== */
+/* ===== Giao diện chuyên nghiệp (20/11/2026): mặc định tông sáng ấm (kem giấy); nút ◐ chuyển tông tối dịu ===== */
 :root {
-  --bg: #0b0e11; --panel: #12161b; --panel-2: #171c22; --ink: #e8ecef; --ink-2: #a9b3bc; --ink-3: #6f7a86; --line: #232a33;
-  --accent: #4c8dff; --accent-bg: rgba(76,141,255,.14); --good: #2ebd85; --good-bg: rgba(46,189,133,.14); --bad: #f6465d; --bad-bg: rgba(246,70,93,.14);
-  --warn: #f0b90b; --warn-bg: rgba(240,185,11,.14); --neutral-bg: #1e252d; --t1: #f6465d; --t1-bg: rgba(246,70,93,.14); --t2: #f0b90b; --t2-bg: rgba(240,185,11,.14);
-  --z0: #f6465d; --z1: #e8833a; --z2: #6f7a86; --z3: #5fc79a; --z4: #2ebd85;
-  --s1: #4c8dff; --s2: #e8833a; --s3: #2ebd85; --s4: #a371f7;
+  --bg: #f4efe6; --panel: #fbf8f2; --panel-2: #f6f1e8; --ink: #2f2a24; --ink-2: #5f574c; --ink-3: #8a8174; --line: #e3dbcd;
+  --accent: #9a6b2f; --accent-bg: #f1e4cf; --good: #4f7f3a; --good-bg: #e5eedb; --bad: #b4493a; --bad-bg: #f6e0da;
+  --warn: #a87a1c; --warn-bg: #f5e8c8; --neutral-bg: #ece5d8; --t1: #b4493a; --t1-bg: #f6e0da; --t2: #a87a1c; --t2-bg: #f5e8c8;
+  --z0: #b4493a; --z1: #c47a3a; --z2: #a39a8c; --z3: #79a05f; --z4: #4f7f3a;
+  --s1: #3d6fa8; --s2: #c4703a; --s3: #4f7f3a; --s4: #7b5bb5;
+  --hm-u: 79,127,58; --hm-d: 180,73,58;
   --mono: var(--font);
-  color-scheme: dark;
-}
-:root[data-theme="light"] {
-  --bg: #f3f4f6; --panel: #ffffff; --panel-2: #f7f8f9; --ink: #111418; --ink-2: #48525c; --ink-3: #78828c; --line: #e2e5e9;
-  --accent: #1f5fd1; --accent-bg: #e6eefc; --good: #0f8a5f; --good-bg: #e2f4ec; --bad: #d1283f; --bad-bg: #fbe6e9;
-  --warn: #9a6a00; --warn-bg: #fbf0d6; --neutral-bg: #eceef1; --t1: #d1283f; --t1-bg: #fbe6e9; --t2: #9a6a00; --t2-bg: #fbf0d6;
-  --z0: #d1283f; --z1: #d9792b; --z2: #9aa1a8; --z3: #3fa77a; --z4: #0f8a5f;
-  --s1: #1f5fd1; --s2: #e06a2c; --s3: #0f8a5f; --s4: #7b4fd0;
   color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #22272e; --panel: #2d333b; --panel-2: #323942; --ink: #cdd5de; --ink-2: #9ba6b2; --ink-3: #7a8591; --line: #3b434d;
+  --accent: #6ca4f8; --accent-bg: rgba(108,164,248,.15); --good: #57ab5a; --good-bg: rgba(87,171,90,.16); --bad: #e5534b; --bad-bg: rgba(229,83,75,.16);
+  --warn: #c69026; --warn-bg: rgba(198,144,38,.16); --neutral-bg: #373e47; --t1: #e5534b; --t1-bg: rgba(229,83,75,.16); --t2: #c69026; --t2-bg: rgba(198,144,38,.16);
+  --z0: #e5534b; --z1: #d9853f; --z2: #7a8591; --z3: #6fbf72; --z4: #57ab5a;
+  --s1: #6ca4f8; --s2: #d9853f; --s3: #57ab5a; --s4: #a98ee8;
+  --hm-u: 87,171,90; --hm-d: 229,83,75;
+  color-scheme: dark;
 }
 body { font-size: 14px; font-variant-numeric: tabular-nums; }
 .wrap { max-width: 1360px; gap: 14px; padding-block: 0 40px; }
@@ -457,7 +459,7 @@ header.top .sub { font-size: .76rem; }
 .ctx-lbl { font-size: .7rem; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-2); font-weight: 600; display: flex; gap: 8px; align-items: center; }
 .ctx-lbl .t { margin-left: auto; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink-3); }
 .ctx-hm td { padding: 6px 7px; }
-.hm-u { background: rgba(46,189,133,var(--a)); } .hm-d { background: rgba(246,70,93,var(--a)); }
+.hm-u { background: rgba(var(--hm-u),calc(var(--a)*.85)); } .hm-d { background: rgba(var(--hm-d),calc(var(--a)*.85)); }
 .ctx-cal { display: grid; grid-template-columns: 54px minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: .86rem; }
 .ctx-cal:last-child { border-bottom: 0; }
 .ctx-kpi { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; }
@@ -2032,19 +2034,19 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       const pIdx = D.cats.indexOf("P"), fmtC = (v) => v == null ? "–" : num(v, v >= 100 ? 0 : 2), lab = (k) => k === "P" ? num(D.P) : num(k);
       const red = "#f6465d", green = "#2ebd85", axis = "#7d8792", grid = "#1f262d", narrow = el.clientWidth < 520;
       ch.setOption({
-        backgroundColor: "#0b0e11", animation: false,
+        backgroundColor: "#2d333b", animation: false,
         legend: { top: 4, textStyle: { color: "#c7ced6", fontSize: 11 }, itemWidth: 12, itemHeight: 8, data: ["Cộng dồn short", "Cộng dồn long", "Short", "Long"] },
         title: { text: `Giá hiện tại: ${num(D.P)}`, left: "center", top: narrow ? 44 : 24, textStyle: { color: "#e6e9ec", fontSize: 11, fontWeight: "normal" } },
         grid: { left: narrow ? 40 : 52, right: narrow ? 44 : 58, top: narrow ? 72 : 56, bottom: 64 },
-        tooltip: { trigger: "axis", confine: true, extraCssText: "white-space:normal;max-width:" + (narrow ? 250 : 360) + "px;", axisPointer: { type: "shadow" }, backgroundColor: "#1a2027", borderColor: "#2b333b", textStyle: { color: "#e6e9ec", fontSize: 12 },
+        tooltip: { trigger: "axis", confine: true, extraCssText: "white-space:normal;max-width:" + (narrow ? 250 : 360) + "px;", axisPointer: { type: "shadow" }, backgroundColor: "#22272e", borderColor: "#444c56", textStyle: { color: "#e6e9ec", fontSize: 12 },
           formatter: (ps) => { const i = ps[0].dataIndex, k = D.cats[i]; if (k === "P") return `Giá hiện tại ${num(D.P)} $`;
             const isL = D.long[i] > 0, c = isL ? D.long[i] : D.short[i], cum = isL ? D.cl[i] : D.cs[i], d = (k / D.P - 1) * 100;
             return `<b>${num(k)}–${num(k + D.bk)} $</b> (${d >= 0 ? "+" : "−"}${num(Math.abs(d), 1)}%)<br><span style="color:${isL ? red : green}">●</span> ${isL ? "Long" : "Short"} bị thanh lý: <b>${fmtC(c)} ${D.coin}</b> ≈ ${usd(c * D.P)} (${D.cnt[i]} vị thế)<br>Cộng dồn nếu giá ${isL ? "xuống" : "lên"} tới đây: <b>${fmtC(cum)} ${D.coin}</b> ≈ ${usd(cum * D.P)}`; } },
-        xAxis: { type: "category", data: D.cats.map(lab), axisLine: { lineStyle: { color: "#2b333b" } }, axisLabel: { color: axis, fontSize: 10, hideOverlap: true }, axisTick: { show: false } },
+        xAxis: { type: "category", data: D.cats.map(lab), axisLine: { lineStyle: { color: "#444c56" } }, axisLabel: { color: axis, fontSize: 10, hideOverlap: true }, axisTick: { show: false } },
         yAxis: [{ type: "value", axisLabel: { color: axis, fontSize: 10, formatter: (v) => num(v) }, splitLine: { lineStyle: { color: grid } } },
                 { type: "value", axisLabel: { color: axis, fontSize: 10, formatter: (v) => num(v) }, splitLine: { show: false } }],
         dataZoom: [{ type: "inside", start: HL.zoom ? HL.zoom[0] : 0, end: HL.zoom ? HL.zoom[1] : 100 },
-                   { type: "slider", height: 18, bottom: 10, start: HL.zoom ? HL.zoom[0] : 0, end: HL.zoom ? HL.zoom[1] : 100, borderColor: "#2b333b", backgroundColor: "#11161b", fillerColor: "rgba(80,120,200,.25)", textStyle: { color: axis }, dataBackground: { lineStyle: { color: "#3a4450" }, areaStyle: { color: "#1c232a" } } }],
+                   { type: "slider", height: 18, bottom: 10, start: HL.zoom ? HL.zoom[0] : 0, end: HL.zoom ? HL.zoom[1] : 100, borderColor: "#444c56", backgroundColor: "#323942", fillerColor: "rgba(80,120,200,.25)", textStyle: { color: axis }, dataBackground: { lineStyle: { color: "#3a4450" }, areaStyle: { color: "#1c232a" } } }],
         series: [
           { name: "Cộng dồn short", type: "line", yAxisIndex: 1, data: D.cs, showSymbol: false, lineStyle: { color: green, width: 1.5 }, itemStyle: { color: green }, areaStyle: { color: "rgba(46,189,133,.18)" }, connectNulls: false },
           { name: "Cộng dồn long", type: "line", yAxisIndex: 1, data: D.cl, showSymbol: false, lineStyle: { color: red, width: 1.5 }, itemStyle: { color: red }, areaStyle: { color: "rgba(246,70,93,.18)" }, connectNulls: false },
@@ -2333,11 +2335,11 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       }
       const ser = (name, data, color) => ({ name, type: "line", data, showSymbol: false, connectNulls: false, lineStyle: { color, width: 1.8 }, itemStyle: { color }, areaStyle: { color: color + "22", origin: "start" } });
       CY.c2.setOption({
-        backgroundColor: "#0b0e11", animation: false, grid: { left: narrow ? 44 : 60, right: narrow ? 30 : 40, top: 40, bottom: 44 },
-        tooltip: { trigger: "axis", confine: true, backgroundColor: "#1a2027", borderColor: "#2b333b", textStyle: { color: "#e6e9ec", fontSize: 12 },
+        backgroundColor: "#2d333b", animation: false, grid: { left: narrow ? 44 : 60, right: narrow ? 30 : 40, top: 40, bottom: 44 },
+        tooltip: { trigger: "axis", confine: true, backgroundColor: "#22272e", borderColor: "#444c56", textStyle: { color: "#e6e9ec", fontSize: 12 },
           formatter: (ps) => { const p = ps.find((x) => x.seriesType === "line" && !String(x.seriesName).startsWith("Kịch bản") && x.value && x.value[1] != null); if (!p) return ""; const i = Math.round((p.value[0] - M.t0) / 864e5); const c = cyc.slice().reverse().find((x) => i >= x.b) || cyc[0];
             const ph = i < c.h ? "Tích luỹ" : i <= c.p ? "Bùng nổ" : "Giảm giá"; return `<b>${d(i)}</b><br>Giá: <b>${kUsd(P[i])}</b><br>${c.name} · ${ph}<br>Halving ${i - c.h >= 0 ? "+" : ""}${i - c.h} ngày`; } },
-        xAxis: { type: "time", min: ts(first), max: ts(endProj), axisLine: { lineStyle: { color: "#2b333b" } }, axisLabel: { color: axis, fontSize: 10 }, splitLine: { show: false } },
+        xAxis: { type: "time", min: ts(first), max: ts(endProj), axisLine: { lineStyle: { color: "#444c56" } }, axisLabel: { color: axis, fontSize: 10 }, splitLine: { show: false } },
         yAxis: { type: "log", logBase: 10, axisLabel: { color: axis, fontSize: 10, formatter: (v) => kUsd(v) }, splitLine: { lineStyle: { color: grid } }, min: 100 },
         legend: CY.proj ? { top: 2, left: narrow ? 6 : 64, data: ["Kịch bản A", "Kịch bản B", "Kịch bản C"], textStyle: { color: "#c7ced6", fontSize: 10 }, itemWidth: 16 } : undefined,
         series: [ser("Tích luỹ", acc, CYC.acc), ser("Bùng nổ", boom, CYC.boom), ser("Giảm giá", bear, CYC.bear), ...paths,
@@ -2378,11 +2380,11 @@ if (typeof module !== "undefined") module.exports = ENGINE;
           [{ xAxis: Math.min(...booms), itemStyle: { color: "rgba(240,164,58,.14)" }, label: { show: true, position: "insideTop", formatter: narrow ? "Đỉnh" : `Đỉnh: +${Math.min(...booms)} → +${Math.max(...booms)} ngày`, color: CYC.boom, fontSize: 10 } }, { xAxis: Math.max(...booms) }]] },
         markLine: { symbol: "none", silent: true, data: [{ xAxis: 0, label: { formatter: "₿ Halving", color: CYC.o }, lineStyle: { color: CYC.o, width: 1.4, type: "solid" } }] } });
       CY.c1.setOption({
-        backgroundColor: "#0b0e11", animation: false, grid: { left: narrow ? 36 : 44, right: 16, top: narrow ? 26 : 40, bottom: narrow ? 58 : 34 },
+        backgroundColor: "#2d333b", animation: false, grid: { left: narrow ? 36 : 44, right: 16, top: narrow ? 26 : 40, bottom: narrow ? 58 : 34 },
         legend: narrow ? { bottom: 4, left: "center", textStyle: { color: "#c7ced6", fontSize: 10 }, itemWidth: 14, data: cyc.map((c) => c.name) } : { top: 4, right: 8, textStyle: { color: "#c7ced6", fontSize: 11 }, data: cyc.map((c) => c.name) },
-        tooltip: { trigger: "axis", confine: true, backgroundColor: "#1a2027", borderColor: "#2b333b", textStyle: { color: "#e6e9ec", fontSize: 12 },
+        tooltip: { trigger: "axis", confine: true, backgroundColor: "#22272e", borderColor: "#444c56", textStyle: { color: "#e6e9ec", fontSize: 12 },
           formatter: (ps) => `Halving ${ps[0].value[0] >= 0 ? "+" : ""}${ps[0].value[0]} ngày<br>` + ps.filter((p) => p.seriesType === "line").map((p) => { const c = cyc[p.seriesIndex], i = c.h + p.value[0]; return `<span style="color:${p.color}">●</span> ${c.name}: ${kUsd(P[i])} (${d(i)})`; }).join("<br>") },
-        xAxis: { type: "value", min: -600, max: 960, interval: 300, axisLine: { lineStyle: { color: "#2b333b" } }, axisLabel: { color: axis, fontSize: 10, formatter: (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v) + (narrow ? "" : " ngày") }, splitLine: { show: false } },
+        xAxis: { type: "value", min: -600, max: 960, interval: 300, axisLine: { lineStyle: { color: "#444c56" } }, axisLabel: { color: axis, fontSize: 10, formatter: (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v) + (narrow ? "" : " ngày") }, splitLine: { show: false } },
         yAxis: { type: "value", min: -0.05, max: 1.08, axisLabel: { color: axis, fontSize: 10, formatter: (v) => v === 0 ? "đáy" : v === 1 ? "đỉnh" : "" }, interval: 0.25, splitLine: { lineStyle: { color: grid } } },
         series: S1,
       }, true);
@@ -2877,17 +2879,17 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       let si = 0; if (rg) { const lo = new Date(Date.parse(cats.at(-1) + "T00:00:00Z") - rg * 864e5).toISOString().slice(0, 10); si = Math.max(0, cats.findIndex((d) => d >= lo)); }
       const lab = (d) => `${+d.slice(8, 10)}/${+d.slice(5, 7)}${rg === 0 || rg > 200 ? "/" + d.slice(2, 4) : ""}`;
       ch.setOption({
-        backgroundColor: "#0b0e11", animation: false,
+        backgroundColor: "#2d333b", animation: false,
         grid: { left: narrow ? 46 : 58, right: narrow ? 46 : 58, top: 16, bottom: 62 },
-        tooltip: { trigger: "axis", confine: true, extraCssText: "white-space:normal;max-width:" + (narrow ? 240 : 320) + "px;", axisPointer: { type: "shadow" }, backgroundColor: "#1a2027", borderColor: "#2b333b", textStyle: { color: "#e6e9ec", fontSize: 12 },
+        tooltip: { trigger: "axis", confine: true, extraCssText: "white-space:normal;max-width:" + (narrow ? 240 : 320) + "px;", axisPointer: { type: "shadow" }, backgroundColor: "#22272e", borderColor: "#444c56", textStyle: { color: "#e6e9ec", fontSize: 12 },
           formatter: (ps) => { const i = ps[0].dataIndex, r = days[i], f = (D.funds || {})[r[0]];
             const fl = f ? Object.entries(f).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).slice(0, 5).map(([k, v]) => `${esc(k)} <span style="color:${v < 0 ? red : green}">${mUsd(v)}</span>`).join(" · ") : "";
             return `<b>${r[0].slice(8, 10)}/${r[0].slice(5, 7)}/${r[0].slice(0, 4)}</b><br><span style="color:${r[1] < 0 ? red : green}">●</span> ${r[1] < 0 ? "Tiền ra ròng" : "Tiền vào ròng"}: <b>${mUsd(r[1])}</b>` + (r[3] ? `<br><span style="color:${gold}">●</span> Giá BTC: ${num(r[3])} $` : "") + (r[2] ? `<br>Tổng tài sản các quỹ: ${num(r[2], 1)} tỷ $` : "") + (fl ? `<br><span style="color:#9aa4ad">${fl}</span>` : ""); } },
-        xAxis: { type: "category", data: cats, axisLine: { lineStyle: { color: "#2b333b" } }, axisLabel: { color: axis, fontSize: 10, hideOverlap: true, formatter: lab }, axisTick: { show: false } },
+        xAxis: { type: "category", data: cats, axisLine: { lineStyle: { color: "#444c56" } }, axisLabel: { color: axis, fontSize: 10, hideOverlap: true, formatter: lab }, axisTick: { show: false } },
         yAxis: [{ type: "value", axisLabel: { color: axis, fontSize: 10, formatter: (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + num(Math.abs(v)) + (narrow ? "" : " tr") }, splitLine: { lineStyle: { color: "#1f262d" } } },
                 { type: "value", scale: true, axisLabel: { color: axis, fontSize: 10, formatter: (v) => num(v / 1000) + "K" }, splitLine: { show: false } }],
         dataZoom: [{ type: "inside", startValue: si, endValue: cats.length - 1 },
-                   { type: "slider", height: 18, bottom: 10, startValue: si, endValue: cats.length - 1, borderColor: "#2b333b", backgroundColor: "#11161b", fillerColor: "rgba(80,120,200,.25)", textStyle: { color: axis }, labelFormatter: (i) => cats[i] ? lab(cats[i]) : "", dataBackground: { lineStyle: { color: "#3a4450" }, areaStyle: { color: "#1c232a" } } }],
+                   { type: "slider", height: 18, bottom: 10, startValue: si, endValue: cats.length - 1, borderColor: "#444c56", backgroundColor: "#323942", fillerColor: "rgba(80,120,200,.25)", textStyle: { color: axis }, labelFormatter: (i) => cats[i] ? lab(cats[i]) : "", dataBackground: { lineStyle: { color: "#3a4450" }, areaStyle: { color: "#1c232a" } } }],
         series: [
           { name: "Tiền ròng", type: "bar", data: days.map((r) => ({ value: r[1], itemStyle: { color: r[1] < 0 ? red : green } })), barMaxWidth: 14, barCategoryGap: "25%" },
           { name: "Giá BTC", type: "line", yAxisIndex: 1, data: days.map((r) => r[3]), showSymbol: false, smooth: true, connectNulls: true, lineStyle: { color: gold, width: 1.6 }, itemStyle: { color: gold }, z: 3 },
@@ -3023,8 +3025,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   $("refresh").addEventListener("click", load);
   $("refresh").addEventListener("click", ctxLoad);
   $("theme-btn").addEventListener("click", () => {
-    const cur = document.documentElement.dataset.theme === "light" ? "light" : "dark", nx = cur === "light" ? "dark" : "light";
-    document.documentElement.dataset.theme = nx; store.set("tamly-theme", nx);
+    const cur = document.documentElement.dataset.theme === "dark" ? "dark" : "warm", nx = cur === "dark" ? "warm" : "dark";
+    document.documentElement.dataset.theme = nx; store.set("tamly-theme2", nx);
     CTX.drawn = false; const d = $("ctx-more"); if (d && d.open) ctxDraw();
   });
 
