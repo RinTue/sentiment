@@ -354,8 +354,10 @@ footer { color: var(--ink-3); font-size: .8rem; text-align: center; line-height:
 .ctx-sig .t { font-weight: 600; font-size: .9rem; } .ctx-sig .d { font-size: .78rem; color: var(--ink-3); }
 .ctx-sig > div.ok { border-color: var(--good); background: var(--good-bg); }
 details.ctx-more > summary { cursor: pointer; font-weight: 600; color: var(--accent); }
-.ctx-sec { display: flex; align-items: center; gap: 8px; margin: 18px 0 8px; font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); }
-.ctx-sec:after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.ctx-sec { display: flex; align-items: center; gap: 10px; margin: 30px 0 12px; padding: 10px 14px; border-radius: 10px; background: var(--accent-bg); border-left: 5px solid var(--accent); font-size: 1.05rem; font-weight: 700; color: var(--ink); }
+.ctx-sec:first-of-type { margin-top: 16px; }
+.ctx-sec .n { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--panel); font-size: .92rem; }
+.ctx-sec small { font-weight: 500; font-size: .82rem; color: var(--ink-3); }
 .ctx-p5 { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-top: 6px; }
 .ctx-p5 > div { border: 1px solid var(--line); border-top-width: 3px; border-radius: 9px; padding: 8px 9px; font-size: .74rem; position: relative; }
 .ctx-p5 .t { font-weight: 700; font-size: .84rem; } .ctx-p5 .d { color: var(--ink-3); margin: 2px 0 6px; min-height: 3.6em; }
@@ -2437,7 +2439,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
         <p class="note">Càng nhiều dấu hiệu bật, khả năng xu hướng tăng bắt đầu càng cao. Có thay đổi sẽ báo qua Telegram.</p></div>
       ${C.exit && C.exit.active ? `<div class="ctx-card">${ctxExit(C)}</div>` : ""}
       <div class="ctx-card"><details class="ctx-more" id="ctx-more"><summary>Xem chi tiết: kiểm chứng, lịch sử, từng chỉ số</summary>
-        <div class="ctx-sec">1 · Tâm lý đám đông theo lý thuyết Dow</div>
+        <div class="ctx-sec"><span class="n">1</span>Tâm lý đám đông theo lý thuyết Dow</div>
         ${ctxCycleSvg(P)}
         <div class="ctx-p5">${p5}</div>
         <p class="note">Kết quả giá sau đó, tính từ 2018. Bình thường (mọi ngày từ 2015): ${C.base90}% số lần giá cao hơn sau 3 tháng. Theo Dow, vùng gom thật đến khi thị trường lặng xuống sau hoảng loạn.</p>
@@ -2449,12 +2451,12 @@ if (typeof module !== "undefined") module.exports = ENGINE;
         </div>
         <h3>Các pha trên biểu đồ giá BTC, từ 2018</h3><div class="ctx-chart" id="ctx-c1"></div>
         <div class="ctx-leg">${P.order.map((k) => `<span><b style="color:${PH_COL[k]}">■</b> ${esc(P.names[k][0])}</span>`).join("")}</div>
-        <div class="ctx-sec">2 · Ba lực chi phối: điểm và kiểm chứng</div>
+        <div class="ctx-sec"><span class="n">2</span>Ba lực chi phối: điểm và kiểm chứng</div>
         <div class="ctx-g3">${ctxVerifyCard("macro", C)}${ctxVerifyCard("whale", C)}${ctxVerifyCard("value", C)}</div>
         <h3>Diễn biến điểm số và giá BTC, từ 2021</h3><div class="ctx-chart tall" id="ctx-c2"></div>
         <p class="note">Đáng chú ý là lúc điểm quay lên trước giá: cuối 2022, điểm Vĩ mô đã leo từ dưới 20 lên trên 70 khi giá vẫn ở đáy.</p>
-        ${C.exit && !C.exit.active ? `<div class="ctx-sec">3 · Dấu hiệu thoát hàng (đang tạm ẩn ngoài trang chính)</div>${ctxExit(C)}` : ""}
-        <div class="ctx-sec">${C.exit && !C.exit.active ? 4 : 3} · Chi tiết từng chỉ số</div>
+        ${C.exit && !C.exit.active ? `<div class="ctx-sec"><span class="n">3</span>Dấu hiệu thoát hàng <small>· đang tạm ẩn ngoài trang chính</small></div>${ctxExit(C)}` : ""}
+        <div class="ctx-sec"><span class="n">${C.exit && !C.exit.active ? 4 : 3}</span>Chi tiết từng chỉ số</div>
         <div style="display:grid;gap:12px">${ctxItems("whale", C)}${ctxItems("macro", C)}${ctxItems("value", C)}</div>
         <p class="note">Điểm 0–100 là thứ hạng của hôm nay so với lịch sử (Vĩ mô, Cá mập: 1 năm; Định giá: 4 năm), trung bình các chỉ số trong nhóm. Ngưỡng và cách tính cố định, xem collector/context.py. Xác suất từ lịch sử, mỗi mức chỉ có vài giai đoạn độc lập. Cập nhật ${fmtTime(Date.parse(C.updated))}.</p>
       </details></div></div>`;
