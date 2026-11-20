@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-20T19:07:50Z",
+ "updated": "2026-11-20T20:08:03Z",
  "test_from": "2019-01-01",
  "split": "2023-01-01",
  "groups_name": {
@@ -1004,39 +1004,6 @@
    "short": false
   },
   {
-   "key": "dvol",
-   "group": "micro",
-   "name": "Độ biến động kỳ vọng DVOL",
-   "from": "2021-04-02",
-   "now": 45.7,
-   "rho30_tr": 0.166,
-   "rho30_te": 0.091,
-   "wf30": {
-    "n": 1450,
-    "from": "2022-11-01",
-    "acc": 50.6,
-    "base": 43.4,
-    "edge": 7.1,
-    "skill": -3.0,
-    "acc_strong": 41.5,
-    "share_strong": 23
-   },
-   "rho90_tr": 0.263,
-   "rho90_te": 0.114,
-   "wf90": {
-    "n": 1329,
-    "from": "2023-01-01",
-    "acc": 52.5,
-    "base": 41.7,
-    "edge": 10.8,
-    "skill": -14.5,
-    "acc_strong": 42.7,
-    "share_strong": 60
-   },
-   "pass": false,
-   "short": false
-  },
-  {
    "key": "exbal",
    "group": "chain",
    "name": "BTC trên sàn (thay đổi 30 ngày)",
@@ -1559,7 +1526,8 @@
   "base90": 55.9
  },
  "errors": {
+  "dvol": "503 Server Error: Service Unavailable for url: https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=BTC&start_timestamp=1717445237114&end_ti",
   "coinmetrics_whales": "403 Client Error: Forbidden for url: https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=AdrBalNtv1KCnt&frequency=1d&start_time="
  },
- "runtime_sec": 81
+ "runtime_sec": 91
 }
