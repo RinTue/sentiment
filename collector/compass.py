@@ -21,7 +21,7 @@ import requests
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
 DAY = 86400
-COMPASS_V = 3
+COMPASS_V = 4
 UA = "sentiment-dashboard (github.com/RinTue/sentiment)"
 WIN = 1095          # 3 năm
 ALTS = ["ETH", "SOL", "XRP", "BNB", "DOGE", "ADA", "LINK", "AVAX"]
@@ -36,13 +36,13 @@ LENSES = [
     ("macro", "Vĩ mô", True, ["Thắt chặt", "Hạn chế", "Trung tính", "Hỗ trợ", "Nới lỏng"],
      "Như Glassnode: đồng đô la so với trung bình 200 ngày, đường cong lợi suất, kỳ vọng lãi suất Fed (FRED)."),
     ("flows", "Dòng tiền", True, ["Cạn kiệt", "Yếu", "Cân bằng", "Dồi dào", "Tràn ngập"],
-     "Như Glassnode: stablecoin 30 ngày, số BTC nằm trên sàn (Coin Metrics), lực mua spot (Coinbase Premium thay cho mua ròng spot), ETF Mỹ."),
+     "Như Glassnode: stablecoin 30 ngày, số BTC nằm trên sàn (Coin Metrics), lực mua spot ròng (Coinalyze), ETF Mỹ."),
     ("behav", "Hành vi nhà đầu tư", True, ["Rút lui", "Dè dặt", "Trung tính", "Hăng hái", "Hưng phấn"],
-     "Tích luỹ hay phân phối: BTC rút ròng khỏi sàn, số địa chỉ có BTC (Coin Metrics), kèm Fear & Greed. Glassnode dùng số người giữ dài/ngắn hạn (trả phí) nên nhóm này dễ lệch nhất."),
+     "Như Glassnode: tỷ lệ cung của người giữ dài hạn và mức gom/bán 30 ngày (BGeometrics, lượng cung theo tuổi coin), MVRV người giữ ngắn hạn (trễ ~7 ngày). Glassnode tính người giữ dài hạn theo 155 ngày, ở đây theo 6 tháng."),
     ("fund", "Nền tảng on-chain", True, ["Co hẹp", "Yếu", "Ổn định", "Mở rộng", "Sôi động"],
      "Như Glassnode: đà phí mạng, mức tham gia, thanh toán và độ đầy khối (trung bình 30 ngày so với 90 ngày, blockchain.com)."),
     ("cycle", "Vị trí chu kỳ", False, ["Đầu hàng", "Tích luỹ", "Giữa chu kỳ", "Phân phối", "Hưng phấn"],
-     "Giá so với giá vốn thực trên chuỗi (MVRV, Coin Metrics, trễ khoảng 1 tháng nhưng giá vốn đổi chậm), trung bình 200 ngày và 200 tuần (so với toàn bộ lịch sử)."),
+     "Như Glassnode: tỷ lệ lãi/lỗ đã chốt trên chuỗi (BGeometrics) và giá so với giá vốn thực (MVRV, Coin Metrics, trễ khoảng 1 tháng nhưng giá vốn đổi chậm)."),
     ("deriv", "Phái sinh", False, ["Xả đòn bẩy", "Nhẹ", "Cân bằng", "Nóng", "Quá nóng"],
      "Như Glassnode: funding, open interest so với vốn hoá, độ biến động kỳ vọng DVOL (Deribit). Chưa có chênh lệch hợp đồng quý và độ lệch quyền chọn."),
     ("rot", "Luân chuyển", False, ["Mùa BTC", "Nghiêng BTC", "Cân bằng", "Nghiêng altcoin", "Mùa altcoin"],
@@ -177,6 +177,91 @@ def alt_closes(errs: dict) -> dict:
     return {a: {int(k): v for k, v in s.items()} for a, s in al.items() if len(s) > 100}
 
 
+def bgeo(names: list, errs: dict) -> dict:
+    """BGeometrics (bitcoin-data.com) miễn phí, không cần mã: giới hạn 15 lượt/ngày nên mỗi chỉ số tải tối đa 1 lần/ngày,
+    lần đầu lấy từ 2022, sau đó chỉ lấy đoạn mới; lưu đệm ở data/compass_cache.json."""
+    try:
+        cache = json.load(open(CACHE, encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        cache = {}
+    bg = cache.get("bgeo") or {}
+    now = time.time()
+    for n in names:
+        ent = bg.get(n) or {}
+        data = ent.get("data") or {}
+        if now - ent.get("t", 0) < 20 * 3600 and data:
+            continue
+        start = (datetime.strptime(max(data), "%Y-%m-%d") - timedelta(days=10)).strftime("%Y-%m-%d") if data else "2022-12-01"
+        try:
+            r = requests.get(f"https://bitcoin-data.com/v1/{n}", params={"startday": start},
+                             headers={"User-Agent": UA, "Accept": "application/json"}, timeout=60)
+            if r.status_code == 429:
+                raise RuntimeError("hết lượt miễn phí hôm nay (429)")
+            r.raise_for_status()
+            rows = r.json()
+            if isinstance(rows, dict):
+                rows = rows.get("data") or [rows]
+            for row in rows:
+                d = row.get("d") or row.get("theDay")
+                if not d:
+                    continue
+                vals = {}
+                for k, v in row.items():
+                    if k in ("d", "theDay", "unixTs") or isinstance(v, bool):
+                        continue
+                    try:
+                        vals[k] = float(v)
+                    except (TypeError, ValueError):
+                        pass
+                if vals:
+                    data[d[:10]] = vals if len(vals) > 1 else next(iter(vals.values()))
+            ent = {"t": now, "data": dict(sorted(data.items()))}
+        except Exception as ex:  # noqa: BLE001
+            errs["bgeo_" + n] = str(ex)[:120]
+            ent["data"] = data
+        bg[n] = ent
+        time.sleep(2)
+    cache["bgeo"] = bg
+    with open(CACHE, "w", encoding="utf-8") as f:
+        json.dump(cache, f, separators=(",", ":"))
+    out = {}
+    for n in names:
+        dd = (bg.get(n) or {}).get("data") or {}
+        out[n] = {day_of(datetime.strptime(k, "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp()): v for k, v in dd.items()}
+    return out
+
+
+def spot_net_buy(errs: dict) -> dict:
+    """Lực mua spot ròng (mua chủ động trừ bán chủ động, USD/ngày) gộp các cặp BTC spot lớn, từ Coinalyze."""
+    import market  # noqa: PLC0415
+    if not market.COINALYZE_KEY:
+        return {}
+    ex = {e["code"]: e["name"] for e in market.cz_get("exchanges")}
+    time.sleep(1.5)
+    want = ("binance", "coinbase", "okx", "bybit", "kraken", "bitstamp")
+    mk = [m for m in market.cz_get("spot-markets") if (m.get("base_asset") or "").upper() == "BTC"
+          and (m.get("quote_asset") or "").upper() in ("USDT", "USD", "USDC")
+          and any(w in ex.get(m.get("exchange"), "").lower() for w in want)]
+    syms = [m["symbol"] for m in mk][:10]
+    if not syms:
+        raise RuntimeError("không có cặp spot BTC")
+    time.sleep(1.5)
+    rows = market.cz_get("ohlcv-history", {"symbols": ",".join(syms), "interval": "daily",
+                                            "from": int(datetime(2022, 6, 1, tzinfo=timezone.utc).timestamp()), "to": int(time.time())})
+    net: dict = {}
+    have_bv = False
+    for row in rows:
+        for h in row.get("history", []):
+            if h.get("bv") is None or not h.get("v"):
+                continue
+            have_bv = True
+            d = day_of(h["t"])
+            net[d] = net.get(d, 0.0) + (2 * float(h["bv"]) - float(h["v"])) * float(h.get("c") or 0)
+    if not have_bv:
+        raise RuntimeError("Coinalyze không trả khối lượng mua (bv) cho spot")
+    return net
+
+
 def etf_daily() -> dict:
     try:
         J = json.load(open(os.path.join(DATA, "etf.json"), encoding="utf-8"))
@@ -278,6 +363,7 @@ def run(px: dict, fng: dict, stab: dict, prem_daily: dict, cz: dict, wiki: dict,
         add("macro", "path", "Kỳ vọng lãi suất Fed (lợi suất 2 năm trừ lãi suất Fed)", rank(pp, invert=True), pp, "pp2")
 
     # Dữ liệu on-chain miễn phí của Coin Metrics (cung trên sàn, tiền vào/ra sàn, số địa chỉ có số dư, MVRV)
+    bg = safe("bgeo", lambda: bgeo(["hodl-waves-supply", "realized-profit", "realized-loss", "sth-mvrv"], errs))
     cm = safe("coinmetrics", lambda: coinmetrics(["SplyExNtv", "FlowInExNtv", "FlowOutExNtv", "AdrBalCnt", "CapMVRVCur", "PriceUSD", "SplyCur"]))
 
     # Dòng tiền: stablecoin 30 ngày, số dư trên sàn, lực mua spot, ETF Mỹ
@@ -288,7 +374,11 @@ def run(px: dict, fng: dict, stab: dict, prem_daily: dict, cz: dict, wiki: dict,
     if cm.get("SplyExNtv"):
         c = chg(ffill(cm["SplyExNtv"], last_px, 5), 30)
         add("flows", "exbal", "BTC nằm trên sàn (thay đổi 30 ngày; giảm là tốt)", rank(c, invert=True), c, "pct")
-    if prem_daily:
+    snb = safe("spot_net_buy", lambda: spot_net_buy(errs))
+    if snb:
+        s30 = {d: v / 1e6 for d, v in sma(snb, 30).items()}
+        add("flows", "spot", "Lực mua spot ròng (mua chủ động trừ bán, trung bình 30 ngày, Coinalyze)", rank(s30, min_n=120), s30, "musd")
+    elif prem_daily:
         p7 = sma(prem_daily, 7)
         add("flows", "prem", "Lực mua spot của người Mỹ (Coinbase Premium 7 ngày)", rank(p7), p7, "pct3")
     etf = etf_daily()
@@ -298,15 +388,30 @@ def run(px: dict, fng: dict, stab: dict, prem_daily: dict, cz: dict, wiki: dict,
         s20 = ffill(s20, last_px, 4)
         add("flows", "etf", "ETF Bitcoin ở Mỹ (tổng 20 phiên)", rank(s20, min_n=120), s20, "musd")
 
-    # Hành vi nhà đầu tư: tích luỹ hay phân phối (rút khỏi sàn, người giữ mới) + tâm lý đám đông
-    if cm.get("FlowInExNtv") and cm.get("FlowOutExNtv"):
+    # Hành vi nhà đầu tư: như Glassnode, tỷ lệ cung của người giữ dài hạn và mức thay đổi (BGeometrics, lượng cung theo tuổi coin)
+    hw = bg.get("hodl-waves-supply") or {}
+    if hw:
+        old = ("age_6m_1y", "age_1y_2y", "age_2y_3y", "age_3y_4y", "age_4y_5y", "age_5y_7y", "age_7y_10y", "age_10y")
+        share = {d: 100 * sum(v.get(k, 0) for k in old) / sum(v.values()) for d, v in hw.items() if isinstance(v, dict) and sum(v.values())}
+        lth = {d: sum(v.get(k, 0) for k in old) for d, v in hw.items() if isinstance(v, dict)}
+        share, lth = ffill(share, last_px, 7), ffill(lth, last_px, 7)
+        add("behav", "lthshare", "Tỷ lệ cung của người giữ dài hạn (coin trên 6 tháng)", rank(share, min_n=365), share, "pct_lvl")
+        c = chg(lth, 30, pct=False)
+        add("behav", "lthchg", "Người giữ dài hạn gom thêm / bán ra (30 ngày)", rank(c, min_n=365), c, "btcs")
+    sm = bg.get("sth-mvrv") or {}
+    if sm:
+        smf = ffill(sm, last_px, 12)    # bản miễn phí trễ khoảng 7 ngày
+        add("behav", "sthmvrv", "MVRV của người giữ ngắn hạn (bản miễn phí trễ ~7 ngày)", rank(smf, min_n=365), smf, "x")
+    if hw or sm:
+        pass
+    elif cm.get("FlowInExNtv") and cm.get("FlowOutExNtv"):
         net = {d: cm["FlowOutExNtv"][d] - cm["FlowInExNtv"][d] for d in cm["FlowOutExNtv"] if d in cm["FlowInExNtv"]}
         n30 = sma(ffill(net, last_px, 5), 30)
         add("behav", "netout", "BTC rút ròng khỏi sàn mỗi ngày (trung bình 30 ngày; dương là gom)", rank(n30), n30, "btcd")
-    if cm.get("AdrBalCnt"):
+    if not (hw or sm) and cm.get("AdrBalCnt"):
         c = chg(ffill(cm["AdrBalCnt"], last_px, 5), 30)
         add("behav", "holders", "Số địa chỉ có BTC (thay đổi 30 ngày)", rank(c), c, "pct2")
-    if fng:
+    if fng and not (hw or sm):
         f7a = sma(ffill(fng, last_px), 7)
         add("behav", "fng", "Fear & Greed (trung bình 7 ngày)", rank(f7a), f7a, "int")
 
@@ -332,12 +437,18 @@ def run(px: dict, fng: dict, stab: dict, prem_daily: dict, cz: dict, wiki: dict,
         rpf = ffill(rp, last_px, 75)      # giá vốn thực đổi chậm; bản miễn phí trễ khoảng 1 tháng nên giữ giá trị gần nhất
         mv = {d: p[d] / rpf[d] for d in p if d in rpf}
         add("cycle", "mvrv", f"Giá / giá vốn thực trên chuỗi (giá vốn khoảng {rpf[max(rpf)]:,.0f} $)".replace(",", "."), rank(mv, None, 365), mv, "x")
-    m200 = sma(p, 200)
-    mayer = {d: p[d] / m200[d] for d in m200}
-    add("cycle", "mayer", "Giá / trung bình 200 ngày", rank(mayer, None, 365), mayer, "x")
-    w200 = sma(p, 1400)
-    r200w = {d: p[d] / w200[d] for d in w200}
-    add("cycle", "w200", "Giá / trung bình 200 tuần", rank(r200w, None, 120), r200w, "x")
+    rpf, rlf = bg.get("realized-profit") or {}, bg.get("realized-loss") or {}
+    if rpf and rlf:
+        a, b = sma(ffill(rpf, last_px, 5), 7), sma(ffill(rlf, last_px, 5), 7)
+        rpl = {d: a[d] / b[d] for d in a if b.get(d)}
+        add("cycle", "rpl", "Tỷ lệ lãi / lỗ đã chốt trên chuỗi (trung bình 7 ngày)", rank(rpl, None, 365), rpl, "x")
+    else:
+        m200 = sma(p, 200)
+        mayer = {d: p[d] / m200[d] for d in m200}
+        add("cycle", "mayer", "Giá / trung bình 200 ngày", rank(mayer, None, 365), mayer, "x")
+        w200 = sma(p, 1400)
+        r200w = {d: p[d] / w200[d] for d in w200}
+        add("cycle", "w200", "Giá / trung bình 200 tuần", rank(r200w, None, 120), r200w, "x")
 
     # Phái sinh: funding, open interest so với vốn hoá, độ biến động kỳ vọng (DVOL)
     if cz.get("funding"):
@@ -416,6 +527,8 @@ def run(px: dict, fng: dict, stab: dict, prem_daily: dict, cz: dict, wiki: dict,
             return f"{v:+.2f} điểm %"
         if kind == "x3":
             return f"{v:.3f}"
+        if kind == "btcs":
+            return f"{v:+,.0f} BTC"
         if kind == "btcd":
             return f"{v:+,.0f} BTC/ngày"
         if kind == "pct3":
