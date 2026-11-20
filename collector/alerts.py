@@ -247,6 +247,9 @@ def ctx_lines(C: dict) -> list:
          f" · Định giá {S['value']['score']} ({CTX_STATE['value'][b(S['value']['score'])]})",
          f"• Tâm lý đám đông: pha <b>{html.escape(P['name'])}</b>",
          f"• Dấu hiệu xu hướng đổi chiều đi lên: <b>{C['n_ok']}/3</b> (" + ", ".join(("✅ " if x["ok"] else "▫️ ") + html.escape(x["name"]) for x in C["signals"]) + ")"]
+    EX = C.get("exit") or {}
+    if EX.get("active"):
+        L.append(f"• Dấu hiệu thoát hàng: <b>{EX['k']}/4 · {html.escape(EX['level'])}</b>")
     return L
 
 
@@ -387,9 +390,17 @@ def run(latest: dict) -> dict:
             if old.get("phase") and old["phase"] != now_ph:
                 pn = C["phase"]["names"]
                 ch.append(f"🔄 Tâm lý đám đông chuyển pha: {html.escape(pn[old['phase']][0])} → <b>{html.escape(pn[now_ph][0])}</b>. {html.escape(pn[now_ph][1])}")
+            EX = C.get("exit") or {}
+            ok_, k_ = int(old.get("exk", 0)), int(EX.get("k", 0))
+            if EX.get("active") and min(k_, 2) > min(ok_, 2) and k_ >= 1:
+                on = [c["name"] for c in EX.get("cond", []) if c.get("ok")]
+                lv = (EX.get("levels") or {}).get("2" if k_ >= 2 else "1") or {}
+                ch.append(f"{'🔴' if k_ >= 2 else '🟠'} Dấu hiệu thoát hàng: <b>{k_}/4 · {html.escape(EX.get('level', ''))}</b> ({html.escape(', '.join(on).lower())})."
+                          + (f" Lịch sử ở mức này: {lv['up90']}% số lần giá cao hơn sau 3 tháng, trung vị {vn(lv['med90'], 0, True)}%." if lv.get("up90") is not None else "")
+                          + " Chốt dần khi phân tích kỹ thuật cũng báo bán.")
             if ch:
                 msgs.append(("ctx", "🧭 <b>Bối cảnh thị trường thay đổi</b>\n" + "\n".join(ch) + "\n\n" + "\n".join(ctx_lines(C))))
-        st["ctx"] = {"asof": C["asof"], "sig": now_sig, "phase": now_ph}
+        st["ctx"] = {"asof": C["asof"], "sig": now_sig, "phase": now_ph, "exk": int((C.get("exit") or {}).get("k", 0)) if (C.get("exit") or {}).get("active") else 0}
 
     # 4) sự kiện vĩ mô cấp 1 trong 3 giờ tới
     try:

@@ -392,6 +392,18 @@ details.ctx-more > summary { cursor: pointer; font-weight: 600; color: var(--acc
 @media (max-width: 860px) { .ctx-g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ctx-p5 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .ctx-g3 { grid-template-columns: 1fr; } }
 @media (max-width: 600px) { .ctx-hz, .ctx-sig, .ctx-two { grid-template-columns: 1fr; } .ctx-p5 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ctx-hz .v { font-size: 1.25rem; } }
 @media (max-width: 420px) { .ctx-g4 { grid-template-columns: 1fr; } }
+.ctx-ex4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+.ctx-ex4 > div { border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; font-size: .82rem; }
+.ctx-ex4 > div.ok { border-color: var(--bad); background: var(--bad-bg); }
+.ctx-ex4 .t { font-weight: 700; font-size: .88rem; } .ctx-ex4 .d { font-size: .74rem; color: var(--ink-3); margin: 2px 0 5px; }
+.ctx-ex4 .r { font-size: .72rem; color: var(--ink-3); margin-top: 6px; border-top: 1px dashed var(--line); padding-top: 4px; }
+.ctx-lv { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.ctx-lv > div { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; font-size: .8rem; }
+.ctx-lv > div.on { outline: 2px solid var(--ink); outline-offset: 1px; }
+.ctx-lv b { display: block; font-size: .86rem; }
+.ctx-exlvl { font-weight: 800; font-size: .86rem; padding: 2px 10px; border-radius: 99px; }
+@media (max-width: 860px) { .ctx-ex4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .ctx-ex4, .ctx-lv { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -2377,6 +2389,22 @@ if (typeof module !== "undefined") module.exports = ENGINE;
         return `<tr><td>${esc(it.name)}${it.tested ? '<span class="ctx-tag">kiểm chứng</span>' : ""}</td><td class="num">${esc(it.val)}</td><td style="white-space:nowrap"><span class="ctx-rk"><i style="width:${r ?? 0}%;background:${c}"></i></span>${r ?? "–"}</td></tr>`; }).join("")}
       </table></div></div>`;
   }
+  function ctxExit(C) {
+    const E = C.exit; if (!E) return "";
+    const col = ["var(--good)", "var(--warn)", "var(--bad)"][Math.min(E.k, 2)], bg = ["var(--good-bg)", "var(--warn-bg)", "var(--bad-bg)"][Math.min(E.k, 2)];
+    const pc = (s) => s && s.up90 != null ? `${s.up90}%, trung vị ${s.med90 > 0 ? "+" : ""}${s.med90}%` : "–";
+    const cond = E.cond.map((c) => `<div class="${c.ok ? "ok" : ""}"><div class="t"><span class="${c.ok ? "tone-bad" : ""}" style="${c.ok ? "" : "color:var(--ink-3)"}">${c.ok ? "✓" : "✗"}</span> ${esc(c.name)}</div>
+      <div class="d">${esc(c.desc)}</div><div>Hiện ${esc(c.now)}</div><div class="r">Riêng điều kiện này: giá cao hơn sau 3 tháng ${pc(c.each)}</div></div>`).join("");
+    const L = E.levels, lv = [["0", "0 dấu hiệu · Giữ", "var(--good)"], ["1", "1 dấu hiệu · Để ý", "var(--warn)"], ["2", "2+ dấu hiệu · Chốt dần", "var(--bad)"]].map(([k, t, c]) => {
+      const s = L[k] || {}; return `<div class="${String(Math.min(E.k, 2)) === k ? "on" : ""}"><b style="color:${c}">${t}</b>Giá cao hơn sau 3 tháng: <b style="display:inline">${s.up90 ?? "–"}%</b>, trung vị ${s.med90 > 0 ? "+" : ""}${s.med90 ?? "–"}%<div class="note" style="margin:2px 0 0">sụt tối đa trong 3 tháng: trung vị ${s.dd90 ?? "–"}%, 1/10 lần tệ hơn ${s.dd90_p10 ?? "–"}%</div></div>`; }).join("");
+    const tops = E.tops.map((t) => `<tr><td>${ctxMY(t.date)}</td><td class="num">${vnN(t.px / 1000, 1)}K</td><td class="num">${t.k} / 4</td><td class="${t.hit ? "tone-good" : "tone-bad"}">${t.hit ? "✓ báo kịp" : "✗ bỏ lỡ"}</td></tr>`).join("");
+    return `<div class="ctx-sigh"><b>Dấu hiệu thoát hàng · đám đông FOMO, cá mập phân phối</b><div class="bar"><i style="width:${Math.max(3, E.k / 4 * 100)}%;background:${col}"></i></div><b>${E.k} / 4</b><span class="ctx-exlvl" style="color:${col};background:${bg}">${E.level}</span></div>
+      ${E.active ? "" : `<p class="note" style="margin-top:4px">Đang ở pha ${esc(C.phase.name)}: khung này chỉ áp dụng khi thị trường ở pha Hồi phục hoặc Hưng phấn, nên chưa cần dùng.</p>`}
+      <div class="ctx-ex4">${cond}</div><div class="ctx-lv">${lv}</div>
+      <p class="note">Kiểm chứng trên ${vnN(E.n)} ngày ở pha Hồi phục/Hưng phấn từ ${ctxMY(E.since)}; bình thường trong pha tăng ${E.base90}% số lần giá cao hơn sau 3 tháng. Riêng FOMO của đám đông gần như không báo trước; định giá cao, cá mập phân phối, vĩ mô thắt lại mới là phần có ý nghĩa. Dùng để chốt dần khi phân tích kỹ thuật cũng báo bán, không bán hết một lần.</p>
+      <div class="tbl-wrap"><table class="ctx-tbl" style="max-width:520px"><tr><th>Đỉnh trước</th><th class="num">Giá đóng cửa</th><th class="num">Dấu hiệu (30 ngày trước đỉnh)</th><th></th></tr>${tops}</table></div>
+      <p class="note">Đỉnh 10/2025 không có FOMO và cá mập vẫn gom; giá rơi vì sập đòn bẩy và tiền ETF rút ra, kiểu đỉnh mà khung này không bắt được.</p>`;
+  }
   function ctxRender() {
     const C = CTX.C, el = $("ctx-box");
     if (!C || !C.scores) { el.innerHTML = `<div class="msg">Chưa có số liệu bối cảnh (data/context.json). Máy chủ tính mỗi sáng lúc 6:41.</div>`; return; }
@@ -2405,6 +2433,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       <div class="ctx-card"><div class="ctx-sigh"><b>Dấu hiệu xu hướng đổi chiều đi lên</b><div class="bar"><i style="width:${Math.max(3, C.n_ok / 3 * 100)}%"></i></div><b>${C.n_ok} / 3</b></div>
         <div class="ctx-sig">${sig}</div>
         <p class="note">Càng nhiều dấu hiệu bật, khả năng xu hướng tăng bắt đầu càng cao. Có thay đổi sẽ báo qua Telegram.</p></div>
+      ${C.exit && C.exit.active ? `<div class="ctx-card">${ctxExit(C)}</div>` : ""}
       <div class="ctx-card"><details class="ctx-more" id="ctx-more"><summary>Xem chi tiết: kiểm chứng, lịch sử, từng chỉ số</summary>
         <div class="ctx-sec">1 · Tâm lý đám đông theo lý thuyết Dow</div>
         ${ctxCycleSvg(P)}
@@ -2422,7 +2451,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
         <div class="ctx-g3">${ctxVerifyCard("macro", C)}${ctxVerifyCard("whale", C)}${ctxVerifyCard("value", C)}</div>
         <h3>Diễn biến điểm số và giá BTC, từ 2021</h3><div class="ctx-chart tall" id="ctx-c2"></div>
         <p class="note">Đáng chú ý là lúc điểm quay lên trước giá: cuối 2022, điểm Vĩ mô đã leo từ dưới 20 lên trên 70 khi giá vẫn ở đáy.</p>
-        <div class="ctx-sec">3 · Chi tiết từng chỉ số</div>
+        ${C.exit && !C.exit.active ? `<div class="ctx-sec">3 · Dấu hiệu thoát hàng (đang tạm ẩn ngoài trang chính)</div>${ctxExit(C)}` : ""}
+        <div class="ctx-sec">${C.exit && !C.exit.active ? 4 : 3} · Chi tiết từng chỉ số</div>
         <div style="display:grid;gap:12px">${ctxItems("whale", C)}${ctxItems("macro", C)}${ctxItems("value", C)}</div>
         <p class="note">Điểm 0–100 là thứ hạng của hôm nay so với lịch sử (Vĩ mô, Cá mập: 1 năm; Định giá: 4 năm), trung bình các chỉ số trong nhóm. Ngưỡng và cách tính cố định, xem collector/context.py. Xác suất từ lịch sử, mỗi mức chỉ có vài giai đoạn độc lập. Cập nhật ${fmtTime(Date.parse(C.updated))}.</p>
       </details></div></div>`;

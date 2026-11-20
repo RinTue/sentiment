@@ -160,6 +160,67 @@ def bucket_stats(s: pd.Series, px: pd.Series, hs=(90, 365)) -> list:
     return out
 
 
+# Dấu hiệu thoát hàng (Dow: cuối pha tăng, đám đông FOMO mua vào, tiền lớn phân phối)
+EX_VALUE = 80        # điểm định giá từ mức này
+EX_FNG, EX_FUND = 75, 85
+EX_WHALE, EX_NEAR = 40, -0.15
+EX_MACRO, EX_MDROP = 40, -20
+TOPS = ["2021-04-14", "2021-11-10", "2024-03-14", "2025-10-06"]
+
+
+def exits(S: pd.DataFrame, P: pd.DataFrame, X: pd.DataFrame, px: pd.Series) -> dict:
+    D = P[["ph"]].join(S).join(px.rename("px"))
+    D["fng"] = X["fng"].ffill(limit=5).reindex(D.index)
+    D["fund"] = prank(X["funding"], 365).reindex(D.index) if "funding" in X else np.nan
+    D["near"] = D.px / px.rolling(365).max().reindex(D.index) - 1
+    D["mac60"] = D.macro - D.macro.shift(60)
+    D["E1"] = D.value >= EX_VALUE
+    D["E2"] = (D.fng >= EX_FNG) | (D.fund >= EX_FUND)
+    D["E3"] = (D.whale <= EX_WHALE) & (D.near > EX_NEAR)
+    D["E4"] = (D.macro <= EX_MACRO) | (D.mac60 <= EX_MDROP)
+    E = ["E1", "E2", "E3", "E4"]
+    D["k"] = D[E].sum(axis=1)
+    f90 = fwd(px, 90).reindex(D.index)
+    mn = px[::-1].rolling(91, min_periods=1).min()[::-1].reindex(D.index)      # giá thấp nhất trong 90 ngày tới
+    D["dd90"] = mn / D.px - 1
+    bull = D[D.ph.isin(["rec", "eu"]) & D.whale.notna() & D.value.notna() & D.macro.notna()]
+    bull = bull[bull.index <= px.index[-1] - pd.Timedelta(days=90)]
+
+    def st(g):
+        f = f90.reindex(g.index).dropna()
+        return {"n": int(len(g)), "up90": round(float((f > 0).mean() * 100)) if len(f) > 20 else None,
+                "med90": round(float(f.median() * 100)) if len(f) > 20 else None,
+                "dd90": round(float(g.dd90.median() * 100)) if len(g) > 20 else None,
+                "dd90_p10": round(float(g.dd90.quantile(.1) * 100)) if len(g) > 20 else None}
+    lv = {"0": st(bull[bull.k == 0]), "1": st(bull[bull.k == 1]), "2": st(bull[bull.k >= 2])}
+    each = {e: st(bull[bull[e]]) for e in E}
+    tops = []
+    for t in TOPS:
+        r = D.loc[pd.Timestamp(t) - pd.Timedelta(days=30):pd.Timestamp(t)]
+        if len(r):
+            km = int(r.k.max())
+            tops.append({"date": t, "px": round(float(px.loc[t])), "k": km, "hit": km >= 2})
+    last = D.iloc[-1]
+    def fmt(x):
+        return "–" if x is None or not np.isfinite(x) else str(int(round(float(x))))
+    cond = [
+        {"key": "E1", "name": "Định giá cao", "desc": f"điểm định giá từ {EX_VALUE}", "ok": bool(last.E1),
+         "now": f"điểm định giá {fmt(last.value)}"},
+        {"key": "E2", "name": "Đám đông FOMO", "desc": f"Fear & Greed từ {EX_FNG}, hoặc funding hạng từ {EX_FUND}", "ok": bool(last.E2),
+         "now": f"F&G {fmt(last.fng)}" + (f" · funding hạng {fmt(last.fund)}" if np.isfinite(last.fund) else "")},
+        {"key": "E3", "name": "Cá mập phân phối", "desc": f"điểm Cá mập ≤ {EX_WHALE} khi giá còn trong {abs(int(EX_NEAR * 100))}% quanh đỉnh 1 năm", "ok": bool(last.E3),
+         "now": f"điểm Cá mập {fmt(last.whale)} · giá cách đỉnh 1 năm {fmt(last.near * 100)}%"},
+        {"key": "E4", "name": "Vĩ mô quay sang thắt chặt", "desc": f"điểm Vĩ mô ≤ {EX_MACRO}, hoặc giảm ≥ {abs(EX_MDROP)} điểm trong 60 ngày", "ok": bool(last.E4),
+         "now": f"điểm Vĩ mô {fmt(last.macro)} · 60 ngày {int(round(last.mac60)):+d} điểm" if np.isfinite(last.mac60) else f"điểm Vĩ mô {fmt(last.macro)}"},
+    ]
+    for c in cond:
+        c["each"] = each[c["key"]]
+        c["now"] = c["now"].replace("-", "−")
+    k = int(last.k)
+    return {"active": last.ph in ("rec", "eu"), "k": k, "level": ["Giữ", "Để ý", "Chốt dần"][min(k, 2)], "cond": cond, "levels": lv,
+            "base90": st(bull)["up90"], "since": str(bull.index[0].date()) if len(bull) else None, "n": int(len(bull)), "tops": tops}
+
+
 def bucket(v: float) -> int:
     return min(4, max(0, int(v // 20)))
 
@@ -271,6 +332,8 @@ def run() -> dict:
         {"key": "phase", "name": "Tâm lý sang \"Chán nản\"", "now": f"hiện {PHASES[ph][0]}", "ok": ph in ("apa", "rec")},
     ]
 
+    ex = exits(S, P, X, px)
+
     # Chuỗi lịch sử cho phần "Xem chi tiết"
     H = S[S.index >= "2021-01-01"].join(px.rename("px"))
     hist = {"t": [d.strftime("%Y-%m-%d") for d in H.index], "px": [round(float(v)) if np.isfinite(v) else None for v in H.px]}
@@ -280,7 +343,7 @@ def run() -> dict:
 
     out = {"v": V, "updated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "asof": str(last.date()),
            "price": round(float(px.iloc[-1])), "price_date": str(px.index[-1].date()), "base90": base90,
-           "scores": sc, "phase": phase, "horizons": horizons, "signals": signals, "n_ok": sum(s["ok"] for s in signals),
+           "scores": sc, "phase": phase, "horizons": horizons, "signals": signals, "n_ok": sum(s["ok"] for s in signals), "exit": ex,
            "hist": hist, "phase_hist": phist, "runtime_sec": round(time.time() - t0, 1)}
 
     def clean(o):
