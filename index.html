@@ -2202,7 +2202,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       cyc.forEach((c) => {
         pts.push({ coord: [ts(c.b), M.pLo(c.b)], name: `ĐÁY ${my(c.b)}\n${kUsd(M.pLo(c.b))}`, itemStyle: { color: CYC.acc }, label: { position: "bottom" } });
         pts.push({ coord: [ts(c.p), M.pHi(c.p)], name: `ĐỈNH ${my(c.p)}\n${kUsd(M.pHi(c.p))} · ×${num(c.gain, 0)}`, itemStyle: { color: "#fff" }, label: { position: "top" } });
-        pts.push({ coord: [ts(c.h), P[c.h]], name: "₿", symbolSize: 18, itemStyle: { color: CYC.o }, label: { position: "inside", color: "#14181b", fontWeight: 700 } });
+        pts.push({ coord: [ts(c.h), P[c.h]], name: "₿", symbolSize: 20, itemStyle: { color: CYC.o, opacity: 1, borderColor: "#fff", borderWidth: 1.5 },
+          label: { position: "inside", color: "#14181b", fontWeight: 800, fontSize: 13, fontFamily: "Arial, Helvetica, sans-serif", backgroundColor: "transparent", padding: 0, borderRadius: 0 } });
         if (c.bear != null && cyc[cyc.indexOf(c) + 1]) { /* đáy kế tiếp đã vẽ ở chu kỳ sau */ }
       });
       const lines = [{ xAxis: ts(today), label: { formatter: narrow ? "Hôm nay" : `Bạn đang ở đây · ${d(today)}`, color: "#fff", position: "end", fontWeight: 600, distance: [0, 26] }, lineStyle: { color: "#fff", type: "solid", width: 1.5 } }];
