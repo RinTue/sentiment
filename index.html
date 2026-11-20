@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sentiment Analysis</title>
+<script>try { const t = JSON.parse(localStorage.getItem("tamly-theme") || "null"); if (t) document.documentElement.dataset.theme = t; } catch (e) { /* bỏ qua */ }</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -406,18 +407,77 @@ details.ctx-more > summary { cursor: pointer; font-weight: 600; color: var(--acc
 .ctx-exlvl { font-weight: 800; font-size: .86rem; padding: 2px 10px; border-radius: 99px; }
 @media (max-width: 860px) { .ctx-ex4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .ctx-ex4, .ctx-lv { grid-template-columns: 1fr; } }
+/* ===== Giao diện chuyên nghiệp (20/11/2026): nền tối mặc định, một bộ quy ước cho mọi tab ===== */
+:root {
+  --bg: #0b0e11; --panel: #12161b; --panel-2: #171c22; --ink: #e8ecef; --ink-2: #a9b3bc; --ink-3: #6f7a86; --line: #232a33;
+  --accent: #4c8dff; --accent-bg: rgba(76,141,255,.14); --good: #2ebd85; --good-bg: rgba(46,189,133,.14); --bad: #f6465d; --bad-bg: rgba(246,70,93,.14);
+  --warn: #f0b90b; --warn-bg: rgba(240,185,11,.14); --neutral-bg: #1e252d; --t1: #f6465d; --t1-bg: rgba(246,70,93,.14); --t2: #f0b90b; --t2-bg: rgba(240,185,11,.14);
+  --z0: #f6465d; --z1: #e8833a; --z2: #6f7a86; --z3: #5fc79a; --z4: #2ebd85;
+  --s1: #4c8dff; --s2: #e8833a; --s3: #2ebd85; --s4: #a371f7;
+  --mono: var(--font);
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #f3f4f6; --panel: #ffffff; --panel-2: #f7f8f9; --ink: #111418; --ink-2: #48525c; --ink-3: #78828c; --line: #e2e5e9;
+  --accent: #1f5fd1; --accent-bg: #e6eefc; --good: #0f8a5f; --good-bg: #e2f4ec; --bad: #d1283f; --bad-bg: #fbe6e9;
+  --warn: #9a6a00; --warn-bg: #fbf0d6; --neutral-bg: #eceef1; --t1: #d1283f; --t1-bg: #fbe6e9; --t2: #9a6a00; --t2-bg: #fbf0d6;
+  --z0: #d1283f; --z1: #d9792b; --z2: #9aa1a8; --z3: #3fa77a; --z4: #0f8a5f;
+  --s1: #1f5fd1; --s2: #e06a2c; --s3: #0f8a5f; --s4: #7b4fd0;
+  color-scheme: light;
+}
+body { font-size: 14px; font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1360px; gap: 14px; padding-block: 0 40px; }
+section.panel { border-radius: 10px; padding: 14px 16px; }
+section.panel > h2, .tabpanel > section > h2 { font-size: .76rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 12px; }
+h3 { font-size: .84rem; }
+.note { font-size: .78rem; }
+.big, .hero .num, .kpi .v, .stat .v { font-family: var(--font); font-weight: 700; letter-spacing: -.01em; }
+/* đầu trang */
+.tk { position: sticky; top: 0; z-index: 7; display: flex; align-items: center; height: 36px; margin-inline: -16px; padding-inline: 16px; background: var(--bg); border-bottom: 1px solid var(--line);
+  overflow-x: auto; scrollbar-width: none; white-space: nowrap; font-size: .8rem; }
+.tk::-webkit-scrollbar { display: none; }
+.tk > div { display: flex; gap: 6px; align-items: baseline; padding: 0 14px; border-right: 1px solid var(--line); }
+.tk > div:first-child { padding-left: 0; } .tk > div:last-child { border-right: 0; }
+.tk .l { color: var(--ink-3); } .tk b { font-weight: 600; }
+header.top { align-items: center; padding: 10px 0 2px; }
+header.top h1 { font-size: 1.15rem; font-weight: 800; letter-spacing: -.01em; }
+header.top h1 span { color: var(--accent); }
+header.top .sub { font-size: .76rem; }
+.hbtns { display: flex; gap: 8px; align-items: center; }
+.btn { font-size: .82rem; padding: 7px 12px; border-radius: 7px; }
+.btn.icon { background: transparent; color: var(--ink-2); border-color: var(--line); padding: 7px 10px; }
+.tabs { position: sticky; top: 36px; padding: 0; gap: 2px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: var(--bg); }
+.tabs button { flex: 0 0 auto; padding: 11px 14px; border-radius: 0; font-size: .88rem; }
+.tabs button.on { background: transparent; color: var(--ink); box-shadow: inset 0 -2px 0 var(--accent); }
+/* Tổng quan */
+.ctx-card { background: var(--panel); border-radius: 10px; }
+.ctx-today { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); font-size: .88rem; }
+.ctx-today b.k { flex: 0 0 auto; font-size: .7rem; letter-spacing: .07em; text-transform: uppercase; color: var(--accent); padding-top: 2px; }
+.ctx-spark { margin-top: 10px; }
+.ctx-lbl { font-size: .7rem; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-2); font-weight: 600; display: flex; gap: 8px; align-items: center; }
+.ctx-lbl .t { margin-left: auto; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink-3); }
+.ctx-hm td { padding: 6px 7px; }
+.hm-u { background: rgba(46,189,133,var(--a)); } .hm-d { background: rgba(246,70,93,var(--a)); }
+.ctx-cal { display: grid; grid-template-columns: 54px minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: .86rem; }
+.ctx-cal:last-child { border-bottom: 0; }
+.ctx-kpi { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; }
+.ctx-kpi .ctx-card .v { font-size: 1.45rem; font-weight: 700; margin: 4px 0 2px; }
+@media (max-width: 860px) { .ctx-kpi { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 600px) { .tk { margin-inline: -16px; } header.top h1 { font-size: 1rem; }
+  .ctx-card, .ctx-sec, details { overflow-x: auto; } .ctx-hm td, .ctx-tbl td, .ctx-tbl th { padding: 5px 4px; } }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="tk" id="tk" aria-label="Số liệu nhanh"><div><span class="l">Đang tải…</span></div></div>
   <header class="top">
     <div>
-      <h1>Sentiment Analysis</h1>
+      <h1>Sentiment<span>.</span></h1>
       <p class="sub"><span class="fresh"><span class="dot" id="fresh-dot"></span><span id="fresh-text">Đang tải…</span></span></p>
       <p class="sub" id="updated" hidden style="font-size:.76rem"></p>
       <div class="msg" id="stale" hidden style="margin-top:8px"></div>
     </div>
-    <button class="btn" id="refresh" type="button">Làm mới dữ liệu</button>
+    <div class="hbtns"><button class="btn icon" id="theme-btn" type="button" title="Đổi giao diện sáng / tối" aria-label="Đổi giao diện sáng / tối"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg></button><button class="btn" id="refresh" type="button">Làm mới dữ liệu</button></div>
   </header>
 
   <nav class="tabs" id="tabs" role="tablist" aria-label="Các mục">
@@ -481,6 +541,10 @@ details.ctx-more > summary { cursor: pointer; font-weight: 600; color: var(--acc
   <!-- ================= ĐÁM ĐÔNG ================= -->
   <div class="tabpanel" data-panel="crowd" role="tabpanel" hidden>
     <section class="panel">
+      <h2>Tin lớn 48 giờ qua</h2>
+      <div id="big-box2"><p class="loading">Đang tải…</p></div>
+    </section>
+    <section class="panel">
       <h2>Tin tức và bàn luận</h2>
       <div hidden>
       <div class="row"><div class="big" id="tx-big">–</div><div id="tx-label" style="font-weight:600"></div><div class="note" id="tx-sub" style="margin:0"></div></div>
@@ -537,6 +601,7 @@ details.ctx-more > summary { cursor: pointer; font-weight: 600; color: var(--acc
 
   <!-- ================= DÒNG TIỀN ================= -->
   <div class="tabpanel" data-panel="money" role="tabpanel" hidden>
+    <div class="ctx-kpi" id="wk-kpi"></div>
     <section class="panel">
       <h2>Tiền thật đang làm gì</h2>
       <div class="seg" id="pos-tabs" role="tablist"><button type="button" data-coin="BTC" class="on">BTC</button><button type="button" data-coin="ETH">ETH</button></div>
@@ -602,6 +667,10 @@ details.ctx-more > summary { cursor: pointer; font-weight: 600; color: var(--acc
 
   <!-- ================= VĨ MÔ VÀ LỊCH ================= -->
   <div class="tabpanel" data-panel="macro" role="tabpanel" hidden>
+    <section class="panel">
+      <h2>Thị trường thế giới</h2>
+      <div id="world-box"><p class="loading">Đang tải…</p></div>
+    </section>
     <section class="panel">
       <h2>Bối cảnh vĩ mô</h2>
       <div class="row"><div class="mc-head" id="mc-label">–</div><div class="note" id="mc-sub" style="margin:0"></div></div>
@@ -1558,6 +1627,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const dot = $("fresh-dot"), ft = $("fresh-text");
     if (S.svAge == null) { dot.className = "dot " + (location.protocol === "file:" ? "" : "neg"); ft.textContent = location.protocol === "file:" ? "Mở từ tệp trên máy: không có dữ liệu máy chủ" : "Không đọc được dữ liệu máy chủ"; }
     else { const hh = S.svAge / 3600e3; dot.className = "dot " + (hh < 2 ? "pos" : hh < 6 ? "warn" : "neg"); ft.textContent = `Máy chủ cập nhật ${fmtTime(Date.parse(S.sv.L.generated_at))} · ${hh < 2 ? "dữ liệu mới" : "dữ liệu cũ " + Math.round(hh) + " giờ"} · tải trang ${fmtClock(Date.now()).slice(0, 5)}`; }
+    try { tickerRender(); ctxEvLine(); } catch (e) { /* bỏ qua */ }
   }
 
   /* ---------- Đà giá đến từ đâu ---------- */
@@ -2350,9 +2420,25 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     return `<div class="ctx-card"><div class="n">${esc(g === "whale" ? "Cá mập" : g === "value" ? "Định giá" : "Vĩ mô")}${g === "macro" ? '<span class="ctx-star">★ quan trọng nhất</span>' : ""}</div>
       <div class="q">${ctxQ[g]}</div><div class="big2 tone-${st[1]}">${sc.score}<small>/100</small></div>
       <div class="st tone-${st[1]}">${st[0]}${st[2] ? ` <span style="font-size:.72rem;font-weight:600;opacity:.8">· ${st[2]}</span>` : ""}${d7}</div>
+      <div class="ctx-spark">${ctxSpark((C.hist[g] || []).slice(-90), { macro: "#f0b90b", whale: "#2ebd85", value: "#a371f7" }[g])}</div><div class="ctx-ends"><span>90 ngày</span><span>${g === "macro" ? "★ đáng tin nhất" : g === "whale" ? "kiểm chứng: yếu" : "cho 1–2 năm"}</span></div>
       <div class="ctx-sc" style="background:${ctxGrad[g]}"><i style="left:${sc.score}%"></i></div><div class="ctx-ends"><span>${ctxEnds[g][0]}</span><span>${ctxEnds[g][1]}</span></div>
       <div class="ctx-mean">${ctxMeaning(g, C)}</div>
       ${sc.stale && sc.stale.length ? `<div class="msg" style="margin-top:8px;font-size:.74rem;padding:6px 8px">⚠ Thiếu số liệu mới: ${esc(sc.stale.join(", "))}. Điểm đang tính từ ${sc.used}/${sc.total} chỉ số.</div>` : ""}</div>`;
+  }
+  function ctxSpark(v, col, w = 240, hgt = 42) {
+    const pts = v.map((x, i) => x == null ? null : `${(i / Math.max(1, v.length - 1) * w).toFixed(1)},${(hgt - 2 - x / 100 * (hgt - 4)).toFixed(1)}`).filter(Boolean);
+    if (!pts.length) return "";
+    const [lx, ly] = pts[pts.length - 1].split(",");
+    return `<svg viewBox="0 0 ${w} ${hgt}" width="100%" height="${hgt}" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="${w}" y1="${hgt / 2}" y2="${hgt / 2}" stroke="var(--line)" stroke-dasharray="3 3"/><polyline points="${pts.join(" ")}" fill="none" stroke="${col}" stroke-width="1.7" vector-effect="non-scaling-stroke"/><circle cx="${lx}" cy="${ly}" r="2.6" fill="${col}"/></svg>`;
+  }
+  function ctxExitCompact(C) {
+    const E = C.exit; if (!E) return "";
+    const lv = [["0 · Giữ", "var(--good)", "var(--good-bg)"], ["1 · Để ý", "var(--warn)", "var(--warn-bg)"], ["2+ · Chốt dần", "var(--bad)", "var(--bad-bg)"]];
+    return `<div class="ctx-sigh"><b>Dấu hiệu chốt lời (thoát hàng)</b><div class="bar"><i style="width:${Math.max(3, E.k / 4 * 100)}%;background:${["var(--good)", "var(--warn)", "var(--bad)"][Math.min(E.k, 2)]}"></i></div><b>${E.k} / 4</b></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${lv.map((l, i) => `<span class="ctx-exlvl" style="color:${l[1]};background:${l[2]};${i === Math.min(E.k, 2) ? "outline:1.5px solid var(--ink)" : "opacity:.5"}">${l[0]}</span>`).join("")}
+        ${E.active ? "" : `<span class="ctx-exlvl" style="color:var(--ink-2);background:var(--neutral-bg)">Chưa áp dụng · đang ở pha ${esc(C.phase.name)}</span>`}</div>
+      <div class="ctx-sig" style="grid-template-columns:repeat(2,minmax(0,1fr))">${E.cond.map((c) => `<div class="${c.ok ? "ok" : ""}" style="${c.ok ? "border-color:var(--bad);background:var(--bad-bg)" : ""}${E.active ? "" : ";opacity:.75"}"><span class="ic ${c.ok ? "tone-bad" : ""}" style="${c.ok ? "" : "color:var(--ink-3)"}">${c.ok ? "●" : "○"}</span><div><div class="t">${esc(c.name)}</div><div class="d">${esc(c.now)}</div></div></div>`).join("")}</div>
+      <p class="note">Chỉ áp dụng khi thị trường ở pha Hồi phục hoặc Hưng phấn. Từ 2 dấu hiệu: chốt dần khi phân tích kỹ thuật cũng báo bán. Kiểm chứng ở phần Xem chi tiết.</p>`;
   }
   function ctxPhaseCard(C) {
     const P = C.phase, o = P.order;
@@ -2447,15 +2533,16 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const nCond = P.cond.filter((c) => c.ok).length;
     const eps = P.episodes.map((e) => `<tr><td>${ctxMY(e.from)}</td><td class="num">${vnN(e.px / 1000, 1)}K</td><td class="num ${e.f180 == null ? "" : e.f180 >= 0 ? "tone-good" : "tone-bad"}">${e.f180 == null ? "chưa đủ 6 tháng" : (e.f180 > 0 ? "+" : "") + e.f180 + "%"}</td></tr>`).join("");
     el.innerHTML = `<div class="ctx">
-      <p class="ctx-sub">Số liệu đến ${ctxDate(C.asof)} · BTC ${vnN(C.price)} $ · chỉ dùng dữ liệu ngoài biểu đồ giá, bổ trợ cho phân tích kỹ thuật</p>
+      <div class="ctx-today" id="ctx-today"><b class="k">Hôm nay cần chú ý</b><span>Đang tổng hợp…</span></div>
       ${age > 3 ? `<div class="msg">Số liệu bối cảnh đã cũ ${Math.floor(age)} ngày: lần tính hằng ngày gần đây chưa chạy được.</div>` : ""}
       <div class="ctx-hz">${hz(H.short)}${hz(H.long)}</div>
       <div class="ctx-g4">${ctxCard("macro", C)}${ctxCard("whale", C)}${ctxCard("value", C)}${ctxPhaseCard(C)}</div>
-      <div class="ctx-card"><div class="ctx-sigh"><b>Dấu hiệu xu hướng đổi chiều đi lên</b><div class="bar"><i style="width:${Math.max(3, C.n_ok / 3 * 100)}%"></i></div><b>${C.n_ok} / 3</b></div>
+      <div class="ctx-two"><div class="ctx-card"><div class="ctx-sigh"><b>Dấu hiệu xu hướng đổi chiều đi lên</b><div class="bar"><i style="width:${Math.max(3, C.n_ok / 3 * 100)}%"></i></div><b>${C.n_ok} / 3</b></div>
         <div class="ctx-sig">${sig}</div>
         <p class="note">Càng nhiều dấu hiệu bật, khả năng xu hướng tăng bắt đầu càng cao. Có thay đổi sẽ báo qua Telegram.</p></div>
-      <div class="msg" id="ctx-ev" hidden style="background:var(--accent-bg);color:var(--ink)"></div>
-      ${C.exit && C.exit.active ? `<div class="ctx-card">${ctxExit(C)}</div>` : ""}
+        <div class="ctx-card">${ctxExitCompact(C)}</div></div>
+      <div class="ctx-two"><div class="ctx-card" id="ctx-world"></div><div class="ctx-card" id="ctx-cal"></div></div>
+      <div class="ctx-card" id="ctx-ev" hidden></div>
       <div class="ctx-card"><details class="ctx-more" id="ctx-more"><summary>Xem chi tiết: kiểm chứng, lịch sử, từng chỉ số</summary>
         <div class="ctx-sec"><span class="n">1</span>Tâm lý đám đông theo lý thuyết Dow</div>
         ${ctxCycleSvg(P)}
@@ -2473,8 +2560,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
         <div class="ctx-g3">${ctxVerifyCard("macro", C)}${ctxVerifyCard("whale", C)}${ctxVerifyCard("value", C)}</div>
         <h3>Diễn biến điểm số và giá BTC, từ 2021</h3><div class="ctx-chart tall" id="ctx-c2"></div>
         <p class="note">Đáng chú ý là lúc điểm quay lên trước giá: cuối 2022, điểm Vĩ mô đã leo từ dưới 20 lên trên 70 khi giá vẫn ở đáy.</p>
-        ${C.exit && !C.exit.active ? `<div class="ctx-sec"><span class="n">3</span>Dấu hiệu thoát hàng <small>· đang tạm ẩn ngoài trang chính</small></div>${ctxExit(C)}` : ""}
-        <div class="ctx-sec"><span class="n">${C.exit && !C.exit.active ? 4 : 3}</span>Chi tiết từng chỉ số</div>
+        ${C.exit ? `<div class="ctx-sec"><span class="n">3</span>Dấu hiệu chốt lời: kiểm chứng trên lịch sử</div>${ctxExit(C)}` : ""}
+        <div class="ctx-sec"><span class="n">${C.exit ? 4 : 3}</span>Chi tiết từng chỉ số</div>
         <div style="display:grid;gap:12px">${ctxItems("whale", C)}${ctxItems("macro", C)}${ctxItems("value", C)}</div>
         <p class="note">Điểm 0–100 là thứ hạng của hôm nay so với lịch sử (Vĩ mô, Cá mập: 1 năm; Định giá: 4 năm), trung bình các chỉ số trong nhóm. Ngưỡng và cách tính cố định, xem collector/context.py. Xác suất từ lịch sử, mỗi mức chỉ có vài giai đoạn độc lập. Cập nhật ${fmtTime(Date.parse(C.updated))}.
         Từ 20/11/2026, mỗi ngày trang ghi lại kết luận của mình vào <a href="data/context_log.csv">nhật ký</a> để sau này đối chiếu với giá thật, thay vì chỉ tin vào kiểm tra trên dữ liệu cũ.</p>
@@ -2557,19 +2644,19 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       <div><b>Nhóm ngành, 30 ngày</b> <span class="note">(trung vị)</span>${sec}
         <p class="note">Giữ giá tốt nhất: ${(M.best || []).map((x) => `${esc(x.sym)} ${vnN(x.c30, 0)}%`).join(", ")}. Yếu nhất: ${(M.worst || []).map((x) => `${esc(x.sym)} ${vnN(x.c30, 0)}%`).join(", ")}.</p></div></div>
       <p class="note">Nguồn: ${esc(srcName)}, ${M.n} đồng lớn nhất (bỏ stablecoin và token bọc). Cập nhật ${fmtTime(Date.parse(D.updated))}. Mô tả trạng thái, không phải tín hiệu dự báo.</p>
-      ${worldHtml(D.world)}`;
+`;
+    const wb = $("world-box"); if (wb) wb.innerHTML = worldHtml(D.world) || `<p class="note">Chưa có số liệu.</p>`;
   }
   function worldHtml(W) {
     if (!W || !(W.items || []).length) return "";
     const tone = { bad: ["var(--bad)", "var(--bad-bg)"], good: ["var(--good)", "var(--good-bg)"], warn: ["var(--warn)", "var(--warn-bg)"], neutral: ["var(--ink-2)", "var(--neutral-bg)"] }[W.tone] || ["var(--ink-2)", "var(--neutral-bg)"];
     const cell = (x, k, key) => x == null ? "–" : key === "usd" ? `<span class="${x > 0 ? "tone-bad" : "tone-good"}">${x > 0 ? "+" : ""}${vnN(x, 1)}%</span>` : k === "pt" ? `<span class="${x > 0 ? "tone-bad" : "tone-good"}">${x > 0 ? "+" : ""}${vnN(x, 2)} điểm %</span>` : mwPct(x);
     const valf = (it) => it.kind === "pt" ? vnN(it.val, 2) + "%" : vnN(it.val, it.val < 200 ? 2 : 0);
-    return `<h3 style="margin-top:18px">Thị trường thế giới</h3>
-      ${W.head ? `<div style="border-left:5px solid ${tone[0]};background:${tone[1]};padding:9px 13px;border-radius:10px;font-size:.9rem">${esc(W.head)}</div>` : ""}
+    return `${W.head ? `<div style="border-left:5px solid ${tone[0]};background:${tone[1]};padding:9px 13px;border-radius:10px;font-size:.9rem">${esc(W.head)}</div>` : ""}
       <div class="tbl-wrap"><table class="ctx-tbl" style="margin-top:8px"><tr><th>Thị trường</th><th class="num">Giá trị</th><th class="num">1 ngày</th><th class="num">7 ngày</th><th class="num">30 ngày</th></tr>
       ${W.items.map((it) => `<tr><td>${esc(it.name)}<div class="note" style="margin:0">đến ${ctxDate(it.asof)} · ${esc(it.src)}</div></td><td class="num">${valf(it)}</td><td class="num">${cell(it.c1, it.kind, it.key)}</td><td class="num">${cell(it.c7, it.kind, it.key)}</td><td class="num">${cell(it.c30, it.kind, it.key)}</td></tr>`).join("")}
       </table></div>
-      <p class="note">Lợi suất và đô la tăng thường bất lợi cho crypto (màu đỏ). Chứng khoán đóng cửa theo giờ Mỹ, nên số trong ngày có thể trễ. Tương quan BTC–Nasdaq và chi tiết vĩ mô xem ở tab Vĩ mô &amp; lịch.</p>`;
+      <p class="note">Lợi suất và đô la tăng thường bất lợi cho crypto (màu đỏ). Chứng khoán đóng cửa theo giờ Mỹ, nên số trong ngày có thể trễ. Tương quan BTC–Nasdaq và chi tiết vĩ mô ở ngay bên dưới.</p>`;
   }
   function calRender() {
     const el = $("ccal-box"), C = CTX.mw && CTX.mw.cal; if (!el) return;
@@ -2586,8 +2673,9 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     el.innerHTML = `<div style="display:grid;gap:10px">${rows.map((r) => r.html).join("")}</div>
       <p class="note">Ngày đáo hạn tự tính (thứ Sáu cuối tháng; tháng 3, 6, 9, 12 là đáo hạn quý). Giá trị, put/call và max pain đọc từ Deribit mỗi giờ. Max pain là mức giá khiến người mua quyền chọn lỗ nhiều nhất; niềm tin "giá bị hút về max pain" có bằng chứng yếu, điều chắc hơn là quanh kỳ đáo hạn lớn biến động thường tăng.${C.opt_err ? " Lần đọc gần nhất lỗi: " + esc(C.opt_err) : ""}</p>`;
   }
-  function bigRender() {
-    const el = $("big-box"), N = (CTX.mw && CTX.mw.news) || []; if (!el) return;
+  function bigRender() { bigRenderTo($("big-box")); bigRenderTo($("big-box2")); }
+  function bigRenderTo(el) {
+    const N = (CTX.mw && CTX.mw.news) || []; if (!el) return;
     if (!N.length) { el.innerHTML = `<p class="note">Chưa có tin nào được từ 2 báo trở lên cùng đưa trong 48 giờ qua.</p>`; return; }
     el.innerHTML = N.map((p) => { const c = BIGCAT[p.cat] || BIGCAT.other, h = Math.max(0, Math.round((Date.now() - p.t) / 3600e3));
       return `<div style="display:grid;grid-template-columns:160px minmax(0,1fr) 92px;gap:10px;align-items:start;padding:9px 0;border-bottom:1px solid var(--line);font-size:.88rem">
@@ -2622,20 +2710,81 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     try { ltRender(); } catch (e) { console.error(e); }
     try { rotRender(); } catch (e) { console.error(e); }
     try { const r = await fetch("data/marketwide.json?t=" + Date.now(), { cache: "no-store" }); CTX.mw = r.ok ? await r.json() : null; } catch (e) { CTX.mw = null; }
-    for (const f of [mwRender, calRender, bigRender, ctxEvLine]) { try { f(); } catch (e) { console.error(e); } }
+    for (const f of [mwRender, calRender, bigRender, ctxEvLine, tickerRender]) { try { f(); } catch (e) { console.error(e); } }
   }
   function ctxEvLine() {
-    const el = $("ctx-ev"); if (!el) return;
-    const D = CTX.mw || {}, M = D.mkt, C = D.cal || {}, today = new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10);
-    const days = (d) => Math.round((Date.parse(d) - Date.parse(today)) / 864e5), parts = [];
-    if (M && M.head) parts.push(`🌐 <b>${esc(M.head)}</b> ${esc(M.detail)} <a href="#money">xem</a>`);
-    if (D.world && D.world.head) parts.push(`🌍 ${esc(D.world.head.split(":")[0])}. <a href="#money">xem</a>`);
-    const up = (C.expiries || []).filter((e) => days(e.date) >= 0 && days(e.date) <= 7).map((e) => `đáo hạn quyền chọn ${e.kind === "quarter" ? "quý" : "tháng"} ${ctxDate(e.date)}${e.btc ? ` (BTC ~${vnN(e.btc.usd / 1e9, 1)} tỷ $)` : ""}`)
-      .concat((C.manual || []).filter((e) => days(e.date) >= 0 && days(e.date) <= 15).map((e) => `${esc(e.title)} (${ctxDate(e.date)})`));
-    if (up.length) parts.push(`📅 Sắp tới: ${up.join("; ")} · <a href="#macro">lịch</a>`);
-    el.hidden = !parts.length;
-    el.innerHTML = parts.join("<br>");
+    const D = CTX.mw || {}, M = D.mkt, W = D.world, Cc = D.cal || {}, C = CTX.C, L = S.sv && S.sv.L;
+    const vnDay = (ms) => new Date(ms + 7 * 3600e3).toISOString().slice(0, 10), today = vnDay(Date.now());
+    const days = (d) => Math.round((Date.parse(d) - Date.parse(today)) / 864e5);
+    // Thế giới 7 ngày (rút gọn)
+    const wEl = $("ctx-world");
+    if (wEl) {
+      const hm = (x, sc, inv) => { if (x == null) return ""; const v = Math.max(-1, Math.min(1, x / sc)) * (inv ? -1 : 1); return `class="num ${v > 0 ? "hm-u" : "hm-d"}" style="--a:${(Math.abs(v) * .3).toFixed(2)};text-align:right"`; };
+      const it = W && W.items ? W.items.filter((x) => ["spx", "ndx", "gold", "usd", "us10"].includes(x.key)) : [];
+      wEl.innerHTML = `<div class="ctx-lbl">Thế giới · 7 ngày<span class="t">${W && W.items && W.items[0] ? "đến " + ctxDate(W.items[0].asof) : ""}</span></div>
+        ${W && W.head ? `<div style="margin:8px 0 6px"><span class="ctx-exlvl" style="color:${{ bad: "var(--bad)", warn: "var(--warn)", good: "var(--good)" }[W.tone] || "var(--ink-2)"};background:${{ bad: "var(--bad-bg)", warn: "var(--warn-bg)", good: "var(--good-bg)" }[W.tone] || "var(--neutral-bg)"}">${esc(W.head.split(":")[0])}</span></div>` : ""}
+        <table class="ctx-tbl ctx-hm">${it.map((x) => `<tr><td>${esc(x.name.split(" (")[0])}</td><td class="num">${x.kind === "pt" ? vnN(x.val, 2) + "%" : vnN(x.val, x.val < 200 ? 2 : 0)}</td><td ${hm(x.c7, x.kind === "pt" ? .3 : 8, ["usd", "us10"].includes(x.key))}>${x.c7 == null ? "–" : (x.c7 > 0 ? "+" : "") + vnN(x.c7, x.kind === "pt" ? 2 : 1) + (x.kind === "pt" ? " điểm %" : "%")}</td></tr>`).join("")}
+        ${M && M.ch7 != null ? `<tr><td><b>Crypto toàn thị trường</b></td><td class="num">${vnN(M.total / 1e12, 2)} nghìn tỷ $</td><td ${hm(M.ch7, 8)}>${(M.ch7 > 0 ? "+" : "") + vnN(M.ch7, 1)}%</td></tr>` : ""}</table>
+        <p class="note">Chi tiết ở tab <a href="#macro">Vĩ mô &amp; lịch</a>.</p>`;
+    }
+    // Lịch 14 ngày: kinh tế Mỹ cấp 1 + đáo hạn quyền chọn + sự kiện nhập tay
+    const ev = [];
+    ((L && L.events && L.events.upcoming) || []).forEach((e) => { const ms = Date.parse(e.t); ev.push({ d: vnDay(ms), t: esc(e.name), s: `${new Date(ms + 7 * 3600e3).toISOString().slice(11, 16)} giờ VN · BTC dao động TB ±${vnN(e.abs60, 2)}% trong 1 giờ`, k: ["Vĩ mô", "var(--warn)", "var(--warn-bg)"] }); });
+    (Cc.expiries || []).forEach((e) => ev.push({ d: e.date, t: `Đáo hạn quyền chọn ${e.kind === "quarter" ? "quý" : "tháng"}`, s: e.btc ? `BTC ~${vnN(e.btc.usd / 1e9, 1)} tỷ $ · max pain ${vnN(e.btc.max_pain)} $` : "Deribit · 15:00 giờ VN", k: ["Crypto", "var(--accent)", "var(--accent-bg)"] }));
+    (Cc.manual || []).forEach((e) => ev.push({ d: e.date, t: esc(e.title), s: "nhập tay", k: ["Sự kiện", "var(--ink-2)", "var(--neutral-bg)"] }));
+    const ev14 = ev.filter((e) => days(e.d) >= 0 && days(e.d) <= 14).sort((a, b) => a.d < b.d ? -1 : 1);
+    const cEl = $("ctx-cal");
+    if (cEl) cEl.innerHTML = `<div class="ctx-lbl">Lịch 14 ngày tới<span class="t">tự động</span></div>` + (ev14.length ? ev14.map((e) => `<div class="ctx-cal"><b>${e.d.slice(8)}/${e.d.slice(5, 7)}</b><div>${e.t}<div class="note" style="margin:0">${e.s}</div></div><span class="ctx-exlvl" style="color:${e.k[1]};background:${e.k[2]}">${e.k[0]}</span></div>`).join("") : `<p class="note">Không có sự kiện lớn trong 14 ngày tới.</p>`) + `<p class="note">Lịch đầy đủ ở tab <a href="#macro">Vĩ mô &amp; lịch</a>.</p>`;
+    // Dải toàn thị trường crypto
+    const el = $("ctx-ev");
+    if (el) {
+      el.hidden = !(M && M.head);
+      if (M && M.head) el.innerHTML = `<div class="ctx-lbl">Toàn thị trường crypto<span class="t">${esc({ coingecko: "CoinGecko", coinpaprika: "CoinPaprika" }[M.src] || M.src)} · ${fmtTime(Date.parse(D.updated))}</span></div>
+        <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-top:8px;font-size:.86rem"><span class="ctx-exlvl" style="color:${M.tone === "bad" ? "var(--bad)" : M.tone === "good" ? "var(--good)" : "var(--warn)"};background:${M.tone === "bad" ? "var(--bad-bg)" : M.tone === "good" ? "var(--good-bg)" : "var(--warn-bg)"}">${esc(M.head.replace(/\.$/, ""))}</span>
+        <span class="note" style="margin:0">7 ngày <b style="color:var(--ink)">${M.breadth.c7.down}/${M.breadth.c7.n}</b> đồng giảm</span>${M.ch30 != null ? `<span class="note" style="margin:0">Vốn hoá 30 ngày ${mwPct(M.ch30)}</span>` : ""}
+        ${M.st_dom != null ? `<span class="note" style="margin:0">Tỷ trọng stablecoin <b style="color:var(--ink)">${vnN(M.st_dom, 1)}%</b>${M.st_dom30 != null ? ` (30 ngày trước ${vnN(M.st_dom30, 1)}%)` : ""}</span>` : ""}
+        ${(M.sectors || []).length ? `<span class="note" style="margin:0">Mạnh nhất: ${esc(M.sectors[0].name)} ${mwPct(M.sectors[0].c30)} · Yếu nhất: ${esc(M.sectors[M.sectors.length - 1].name)} ${mwPct(M.sectors[M.sectors.length - 1].c30)}</span>` : ""}
+        <a href="#money" style="font-size:.84rem">xem</a></div>`;
+    }
+    // Hôm nay cần chú ý
+    const tEl = $("ctx-today");
+    if (tEl && C) {
+      const pts = [];
+      pts.push(`1–3 tháng <b class="tone-${C.horizons.short.tone}">${esc(C.horizons.short.label.toLowerCase())}</b>, 1–2 năm <b class="tone-${C.horizons.long.tone}">${esc(C.horizons.long.label.toLowerCase())}</b>`);
+      if (W && W.head) pts.push(esc(W.head.split(":")[0].toLowerCase()));
+      const soon = ev14.filter((e) => days(e.d) <= 7);
+      if (soon.length) pts.push(soon.slice(0, 2).map((e) => `${e.t.replace(/ \(.*\)$/, "")} ${days(e.d) === 0 ? "hôm nay" : "còn " + days(e.d) + " ngày"}`).join("; "));
+      pts.push(C.n_ok ? `<b class="tone-good">${C.n_ok}/3 dấu hiệu đảo chiều đi lên đã bật</b>` : "chưa có dấu hiệu đảo chiều đi lên");
+      if (C.exit && C.exit.active && C.exit.k >= 1) pts.push(`<b class="tone-bad">dấu hiệu chốt lời ${C.exit.k}/4</b>`);
+      tEl.innerHTML = `<b class="k">Hôm nay cần chú ý</b><span>${pts.join(" · ")}.</span>`;
+    }
   }
+  function tickerRender() {
+    const el = $("tk"); if (!el) return;
+    const L = S.sv && S.sv.L, M = CTX.mw && CTX.mw.mkt, W = CTX.mw && CTX.mw.world, wi = (k) => W && W.items ? W.items.find((x) => x.key === k) : null;
+    const ch = (x, inv) => x == null ? "" : `<span class="${(inv ? x < 0 : x > 0) ? "up" : "down"}">${x > 0 ? "+" : ""}${vnN(x, 2)}%</span>`;
+    const cells = [];
+    if (L && L.market && L.market.btc) cells.push(["BTC", vnN(L.market.btc.price) + " $", ch(L.market.btc.ch24)]);
+    if (M && M.total) cells.push(["Vốn hoá crypto", vnN(M.total / 1e12, 2) + " nghìn tỷ $", ch(M.ch24)]);
+    if (M && M.btc_dom) cells.push(["Tỷ trọng BTC", vnN(M.btc_dom, 1) + "%", ""]);
+    if (L && L.market && L.market.fng) cells.push(["Fear & Greed", String(L.market.fng.value), `<span class="${L.market.fng.value < 25 ? "down" : L.market.fng.value > 75 ? "up" : ""}">${L.market.fng.value < 25 ? "Cực sợ" : L.market.fng.value < 45 ? "Sợ" : L.market.fng.value <= 55 ? "Trung tính" : L.market.fng.value <= 75 ? "Tham" : "Cực tham"}</span>`]);
+    if (L && L.market && L.market.funding && L.market.funding.pct != null) cells.push(["Funding", `hạng ${vnN(L.market.funding.pct)}/100`, ""]);
+    for (const [k, n, inv] of [["spx", "S&P 500"], ["gold", "Vàng"], ["us10", "Lợi suất 10N"], ["usd", "USD", true]]) { const x = wi(k); if (x) cells.push([n, x.kind === "pt" ? vnN(x.val, 2) + "%" : vnN(x.val, x.val < 200 ? 2 : 0), x.kind === "pt" ? "" : ch(x.c1, inv)]); }
+    if (!cells.length) return;
+    el.innerHTML = cells.map(([a, b, c]) => `<div><span class="l">${a}</span><b>${b}</b>${c}</div>`).join("");
+    // Hàng số nhanh ở tab Cá mập & phái sinh
+    const k = $("wk-kpi");
+    if (k && L) {
+      const E = L.etf && L.etf.summary, P = L.market && L.market.premium, ST = L.market && L.market.stable, F = L.market && L.market.funding, LS = L.market && L.market.ls;
+      const box = (t, v, s, tone) => `<div class="ctx-card"><div class="ctx-lbl">${t}</div><div class="v tone-${tone}">${v}</div><div class="note" style="margin:0">${s}</div></div>`;
+      k.innerHTML = [E ? box("ETF 20 phiên", `${E.s20 > 0 ? "+" : ""}${vnN(E.s20 / 1000, 2)} tỷ $`, E.streak && E.streak.n >= 2 ? `chuỗi ${E.streak.sign < 0 ? "rút" : "vào"} ${E.streak.n} phiên` : "phiên " + ctxDate(E.date), E.s20 < 0 ? "bad" : "good") : "",
+        P ? box("Coinbase Premium", `${vnN(P.last, 2)}%`, P.last < 0 ? "người Mỹ đang bán" : "người Mỹ đang mua", P.last < 0 ? "bad" : "good") : "",
+        ST ? box("Stablecoin 30 ngày", `${ST.ch30 > 0 ? "+" : ""}${vnN(ST.ch30, 1)}%`, `${vnN(ST.total, 1)} tỷ $`, ST.ch30 < 0 ? "bad" : "good") : "",
+        F && F.pct != null ? box("Funding gộp", `hạng ${vnN(F.pct)}`, F.pct < 20 ? "đòn bẩy mua thấp" : F.pct > 80 ? "đòn bẩy mua cao" : "bình thường", F.pct > 80 ? "bad" : F.pct < 20 ? "good" : "neutral") : "",
+        LS ? box("Long/short " + (LS.src || ""), `${vnN(LS.buy * 100)}% mua`, LS.buy > .6 ? "đám đông nghiêng mua" : LS.buy < .4 ? "đám đông nghiêng bán" : "cân bằng", LS.buy > .65 ? "warn" : "neutral") : ""].join("");
+    }
+  }
+
 
   /* ---------- Tab ---------- */
   const TABS = ["overview", "crowd", "money", "macro", "cycle", "events", "method"];
@@ -2873,6 +3022,11 @@ if (typeof module !== "undefined") module.exports = ENGINE;
   }
   $("refresh").addEventListener("click", load);
   $("refresh").addEventListener("click", ctxLoad);
+  $("theme-btn").addEventListener("click", () => {
+    const cur = document.documentElement.dataset.theme === "light" ? "light" : "dark", nx = cur === "light" ? "dark" : "light";
+    document.documentElement.dataset.theme = nx; store.set("tamly-theme", nx);
+    CTX.drawn = false; const d = $("ctx-more"); if (d && d.open) ctxDraw();
+  });
 
   /* ---------- thanh lý trực tiếp ---------- */
   /* ---------- Thanh lý trực tiếp, gộp nhiều sàn ---------- */
