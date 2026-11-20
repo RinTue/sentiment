@@ -177,6 +177,99 @@ def fallback_okx(latest: dict) -> dict:
     return out
 
 
+# ---------------- Thị trường thế giới ----------------
+WORLD = [  # khoá, tên, mã Yahoo, mã FRED dự phòng, kiểu thay đổi (pct hoặc điểm %)
+    ("spx", "S&P 500 (Mỹ)", "^GSPC", "SP500", "pct"),
+    ("ndx", "Nasdaq 100 (công nghệ Mỹ)", "^NDX", "NASDAQ100", "pct"),
+    ("nikkei", "Nikkei 225 (Nhật)", "^N225", "NIKKEI225", "pct"),
+    ("gold", "Vàng", "GC=F", None, "pct"),
+    ("oil", "Dầu WTI", "CL=F", "DCOILWTICO", "pct"),
+    ("usd", "Chỉ số USD", "DX-Y.NYB", "DTWEXBGS", "pct"),
+    ("us10", "Lợi suất Mỹ 10 năm", "^TNX", "DGS10", "pt"),
+]
+BROWSER = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"}
+
+
+def _yahoo(sym: str) -> list:
+    last = None
+    for host in ("query1", "query2"):
+        try:
+            r = requests.get(f"https://{host}.finance.yahoo.com/v8/finance/chart/{requests.utils.quote(sym)}",
+                             params={"range": "3mo", "interval": "1d"}, headers=BROWSER, timeout=20)
+            r.raise_for_status()
+            res = r.json()["chart"]["result"][0]
+            cl = res["indicators"]["quote"][0]["close"]
+            out = [(int(t), float(c)) for t, c in zip(res["timestamp"], cl) if c is not None]
+            if len(out) >= 25:
+                return out
+            raise RuntimeError("thiếu dữ liệu")
+        except Exception as ex:  # noqa: BLE001
+            last = ex
+    raise last
+
+
+def _fred(sid: str) -> list:
+    key = os.environ.get("FRED_API_KEY", "").strip()
+    if not key:
+        raise RuntimeError("chưa có FRED_API_KEY")
+    start = (datetime.now(timezone.utc) - timedelta(days=100)).strftime("%Y-%m-%d")
+    j = _get("https://api.stlouisfed.org/fred/series/observations", {"series_id": sid, "api_key": key, "file_type": "json", "observation_start": start})
+    out = [(int(datetime.strptime(o["date"], "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp()), float(o["value"]))
+           for o in j.get("observations", []) if o.get("value") not in (".", "", None)]
+    if len(out) < 25:
+        raise RuntimeError(f"{sid}: thiếu dữ liệu")
+    return out
+
+
+def _chg(ser: list, days: int, kind: str):
+    t1, v1 = ser[-1]
+    prev = [v for t, v in ser if t <= t1 - days * 86400 + 3600]
+    if not prev:
+        return None
+    v0 = prev[-1]
+    return round(v1 - v0, 2) if kind == "pt" else round((v1 / v0 - 1) * 100, 1)
+
+
+def world(mkt: dict) -> dict:
+    items, errs = [], []
+    for key, name, ysym, fsid, kind in WORLD:
+        ser, src = None, None
+        for sname, fn in (("Yahoo", lambda: _yahoo(ysym)), ("FRED", (lambda: _fred(fsid)) if fsid else None)):
+            if fn is None:
+                continue
+            try:
+                ser, src = fn(), sname
+                break
+            except Exception as ex:  # noqa: BLE001
+                errs.append(f"{name} ({sname}): {str(ex)[:80]}")
+        if not ser:
+            continue
+        if kind == "pt" and ser[-1][1] > 20:      # Yahoo ^TNX cũ trả x10
+            ser = [(t, v / 10) for t, v in ser]
+        items.append({"key": key, "name": name, "val": round(ser[-1][1], 2), "asof": datetime.fromtimestamp(ser[-1][0], timezone.utc).strftime("%Y-%m-%d"),
+                      "kind": kind, "c1": _chg(ser, 1, kind), "c7": _chg(ser, 7, kind), "c30": _chg(ser, 30, kind), "src": src})
+    eq = next((i for i in items if i["key"] == "spx"), None) or next((i for i in items if i["key"] == "ndx"), None)
+    cr7 = mkt.get("ch7") if mkt.get("ch7") is not None else mkt.get("btc_c7")
+    head, tone = None, "neutral"
+    if eq and eq.get("c7") is not None and cr7 is not None:
+        e7 = eq["c7"]
+        if e7 <= -2 and cr7 <= -5:
+            head, tone = "Rủi ro toàn cầu (risk-off): cả chứng khoán và crypto cùng giảm. Nguyên nhân chủ yếu từ vĩ mô; crypto thường chỉ hồi khi chứng khoán hồi.", "bad"
+        elif e7 > -1 and cr7 <= -5:
+            head, tone = "Chỉ crypto giảm, chứng khoán vẫn ổn: vấn đề riêng của crypto (sự cố, ETF rút, xả đòn bẩy). Khi tin xấu qua đi, giá thường hồi nhanh hơn.", "warn"
+        elif e7 >= 2 and cr7 >= 5:
+            head, tone = "Ưa rủi ro toàn cầu (risk-on): cả chứng khoán và crypto cùng tăng.", "good"
+        elif e7 <= -2 and cr7 > -1:
+            head, tone = "Crypto đứng vững dù chứng khoán giảm.", "good"
+        elif e7 >= 1 and cr7 <= -2:
+            head, tone = "Chứng khoán tăng nhưng crypto không theo: crypto đang yếu riêng.", "warn"
+        else:
+            head = "Chứng khoán và crypto chưa có diễn biến rõ cùng chiều."
+        paren = f"7 ngày: {eq['name'].split(' (')[0]} {e7:+.1f}%; toàn thị trường crypto {cr7:+.1f}%".replace(".", ",").replace("-", "−")
+        head = f"{head} ({paren})"
+    return {"items": items, "head": head, "tone": tone, "err": "; ".join(errs[:4]) or None}
+
+
 # ---------------- Lịch crypto ----------------
 def last_friday(y: int, m: int) -> date:
     d = date(y + (m == 12), m % 12 + 1, 1) - timedelta(days=1)
@@ -274,6 +367,10 @@ def run(latest: dict) -> dict:
         if mkt:
             data["mkt"] = mkt
         data["mkt_err"] = "; ".join(errs) or None
+        try:
+            data["world"] = world(data.get("mkt") or {})
+        except Exception as ex:  # noqa: BLE001
+            data["world_err"] = str(ex)[:200]
         try:
             data["cal"] = calendar(old.get("cal") or {})
         except Exception as ex:  # noqa: BLE001

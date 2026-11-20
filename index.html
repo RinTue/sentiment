@@ -2556,7 +2556,20 @@ if (typeof module !== "undefined") module.exports = ENGINE;
         <p class="note">Đỏ là số đồng giảm, xanh là số đồng tăng. Trên 80% cùng giảm nghĩa là cả thị trường giảm; dưới 50% là chỉ một nhóm yếu.</p></div>
       <div><b>Nhóm ngành, 30 ngày</b> <span class="note">(trung vị)</span>${sec}
         <p class="note">Giữ giá tốt nhất: ${(M.best || []).map((x) => `${esc(x.sym)} ${vnN(x.c30, 0)}%`).join(", ")}. Yếu nhất: ${(M.worst || []).map((x) => `${esc(x.sym)} ${vnN(x.c30, 0)}%`).join(", ")}.</p></div></div>
-      <p class="note">Nguồn: ${esc(srcName)}, ${M.n} đồng lớn nhất (bỏ stablecoin và token bọc). Cập nhật ${fmtTime(Date.parse(D.updated))}. Mô tả trạng thái, không phải tín hiệu dự báo.</p>`;
+      <p class="note">Nguồn: ${esc(srcName)}, ${M.n} đồng lớn nhất (bỏ stablecoin và token bọc). Cập nhật ${fmtTime(Date.parse(D.updated))}. Mô tả trạng thái, không phải tín hiệu dự báo.</p>
+      ${worldHtml(D.world)}`;
+  }
+  function worldHtml(W) {
+    if (!W || !(W.items || []).length) return "";
+    const tone = { bad: ["var(--bad)", "var(--bad-bg)"], good: ["var(--good)", "var(--good-bg)"], warn: ["var(--warn)", "var(--warn-bg)"], neutral: ["var(--ink-2)", "var(--neutral-bg)"] }[W.tone] || ["var(--ink-2)", "var(--neutral-bg)"];
+    const cell = (x, k, key) => x == null ? "–" : key === "usd" ? `<span class="${x > 0 ? "tone-bad" : "tone-good"}">${x > 0 ? "+" : ""}${vnN(x, 1)}%</span>` : k === "pt" ? `<span class="${x > 0 ? "tone-bad" : "tone-good"}">${x > 0 ? "+" : ""}${vnN(x, 2)} điểm %</span>` : mwPct(x);
+    const valf = (it) => it.kind === "pt" ? vnN(it.val, 2) + "%" : vnN(it.val, it.val < 200 ? 2 : 0);
+    return `<h3 style="margin-top:18px">Thị trường thế giới</h3>
+      ${W.head ? `<div style="border-left:5px solid ${tone[0]};background:${tone[1]};padding:9px 13px;border-radius:10px;font-size:.9rem">${esc(W.head)}</div>` : ""}
+      <div class="tbl-wrap"><table class="ctx-tbl" style="margin-top:8px"><tr><th>Thị trường</th><th class="num">Giá trị</th><th class="num">1 ngày</th><th class="num">7 ngày</th><th class="num">30 ngày</th></tr>
+      ${W.items.map((it) => `<tr><td>${esc(it.name)}<div class="note" style="margin:0">đến ${ctxDate(it.asof)} · ${esc(it.src)}</div></td><td class="num">${valf(it)}</td><td class="num">${cell(it.c1, it.kind, it.key)}</td><td class="num">${cell(it.c7, it.kind, it.key)}</td><td class="num">${cell(it.c30, it.kind, it.key)}</td></tr>`).join("")}
+      </table></div>
+      <p class="note">Lợi suất và đô la tăng thường bất lợi cho crypto (màu đỏ). Chứng khoán đóng cửa theo giờ Mỹ, nên số trong ngày có thể trễ. Tương quan BTC–Nasdaq và chi tiết vĩ mô xem ở tab Vĩ mô &amp; lịch.</p>`;
   }
   function calRender() {
     const el = $("ccal-box"), C = CTX.mw && CTX.mw.cal; if (!el) return;
@@ -2616,6 +2629,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const D = CTX.mw || {}, M = D.mkt, C = D.cal || {}, today = new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10);
     const days = (d) => Math.round((Date.parse(d) - Date.parse(today)) / 864e5), parts = [];
     if (M && M.head) parts.push(`🌐 <b>${esc(M.head)}</b> ${esc(M.detail)} <a href="#money">xem</a>`);
+    if (D.world && D.world.head) parts.push(`🌍 ${esc(D.world.head.split(":")[0])}. <a href="#money">xem</a>`);
     const up = (C.expiries || []).filter((e) => days(e.date) >= 0 && days(e.date) <= 7).map((e) => `đáo hạn quyền chọn ${e.kind === "quarter" ? "quý" : "tháng"} ${ctxDate(e.date)}${e.btc ? ` (BTC ~${vnN(e.btc.usd / 1e9, 1)} tỷ $)` : ""}`)
       .concat((C.manual || []).filter((e) => days(e.date) >= 0 && days(e.date) <= 15).map((e) => `${esc(e.title)} (${ctxDate(e.date)})`));
     if (up.length) parts.push(`📅 Sắp tới: ${up.join("; ")} · <a href="#macro">lịch</a>`);
