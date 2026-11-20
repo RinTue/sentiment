@@ -235,7 +235,8 @@ def run() -> dict:
     t0, errs = time.time(), {}
     cache = _load()
     cache.setdefault("errs", {})
-    T = trends(cache, cache["errs"])
+    # Google Trends đã tắt (20/11/2026): chuỗi bị chuẩn hoá lại mỗi lần tải nên nhìn trước tương lai, và trang không còn dùng.
+    T = cache.get("trends", {})
     apps = None
     try:
         apps = app_ranks(errs)

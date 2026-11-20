@@ -26,6 +26,7 @@ import pandas as pd
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
 CSV = os.path.join(DATA, "research_features.csv")
+LOG = os.path.join(DATA, "context_log.csv")     # nhật ký trang đã nói gì mỗi ngày, để sau này đối chiếu với giá thật
 OUT = os.path.join(DATA, "context.json")
 V = 1
 
@@ -221,6 +222,24 @@ def exits(S: pd.DataFrame, P: pd.DataFrame, X: pd.DataFrame, px: pd.Series) -> d
             "base90": st(bull)["up90"], "since": str(bull.index[0].date()) if len(bull) else None, "n": int(len(bull)), "tops": tops}
 
 
+def rotation(px: pd.Series) -> dict | None:
+    """Dòng tiền giữa BTC và altcoin: lấy từ phần Luân chuyển do compass.py tính mỗi ngày (data/latest.json)."""
+    try:
+        L = json.load(open(os.path.join(DATA, "latest.json"), encoding="utf-8"))
+        C = (L.get("history_test") or {}).get("compass") or {}
+        lens = next(x for x in C.get("lenses", []) if x.get("key") == "rot")
+    except (OSError, ValueError, StopIteration):
+        return None
+    ser = [(pd.Timestamp(r[0], unit="ms").normalize(), r[8]) for r in C.get("series", []) if len(r) > 8 and r[8] is not None]
+    ser = ser[-365:]
+    it = {i["key"]: i for i in lens.get("items", [])}
+    return {"score": lens.get("score"), "band": lens.get("band"), "d7": lens.get("d7"), "asof": lens.get("asof"),
+            "season": it.get("season", {}).get("raw"), "season_p": it.get("season", {}).get("p"),
+            "alt30": it.get("alt30", {}).get("raw"), "alt30_p": it.get("alt30", {}).get("p"),
+            "t": [d.strftime("%Y-%m-%d") for d, _ in ser], "v": [v for _, v in ser],
+            "px": [round(float(px.get(d))) if d in px.index else None for d, _ in ser]}
+
+
 def bucket(v: float) -> int:
     return min(4, max(0, int(v // 20)))
 
@@ -248,8 +267,10 @@ def run() -> dict:
                 continue
             r = R[f].dropna()
             name, fmt = ITEM[f]
+            # Bảng chỉ số đã tự lấp vài ngày trống của từng nguồn; còn trống ở ngày cuối nghĩa là nguồn đã ngừng quá lâu
+            gap = (X.index[-1] - X[f].dropna().index[-1]).days
             items.append({"key": f, "name": name, "val": vn(fmt(float(raw.iloc[-1]))), "rank": round(float(r.iloc[-1])) if len(r) else None,
-                          "asof": str(raw.index[-1].date()), "tested": f in TESTED})
+                          "asof": str(X[f].dropna().index[-1].date()), "stale": bool(gap >= 1), "tested": f in TESTED})
         mk = {}
         for lab, day in (("top21", "2021-11-10"), ("bot22", "2022-11-21"), ("top25", "2025-10-06")):
             try:
@@ -257,7 +278,10 @@ def run() -> dict:
             except (KeyError, ValueError, TypeError):
                 mk[lab] = None
         sc[g] = {"name": NAMES[g], "score": round(v), "d7": round(d7) if d7 is not None else None, "asof": str(s.index[-1].date()),
-                 "items": items, "marks": mk, "verify": bucket_stats(S[g].dropna(), px)}
+                 "items": items, "marks": mk, "verify": bucket_stats(S[g].dropna(), px),
+                 "verify23": bucket_stats(S[g].dropna()[S[g].dropna().index >= "2023-01-01"], px, hs=(90,)),
+                 "used": sum(1 for i in items if not i["stale"]), "total": len(GROUPS[g]),
+                 "stale": [i["name"].split(",")[0] for i in items if i["stale"]] + [ITEM[f][0].split(",")[0] for f in GROUPS[g] if f not in X]}
 
     # Pha tâm lý
     ph = P["ph"].iloc[-1]
@@ -304,6 +328,10 @@ def run() -> dict:
              "điều kiện tài chính nới lỏng", "điều kiện tài chính rất nới lỏng"][bucket(m)]
     pword = {"pan": "thị trường còn hoảng loạn", "apa": "thị trường đang chán nản (vùng gom)", "rec": "thị trường đang hồi phục",
              "eu": "thị trường hưng phấn", "wk": "thị trường suy yếu sau đỉnh"}[ph]
+    v23 = sc["macro"]["verify23"][bucket(m)]
+    caveat = ("Lưu ý: kết luận này dựa chủ yếu vào nhóm Vĩ mô, mà mức báo trước của nhóm này đã yếu đi từ 2023"
+              + (f" (từ 2023, ở mức này {v23['up90']}% số lần giá cao hơn sau 3 tháng, {v23['n']} ngày)." if v23.get("up90") is not None
+                 else f" (từ 2023 mới có {v23['n']} ngày ở mức này, chưa đủ để kiểm)."))
     w = float(lr.w)
     vv = sc["value"]["score"]
     vb2 = sc["value"]["verify"][bucket(vv)]
@@ -320,7 +348,8 @@ def run() -> dict:
     horizons = {
         "short": {"title": "Xu hướng 1–3 tháng tới", "label": st_short[0], "tone": st_short[1],
                   "why": f"{mword[0].upper() + mword[1:]}, {pword}.",
-                  "stat": f"Vĩ mô ở mức {vb['lo']}–{vb['hi']}: {vb['up90']}% số lần giá cao hơn sau 3 tháng (bình thường {base90}%)." if vb.get("up90") is not None else ""},
+                  "stat": f"Vĩ mô ở mức {vb['lo']}–{vb['hi']}: {vb['up90']}% số lần giá cao hơn sau 3 tháng (bình thường {base90}%)." if vb.get("up90") is not None else "",
+                  "caveat": caveat},
         "long": {"title": "Xu hướng 1–2 năm tới", "label": z[2], "tone": z[3],
                  "why": f"{z[4][0].upper() + z[4][1:]}" + (f"; MVRV {mv}." if mv else "."),
                  "ratio": vn(f"{w:.2f}"),
@@ -333,6 +362,7 @@ def run() -> dict:
     ]
 
     ex = exits(S, P, X, px)
+    rot = rotation(px)
 
     # Chuỗi lịch sử cho phần "Xem chi tiết"
     H = S[S.index >= "2021-01-01"].join(px.rename("px"))
@@ -343,7 +373,7 @@ def run() -> dict:
 
     out = {"v": V, "updated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "asof": str(last.date()),
            "price": round(float(px.iloc[-1])), "price_date": str(px.index[-1].date()), "base90": base90,
-           "scores": sc, "phase": phase, "horizons": horizons, "signals": signals, "n_ok": sum(s["ok"] for s in signals), "exit": ex,
+           "scores": sc, "phase": phase, "horizons": horizons, "signals": signals, "n_ok": sum(s["ok"] for s in signals), "exit": ex, "rot": rot,
            "hist": hist, "phase_hist": phist, "runtime_sec": round(time.time() - t0, 1)}
 
     def clean(o):
@@ -360,7 +390,23 @@ def run() -> dict:
         return o
     out = clean(out)
     json.dump(out, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+    log_day(out)
     return out
+
+
+def log_day(o: dict) -> None:
+    """Ghi một dòng cho mỗi ngày số liệu (ghi đè nếu tính lại trong ngày): giữ lại đúng điều trang đã nói lúc đó."""
+    cols = ["asof", "updated", "price", "macro", "whale", "value", "phase", "short", "long", "n_up", "exit_k", "exit_active"]
+    row = [o["asof"], o["updated"], o["price"], o["scores"]["macro"]["score"], o["scores"]["whale"]["score"], o["scores"]["value"]["score"],
+           o["phase"]["key"], o["horizons"]["short"]["label"], o["horizons"]["long"]["label"], o["n_ok"],
+           (o.get("exit") or {}).get("k"), (o.get("exit") or {}).get("active")]
+    try:
+        old = pd.read_csv(LOG, dtype=str) if os.path.exists(LOG) else pd.DataFrame(columns=cols)
+    except Exception:  # noqa: BLE001
+        old = pd.DataFrame(columns=cols)
+    old = old[old["asof"] != o["asof"]]
+    new = pd.concat([old, pd.DataFrame([[str(x) for x in row]], columns=cols)], ignore_index=True).sort_values("asof")
+    new.to_csv(LOG, index=False)
 
 
 if __name__ == "__main__":

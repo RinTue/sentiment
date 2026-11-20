@@ -8,6 +8,11 @@ on:
     - cron: "37 * * * *"
     - cron: "57 * * * *"
   workflow_dispatch:        # cho phép bấm chạy tay
+    inputs:
+      telegram_test:
+        description: "Gửi tin Telegram thử"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -48,6 +53,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           COINALYZE_API_KEY: ${{ secrets.COINALYZE_API_KEY }}
+          TELEGRAM_TEST: ${{ inputs.telegram_test }}
 
       - name: Thử nghiệm CryptoBERT (so sánh, không ảnh hưởng điểm chính)
         continue-on-error: true

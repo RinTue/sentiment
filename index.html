@@ -553,6 +553,10 @@ details.ctx-more > summary { cursor: pointer; font-weight: 600; color: var(--acc
       <p class="note">Các quỹ ETF Bitcoin giao ngay (IBIT của BlackRock, FBTC của Fidelity, GBTC…) là kênh để tổ chức, quỹ hưu trí và nhà đầu tư qua tài khoản chứng khoán mua BTC; tiền vào ròng thì quỹ phải mua BTC thật, tiền ra ròng thì quỹ bán. Số mỗi phiên có sau khi thị trường Mỹ đóng cửa, tức sáng hôm sau giờ Việt Nam; thứ Bảy, Chủ nhật và ngày lễ Mỹ không có phiên. Hợp để xem xu hướng vài ngày đến vài tuần, không dùng để vào lệnh trong ngày. Nguồn: <a href="https://www.tftc.io/bitcoin-etf-flows" target="_blank" rel="noopener">The Commoner Bitcoin ETF Tracker của TFTC</a> (CC BY 4.0), tổng hợp từ SoSoValue và số công bố của các quỹ; khi TFTC chậm thì lấy tạm từ BGeometrics.</p>
     </section>
     <section class="panel">
+      <h2>Dòng tiền giữa BTC và altcoin</h2>
+      <div id="rot-box"><p class="loading">Đang tải…</p></div>
+    </section>
+    <section class="panel">
       <h2>Thanh lý: phe nào đang bị ép</h2>
       <div class="seg" id="liq-tabs"><button type="button" data-coin="BTC" class="on">BTC</button><button type="button" data-coin="ETH">ETH</button></div>
       <div class="chips liq-src" id="liq-src"></div>
@@ -606,6 +610,11 @@ details.ctx-more > summary { cursor: pointer; font-weight: 600; color: var(--acc
       <div class="legend"><span><span class="tier t1">CẤP 1</span>Có thể làm BTC biến động mạnh trong vài phút</span><span><span class="imp high">Cao</span><span class="imp medium">Vừa</span>Mức quan trọng theo Investing.com</span></div>
       <div id="cal-box"><p class="loading">Đang tải lịch…</p></div>
       <p class="note">"Tốt cho USD" nghĩa là số liệu khiến USD mạnh lên (lạm phát cao, việc làm mạnh…), thường bất lợi cho crypto trong ngắn hạn. Xem thêm: <a href="https://www.investing.com/economic-calendar/" target="_blank" rel="noopener">Investing.com</a>, <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener">Forex Factory</a>.</p>
+    </section>
+    <section class="panel">
+      <h2>Sự kiện crypto và luật lệ</h2>
+      <div id="evm-box"><p class="loading">Đang tải…</p></div>
+      <p class="note">Không có nguồn miễn phí tự cập nhật các sự kiện này (quyết định chỉ số, hạn chót luật, mở khoá token…), nên danh sách được nhập tay trong data/events_manual.json: nhờ Claude thêm khi có tin. Telegram nhắc trước 3 ngày.</p>
     </section>
     <section class="panel">
       <h2>Số liệu vĩ mô Mỹ tác động BTC ra sao</h2>
@@ -2335,7 +2344,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       <div class="q">${ctxQ[g]}</div><div class="big2 tone-${st[1]}">${sc.score}<small>/100</small></div>
       <div class="st tone-${st[1]}">${st[0]}${st[2] ? ` <span style="font-size:.72rem;font-weight:600;opacity:.8">· ${st[2]}</span>` : ""}${d7}</div>
       <div class="ctx-sc" style="background:${ctxGrad[g]}"><i style="left:${sc.score}%"></i></div><div class="ctx-ends"><span>${ctxEnds[g][0]}</span><span>${ctxEnds[g][1]}</span></div>
-      <div class="ctx-mean">${ctxMeaning(g, C)}</div></div>`;
+      <div class="ctx-mean">${ctxMeaning(g, C)}</div>
+      ${sc.stale && sc.stale.length ? `<div class="msg" style="margin-top:8px;font-size:.74rem;padding:6px 8px">⚠ Thiếu số liệu mới: ${esc(sc.stale.join(", "))}. Điểm đang tính từ ${sc.used}/${sc.total} chỉ số.</div>` : ""}</div>`;
   }
   function ctxPhaseCard(C) {
     const P = C.phase, o = P.order;
@@ -2390,7 +2400,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     return `<div class="ctx-card"><b>${esc(sc.name)}</b> <span class="note">· ${note}</span>
       <div class="tbl-wrap"><table class="ctx-tbl"><tr><th>Chỉ số</th><th class="num">Giá trị</th><th>${lab}</th></tr>
       ${sc.items.map((it) => { const r = it.rank, c = r == null ? "var(--z2)" : g === "value" ? (r < 34 ? "var(--good)" : r > 66 ? "var(--bad)" : "var(--z2)") : (r < 34 ? "var(--bad)" : r > 66 ? "var(--good)" : "var(--z2)");
-        return `<tr><td>${esc(it.name)}${it.tested ? '<span class="ctx-tag">kiểm chứng</span>' : ""}</td><td class="num">${esc(it.val)}</td><td style="white-space:nowrap"><span class="ctx-rk"><i style="width:${r ?? 0}%;background:${c}"></i></span>${r ?? "–"}</td></tr>`; }).join("")}
+        return `<tr><td>${esc(it.name)}${it.tested ? '<span class="ctx-tag">kiểm chứng</span>' : ""}${it.stale ? `<span class="ctx-tag" style="background:var(--warn-bg);color:var(--warn)">cũ, từ ${ctxDate(it.asof)}</span>` : ""}</td><td class="num">${esc(it.val)}</td><td style="white-space:nowrap"><span class="ctx-rk"><i style="width:${r ?? 0}%;background:${c}"></i></span>${r ?? "–"}</td></tr>`; }).join("")}
       </table></div></div>`;
   }
   function ctxExit(C) {
@@ -2415,7 +2425,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const age = (Date.now() - Date.parse(C.asof + "T00:00:00Z")) / 864e5;
     const H = C.horizons, P = C.phase;
     const hz = (h) => `<div class="ctx-card" style="border-left-color:var(--${h.tone === "neutral" ? "z2" : h.tone})"><div class="l">${esc(h.title)}</div>
-      <div class="v tone-${h.tone}">${esc(h.label)}</div><div class="w">${esc(h.why)}</div>${h.stat ? `<div class="s">${esc(h.stat)}</div>` : ""}</div>`;
+      <div class="v tone-${h.tone}">${esc(h.label)}</div><div class="w">${esc(h.why)}</div>${h.stat ? `<div class="s">${esc(h.stat)}</div>` : ""}${h.caveat ? `<div class="s" style="font-style:italic">${esc(h.caveat)}</div>` : ""}</div>`;
     const sig = C.signals.map((s) => `<div class="${s.ok ? "ok" : ""}"><span class="ic ${s.ok ? "tone-good" : "tone-bad"}">${s.ok ? "✓" : "✗"}</span><div><div class="t">${esc(s.name)}</div><div class="d">${esc(s.now)}</div></div></div>`).join("");
     const st = P.stats;
     const p5 = P.order.map((k) => { const s = st[k] || {};
@@ -2437,6 +2447,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       <div class="ctx-card"><div class="ctx-sigh"><b>Dấu hiệu xu hướng đổi chiều đi lên</b><div class="bar"><i style="width:${Math.max(3, C.n_ok / 3 * 100)}%"></i></div><b>${C.n_ok} / 3</b></div>
         <div class="ctx-sig">${sig}</div>
         <p class="note">Càng nhiều dấu hiệu bật, khả năng xu hướng tăng bắt đầu càng cao. Có thay đổi sẽ báo qua Telegram.</p></div>
+      <div class="msg" id="ctx-ev" hidden style="background:var(--accent-bg);color:var(--ink)"></div>
       ${C.exit && C.exit.active ? `<div class="ctx-card">${ctxExit(C)}</div>` : ""}
       <div class="ctx-card"><details class="ctx-more" id="ctx-more"><summary>Xem chi tiết: kiểm chứng, lịch sử, từng chỉ số</summary>
         <div class="ctx-sec"><span class="n">1</span>Tâm lý đám đông theo lý thuyết Dow</div>
@@ -2458,7 +2469,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
         ${C.exit && !C.exit.active ? `<div class="ctx-sec"><span class="n">3</span>Dấu hiệu thoát hàng <small>· đang tạm ẩn ngoài trang chính</small></div>${ctxExit(C)}` : ""}
         <div class="ctx-sec"><span class="n">${C.exit && !C.exit.active ? 4 : 3}</span>Chi tiết từng chỉ số</div>
         <div style="display:grid;gap:12px">${ctxItems("whale", C)}${ctxItems("macro", C)}${ctxItems("value", C)}</div>
-        <p class="note">Điểm 0–100 là thứ hạng của hôm nay so với lịch sử (Vĩ mô, Cá mập: 1 năm; Định giá: 4 năm), trung bình các chỉ số trong nhóm. Ngưỡng và cách tính cố định, xem collector/context.py. Xác suất từ lịch sử, mỗi mức chỉ có vài giai đoạn độc lập. Cập nhật ${fmtTime(Date.parse(C.updated))}.</p>
+        <p class="note">Điểm 0–100 là thứ hạng của hôm nay so với lịch sử (Vĩ mô, Cá mập: 1 năm; Định giá: 4 năm), trung bình các chỉ số trong nhóm. Ngưỡng và cách tính cố định, xem collector/context.py. Xác suất từ lịch sử, mỗi mức chỉ có vài giai đoạn độc lập. Cập nhật ${fmtTime(Date.parse(C.updated))}.
+        Từ 20/11/2026, mỗi ngày trang ghi lại kết luận của mình vào <a href="data/context_log.csv">nhật ký</a> để sau này đối chiếu với giá thật, thay vì chỉ tin vào kiểm tra trên dữ liệu cũ.</p>
       </details></div></div>`;
     CTX.drawn = false;
     const det = $("ctx-more");
@@ -2512,6 +2524,32 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       ${ctxVerifyCard("value", C)}</div><div style="margin-top:12px">${ctxItems("value", C)}</div>
       <p class="note">Định giá cho biết rẻ hay đắt cho tầm 1–2 năm, không cho biết giá vài tuần tới. MVRV = giá ÷ giá vốn trung bình của mọi BTC (giá lần cuối di chuyển); dưới 1 nghĩa là đa số người nắm giữ đang lỗ.</p>`;
   }
+  function evmRender() {
+    const el = $("evm-box"); if (!el) return;
+    const E = CTX.ev || [], today = new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10);
+    const rows = E.filter((e) => e.date >= new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10)).sort((a, b) => a.date < b.date ? -1 : 1);
+    if (!rows.length) { el.innerHTML = `<p class="note">Chưa có sự kiện nào trong danh sách.</p>`; return; }
+    el.innerHTML = `<div style="display:grid;gap:10px">${rows.map((e) => { const past = e.date < today, dd = Math.round((Date.parse(e.date) - Date.parse(today)) / 864e5);
+      return `<div class="ctx-card" style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;${past ? "opacity:.55" : ""}"><div><b>${ctxDate(e.date)}</b><div class="note" style="margin:0">${past ? "đã qua" : dd === 0 ? "hôm nay" : "còn " + dd + " ngày"}</div></div>
+        <div><b>${esc(e.title)}</b>${e.time ? `<div class="note" style="margin:0">${esc(e.time)}</div>` : ""}<div style="font-size:.88rem;margin-top:4px">${esc(e.note || "")}${e.src ? ` <a href="${esc(e.src)}" target="_blank" rel="noopener">Nguồn</a>` : ""}</div></div></div>`; }).join("")}</div>`;
+  }
+  function rotRender() {
+    const el = $("rot-box"), R = CTX.C && CTX.C.rot; if (!el) return;
+    if (!R) { el.innerHTML = `<p class="note">Chưa có số liệu.</p>`; return; }
+    const sv = +String(R.season).replace(",", "."), zone = sv >= 75 ? ["Mùa altcoin", "var(--good)"] : sv <= 25 ? ["Mùa BTC", "var(--accent)"] : ["Chưa rõ mùa", "var(--ink-2)"];
+    const v = R.v || [], W = 600, H = 90, n = v.length;
+    const pts = v.map((x, i) => `${(i / Math.max(1, n - 1) * W).toFixed(1)},${(H - x / 100 * H).toFixed(1)}`).join(" ");
+    el.innerHTML = `<div class="ctx-two"><div class="ctx-card"><div class="note" style="margin:0">Chỉ số mùa altcoin: % trong 39 altcoin lớn thắng BTC sau 90 ngày</div>
+        <div style="font-size:2.2rem;font-weight:800;line-height:1.1;margin-top:6px">${esc(R.season)}<small style="font-size:.9rem;color:var(--ink-3)">/100</small> <span style="font-size:1rem;color:${zone[1]}">${zone[0]}</span></div>
+        <div class="ctx-sc" style="background:linear-gradient(90deg,var(--accent) 0 25%,var(--neutral-bg) 25% 75%,var(--good) 75%)"><i style="left:${Math.min(100, Math.max(0, sv))}%"></i></div>
+        <div class="ctx-ends"><span>Mùa BTC (≤ 25)</span><span>Mùa altcoin (≥ 75)</span></div>
+        <div style="margin-top:10px;font-size:.88rem">8 altcoin lớn nhất so với BTC, 30 ngày: <b>${esc(R.alt30)}</b></div>
+        <div style="margin-top:4px;font-size:.88rem">Điểm luân chuyển so với 3 năm qua: <b>${R.score}/100 · ${esc(R.band)}</b>${R.d7 ? ` (${R.d7 > 0 ? "tăng" : "giảm"} ${Math.abs(R.d7)} điểm so với tuần trước)` : ""}</div></div>
+      <div class="ctx-card"><div class="note" style="margin:0">Điểm luân chuyển 1 năm qua (cao = tiền nghiêng sang altcoin)</div>
+        <svg viewBox="0 0 ${W} ${H}" width="100%" height="110" preserveAspectRatio="none" style="margin-top:8px"><line x1="0" x2="${W}" y1="${H / 2}" y2="${H / 2}" stroke="var(--line)"/><polyline points="${pts}" fill="none" stroke="var(--s4)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>
+        <div class="ctx-ends"><span>${ctxDate(R.t[0])}</span><span>${ctxDate(R.asof)}</span></div></div></div>
+      <p class="note">Theo cách đo phổ biến (Blockchaincenter): từ 75% altcoin thắng BTC trong 90 ngày là mùa altcoin, từ 25% trở xuống là mùa BTC. Điểm luân chuyển xếp hạng so với 3 năm, nên "nghiêng altcoin" chỉ có nghĩa là altcoin đỡ yếu hơn mọi khi. Đây là mô tả trạng thái, chưa kiểm chứng khả năng báo trước.</p>`;
+  }
   async function ctxLoad() {
     try {
       const r = await fetch("data/context.json?t=" + Date.now(), { cache: "no-store" });
@@ -2520,6 +2558,16 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     } catch (e) { CTX.C = null; }
     try { ctxRender(); } catch (e) { console.error(e); $("ctx-box").innerHTML = `<div class="msg">Lỗi hiển thị bối cảnh: ${esc(e.message)}</div>`; }
     try { ltRender(); } catch (e) { console.error(e); }
+    try { rotRender(); } catch (e) { console.error(e); }
+    try { const r = await fetch("data/events_manual.json?t=" + Date.now(), { cache: "no-store" }); CTX.ev = r.ok ? ((await r.json()).events || []) : []; } catch (e) { CTX.ev = []; }
+    try { evmRender(); ctxEvLine(); } catch (e) { console.error(e); }
+  }
+  function ctxEvLine() {
+    const el = $("ctx-ev"); if (!el) return;
+    const today = new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 10), lim = new Date(Date.now() + 15 * 864e5).toISOString().slice(0, 10);
+    const up = (CTX.ev || []).filter((e) => e.date >= today && e.date <= lim);
+    el.hidden = !up.length;
+    el.innerHTML = up.length ? "📌 Sự kiện crypto sắp tới: " + up.map((e) => `<b>${esc(e.title)}</b> (${ctxDate(e.date)})`).join("; ") + ` · <a href="#macro">xem</a>` : "";
   }
   /* ---------- Tab ---------- */
   const TABS = ["overview", "crowd", "money", "macro", "cycle", "events", "method"];

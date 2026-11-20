@@ -229,6 +229,15 @@ def load_ctx() -> dict:
         return {}
 
 
+def manual_events() -> list:
+    """Sự kiện crypto / luật lệ nhập tay (không có nguồn miễn phí tự cập nhật)."""
+    try:
+        E = json.load(open(os.path.join(os.path.dirname(STATE_FILE), "events_manual.json"), encoding="utf-8"))
+        return [e for e in (E.get("events") or []) if e.get("date") and e.get("title")]
+    except (OSError, ValueError):
+        return []
+
+
 CTX_STATE = {
     "macro": ["rất thắt chặt", "thắt chặt", "trung tính", "nới lỏng", "rất nới lỏng"],
     "whale": ["phân phối mạnh", "phân phối", "trung tính", "tích luỹ", "tích luỹ mạnh"],
@@ -402,6 +411,20 @@ def run(latest: dict) -> dict:
                 msgs.append(("ctx", "🧭 <b>Bối cảnh thị trường thay đổi</b>\n" + "\n".join(ch) + "\n\n" + "\n".join(ctx_lines(C))))
         st["ctx"] = {"asof": C["asof"], "sig": now_sig, "phase": now_ph, "exk": int((C.get("exit") or {}).get("k", 0)) if (C.get("exit") or {}).get("active") else 0}
 
+    # 3c) sự kiện crypto / luật lệ nhập tay (data/events_manual.json): nhắc trước 3 ngày, mỗi sự kiện một lần
+    for e in manual_events():
+        dd = (datetime.strptime(e["date"], "%Y-%m-%d").date() - vnow.date()).days
+        key = f"evm|{e['date']}|{e['title']}"
+        if 0 <= dd <= 3 and key not in st["events"]:
+            st["events"].append(key)
+            msgs.append(("event", f"📌 <b>{html.escape(e['title'])}</b> · {e['date'][8:10]}/{e['date'][5:7]}" + (f" ({html.escape(e['time'])})" if e.get("time") else "")
+                         + (f", còn {dd} ngày" if dd else ", hôm nay") + (f"\n{html.escape(e['note'])}" if e.get("note") else "")))
+
+    # 3d) tin thử khi bấm chạy tay với tuỳ chọn "Gửi tin Telegram thử"
+    if os.environ.get("TELEGRAM_TEST", "").lower() == "true" and C:
+        msgs.append(("test", "🧪 <b>Tin thử</b> (bấm chạy tay). Khi bối cảnh đổi, tin sẽ trông như sau:\n\n🧭 <b>Bối cảnh thị trường thay đổi</b>\n"
+                     "✅ Bật: <b>Vĩ mô vượt 40</b> (ví dụ)\n🔄 Tâm lý đám đông chuyển pha: Hoảng loạn → <b>Chán nản</b> (ví dụ)\n\nSố thật hôm nay:\n" + "\n".join(ctx_lines(C))))
+
     # 4) sự kiện vĩ mô cấp 1 trong 3 giờ tới
     try:
         cal = calendar()
@@ -423,8 +446,14 @@ def run(latest: dict) -> dict:
     issues = []
     if (latest.get("kept_count") or 0) < 40:
         issues.append(f"chỉ giữ được {latest.get('kept_count', 0)} bài")
-    if ci is None or len((M.get("composite") or {}).get("parts", [])) < 4:
-        issues.append(f"chỉ số tổng hợp chỉ có {len((M.get('composite') or {}).get('parts', []))} thành phần")
+    Cx = load_ctx()
+    if Cx and Cx.get("asof"):
+        age = (now.date() - datetime.strptime(Cx["asof"], "%Y-%m-%d").date()).days
+        if age >= 3:
+            issues.append(f"phần Bối cảnh thị trường chưa tính lại {age} ngày")
+        miss = [x for g in Cx.get("scores", {}).values() for x in (g.get("stale") or [])]
+        if miss:
+            issues.append("thiếu số liệu mới: " + ", ".join(miss))
     mac = latest.get("macro") or {}
     if mac.get("error") or (mac.get("have") is not None and mac["have"] < 6):
         issues.append("thiếu nhiều số liệu vĩ mô")
@@ -443,6 +472,9 @@ def run(latest: dict) -> dict:
         el = etf_line(latest)
         if el:
             L.append("• " + el)
+        soon_m = [e for e in manual_events() if 0 <= (datetime.strptime(e["date"], "%Y-%m-%d").date() - vnow.date()).days <= 7]
+        if soon_m:
+            L.append("• Sự kiện crypto sắp tới: " + "; ".join(f"{html.escape(e['title'])} ({e['date'][8:10]}/{e['date'][5:7]})" for e in soon_m))
         today = [e for e in cal if e["t"].astimezone(VN).strftime("%Y-%m-%d") == vday and e["t"] > now]
         if today:
             L.append("\nSự kiện cấp 1 hôm nay: " + "; ".join(f"{e['vi']} lúc {e['t'].astimezone(VN):%H:%M}" for e in today))

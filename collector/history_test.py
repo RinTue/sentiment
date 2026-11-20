@@ -349,10 +349,7 @@ def run(force: bool = False) -> dict | None:
     if wiki and doge:
         ratio = {d: (doge.get(d, 0) + mc.get(d, 0)) / wiki[d] for d in wiki if wiki[d] and d in doge}
         F["meme"] = keep(trailing_pct(rolling(ratio, lambda a: sum(a) / len(a), 7), 365))
-    for key, grp, idx in (("tr_buy", "global", 0), ("tr_vn", "vn", 0)):
-        tr = trends_daily(grp, idx)
-        if len(tr) > 400:
-            F[key] = keep(trailing_pct(tr, 365))
+    # Google Trends đã bỏ khỏi kiểm chứng: Google chuẩn hoá lại cả chuỗi mỗi lần tải nên số cũ "biết trước" tương lai.
 
     # Chỉ số tổng hợp dựng lại: đúng công thức trang web với các thành phần có lịch sử
     W = {"fng": 20, "funding": 20, "wiki": 15}
