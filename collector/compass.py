@@ -21,7 +21,7 @@ import requests
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
 DAY = 86400
-COMPASS_V = 4
+COMPASS_V = 5
 UA = "sentiment-dashboard (github.com/RinTue/sentiment)"
 WIN = 1095          # 3 năm
 ALTS = ["ETH", "SOL", "XRP", "BNB", "DOGE", "ADA", "LINK", "AVAX"]
@@ -440,7 +440,7 @@ def run(px: dict, fng: dict, stab: dict, prem_daily: dict, cz: dict, wiki: dict,
     rpf, rlf = bg.get("realized-profit") or {}, bg.get("realized-loss") or {}
     if rpf and rlf:
         a, b = sma(ffill(rpf, last_px, 5), 7), sma(ffill(rlf, last_px, 5), 7)
-        rpl = {d: a[d] / b[d] for d in a if b.get(d)}
+        rpl = {d: a[d] / abs(b[d]) for d in a if b.get(d)}     # BGeometrics ghi lỗ đã chốt là số âm
         add("cycle", "rpl", "Tỷ lệ lãi / lỗ đã chốt trên chuỗi (trung bình 7 ngày)", rank(rpl, None, 365), rpl, "x")
     else:
         m200 = sma(p, 200)
