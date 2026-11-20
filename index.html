@@ -2345,25 +2345,27 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       <div class="ctx-mean">${ctxNext[P.key]}</div></div>`;
   }
   function ctxCycleSvg(P) {
-    const pos = { apa: [130, 166], rec: [351, 97], eu: [585, 24], wk: [819, 80], pan: [1088, 181] }[P.key];
-    const ink = "currentColor";
-    return `<svg class="ctx-cyc" viewBox="0 -24 1170 240" role="img" aria-label="Vòng tâm lý thị trường, hiện ở pha ${esc(P.name)}" style="color:var(--ink)">
-      <path d="M20,170 C120,175 180,165 234,150" stroke="${PH_COL.apa}" stroke-width="7" fill="none" stroke-linecap="round"/>
-      <path d="M234,150 C320,125 400,70 468,45" stroke="${PH_COL.rec}" stroke-width="7" fill="none" stroke-linecap="round"/>
-      <path d="M468,45 C520,25 600,18 702,40" stroke="${PH_COL.eu}" stroke-width="7" fill="none" stroke-linecap="round"/>
-      <path d="M702,40 C780,60 850,95 936,120" stroke="${PH_COL.wk}" stroke-width="7" fill="none" stroke-linecap="round"/>
-      <path d="M936,120 C1000,140 1060,185 1150,178" stroke="${PH_COL.pan}" stroke-width="7" fill="none" stroke-linecap="round"/>
-      <path d="M1150,192 C900,214 300,214 40,190" stroke="${ink}" stroke-opacity=".35" stroke-width="1.5" fill="none" stroke-dasharray="5 5"/>
-      <path d="M48,184 L36,190 L48,196" stroke="${ink}" stroke-opacity=".35" stroke-width="1.5" fill="none"/>
+    // Một mạch liên tục: Chán nản → Hồi phục → Hưng phấn → Suy yếu → Hoảng loạn → Chán nản (chu kỳ mới)
+    const pos = { apa: [110, 172], rec: [312, 100], eu: [530, 27], wk: [762, 87], pan: [950, 180] }[P.key];
+    const below = P.key === "pan" || P.key === "apa";
+    const seg = (d, c, o = 1) => `<path d="${d}" stroke="${c}" stroke-opacity="${o}" stroke-width="8" fill="none" stroke-linecap="round"/>`;
+    return `<svg class="ctx-cyc" viewBox="0 -28 1170 262" role="img" aria-label="Vòng tâm lý thị trường, hiện ở pha ${esc(P.name)}" style="color:var(--ink)">
+      ${seg("M20,175 C80,178 140,172 200,158", PH_COL.apa)}
+      ${seg("M200,158 C260,144 330,80 420,48", PH_COL.rec)}
+      ${seg("M420,48 C470,30 560,22 640,40", PH_COL.eu)}
+      ${seg("M640,40 C720,58 800,110 880,150", PH_COL.wk)}
+      ${seg("M880,150 C920,170 960,182 1010,180", PH_COL.pan)}
+      ${seg("M1010,180 C1060,178 1110,172 1150,164", PH_COL.apa, .45)}
       <g font-size="22" font-weight="700" font-family="inherit">
-        <text x="120" y="140" fill="${PH_COL.apa}" text-anchor="middle">① Chán nản</text><text x="120" y="116" fill="${PH_COL.apa}" text-anchor="middle" font-size="17" font-weight="500">(vùng gom)</text>
-        <text x="300" y="72" fill="${PH_COL.rec}" text-anchor="middle">② Hồi phục</text>
-        <text x="585" y="0" dy="0" fill="${PH_COL.eu}" text-anchor="middle" transform="translate(0,14)">③ Hưng phấn</text>
-        <text x="870" y="58" fill="${PH_COL.wk}" text-anchor="middle">④ Suy yếu</text>
-        <text x="1010" y="118" fill="${PH_COL.pan}" text-anchor="middle">⑤ Hoảng loạn</text>
+        <text x="110" y="146" fill="${PH_COL.apa}" text-anchor="middle">① Chán nản</text><text x="110" y="122" fill="${PH_COL.apa}" text-anchor="middle" font-size="17" font-weight="500">(vùng gom)</text>
+        <text x="250" y="92" fill="${PH_COL.rec}" text-anchor="middle">② Hồi phục</text>
+        <text x="530" y="-6" fill="${PH_COL.eu}" text-anchor="middle">③ Hưng phấn</text>
+        <text x="830" y="80" fill="${PH_COL.wk}" text-anchor="middle">④ Suy yếu</text>
+        <text x="955" y="128" fill="${PH_COL.pan}" text-anchor="middle">⑤ Hoảng loạn</text>
+        <text x="1090" y="148" fill="${PH_COL.apa}" fill-opacity=".75" text-anchor="middle" font-size="17" font-weight="600">→ ① chu kỳ mới</text>
       </g>
-      <circle cx="${pos[0]}" cy="${pos[1]}" r="13" fill="${PH_COL[P.key]}" stroke="${ink}" stroke-width="4"/>
-      <text x="${pos[0]}" y="${pos[1] + (P.key === "eu" ? 40 : -22)}" fill="${ink}" font-size="19" font-weight="800" text-anchor="middle">BẠN Ở ĐÂY</text>
+      <circle cx="${pos[0]}" cy="${pos[1]}" r="13" fill="${PH_COL[P.key]}" stroke="currentColor" stroke-width="4"/>
+      <text x="${pos[0]}" y="${pos[1] + (below ? 40 : -22)}" fill="currentColor" font-size="19" font-weight="800" text-anchor="middle">BẠN Ở ĐÂY</text>
     </svg>`;
   }
   function ctxVerifyCard(g, C) {
