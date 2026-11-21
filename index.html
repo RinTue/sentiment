@@ -492,28 +492,68 @@ header.top .sub { font-size: .76rem; }
 @media (max-width: 860px) { .fl-grid { grid-template-columns: 1fr; gap: 16px; } }
 @media (max-width: 600px) { .tk { margin-inline: -16px; } header.top h1 { font-size: 1rem; }
   .ctx-card, .ctx-sec, details { overflow-x: auto; } .ctx-hm td, .ctx-tbl td, .ctx-tbl th { padding: 5px 4px; } }
+/* ----- Thanh ứng dụng (21/11): logo + tab + nút trên một hàng, dải giá chạy bên dưới; điện thoại: tab ở đáy màn hình ----- */
+.appbar { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); transition: box-shadow .2s; }
+.appbar.sc { box-shadow: 0 8px 20px -14px rgba(40,30,20,.45); }
+.ab-in { max-width: 1360px; margin: 0 auto; padding: 0 16px; height: 54px; display: flex; align-items: stretch; gap: 26px; }
+.ab-in .logo { align-self: center; font-weight: 800; font-size: 1.12rem; letter-spacing: -.01em; color: var(--ink); text-decoration: none; white-space: nowrap; }
+.ab-in .logo span { color: var(--accent); }
+.appbar .tabs { position: static; flex: 1; min-width: 0; display: flex; gap: 2px; padding: 0; margin: 0; border: 0; border-radius: 0; background: transparent; overflow-x: auto; }
+.appbar .tabs button { flex: 0 0 auto; height: 100%; padding: 0 14px; border-radius: 0; font-size: .9rem; font-weight: 500; color: var(--ink-2); background: transparent; box-shadow: none; }
+.appbar .tabs button:hover { color: var(--ink); }
+.appbar .tabs button.on { color: var(--ink); font-weight: 600; background: transparent; box-shadow: inset 0 -2px 0 var(--accent); }
+.appbar .tabs button svg { width: 17px; height: 17px; opacity: .8; }
+.appbar .hbtns { align-self: center; }
+.tk-wrap { border-top: 1px solid var(--line); background: var(--panel); }
+.tk { position: static; max-width: 1360px; height: 34px; margin: 0 auto; padding: 0 16px; border: 0; background: transparent; overflow: hidden; display: flex; align-items: center; white-space: nowrap; font-size: .8rem;
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 48px), transparent); }
+.tk-track { display: flex; flex: none; align-items: center; height: 100%; }
+.tk.run .tk-track { animation: tkmove var(--tkd, 60s) linear infinite; } .tk.run:hover .tk-track { animation-play-state: paused; }
+@keyframes tkmove { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .tk.run .tk-track { animation: none; } .tk { overflow-x: auto; } }
+.tki { display: inline-flex; align-items: baseline; gap: 7px; padding: 0 16px; border-right: 1px solid var(--line); line-height: 1; }
+.tk-track > .tki:first-child { padding-left: 0; }
+.tki .l { font-size: .68rem; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+.tki b { font-weight: 650; color: var(--ink); }
+.tki em { font-style: normal; font-size: .74rem; font-weight: 600; }
+.tk-gap { display: inline-block; flex: none; width: 40px; }
+.tk > .tk-track { padding: 0; border: 0; gap: 0; align-items: center; }
+header.top { padding: 12px 0 0; } header.top .sub { margin: 0; }
+@media (max-width: 760px) {
+  .ab-in { height: 48px; justify-content: space-between; gap: 12px; }
+  .appbar .tabs { position: fixed; top: auto; left: 0; right: 0; bottom: 0; z-index: 21; height: auto; background: var(--panel); border-top: 1px solid var(--line);
+    padding: 4px 4px calc(4px + env(safe-area-inset-bottom)); justify-content: space-around; overflow: visible; box-shadow: 0 -6px 18px -14px rgba(40,30,20,.5); }
+  .appbar .tabs button { flex: 1 1 0; min-width: 0; height: auto; flex-direction: column; gap: 3px; padding: 6px 2px; font-size: .64rem; line-height: 1.15; white-space: normal; text-align: center; border-radius: 8px; }
+  .appbar .tabs button.on { box-shadow: none; color: var(--accent); background: var(--accent-bg); }
+  .appbar .tabs button svg { width: 19px; height: 19px; opacity: 1; }
+  .wrap { padding-bottom: 92px; }
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="tk" id="tk" aria-label="Số liệu nhanh"><div><span class="l">Đang tải…</span></div></div>
-  <header class="top">
-    <div>
-      <h1>Sentiment<span>.</span></h1>
-      <p class="sub"><span class="fresh"><span class="dot" id="fresh-dot"></span><span id="fresh-text">Đang tải…</span></span></p>
-      <p class="sub" id="updated" hidden style="font-size:.76rem"></p>
-      <div class="msg" id="stale" hidden style="margin-top:8px"></div>
-    </div>
-    <div class="hbtns"><button class="btn icon" id="theme-btn" type="button" title="Đổi giao diện sáng / tối" aria-label="Đổi giao diện sáng / tối"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg></button><button class="btn" id="refresh" type="button">Làm mới dữ liệu</button></div>
-  </header>
-
-  <nav class="tabs" id="tabs" role="tablist" aria-label="Các mục">
+<div class="appbar" id="appbar">
+  <div class="ab-in">
+    <a class="logo" href="#overview">Sentiment<span>.</span></a>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Các mục">
     <button type="button" role="tab" data-tab="overview" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M12 12l3 -3"/></svg><span>Tổng quan</span></button>
     <button type="button" role="tab" data-tab="money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6 -6l4 4l8 -8"/><path d="M14 7l7 0l0 7"/></svg><span>Cá mập &amp; phái sinh</span></button>
     <button type="button" role="tab" data-tab="macro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/></svg><span>Vĩ mô &amp; lịch</span></button>
     <button type="button" role="tab" data-tab="cycle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg><span>Dài hạn</span></button>
     <button type="button" role="tab" data-tab="crowd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg><span>Tin tức</span></button>
   </nav>
+<div class="hbtns"><button class="btn icon" id="theme-btn" type="button" title="Đổi giao diện sáng / tối" aria-label="Đổi giao diện sáng / tối"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg></button><button class="btn" id="refresh" type="button">Làm mới dữ liệu</button></div>
+  </div>
+  <div class="tk-wrap"><div class="tk" id="tk" aria-label="Số liệu nhanh"><div class="tk-track"><div class="tki"><span class="l">Đang tải…</span></div></div></div></div>
+</div>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="sub"><span class="fresh"><span class="dot" id="fresh-dot"></span><span id="fresh-text">Đang tải…</span></span></p>
+      <p class="sub" id="updated" hidden style="font-size:.76rem"></p>
+      <div class="msg" id="stale" hidden style="margin-top:8px"></div>
+    </div>
+  </header>
+
 
   <!-- ================= TỔNG QUAN ================= -->
   <div class="tabpanel" data-panel="overview" role="tabpanel">
@@ -2871,10 +2911,11 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       </details>
       <p class="note">Thuận = có lợi cho giá BTC, Ngược = bất lợi, Chờ = tiền đang đứng ngoài, có thể quay lại sau. Mô tả tiền đã đi đâu, không phải dự báo.</p>`;
   }
+  try { addEventListener("scroll", () => { const a = document.getElementById("appbar"); if (a) a.classList.toggle("sc", scrollY > 4); }, { passive: true }); } catch (e) {}
   function tickerRender() {
     const el = $("tk"); if (!el) return;
     const L = S.sv && S.sv.L, M = CTX.mw && CTX.mw.mkt, W = CTX.mw && CTX.mw.world, wi = (k) => W && W.items ? W.items.find((x) => x.key === k) : null;
-    const ch = (x, inv) => x == null ? "" : `<span class="${(inv ? x < 0 : x > 0) ? "up" : "down"}">${x > 0 ? "+" : ""}${vnN(x, 2)}%</span>`;
+    const ch = (x, inv) => x == null ? "" : `<em class="${(inv ? x < 0 : x > 0) ? "up" : "down"}">${x > 0 ? "▲" : x < 0 ? "▼" : ""} ${vnN(Math.abs(x), 2)}%</em>`;
     const cells = [];
     if (L && L.market && L.market.btc) cells.push(["BTC", vnN(L.market.btc.price) + " $", ch(L.market.btc.ch24)]);
     if (M && M.total) cells.push(["Vốn hoá crypto", vnN(M.total / 1e12, 2) + " nghìn tỷ $", ch(M.ch24)]);
@@ -2883,7 +2924,10 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     if (L && L.market && L.market.funding && L.market.funding.pct != null) cells.push(["Funding", `hạng ${vnN(L.market.funding.pct)}/100`, ""]);
     for (const [k, n, inv] of [["spx", "S&P 500"], ["gold", "Vàng"], ["us10", "Lợi suất 10N"], ["usd", "USD", true]]) { const x = wi(k); if (x) cells.push([n, x.kind === "pt" ? vnN(x.val, 2) + "%" : vnN(x.val, x.val < 200 ? 2 : 0), x.kind === "pt" ? "" : ch(x.c1, inv)]); }
     if (!cells.length) return;
-    el.innerHTML = cells.map(([a, b, c]) => `<div><span class="l">${a}</span><b>${b}</b>${c}</div>`).join("");
+    const one = cells.map(([a, b, c]) => `<div class="tki"><span class="l">${a}</span><b>${b}</b>${c}</div>`).join("");
+    el.innerHTML = `<div class="tk-track">${one}</div>`;
+    const tr = el.firstElementChild;
+    if (tr.scrollWidth > el.clientWidth + 4) { tr.innerHTML = one + `<span class="tk-gap"></span>` + one; tr.style.setProperty("--tkd", Math.round(tr.scrollWidth / 2 / 40) + "s"); el.classList.add("run"); } else el.classList.remove("run");
     // Hàng số nhanh ở tab Cá mập & phái sinh
     const k = $("wk-kpi");
     if (k && L) {
