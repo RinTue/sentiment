@@ -459,7 +459,7 @@ def run(latest: dict) -> dict:
             data["world"] = world(data.get("mkt") or {})
         except Exception as ex:  # noqa: BLE001
             data["world_err"] = str(ex)[:200]
-        for key, fn2 in (("sectors", sectors), ("mmf", lambda: mmf(old.get("mmf") or {})), ("cot", cot)):
+        for key, fn2 in (("sectors", sectors), ("cot", cot)):  # ICI (quỹ tiền tệ) chặn máy chủ GitHub (403) nên tắt
             try:
                 data[key] = fn2()
                 data.pop(key + "_err", None)
