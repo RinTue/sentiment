@@ -271,6 +271,94 @@ def world(mkt: dict) -> dict:
 
 
 # ---------------- Lịch crypto ----------------
+# ---------- Dòng tiền ngoài crypto: 11 ngành chứng khoán Mỹ, quỹ tiền tệ Mỹ (ICI), vị thế quỹ trên Bitcoin CME (CFTC COT) ----------
+SECTORS = [("XLK", "Công nghệ", "tc"), ("XLC", "Viễn thông, truyền thông", "tc"), ("XLY", "Tiêu dùng không thiết yếu", "tc"), ("XLI", "Công nghiệp", "tc"),
+           ("XLF", "Tài chính, ngân hàng", ""), ("XLB", "Nguyên vật liệu", ""), ("XLE", "Năng lượng", ""),
+           ("XLP", "Hàng thiết yếu", "pt"), ("XLU", "Tiện ích (điện, nước)", "pt"), ("XLV", "Y tế", "pt"), ("XLRE", "Bất động sản", "pt")]
+
+
+def sectors() -> dict:
+    spy = _yahoo("SPY")
+    s30 = _chg(spy, 30, "pct")
+    out, errs = [], []
+    for sym, name, grp in SECTORS:
+        try:
+            ser = _yahoo(sym)
+            c30 = _chg(ser, 30, "pct")
+            out.append({"sym": sym, "name": name, "grp": grp, "c30": c30, "c7": _chg(ser, 7, "pct"), "rel": round(c30 - s30, 1) if c30 is not None and s30 is not None else None})
+        except Exception as ex:  # noqa: BLE001
+            errs.append(f"{sym}: {str(ex)[:60]}")
+    ok = [x for x in out if x["rel"] is not None]
+    if len(ok) < 8:
+        raise RuntimeError("thiếu ngành: " + "; ".join(errs[:3]))
+    avg = lambda g: stx.mean([x["c30"] for x in ok if x["grp"] == g])  # noqa: E731
+    gap = round(avg("pt") - avg("tc"), 1)
+    ok.sort(key=lambda x: -x["rel"])
+    return {"spy30": s30, "items": ok, "gap": gap, "asof": datetime.fromtimestamp(spy[-1][0], timezone.utc).strftime("%Y-%m-%d"), "err": "; ".join(errs) or None}
+
+
+MONTHS = {m: i for i, m in enumerate(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], 1)}
+
+
+def _ici_page(url: str):
+    import re
+    r = requests.get(url, headers=BROWSER, timeout=25)
+    r.raise_for_status()
+    txt = re.sub(r"<[^>]+>", " ", r.text)
+    txt = re.sub(r"\s+", " ", txt)
+    m = re.search(r"Total money market fund assets\W*\d?\s*(increased|decreased) by \$([\d.,]+) (billion|million) to \$([\d.,]+) trillion for the week ended \w+, (\w+) (\d+)", txt)
+    if not m:
+        raise RuntimeError("không thấy câu tổng tài sản")
+    chg = float(m.group(2).replace(",", "")) * (1 if m.group(3) == "billion" else 0.001) * (1 if m.group(1) == "increased" else -1)
+    today = date.today()
+    mo, dy = MONTHS[m.group(5)], int(m.group(6))
+    y = today.year if (mo, dy) <= (today.month, today.day) or mo <= today.month + 1 else today.year - 1
+    return {"d": date(y, mo, dy).isoformat(), "total": float(m.group(4)), "chg": round(chg, 2)}
+
+
+def mmf(old: dict) -> dict:
+    hist = {h["d"]: h for h in (old or {}).get("hist", [])}
+    cur = _ici_page("https://www.ici.org/research/stats/mmf")
+    hist[cur["d"]] = cur
+    # Bù các tuần trước từ trang lưu trữ (ra thứ Năm, sau ngày chốt thứ Tư 1 ngày)
+    d0 = date.fromisoformat(cur["d"])
+    for k in range(1, 9):
+        dk = d0 - timedelta(days=7 * k)
+        if dk.isoformat() in hist:
+            continue
+        rel = dk + timedelta(days=1)
+        try:
+            h = _ici_page(f"https://www.ici.org/research/stats/mmf/mm_{rel:%m_%d_%y}")
+            hist[h["d"]] = h
+        except Exception:  # noqa: BLE001
+            pass
+    hs = sorted(hist.values(), key=lambda h: h["d"])[-60:]
+    last4 = [h for h in hs if h["d"] > (d0 - timedelta(days=28)).isoformat()]
+    c4 = sum(h["chg"] for h in last4) if len(last4) >= 4 else None
+    return {"d": cur["d"], "total": cur["total"], "w1": cur["chg"], "c4": round(c4, 1) if c4 is not None else None,
+            "c4p": round(c4 / (cur["total"] * 1000 - c4) * 100, 2) if c4 is not None else None, "hist": hs}
+
+
+def cot() -> dict:
+    url = "https://publicreporting.cftc.gov/resource/gpe5-46if.json"
+    rows = None
+    for where in ("cftc_contract_market_code='133741'", "upper(market_and_exchange_names) like 'BITCOIN - CHICAGO MERCANTILE%'"):
+        try:
+            rows = _get(url, {"$where": where, "$order": "report_date_as_yyyy_mm_dd DESC", "$limit": 12})
+            if rows:
+                break
+        except Exception:  # noqa: BLE001
+            rows = None
+    if not rows:
+        raise RuntimeError("CFTC không trả dữ liệu Bitcoin CME")
+    f = lambda r, k: float(r.get(k) or 0)  # noqa: E731
+    pts = [{"d": r["report_date_as_yyyy_mm_dd"][:10], "am": f(r, "asset_mgr_positions_long") - f(r, "asset_mgr_positions_short"),
+            "lev": f(r, "lev_money_positions_long") - f(r, "lev_money_positions_short"), "oi": f(r, "open_interest_all")} for r in rows]
+    a, b = pts[0], (pts[4] if len(pts) > 4 else pts[-1])
+    ch = round((a["am"] - b["am"]) / abs(b["am"]) * 100, 1) if b["am"] else None
+    return {"d": a["d"], "am": a["am"], "am4": b["am"], "am_ch": ch, "lev": a["lev"], "oi": a["oi"], "pts": pts[::-1]}
+
+
 def last_friday(y: int, m: int) -> date:
     d = date(y + (m == 12), m % 12 + 1, 1) - timedelta(days=1)
     while d.weekday() != 4:
@@ -371,6 +459,12 @@ def run(latest: dict) -> dict:
             data["world"] = world(data.get("mkt") or {})
         except Exception as ex:  # noqa: BLE001
             data["world_err"] = str(ex)[:200]
+        for key, fn2 in (("sectors", sectors), ("mmf", lambda: mmf(old.get("mmf") or {})), ("cot", cot)):
+            try:
+                data[key] = fn2()
+                data.pop(key + "_err", None)
+            except Exception as ex:  # noqa: BLE001
+                data[key + "_err"] = str(ex)[:200]
         try:
             data["cal"] = calendar(old.get("cal") or {})
         except Exception as ex:  # noqa: BLE001
