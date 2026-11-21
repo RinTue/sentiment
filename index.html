@@ -474,8 +474,21 @@ header.top .sub { font-size: .76rem; }
 .fl-bar::after { content: ""; position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--ink-3); }
 .fl-bar i { position: absolute; top: 0; bottom: 0; border-radius: 2px; } .fl-bar i.u { background: var(--good); } .fl-bar i.d { background: var(--bad); }
 .fl-io { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: .86rem; }
-.fl-back { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--panel-2); }
+.fl-back { margin-top: 0; padding: 10px 12px; border-radius: 8px; background: var(--panel-2); }
 .fl-chk { font-size: .84rem; padding: 3px 0; color: var(--ink-3); } .fl-chk.on { color: var(--good); font-weight: 600; }
+.fl-top { display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 24px; align-items: center; margin: 10px 0 4px; }
+.fl-head { font-size: 1.35rem; font-weight: 700; } .fl-sub { color: var(--ink-2); margin-top: 4px; font-size: .88rem; }
+.fl-meter { display: flex; gap: 4px; margin-top: 10px; } .fl-meter i { flex: 1; height: 8px; border-radius: 2px; }
+.fl-meter i.ng { background: var(--bad); } .fl-meter i.th { background: var(--good); } .fl-meter i.ch { background: var(--warn); } .fl-meter i.tt { background: var(--ink-3); opacity: .35; }
+.fl-ml { display: flex; justify-content: space-between; font-size: .76rem; color: var(--ink-3); margin-top: 5px; }
+.fl-tbl { width: 100%; border-collapse: collapse; margin-top: 6px; } .fl-tbl td { padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: middle; font-size: .88rem; }
+.fl-tbl tr.gh td { border: 0; padding: 14px 6px 2px; font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); font-weight: 600; }
+.fl-tbl td.n { width: 230px; font-weight: 600; } .fl-tbl td.d { color: var(--ink-2); text-align: left; } .fl-tbl td.n { text-align: left; } .fl-tbl td.d small { display: block; font-size: .7rem; color: var(--ink-3); }
+.fl-tbl td.r { width: 100px; text-align: right; }
+.fl-pill { display: inline-block; min-width: 76px; text-align: center; padding: 3px 8px; border-radius: 6px; font-weight: 600; font-size: .8rem; }
+.fl-pill.tone-bad { background: var(--bad-bg); } .fl-pill.tone-good { background: var(--good-bg); } .fl-pill.tone-warn { background: var(--warn-bg); } .fl-pill.tone-neutral { background: var(--panel-2); color: var(--ink-2); }
+.fl-more > summary { cursor: pointer; color: var(--accent); font-weight: 600; margin-top: 12px; font-size: .88rem; }
+@media (max-width: 860px) { .fl-top { grid-template-columns: 1fr; } .fl-tbl td.n { width: auto; } .fl-tbl tr:not(.gh) { display: grid; grid-template-columns: 1fr auto; } .fl-tbl tr:not(.gh) td.d { grid-column: 1 / -1; grid-row: 2; padding-top: 0; } .fl-tbl tr:not(.gh) td { border: 0; } .fl-tbl tr:not(.gh) { border-bottom: 1px solid var(--line); } }
 @media (max-width: 860px) { .fl-grid { grid-template-columns: 1fr; gap: 16px; } }
 @media (max-width: 600px) { .tk { margin-inline: -16px; } header.top h1 { font-size: 1rem; }
   .ctx-card, .ctx-sec, details { overflow-x: auto; } .ctx-hm td, .ctx-tbl td, .ctx-tbl th { padding: 5px 4px; } }
@@ -2765,52 +2778,98 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       tEl.innerHTML = `<b class="k">Hôm nay cần chú ý</b><span>${pts.join(" · ")}.</span>`;
     }
   }
-  /* ---------- Dòng tiền đang đi đâu: giữa các thị trường, vào/ra crypto, bên trong crypto (30 ngày) ---------- */
+  /* ---------- Dòng tiền tác động lên BTC: mỗi yếu tố một câu + nhãn Thuận/Ngược; chi tiết bấm mở ---------- */
   function flowHtml(M, W) {
-    const L = S.sv && S.sv.L; if (!M && !(W && W.items)) return "";
+    const L = S.sv && S.sv.L, D = CTX.mw || {}; if (!M && !(W && W.items)) return "";
     const wi = (k) => W && W.items ? W.items.find((x) => x.key === k) : null;
-    const bar = (x, mx) => { const w = Math.min(50, Math.abs(x) / mx * 50); return `<span class="fl-bar"><i class="${x < 0 ? "d" : "u"}" style="${x < 0 ? `right:50%` : `left:50%`};width:${w}%"></i></span>`; };
-    const row = (n, x, mx, s) => `<div class="fl-row"><span>${n}${s ? `<small>${s}</small>` : ""}</span>${bar(x, mx)}${mwPct(x)}</div>`;
-    // 1. Giữa các thị trường
+    const pc = (x, d = 1) => `${x > 0 ? "+" : ""}${vnN(x, d)}%`;
+    const rows = { out: [], btc: [] };
+    const add = (g, n, txt, t, src) => rows[g].push({ n, txt, t, src });
+    // 1. Khẩu vị rủi ro chứng khoán (11 ngành Mỹ)
+    const SE = D.sectors;
+    if (SE && SE.items && SE.items.length) {
+      const it = SE.items, best = it[0], worst = it[it.length - 1], pt = it.filter((x) => x.grp === "pt" && x.rel > 0).slice(0, 2).map((x) => x.name.split(" (")[0].toLowerCase());
+      if (SE.gap > 3) add("out", "Khẩu vị rủi ro chứng khoán", `Tiền chạy sang ngành phòng thủ${pt.length ? ` (${pt.join(", ")})` : ""}; ${worst.name.toLowerCase()} bị bán ${pc(worst.c30)}`, "ng", `11 ngành Mỹ, 30 ngày`);
+      else if (SE.gap < -3) add("out", "Khẩu vị rủi ro chứng khoán", `Tiền vào ngành tấn công, mạnh nhất ${best.name.toLowerCase()} ${pc(best.c30)}: thị trường dám chấp nhận rủi ro`, "th", `11 ngành Mỹ, 30 ngày`);
+      else add("out", "Khẩu vị rủi ro chứng khoán", `Chưa nghiêng rõ về phòng thủ hay tấn công (S&P 500 ${pc(SE.spy30)})`, "tt", `11 ngành Mỹ, 30 ngày`);
+    }
+    // 2. USD & trái phiếu
+    const u = wi("usd"), y = wi("us10"), sp = wi("spx");
+    if (u && y && u.c30 != null && y.c30 != null) {
+      if (u.c30 > 1 && y.c30 <= 0) add("out", "Đô la Mỹ & trái phiếu", `Tiền về USD (${pc(u.c30)}) và trái phiếu Mỹ (lợi suất 10 năm ${y.c30 > 0 ? "+" : ""}${vnN(y.c30, 2)} điểm %)`, "ng");
+      else if (y.c30 >= .25) add("out", "Đô la Mỹ & trái phiếu", `Lợi suất 10 năm tăng ${vnN(y.c30, 2)} điểm %: vay tiền đắt hơn, bất lợi cho tài sản rủi ro`, "ng");
+      else if (u.c30 < -1) add("out", "Đô la Mỹ & trái phiếu", `USD yếu đi (${pc(u.c30)}): thường có lợi cho BTC`, "th");
+      else if (y.c30 <= -.25 && u.c30 <= 0) add("out", "Đô la Mỹ & trái phiếu", `Lợi suất giảm ${vnN(-y.c30, 2)} điểm %, USD không tăng: tiền rẻ hơn`, "th");
+      else add("out", "Đô la Mỹ & trái phiếu", `USD (${pc(u.c30)}) và lợi suất (${y.c30 > 0 ? "+" : ""}${vnN(y.c30, 2)} điểm %) đi ngang`, "tt");
+    }
+    // 3. Tiền mặt đứng chờ (quỹ tiền tệ Mỹ, ICI)
+    const MF = D.mmf;
+    if (MF && MF.total) {
+      const v = MF.c4p != null ? MF.c4p : null, tot = `${vnN(MF.total, 2)} nghìn tỷ $`;
+      if (v == null) add("out", "Tiền mặt đứng chờ", `Quỹ tiền tệ Mỹ ${tot}, tuần qua ${MF.w1 > 0 ? "+" : ""}${vnN(MF.w1, 1)} tỷ $`, "tt", `ICI, tuần chốt ${ctxDate(MF.d)}`);
+      else if (v > 1) add("out", "Tiền mặt đứng chờ", `Quỹ tiền tệ Mỹ tăng ${pc(v)} trong 4 tuần, lên ${tot}: tiền rút về đứng ngoài, sau này có thể quay lại`, "ch", `ICI, tuần chốt ${ctxDate(MF.d)}`);
+      else if (v < -1) add("out", "Tiền mặt đứng chờ", `Quỹ tiền tệ Mỹ giảm ${pc(v)} trong 4 tuần: tiền mặt đang được đem đi đầu tư`, "th", `ICI, tuần chốt ${ctxDate(MF.d)}`);
+      else add("out", "Tiền mặt đứng chờ", `Quỹ tiền tệ Mỹ đi ngang (${pc(v, 2)} trong 4 tuần), ${tot}`, "tt", `ICI, tuần chốt ${ctxDate(MF.d)}`);
+    }
+    // 4–8. Tiền vào/ra Bitcoin
+    const E = L && L.etf && L.etf.summary;
+    if (E && E.d30 != null) add("btc", "Quỹ ETF Bitcoin", `${E.d30 >= 0 ? "Vào" : "Rút"} ${vnN(Math.abs(E.d30) / 1000, 2)} tỷ $ trong 30 ngày`, Math.abs(E.d30) < 300 ? "tt" : E.d30 > 0 ? "th" : "ng");
+    const CO = D.cot;
+    if (CO && CO.am != null) {
+      const c = CO.am_ch, k = (x) => vnN(Math.abs(x)) + " hợp đồng";
+      add("btc", "Quỹ lớn trên CME", c == null ? `Quỹ quản lý tài sản ${CO.am >= 0 ? "mua ròng" : "bán ròng"} ${k(CO.am)}` : `Quỹ quản lý tài sản ${c > 10 ? "tăng mua" : c < -10 ? "giảm mua" : "giữ nguyên"} trong 4 tuần (${c > 0 ? "+" : ""}${vnN(c)}%), còn ${CO.am >= 0 ? "mua ròng" : "bán ròng"} ${k(CO.am)}`,
+        c == null ? "tt" : c > 10 ? "th" : c < -10 ? "ng" : "tt", `CFTC, chốt ${ctxDate(CO.d)}`);
+    }
+    const P = L && L.market && L.market.premium, pv = P ? (P.avg7d != null ? P.avg7d : P.last) : null;
+    if (pv != null) add("btc", "Nhà đầu tư Mỹ (Coinbase)", pv < -.02 ? `Đang bán: giá Coinbase thấp hơn sàn khác ${vnN(-pv, 2)}%` : pv > .02 ? `Đang mua: giá Coinbase cao hơn sàn khác ${vnN(pv, 2)}%` : "Mua bán cân bằng", pv < -.02 ? "ng" : pv > .02 ? "th" : "tt", "trung bình 7 ngày");
+    const ST = L && L.market && L.market.stable;
+    if (ST && ST.ch30 != null) add("btc", "Stablecoin (tiền chờ mua crypto)", ST.ch30 > 1 ? `Tăng ${pc(ST.ch30)}: có tiền mới vào crypto` : ST.ch30 < -1 ? `Giảm ${pc(-ST.ch30).slice(1)}: tiền rút hẳn khỏi crypto` : `Đi ngang (${pc(ST.ch30)})`, ST.ch30 > 1 ? "th" : ST.ch30 < -1 ? "ng" : "tt", "30 ngày");
+    if (M && M.btc_c30 != null && M.alt_ch30 != null) { const d = M.alt_ch30 - M.btc_c30; add("btc", "BTC so với altcoin", d > 5 ? `Altcoin mạnh hơn BTC ${vnN(d)} điểm: tiền đang lan sang altcoin` : d < -5 ? `BTC mạnh hơn altcoin ${vnN(-d)} điểm: tiền trú ở BTC` : `${M.btc_c30 < 0 ? "Giảm" : "Tăng"} như nhau (BTC ${pc(M.btc_c30)}, altcoin ${pc(M.alt_ch30)}): chưa nhóm nào hút tiền`, "tt", "30 ngày"); }
+    const all = rows.out.concat(rows.btc); if (!all.length) return "";
+    const cnt = (t) => all.filter((r) => r.t === t).length, nNg = cnt("ng"), nTh = cnt("th"), nCh = cnt("ch"), nTt = cnt("tt");
+    const tone = nTh - nNg <= -3 ? "bad" : nTh - nNg >= 3 ? "good" : "warn";
+    const head = tone === "bad" ? "Dòng tiền đang ngược chiều với BTC" : tone === "good" ? "Dòng tiền đang thuận cho BTC" : "Dòng tiền lẫn lộn, chưa rõ chiều";
+    let sub = "";
+    if (u && y && sp && u.c30 > 0 && y.c30 < 0 && sp.c30 < 0) sub = "Tiền rút khỏi tài sản rủi ro trên toàn thế giới, về tiền mặt USD và trái phiếu Mỹ. Không phải chuyện riêng của crypto.";
+    else if (sp && sp.c30 > 0 && M && M.ch30 < -5) sub = "Chứng khoán vẫn ổn nhưng tiền rút khỏi crypto: crypto đang yếu riêng.";
+    else if (sp && sp.c30 > 0 && M && M.ch30 > 5) sub = "Tiền vào tài sản rủi ro, cả chứng khoán và crypto cùng được hưởng.";
+    else sub = `${nNg} yếu tố bất lợi, ${nTh} yếu tố có lợi cho BTC trong 30 ngày qua.`;
+    const TAG = { ng: ["Ngược", "bad"], th: ["Thuận", "good"], ch: ["Chờ", "warn"], tt: ["Trung tính", "neutral"] };
+    const pill = (t) => `<span class="fl-pill tone-${TAG[t][1]}">${TAG[t][0]}</span>`;
+    const meter = ["ng", "ch", "tt", "th"].flatMap((t) => all.filter((r) => r.t === t).map(() => `<i class="${t}"></i>`)).join("");
+    const tbl = (g, title) => rows[g].length ? `<tr class="gh"><td colspan="3">${title}</td></tr>` + rows[g].map((r) => `<tr><td class="n">${r.n}</td><td class="d">${r.txt}${r.src ? `<small>${r.src}</small>` : ""}</td><td class="r">${pill(r.t)}</td></tr>`).join("") : "";
+    const back = [];
+    if (E) back.push(["ETF có tiền vào 5 phiên liền", E.streak && E.streak.sign > 0 && E.streak.n >= 5]);
+    if (ST) back.push(["Stablecoin tăng trở lại", ST.ch30 > 0]);
+    if (pv != null) back.push(["Người Mỹ mua lại (Coinbase dương)", pv > 0]);
+    const nb = back.filter((r) => r[1]).length;
+    // Chi tiết
+    const bar = (x, mx) => { const w = Math.min(50, Math.abs(x) / mx * 50); return `<span class="fl-bar"><i class="${x < 0 ? "d" : "u"}" style="${x < 0 ? "right:50%" : "left:50%"};width:${w}%"></i></span>`; };
+    const brow = (n, x, mx, s) => `<div class="fl-row"><span>${n}${s ? `<small>${s}</small>` : ""}</span>${bar(x, mx)}${mwPct(x)}</div>`;
     const mk = [];
     for (const [k, n] of [["spx", "Chứng khoán Mỹ (S&P 500)"], ["ndx", "Công nghệ Mỹ (Nasdaq)"], ["nikkei", "Chứng khoán Nhật"], ["gold", "Vàng"], ["oil", "Dầu"], ["usd", "Đô la Mỹ (USD)"]]) { const x = wi(k); if (x && x.c30 != null) mk.push([n, x.c30, ""]); }
-    const y = wi("us10"); if (y && y.c30 != null) mk.push(["Trái phiếu Mỹ 10 năm", -8 * y.c30, `ước tính từ lợi suất ${y.c30 > 0 ? "+" : ""}${vnN(y.c30, 2)} điểm %`]);
+    if (y && y.c30 != null) mk.push(["Trái phiếu Mỹ 10 năm", -8 * y.c30, "ước tính từ lợi suất"]);
     if (M && M.ch30 != null) mk.push(["Crypto (tổng vốn hoá)", M.ch30, ""]);
     mk.sort((p, q) => q[1] - p[1]);
-    const mx1 = Math.max(5, ...mk.map((r) => Math.abs(r[1])));
-    // 2. Vào / ra crypto
-    const ST = L && L.market && L.market.stable, E = L && L.etf && L.etf.summary, P = L && L.market && L.market.premium;
-    const io = [], back = [];
-    if (ST && ST.ch30 != null) { io.push(["Lượng stablecoin", `${ST.ch30 > 0 ? "+" : ""}${vnN(ST.ch30, 1)}%`, ST.ch30 >= 0, ST.ch30 >= 0 ? "tiền mới vào chờ mua" : "tiền rút hẳn khỏi crypto"]); back.push(["Stablecoin tăng lại (30 ngày)", ST.ch30 > 0]); }
-    if (E && E.d30 != null) { io.push(["Quỹ ETF Bitcoin", `${E.d30 > 0 ? "+" : ""}${vnN(E.d30 / 1000, 2)} tỷ $`, E.d30 >= 0, E.d30 >= 0 ? "quỹ lớn đang mua" : "quỹ lớn đang bán"]); back.push(["ETF có tiền vào (5 phiên)", E.s5 > 0]); }
-    const pv = P ? (P.avg7d != null ? P.avg7d : P.last) : null;
-    if (pv != null) { io.push(["Coinbase Premium 7 ngày", `${vnN(pv, 2)}%`, pv >= 0, pv >= 0 ? "người Mỹ mua" : "người Mỹ bán"]); back.push(["Coinbase Premium dương", pv > 0]); }
-    const outN = io.filter((r) => !r[2]).length, nb = back.filter((r) => r[1]).length;
-    // 3. Bên trong crypto
-    const sec = (M && M.sectors || []).slice().sort((p, q) => q.c30 - p.c30);
     const inn = [];
-    if (M && M.btc_c30 != null) inn.push(["Bitcoin", M.btc_c30, ""]);
-    if (M && M.alt_ch30 != null) inn.push(["Altcoin (gộp)", M.alt_ch30, ""]);
-    for (const x of sec) inn.push([x.name, x.c30, ""]);
-    const mx3 = Math.max(5, ...inn.map((r) => Math.abs(r[1])));
-    // Kết luận
-    const parts = [];
-    if (io.length) parts.push(outN >= 2 ? "Tiền đang rút khỏi crypto" : outN === 0 ? "Tiền đang vào crypto" : "Tiền vào/ra crypto lẫn lộn");
-    const u = wi("usd"), sp = wi("spx");
-    if (u && y && sp && u.c30 > 0 && y.c30 < 0 && sp.c30 < 0) parts.push("về tiền mặt USD và trái phiếu Mỹ");
-    else if (mk.length) parts.push(`mạnh nhất 30 ngày: ${mk[0][0].replace(/ \(.*\)$/, "")}`);
-    let inside = "";
-    if (M && M.btc_c30 != null && M.alt_ch30 != null) { const d = M.alt_ch30 - M.btc_c30; inside = d > 5 ? "Trong crypto, tiền nghiêng sang altcoin." : d < -5 ? "Trong crypto, tiền nghiêng về BTC (altcoin yếu hơn rõ)." : "Trong crypto, BTC và altcoin đi như nhau: chưa có nhóm nào hút tiền."; }
-    const tone = outN >= 2 ? "bad" : outN === 0 ? "good" : "warn";
-    return `<div class="ctx-lbl">Dòng tiền đang đi đâu<span class="t">30 ngày · tự động</span></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0 2px"><span class="ctx-exlvl" style="color:var(--${tone});background:var(--${tone}-bg)">${esc(parts.join(", "))}</span><span class="note" style="margin:0">${esc(inside)}</span></div>
-      <div class="fl-grid">
-        <div><h4>Giữa các thị trường</h4>${mk.map((r) => row(r[0], r[1], mx1, r[2])).join("")}</div>
-        <div><h4>Vào / ra crypto</h4>${io.map((r) => `<div class="fl-io"><span>${r[0]}<small>${r[3]}</small></span><b class="tone-${r[2] ? "good" : "bad"}">${r[2] ? "▲" : "▼"} ${r[1]}</b></div>`).join("")}
-          <div class="fl-back"><div class="ctx-lbl" style="margin-bottom:6px">Dấu hiệu tiền quay lại<span class="t">${nb} / ${back.length}</span></div>${back.map((r) => `<div class="fl-chk ${r[1] ? "on" : ""}">${r[1] ? "✓" : "✕"} ${r[0]}</div>`).join("")}</div></div>
-        <div><h4>Bên trong crypto</h4>${inn.map((r) => row(r[0], r[1], mx3, r[2])).join("")}${M && M.st_dom != null ? `<p class="note">Tỷ trọng stablecoin ${vnN(M.st_dom, 1)}% (30 ngày trước ${vnN(M.st_dom30, 1)}%): tăng = tiền đứng ngoài chờ.</p>` : ""}</div>
-      </div>
-      <p class="note">Mô tả tiền đã đi đâu trong 30 ngày qua, không phải dự báo. Trái phiếu tính gần đúng từ lợi suất 10 năm (lợi suất giảm = giá trái phiếu tăng). Chi tiết ở tab <a href="#money">Cá mập</a> và <a href="#macro">Vĩ mô</a>.</p>`;
+    if (M && M.btc_c30 != null) inn.push(["Bitcoin", M.btc_c30]); if (M && M.alt_ch30 != null) inn.push(["Altcoin (gộp)", M.alt_ch30]);
+    for (const x of (M && M.sectors || []).slice().sort((p, q) => q.c30 - p.c30)) inn.push([x.name, x.c30]);
+    const mx = (a) => Math.max(5, ...a.map((r) => Math.abs(r[1])));
+    const sec = SE && SE.items ? SE.items.map((x) => [x.name, x.rel, `${x.sym}${x.grp === "pt" ? " · phòng thủ" : x.grp === "tc" ? " · tấn công" : ""}`]) : [];
+    return `<div class="ctx-lbl">Dòng tiền tác động lên BTC<span class="t">30 ngày · tự động</span></div>
+      <div class="fl-top"><div><div class="fl-head tone-${tone}">${head}</div><div class="fl-sub">${sub}</div>
+        <div class="fl-meter">${meter}</div><div class="fl-ml"><span>${[nNg && nNg + " ngược", nCh && nCh + " chờ", nTt && nTt + " trung tính"].filter(Boolean).join(" · ")}</span><span>${nTh} thuận</span></div></div>
+        ${back.length ? `<div class="fl-back"><div class="ctx-lbl" style="margin-bottom:4px">Khi nào tiền quay lại BTC<span class="t"><b>${nb} / ${back.length}</b></span></div>${back.map((r) => `<div class="fl-chk ${r[1] ? "on" : ""}">${r[1] ? "✓" : "✕"} ${r[0]}</div>`).join("")}</div>` : ""}</div>
+      <table class="fl-tbl">${tbl("out", "Ngoài crypto: thế giới đang làm gì")}${tbl("btc", "Tiền vào / ra Bitcoin")}</table>
+      <details class="fl-more"><summary>Xem số liệu chi tiết: từng thị trường, 11 ngành chứng khoán Mỹ, từng nhóm coin</summary>
+        <div class="fl-grid">
+          <div><h4>Giữa các thị trường · 30 ngày</h4>${mk.map((r) => brow(r[0], r[1], mx(mk), r[2])).join("")}</div>
+          ${sec.length ? `<div><h4>11 ngành Mỹ so với S&amp;P 500</h4>${sec.map((r) => brow(r[0], r[1], mx(sec), r[2])).join("")}<p class="note">Dương = mạnh hơn thị trường chung. Phòng thủ mạnh hơn tấn công = tiền trốn rủi ro.</p></div>` : ""}
+          <div><h4>Bên trong crypto · 30 ngày</h4>${inn.map((r) => brow(r[0], r[1], mx(inn))).join("")}${M && M.st_dom != null ? `<p class="note">Tỷ trọng stablecoin ${vnN(M.st_dom, 1)}% (30 ngày trước ${vnN(M.st_dom30, 1)}%).</p>` : ""}</div>
+        </div>
+        ${CO && CO.am != null ? `<p class="note">Bitcoin CME (CFTC, chốt ${ctxDate(CO.d)}): quỹ quản lý tài sản ${CO.am >= 0 ? "mua ròng" : "bán ròng"} ${vnN(Math.abs(CO.am))} hợp đồng (4 tuần trước ${vnN(CO.am4)}); quỹ đầu cơ ${CO.lev >= 0 ? "mua ròng" : "bán ròng"} ${vnN(Math.abs(CO.lev))} hợp đồng. Quỹ đầu cơ bán ròng phần lớn là ăn chênh lệch giữa ETF và hợp đồng tương lai, không phải đặt cược giá giảm, nên không tính.</p>` : ""}
+      </details>
+      <p class="note">Thuận = có lợi cho giá BTC, Ngược = bất lợi, Chờ = tiền đang đứng ngoài, có thể quay lại sau. Mô tả tiền đã đi đâu, không phải dự báo.</p>`;
   }
   function tickerRender() {
     const el = $("tk"); if (!el) return;
