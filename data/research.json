@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-21T23:08:13Z",
+ "updated": "2026-11-22T00:07:44Z",
  "test_from": "2019-01-01",
  "split": "2023-01-01",
  "groups_name": {
@@ -743,9 +743,9 @@
    "key": "prem",
    "group": "inst",
    "name": "Coinbase Premium (7 ngày)",
-   "from": "2021-09-16",
+   "from": "2021-09-17",
    "now": -0.09769,
-   "rho30_tr": -0.099,
+   "rho30_tr": -0.1,
    "rho30_te": 0.024,
    "wf30": {
     "n": 1270,
@@ -762,9 +762,9 @@
    "wf90": {
     "n": 1149,
     "from": "2023-07-01",
-    "acc": 38.9,
+    "acc": 38.7,
     "base": 41.0,
-    "edge": -2.1,
+    "edge": -2.3,
     "skill": -0.3,
     "acc_strong": 15.0,
     "share_strong": 13
@@ -1561,5 +1561,5 @@
  "errors": {
   "coinmetrics_whales": "403 Client Error: Forbidden for url: https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=AdrBalNtv1KCnt&frequency=1d&start_time="
  },
- "runtime_sec": 98
+ "runtime_sec": 71
 }
