@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-23T21:08:12Z",
+ "updated": "2026-11-23T22:07:38Z",
  "test_from": "2019-01-01",
  "split": "2023-01-01",
  "groups_name": {
@@ -315,7 +315,7 @@
    "group": "liq",
    "name": "Đồng đô la (thay đổi 3 tháng)",
    "from": "2013-03-05",
-   "now": 0.02591,
+   "now": 0.03361,
    "rho30_tr": -0.203,
    "rho30_te": 0.058,
    "wf30": {
@@ -381,7 +381,7 @@
    "group": "macro",
    "name": "Kỳ vọng lãi suất Fed (2 năm − lãi suất Fed)",
    "from": "2013-01-01",
-   "now": 0.88,
+   "now": 0.75,
    "rho30_tr": -0.252,
    "rho30_te": -0.08,
    "wf30": {
@@ -414,7 +414,7 @@
    "group": "macro",
    "name": "Lợi suất thực 10 năm (thay đổi 3 tháng)",
    "from": "2013-03-05",
-   "now": 0.2,
+   "now": 0.09,
    "rho30_tr": -0.087,
    "rho30_te": 0.099,
    "wf30": {
@@ -1543,17 +1543,17 @@
  },
  "ablation": {},
  "now": {
-  "p30": 52.4,
+  "p30": 52.0,
   "asof30": "2026-11-23",
   "contrib30": {
-   "real": 0.018,
+   "real": 0.005,
    "spotnet": -0.091
   },
   "base30": 54.1,
-  "p90": 48.7,
+  "p90": 52.3,
   "asof90": "2026-11-23",
   "contrib90": {
-   "real": -0.204,
+   "real": -0.059,
    "spotnet": -0.091
   },
   "base90": 55.8
@@ -1561,5 +1561,5 @@
  "errors": {
   "coinmetrics_whales": "403 Client Error: Forbidden for url: https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=AdrBalNtv1KCnt&frequency=1d&start_time="
  },
- "runtime_sec": 100
+ "runtime_sec": 72
 }
