@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-23T08:08:44Z",
+ "updated": "2026-11-23T09:08:10Z",
  "test_from": "2019-01-01",
  "split": "2023-01-01",
  "groups_name": {
@@ -938,6 +938,72 @@
    "short": false
   },
   {
+   "key": "spotperp",
+   "group": "micro",
+   "name": "Khối lượng spot so với hợp đồng vĩnh cửu (30 ngày)",
+   "from": "2019-10-12",
+   "now": -2.05396,
+   "rho30_tr": 0.057,
+   "rho30_te": 0.013,
+   "wf30": {
+    "n": 1971,
+    "from": "2021-06-01",
+    "acc": 49.9,
+    "base": 52.8,
+    "edge": -2.9,
+    "skill": -2.1,
+    "acc_strong": 45.7,
+    "share_strong": 12
+   },
+   "rho90_tr": 0.239,
+   "rho90_te": 0.103,
+   "wf90": {
+    "n": 1850,
+    "from": "2021-08-01",
+    "acc": 43.6,
+    "base": 52.6,
+    "edge": -9.0,
+    "skill": -11.2,
+    "acc_strong": 34.9,
+    "share_strong": 51
+   },
+   "pass": false,
+   "short": false
+  },
+  {
+   "key": "cvdgap",
+   "group": "micro",
+   "name": "Lệch pha: mua ròng spot − mua ròng phái sinh",
+   "from": "2019-10-12",
+   "now": -0.00195,
+   "rho30_tr": 0.045,
+   "rho30_te": -0.126,
+   "wf30": {
+    "n": 1971,
+    "from": "2021-06-01",
+    "acc": 51.4,
+    "base": 52.8,
+    "edge": -1.4,
+    "skill": -4.6,
+    "acc_strong": 42.2,
+    "share_strong": 28
+   },
+   "rho90_tr": 0.144,
+   "rho90_te": -0.393,
+   "wf90": {
+    "n": 1850,
+    "from": "2021-08-01",
+    "acc": 50.1,
+    "base": 52.6,
+    "edge": -2.5,
+    "skill": -16.1,
+    "acc_strong": 39.7,
+    "share_strong": 63
+   },
+   "pass": false,
+   "short": false
+  },
+  {
    "key": "dvol",
    "group": "micro",
    "name": "Độ biến động kỳ vọng DVOL",
@@ -1493,8 +1559,7 @@
   "base90": 55.8
  },
  "errors": {
-  "cz_perp": "429 Client Error: Too Many Requests for url: https://api.coinalyze.net/v1/ohlcv-history?symbols=BTCUSDT.6%2CBTCUSDC_PERP.A%2CBTCUSDT_PERP.A%2CBTCUSDT_PERP.3%2CB",
   "coinmetrics_whales": "403 Client Error: Forbidden for url: https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=AdrBalNtv1KCnt&frequency=1d&start_time="
  },
- "runtime_sec": 132
+ "runtime_sec": 98
 }
