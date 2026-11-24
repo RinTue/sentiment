@@ -79,9 +79,9 @@ Khi đề xuất chỉ báo mới, hãy nói rõ nó có thật sự báo trư�
 - Commit message tiếng Việt, mô tả việc đã làm. Sau khi đẩy, có thể bấm chạy workflow để có dữ liệu thật rồi kiểm tra `data/latest.json`.
 - Ý tưởng đang chờ người dùng quyết: chỉ báo "lệch pha spot – phái sinh" (khối lượng spot thấp, funding dương kéo dài), ETF ETH (cần mã SoSoValue), cron-job.org.
 
-### Giao diện (từ 20/11/2026)
-- Mặc định tông sáng ấm (kem giấy), nút ◐ chuyển tông tối dịu (xám than); lưu ở localStorage `tamly-theme2` ("warm"/"dark"). Các khung biểu đồ kiểu CoinGlass giữ nền xám than #2d333b ở cả hai tông. Màu định nghĩa trong khối CSS "Giao diện chuyên nghiệp" cuối `<style>`.
-- Thanh giá cố định trên cùng `#tk` (BTC, vốn hoá, tỷ trọng BTC, F&G, funding, S&P, vàng, 10Y, USD) do `tickerRender()` vẽ; tab dính ngay dưới.
-- Tổng quan: dòng "Hôm nay cần chú ý" → 2 xu hướng → 4 thẻ (có đường 90 ngày) → [Đảo chiều đi lên | Chốt lời] → [Thế giới 7 ngày | Lịch 14 ngày] → toàn thị trường crypto → Xem chi tiết.
-- Cá mập: hàng KPI `#wk-kpi` ở đầu. Vĩ mô: bảng thế giới `#world-box` ở đầu. Tin tức: "Tin lớn 48 giờ" `#big-box2` ở đầu.
-- Điện thoại: bảng rộng tự cuộn ngang trong thẻ, trang không tràn.
+### Giao diện "Hải đồ" (từ 24/11/2026)
+- Người dùng đã chọn hướng B "Hải đồ" sau khi từ chối kiểu terminal/SaaS ("nhìn là biết AI copy"). Không quay về thẻ bo góc đồng loạt, chữ viết hoa nhỏ, chữ số mono.
+- Màu: nền hải đồ #eaf0f3 có lưới chấm, mực xanh hải quân #12304a, cam phao #e0592a (chỉ dùng cho điểm nhấn / bất lợi), xanh #2b7a5c. Nút ◐ chuyển "biển đêm" (`data-theme="dark"`, lưu `tamly-theme2`).
+- Chữ: Barlow (nội dung) + Barlow Condensed (tiêu đề, số lớn) qua Google Fonts; biến `--font`, `--cond`.
+- Tổng quan: `hdHero()` = vòng 5 pha Dow (`hdDial`, kim chỉ pha hiện tại, "ngày thứ N của pha") + tiêu đề "Thị trường đang ở vùng …" + 2 xu hướng + 4 đồng hồ (`hdGauge`; Tâm lý lấy F&G qua `hdFng`) + dòng "Hôm nay cần chú ý"; dải trắng `.hd-band` = "Gió đang thổi …" (`flowHtml`, mũi tên ngược/thuận) | "Đoạn đường 14 ngày tới" (`#ctx-cal`); rồi dấu hiệu đảo chiều/chốt lời, thế giới, Xem chi tiết.
+- Thanh trên: logo + tab + nút; dải giá chạy bên dưới. Điện thoại: tab cố định ở đáy (không đặt backdrop-filter lên .appbar vì làm hỏng position:fixed).
