@@ -3021,11 +3021,11 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const tone = nTh - nNg <= -3 ? "bad" : nTh - nNg >= 3 ? "good" : "warn";
     const head = tone === "bad" ? "Dòng tiền đang ngược chiều với BTC" : tone === "good" ? "Dòng tiền đang thuận cho BTC" : "Dòng tiền lẫn lộn, chưa rõ chiều";
     let sub = "";
-    if (u && y && sp && u.c30 > 0 && y.c30 < 0 && sp.c30 < 0) sub = "Tiền rút khỏi tài sản rủi ro trên toàn thế giới, về tiền mặt USD và trái phiếu Mỹ. Không phải chuyện riêng của crypto.";
-    else if (sp && sp.c30 > 0 && M && M.ch30 < -5) sub = "Chứng khoán vẫn ổn nhưng tiền rút khỏi crypto: crypto đang yếu riêng.";
-    else if (sp && sp.c30 > 0 && M && M.ch30 > 5) sub = "Tiền vào tài sản rủi ro, cả chứng khoán và crypto cùng được hưởng.";
-    else sub = `${nNg} yếu tố bất lợi, ${nTh} yếu tố có lợi cho BTC trong 30 ngày qua.`;
-    const TAG = { ng: ["Ngược", "bad"], th: ["Thuận", "good"], ch: ["Chờ", "warn"], tt: ["Trung tính", "neutral"] };
+    if (u && y && sp && u.c30 > 0 && y.c30 < 0 && sp.c30 < 0) sub = "Trạng thái né rủi ro (risk-off) toàn cầu: vốn rút khỏi tài sản rủi ro, về USD và trái phiếu Mỹ. Không riêng crypto.";
+    else if (sp && sp.c30 > 0 && M && M.ch30 < -5) sub = "Chứng khoán vẫn ổn nhưng vốn rút khỏi crypto: crypto đang yếu riêng.";
+    else if (sp && sp.c30 > 0 && M && M.ch30 > 5) sub = "Trạng thái ưa rủi ro (risk-on): vốn vào cả chứng khoán và crypto.";
+    else sub = "";
+    const TAG = { ng: ["Bất lợi", "bad"], th: ["Hỗ trợ", "good"], ch: ["Chờ", "warn"], tt: ["Trung tính", "neutral"] };
     const pill = (t) => `<span class="fl-pill tone-${TAG[t][1]}">${TAG[t][0]}</span>`;
     const meter = ["ng", "ch", "tt", "th"].flatMap((t) => all.filter((r) => r.t === t).map(() => `<i class="${t}"></i>`)).join("");
     const tbl = (g, title) => rows[g].length ? `<tr class="gh"><td colspan="3">${title}</td></tr>` + rows[g].map((r) => `<tr><td class="n">${r.n}</td><td class="d">${r.txt}${r.src ? `<small>${r.src}</small>` : ""}</td><td class="r">${pill(r.t)}</td></tr>`).join("") : "";
@@ -3049,10 +3049,10 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const sec = SE && SE.items ? SE.items.map((x) => [x.name, x.rel, `${x.sym}${x.grp === "pt" ? " · phòng thủ" : x.grp === "tc" ? " · tấn công" : ""}`]) : [];
     const ARW = { ng: '<path d="M12 3v16M5 13l7 7 7-7"/>', th: '<path d="M12 21V5M5 11l7-7 7 7"/>', ch: '<path d="M3 12h16M13 5l7 7-7 7"/>', tt: '<path d="M4 12h16"/>' };
     const li = (r) => `<li><svg viewBox="0 0 24 24" class="hd-arw t-${r.t}" aria-label="${TAG[r.t][0]}">${ARW[r.t]}</svg><b>${r.n}</b><span>${r.txt}${r.src ? `<small>${r.src}</small>` : ""}</span></li>`;
-    const gh = tone === "bad" ? "Gió đang thổi ngược" : tone === "good" ? "Gió đang thuận" : "Gió lẫn lộn";
-    return `<h2 class="hd-h2">${gh}</h2><p class="hd-sub">${nNg} trên ${all.length} dòng tiền đi ngược chiều BTC, ${nTh} thuận, trong 30 ngày qua. ${sub}</p>
+    const gh = tone === "bad" ? "Dòng vốn: đang rút ra" : tone === "good" ? "Dòng vốn: đang chảy vào" : "Dòng vốn: chưa rõ chiều";
+    return `<h2 class="hd-h2">${gh}</h2><p class="hd-sub">${nNg}/${all.length} yếu tố bất lợi (headwinds), ${nTh} hỗ trợ (tailwinds), trong 30 ngày qua. ${sub}</p>
       <ul class="hd-wind">${rows.out.map(li).join("")}${rows.btc.map(li).join("")}</ul>
-      ${back.length ? `<p class="hd-back">Tiền quay lại khi ${back.map((r) => `<b class="${r[1] ? "tone-good" : ""}">${r[1] ? "✓ " : ""}${r[0].charAt(0).toLowerCase() + r[0].slice(1)}</b>`).join(", ")}. ${nb ? `Đã có ${nb} trên ${back.length}.` : "Hiện chưa có dấu nào."}</p>` : ""}
+      ${back.length ? `<p class="hd-back">Dòng vốn quay lại khi ${back.map((r) => `<b class="${r[1] ? "tone-good" : ""}">${r[1] ? "✓ " : ""}${r[0].charAt(0).toLowerCase() + r[0].slice(1)}</b>`).join(", ")}. ${nb ? `Đã có ${nb} trên ${back.length}.` : "Hiện chưa có dấu nào."}</p>` : ""}
       <details class="fl-more"><summary>Xem số liệu chi tiết: từng thị trường, 11 ngành chứng khoán Mỹ, từng nhóm coin</summary>
         <div class="fl-grid">
           <div><h4>Giữa các thị trường · 30 ngày</h4>${mk.map((r) => brow(r[0], r[1], mx(mk), r[2])).join("")}</div>
@@ -3061,7 +3061,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
         </div>
         ${CO && CO.am != null ? `<p class="note">Bitcoin CME (CFTC, chốt ${ctxDate(CO.d)}): quỹ quản lý tài sản ${CO.am >= 0 ? "mua ròng" : "bán ròng"} ${vnN(Math.abs(CO.am))} hợp đồng (4 tuần trước ${vnN(CO.am4)}); quỹ đầu cơ ${CO.lev >= 0 ? "mua ròng" : "bán ròng"} ${vnN(Math.abs(CO.lev))} hợp đồng. Quỹ đầu cơ bán ròng phần lớn là ăn chênh lệch giữa ETF và hợp đồng tương lai, không phải đặt cược giá giảm, nên không tính.</p>` : ""}
       </details>
-      <p class="note">Thuận = có lợi cho giá BTC, Ngược = bất lợi, Chờ = tiền đang đứng ngoài, có thể quay lại sau. Mô tả tiền đã đi đâu, không phải dự báo.</p>`;
+      <p class="note">Hỗ trợ = có lợi cho giá BTC, Bất lợi = cản đà tăng, Chờ = tiền đang đứng ngoài, có thể quay lại sau. Mô tả tiền đã đi đâu, không phải dự báo.</p>`;
   }
   try { addEventListener("scroll", () => { const a = document.getElementById("appbar"); if (a) a.classList.toggle("sc", scrollY > 4); }, { passive: true }); } catch (e) {}
   function tickerRender() {
