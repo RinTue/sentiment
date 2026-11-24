@@ -3052,7 +3052,7 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const gh = tone === "bad" ? "Dòng vốn: đang rút ra" : tone === "good" ? "Dòng vốn: đang chảy vào" : "Dòng vốn: chưa rõ chiều";
     return `<h2 class="hd-h2">${gh}</h2><p class="hd-sub">${nNg}/${all.length} yếu tố bất lợi (headwinds), ${nTh} hỗ trợ (tailwinds), trong 30 ngày qua. ${sub}</p>
       <ul class="hd-wind">${rows.out.map(li).join("")}${rows.btc.map(li).join("")}</ul>
-      ${back.length ? `<p class="hd-back">Dòng vốn quay lại khi ${back.map((r) => `<b class="${r[1] ? "tone-good" : ""}">${r[1] ? "✓ " : ""}${r[0].charAt(0).toLowerCase() + r[0].slice(1)}</b>`).join(", ")}. ${nb ? `Đã có ${nb} trên ${back.length}.` : "Hiện chưa có dấu nào."}</p>` : ""}
+      ${back.length ? `<p class="hd-back">Dòng vốn quay lại khi ${back.map((r) => `<b class="${r[1] ? "tone-good" : ""}">${r[1] ? "✓ " : ""}${/^[A-ZÀ-Ỹ]{2}/.test(r[0]) ? r[0] : r[0].charAt(0).toLowerCase() + r[0].slice(1)}</b>`).join(", ")}. ${nb ? `Đã có ${nb} trên ${back.length}.` : "Hiện chưa có dấu nào."}</p>` : ""}
       <details class="fl-more"><summary>Xem số liệu chi tiết: từng thị trường, 11 ngành chứng khoán Mỹ, từng nhóm coin</summary>
         <div class="fl-grid">
           <div><h4>Giữa các thị trường · 30 ngày</h4>${mk.map((r) => brow(r[0], r[1], mx(mk), r[2])).join("")}</div>
