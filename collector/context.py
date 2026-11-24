@@ -240,6 +240,35 @@ def rotation(px: pd.Series) -> dict | None:
             "px": [round(float(px.get(d))) if d in px.index else None for d, _ in ser]}
 
 
+# Đô la Mỹ (chỉ số USD rộng của Fed, thay đổi 3 tháng) và BTC 90 ngày sau: kiểm chứng theo 5 nhóm, chia 2 giai đoạn
+USD_BINS = [(-99, -3, "dn3", "USD giảm hơn 3%"), (-3, -1, "dn1", "USD giảm 1–3%"), (-1, 1, "flat", "USD đi ngang (±1%)"), (1, 3, "up1", "USD tăng 1–3%"), (3, 99, "up3", "USD tăng hơn 3%")]
+
+
+def usd_block(X: pd.DataFrame, px: pd.Series) -> dict | None:
+    if "usd" not in X:
+        return None
+    u = (np.exp(X["usd"].dropna()) - 1) * 100
+    u = u[u.index >= "2015-01-01"]
+    if u.empty:
+        return None
+    f90 = fwd(px, 90).reindex(u.index)
+    cur = float(u.iloc[-1])
+    key = next(k for lo, hi, k, _ in USD_BINS if lo <= cur < hi)
+    rows = []
+    for lo, hi, k, name in USD_BINS:
+        m = (u >= lo) & (u < hi)
+        r = {"key": k, "name": name, "n": int(m.sum())}
+        for tag, sel in (("all", m), ("a", m & (u.index < "2022-01-01")), ("b", m & (u.index >= "2022-01-01"))):
+            f = f90[sel].dropna()
+            r[f"up_{tag}"] = round(float((f > 0).mean() * 100)) if len(f) >= 30 else None
+            if tag == "all":
+                r["med"] = round(float(f.median() * 100), 1) if len(f) >= 30 else None
+        rows.append(r)
+    s90 = u.iloc[-90:]
+    return {"asof": str(u.index[-1].date()), "c3m": round(cur, 2), "key": key, "rows": rows,
+            "hist": {"t": [d.strftime("%Y-%m-%d") for d in s90.index], "v": [round(float(v), 2) for v in s90]}}
+
+
 def bucket(v: float) -> int:
     return min(4, max(0, int(v // 20)))
 
@@ -373,7 +402,7 @@ def run() -> dict:
 
     out = {"v": V, "updated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "asof": str(last.date()),
            "price": round(float(px.iloc[-1])), "price_date": str(px.index[-1].date()), "base90": base90,
-           "scores": sc, "phase": phase, "horizons": horizons, "signals": signals, "n_ok": sum(s["ok"] for s in signals), "exit": ex, "rot": rot,
+           "scores": sc, "phase": phase, "horizons": horizons, "signals": signals, "n_ok": sum(s["ok"] for s in signals), "exit": ex, "rot": rot, "usd": usd_block(X, px),
            "hist": hist, "phase_hist": phist, "runtime_sec": round(time.time() - t0, 1)}
 
     def clean(o):

@@ -423,7 +423,15 @@ def run(latest: dict) -> dict:
                           + " Chốt dần khi phân tích kỹ thuật cũng báo bán.")
             if ch:
                 msgs.append(("ctx", "🧭 <b>Bối cảnh thị trường thay đổi</b>\n" + "\n".join(ch) + "\n\n" + "\n".join(ctx_lines(C))))
-        st["ctx"] = {"asof": C["asof"], "sig": now_sig, "phase": now_ph, "exk": int((C.get("exit") or {}).get("k", 0)) if (C.get("exit") or {}).get("active") else 0}
+        U = C.get("usd") or {}
+        if U.get("key") and old.get("usd") and old.get("usd") != U["key"] and old.get("asof") != C["asof"]:
+            r = next((x for x in U["rows"] if x["key"] == U["key"]), {})
+            stat = f" Lịch sử từ 2015: {r['up_all']}% số lần BTC cao hơn sau 90 ngày (từ 2022: {r['up_b']}%)." if r.get("up_all") is not None else ""
+            head = {"dn3": "💵 <b>Gió thuận từ đô la</b>: USD giảm mạnh", "up3": "💵 <b>Đô la siết thanh khoản</b>: USD tăng mạnh",
+                    }.get(U["key"], "💵 Đô la Mỹ chuyển nhóm")
+            msgs.append(("ctx:usd", f"{head} ({vn(U['c3m'], 1, True)}% trong 3 tháng, nhóm “{html.escape(r.get('name', ''))}”).{stat}"
+                         + (" Bằng chứng mạnh nhất trong các nhóm USD." if U["key"] == "dn3" else " Bằng chứng yếu hơn chiều USD giảm." if U["key"] == "up3" else "")))
+        st["ctx"] = {"usd": U.get("key"), "asof": C["asof"], "sig": now_sig, "phase": now_ph, "exk": int((C.get("exit") or {}).get("k", 0)) if (C.get("exit") or {}).get("active") else 0}
 
     # 3c) sự kiện crypto / luật lệ nhập tay (data/events_manual.json): nhắc trước 3 ngày, mỗi sự kiện một lần
     for e in manual_events():

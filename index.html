@@ -528,6 +528,15 @@ header.top { padding: 12px 0 0; } header.top .sub { margin: 0; }
   .appbar .tabs button svg { width: 19px; height: 19px; opacity: 1; }
   .wrap { padding-bottom: 92px; }
 }
+.usd-top { display: grid; grid-template-columns: 300px minmax(0,1fr); gap: 28px; align-items: center; margin-bottom: 10px; }
+.usd-v { font-size: 2rem; font-weight: 700; margin: 4px 0 8px; }
+.usd-scale { position: relative; height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--good) 0 25%, var(--neutral-bg) 25% 75%, var(--bad) 75% 100%); opacity: .9; }
+.usd-scale i { position: absolute; top: -4px; width: 4px; height: 16px; margin-left: -2px; border-radius: 2px; background: var(--ink); }
+.usd-sl { display: flex; justify-content: space-between; font-size: .7rem; color: var(--ink-3); margin-top: 4px; }
+.usd-say { font-size: .9rem; line-height: 1.55; color: var(--ink-2); } .usd-say b { color: var(--ink); }
+.usd-tbl th { text-align: center; } .usd-tbl th:first-child, .usd-tbl td:first-child { text-align: left; } .usd-tbl td { text-align: center; }
+.usd-tbl tr.on td { background: var(--panel-2); font-weight: 600; }
+@media (max-width: 760px) { .usd-top { grid-template-columns: 1fr; gap: 12px; } }
 </style>
 </head>
 <body>
@@ -737,6 +746,10 @@ header.top { padding: 12px 0 0; } header.top .sub { margin: 0; }
     <section class="panel">
       <h2>Thị trường thế giới</h2>
       <div id="world-box"><p class="loading">Đang tải…</p></div>
+    </section>
+    <section class="panel" id="usd-sec" hidden>
+      <h2>Đô la Mỹ và BTC</h2>
+      <div id="usd-box"></div>
     </section>
     <section class="panel">
       <h2>Bối cảnh vĩ mô</h2>
@@ -2779,10 +2792,31 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     try { const r = await fetch("data/marketwide.json?t=" + Date.now(), { cache: "no-store" }); CTX.mw = r.ok ? await r.json() : null; } catch (e) { CTX.mw = null; }
     for (const f of [mwRender, calRender, bigRender, ctxEvLine, tickerRender]) { try { f(); } catch (e) { console.error(e); } }
   }
+  /* ---------- Đô la Mỹ và BTC: nhóm hiện tại + bảng kiểm chứng từ 2015 (context.json → usd) ---------- */
+  function usdRender() {
+    const U = CTX.C && CTX.C.usd, box = $("usd-box"), sec = $("usd-sec");
+    if (!U || !box || !sec) return; sec.hidden = false;
+    const cur = U.rows.find((x) => x.key === U.key) || {};
+    const good = U.key === "dn3" || U.key === "dn1", bad = U.key === "up3" || U.key === "up1";
+    const tone = good ? "good" : bad ? "bad" : "neutral";
+    const pos = Math.max(0, Math.min(100, (U.c3m + 6) / 12 * 100));
+    const cell = (v) => v == null ? "–" : `<span class="tone-${v >= 70 ? "good" : v < 50 ? "bad" : "neutral"}">${v}%</span>`;
+    box.innerHTML = `<div class="usd-top">
+        <div><div class="ctx-lbl">Chỉ số USD · thay đổi 3 tháng<span class="t">Fed, ngày ${ctxDate(U.asof)}</span></div>
+          <div class="usd-v tone-${tone}">${U.c3m > 0 ? "+" : ""}${vnN(U.c3m, 2)}%</div>
+          <div class="usd-scale"><i style="left:${pos}%"></i></div><div class="usd-sl"><span>giảm 6%</span><span>−3</span><span>0</span><span>+3</span><span>tăng 6%</span></div></div>
+        <div class="usd-say"><b>Đang ở nhóm “${esc(cur.name || "")}”.</b> ${cur.up_all != null ? `Từ 2015, ở nhóm này BTC cao hơn sau 90 ngày <b>${cur.up_all}%</b> số lần (trước 2022: ${cur.up_a}%, từ 2022: ${cur.up_b}%); bình thường là ${CTX.C.base90}%.` : ""}
+          ${U.key === "dn3" ? " Đây là nhóm có bằng chứng mạnh nhất: đúng ở cả hai giai đoạn." : U.key === "up3" ? " Chiều USD tăng mạnh có bằng chứng yếu hơn: trước 2022 không xấu, từ 2022 mới xấu rõ." : ""}</div>
+      </div>
+      <table class="ctx-tbl usd-tbl"><thead><tr><th rowspan="2">USD trong 3 tháng</th><th colspan="3">Số lần BTC cao hơn sau 90 ngày</th><th rowspan="2">Trung vị 90 ngày</th></tr><tr><th>2015–2021</th><th>2022–nay</th><th>Cả giai đoạn</th></tr></thead>
+      <tbody>${U.rows.map((r) => `<tr class="${r.key === U.key ? "on" : ""}"><td>${esc(r.name)}${r.key === U.key ? ` <span class="fl-pill tone-warn" style="min-width:0;margin-left:6px">hiện tại</span>` : ""}</td><td>${cell(r.up_a)}</td><td>${cell(r.up_b)}</td><td><b>${cell(r.up_all)}</b></td><td>${r.med == null ? "–" : (r.med > 0 ? "+" : "") + vnN(r.med, 1) + "%"}</td></tr>`).join("")}</tbody></table>
+      <p class="note">Chỉ số USD rộng của Fed (gần giống DXY nhưng gồm nhiều đồng tiền hơn). Các ngày liền nhau thuộc cùng một đợt, nên số đợt độc lập ở hai nhóm đầu–cuối chỉ khoảng 6–10: đủ để tham khảo, chưa chắc chắn. Telegram báo khi USD chuyển nhóm. Bảng tự tính lại mỗi ngày.</p>`;
+  }
   function ctxEvLine() {
     const D = CTX.mw || {}, M = D.mkt, W = D.world, Cc = D.cal || {}, C = CTX.C, L = S.sv && S.sv.L;
     const vnDay = (ms) => new Date(ms + 7 * 3600e3).toISOString().slice(0, 10), today = vnDay(Date.now());
     const days = (d) => Math.round((Date.parse(d) - Date.parse(today)) / 864e5);
+    try { usdRender(); } catch (e) { /* bỏ qua */ }
     // Thế giới 7 ngày (rút gọn)
     const wEl = $("ctx-world");
     if (wEl) {
@@ -2842,6 +2876,8 @@ if (typeof module !== "undefined") module.exports = ENGINE;
       else if (y.c30 <= -.25 && u.c30 <= 0) add("out", "Đô la Mỹ & trái phiếu", `Lợi suất giảm ${vnN(-y.c30, 2)} điểm %, USD không tăng: tiền rẻ hơn`, "th");
       else add("out", "Đô la Mỹ & trái phiếu", `USD (${pc(u.c30)}) và lợi suất (${y.c30 > 0 ? "+" : ""}${vnN(y.c30, 2)} điểm %) đi ngang`, "tt");
     }
+    { const U = CTX.C && CTX.C.usd, r = U && U.rows.find((x) => x.key === U.key), row = rows.out.find((x) => x.n === "Đô la Mỹ & trái phiếu");
+      if (U && r && row && r.up_b != null) row.src = `Chỉ số USD ${pc(U.c3m)} trong 3 tháng · từ 2022, nhóm này chỉ ${r.up_b}% số lần BTC cao hơn sau 90 ngày`.replace("chỉ " + r.up_b, r.up_b >= 60 ? r.up_b : "chỉ " + r.up_b); }
     // 3. Tiền mặt đứng chờ (quỹ tiền tệ Mỹ, ICI)
     const MF = D.mmf;
     if (MF && MF.total) {
