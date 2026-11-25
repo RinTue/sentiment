@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T03:08:15Z",
+ "updated": "2026-11-25T04:07:36Z",
  "test_from": "2019-01-01",
  "split": "2023-01-01",
  "groups_name": {
@@ -776,7 +776,7 @@
    "key": "funding",
    "group": "micro",
    "name": "Funding (7 ngày)",
-   "from": "2022-10-22",
+   "from": "2022-10-23",
    "now": 2e-05,
    "rho30_tr": null,
    "rho30_te": 0.014,
@@ -809,10 +809,10 @@
    "key": "oi",
    "group": "micro",
    "name": "Open interest so với giá (mức đòn bẩy)",
-   "from": "2023-05-03",
+   "from": "2023-05-04",
    "now": 0.0674,
    "rho30_tr": null,
-   "rho30_te": -0.109,
+   "rho30_te": -0.11,
    "wf30": {
     "n": 694,
     "from": "2024-12-01",
@@ -820,19 +820,19 @@
     "base": 49.7,
     "edge": -2.3,
     "skill": 1.0,
-    "acc_strong": 46.3,
-    "share_strong": 29
+    "acc_strong": 47.3,
+    "share_strong": 30
    },
    "rho90_tr": null,
    "rho90_te": -0.262,
    "wf90": {
     "n": 572,
     "from": "2025-02-01",
-    "acc": 42.8,
+    "acc": 42.7,
     "base": 48.1,
-    "edge": -5.2,
+    "edge": -5.4,
     "skill": 5.2,
-    "acc_strong": 50.6,
+    "acc_strong": 50.7,
     "share_strong": 70
    },
    "pass": false,
@@ -842,7 +842,7 @@
    "key": "oi30",
    "group": "micro",
    "name": "Open interest thay đổi 30 ngày",
-   "from": "2022-11-15",
+   "from": "2022-11-16",
    "now": 0.01508,
    "rho30_tr": null,
    "rho30_te": 0.064,
@@ -852,8 +852,8 @@
     "acc": 53.0,
     "base": 54.0,
     "edge": -0.9,
-    "skill": -3.0,
-    "acc_strong": 48.7,
+    "skill": -2.9,
+    "acc_strong": 49.0,
     "share_strong": 53
    },
    "rho90_tr": null,
@@ -864,7 +864,7 @@
     "acc": 49.1,
     "base": 49.2,
     "edge": -0.1,
-    "skill": 1.2,
+    "skill": 1.1,
     "acc_strong": 49.4,
     "share_strong": 84
    },
@@ -875,30 +875,30 @@
    "key": "liq7",
    "group": "micro",
    "name": "Thanh lý 7 ngày: short so với long",
-   "from": "2022-10-14",
+   "from": "2022-10-15",
    "now": -0.73634,
    "rho30_tr": null,
    "rho30_te": 0.099,
    "wf30": {
     "n": 877,
     "from": "2024-06-01",
-    "acc": 54.4,
+    "acc": 55.1,
     "base": 53.5,
-    "edge": 0.9,
-    "skill": 0.2,
-    "acc_strong": 46.8,
-    "share_strong": 47
+    "edge": 1.6,
+    "skill": 0.3,
+    "acc_strong": 47.2,
+    "share_strong": 48
    },
    "rho90_tr": null,
    "rho90_te": 0.082,
    "wf90": {
     "n": 756,
     "from": "2024-08-01",
-    "acc": 50.5,
+    "acc": 50.7,
     "base": 51.3,
-    "edge": -0.8,
-    "skill": -2.7,
-    "acc_strong": 49.0,
+    "edge": -0.7,
+    "skill": -2.9,
+    "acc_strong": 49.2,
     "share_strong": 93
    },
    "pass": false,
@@ -1561,5 +1561,5 @@
  "errors": {
   "coinmetrics_whales": "403 Client Error: Forbidden for url: https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=AdrBalNtv1KCnt&frequency=1d&start_time="
  },
- "runtime_sec": 100
+ "runtime_sec": 70
 }
