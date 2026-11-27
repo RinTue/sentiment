@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-27T21:08:32Z",
+ "updated": "2026-11-27T22:08:15Z",
  "test_from": "2019-01-01",
  "split": "2023-01-01",
  "groups_name": {
@@ -381,7 +381,7 @@
    "group": "macro",
    "name": "Kỳ vọng lãi suất Fed (2 năm − lãi suất Fed)",
    "from": "2013-01-01",
-   "now": 0.75,
+   "now": 0.73,
    "rho30_tr": -0.252,
    "rho30_te": -0.086,
    "wf30": {
@@ -414,7 +414,7 @@
    "group": "macro",
    "name": "Lợi suất thực 10 năm (thay đổi 3 tháng)",
    "from": "2013-03-05",
-   "now": 0.03,
+   "now": -0.03,
    "rho30_tr": -0.087,
    "rho30_te": 0.095,
    "wf30": {
@@ -938,72 +938,6 @@
    "short": false
   },
   {
-   "key": "spotperp",
-   "group": "micro",
-   "name": "Khối lượng spot so với hợp đồng vĩnh cửu (30 ngày)",
-   "from": "2019-10-12",
-   "now": -2.06083,
-   "rho30_tr": 0.057,
-   "rho30_te": 0.013,
-   "wf30": {
-    "n": 1975,
-    "from": "2021-06-01",
-    "acc": 49.8,
-    "base": 52.7,
-    "edge": -2.9,
-    "skill": -2.1,
-    "acc_strong": 45.7,
-    "share_strong": 12
-   },
-   "rho90_tr": 0.239,
-   "rho90_te": 0.108,
-   "wf90": {
-    "n": 1854,
-    "from": "2021-08-01",
-    "acc": 43.7,
-    "base": 52.5,
-    "edge": -8.8,
-    "skill": -11.1,
-    "acc_strong": 34.9,
-    "share_strong": 50
-   },
-   "pass": false,
-   "short": false
-  },
-  {
-   "key": "cvdgap",
-   "group": "micro",
-   "name": "Lệch pha: mua ròng spot − mua ròng phái sinh",
-   "from": "2019-10-12",
-   "now": -0.00401,
-   "rho30_tr": 0.045,
-   "rho30_te": -0.12,
-   "wf30": {
-    "n": 1975,
-    "from": "2021-06-01",
-    "acc": 51.3,
-    "base": 52.7,
-    "edge": -1.4,
-    "skill": -4.6,
-    "acc_strong": 42.2,
-    "share_strong": 28
-   },
-   "rho90_tr": 0.144,
-   "rho90_te": -0.391,
-   "wf90": {
-    "n": 1854,
-    "from": "2021-08-01",
-    "acc": 49.9,
-    "base": 52.5,
-    "edge": -2.5,
-    "skill": -16.1,
-    "acc_strong": 39.7,
-    "share_strong": 63
-   },
-   "pass": false,
-   "short": false
-  },
-  {
    "key": "dvol",
    "group": "micro",
    "name": "Độ biến động kỳ vọng DVOL",
@@ -1414,28 +1348,26 @@
     "oi30",
     "liq7",
     "spotnet",
-    "spotperp",
-    "cvdgap",
     "dvol"
    ],
    "wf30": {
     "n": 696,
     "from": "2024-12-01",
-    "acc": 44.0,
+    "acc": 43.4,
     "base": 49.6,
-    "edge": -5.6,
-    "skill": -21.8,
-    "acc_strong": 43.5,
-    "share_strong": 65
+    "edge": -6.2,
+    "skill": -12.0,
+    "acc_strong": 44.4,
+    "share_strong": 55
    },
    "wf90": {
     "n": 574,
     "from": "2025-02-01",
-    "acc": 34.7,
+    "acc": 42.2,
     "base": 47.9,
-    "edge": -13.2,
-    "skill": -65.8,
-    "acc_strong": 30.3,
+    "edge": -5.7,
+    "skill": -28.2,
+    "acc_strong": 41.7,
     "share_strong": 84
    }
   },
@@ -1549,21 +1481,22 @@
  },
  "ablation": {},
  "now": {
-  "p30": 55.8,
+  "p30": 55.9,
   "asof30": "2026-11-26",
   "contrib30": {
-   "real": 0.001
+   "real": 0.008
   },
   "base30": 55.7,
-  "p90": 57.9,
+  "p90": 59.6,
   "asof90": "2026-11-26",
   "contrib90": {
-   "real": 0.009
+   "real": 0.077
   },
   "base90": 57.6
  },
  "errors": {
+  "cz_perp": "429 Client Error: Too Many Requests for url: https://api.coinalyze.net/v1/future-markets",
   "coinmetrics_whales": "403 Client Error: Forbidden for url: https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=AdrBalNtv1KCnt&frequency=1d&start_time="
  },
- "runtime_sec": 119
+ "runtime_sec": 98
 }
