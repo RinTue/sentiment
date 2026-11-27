@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-27T09:07:48Z",
+ "updated": "2026-11-27T10:07:56Z",
  "test_from": "2019-01-01",
  "split": "2023-01-01",
  "groups_name": {
@@ -1004,6 +1004,39 @@
    "short": false
   },
   {
+   "key": "dvol",
+   "group": "micro",
+   "name": "Độ biến động kỳ vọng DVOL",
+   "from": "2021-04-02",
+   "now": 52.28,
+   "rho30_tr": 0.166,
+   "rho30_te": 0.101,
+   "wf30": {
+    "n": 1457,
+    "from": "2022-11-01",
+    "acc": 50.3,
+    "base": 43.2,
+    "edge": 7.1,
+    "skill": -3.2,
+    "acc_strong": 41.5,
+    "share_strong": 23
+   },
+   "rho90_tr": 0.263,
+   "rho90_te": 0.12,
+   "wf90": {
+    "n": 1336,
+    "from": "2023-01-01",
+    "acc": 52.2,
+    "base": 41.5,
+    "edge": 10.8,
+    "skill": -14.5,
+    "acc_strong": 42.7,
+    "share_strong": 59
+   },
+   "pass": false,
+   "short": false
+  },
+  {
    "key": "exbal",
    "group": "chain",
    "name": "BTC trên sàn (thay đổi 30 ngày)",
@@ -1382,27 +1415,28 @@
     "liq7",
     "spotnet",
     "spotperp",
-    "cvdgap"
+    "cvdgap",
+    "dvol"
    ],
    "wf30": {
     "n": 696,
     "from": "2024-12-01",
-    "acc": 45.4,
+    "acc": 44.0,
     "base": 49.6,
-    "edge": -4.2,
-    "skill": -19.5,
-    "acc_strong": 43.1,
-    "share_strong": 63
+    "edge": -5.6,
+    "skill": -21.8,
+    "acc_strong": 43.5,
+    "share_strong": 65
    },
    "wf90": {
     "n": 574,
     "from": "2025-02-01",
-    "acc": 31.7,
+    "acc": 34.7,
     "base": 47.9,
-    "edge": -16.2,
-    "skill": -72.2,
-    "acc_strong": 23.7,
-    "share_strong": 76
+    "edge": -13.2,
+    "skill": -65.8,
+    "acc_strong": 30.3,
+    "share_strong": 84
    }
   },
   "chain": {
@@ -1529,8 +1563,7 @@
   "base90": 57.6
  },
  "errors": {
-  "dvol": "503 Server Error: Service Unavailable for url: https://www.deribit.com/api/v2/public/get_volatility_index_data?currency=BTC&start_timestamp=1718010426884&end_ti",
   "coinmetrics_whales": "403 Client Error: Forbidden for url: https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=AdrBalNtv1KCnt&frequency=1d&start_time="
  },
- "runtime_sec": 72
+ "runtime_sec": 79
 }
