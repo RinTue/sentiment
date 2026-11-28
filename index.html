@@ -611,6 +611,11 @@ section.panel > h2, .tabpanel > section > h2 { font-family: var(--cond); font-si
 #ctx-ev[hidden] + div { grid-column: 1 / -1; }
 @media (max-width: 1000px) { .hd-hero { grid-template-columns: 1fr; gap: 10px; } .hd-dial { max-width: 340px; margin: 0 auto; } .hd-band { grid-template-columns: 1fr; gap: 28px; padding: 20px 18px; } }
 @media (max-width: 600px) { .hd-wind li { grid-template-columns: 24px minmax(0,1fr); } .hd-wind li span { grid-column: 2; } .hd-ins { width: 46%; } }
+.drv-now { padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px dashed var(--line); }
+.drv-now .v.txt { font: 700 1.6rem/1.15 var(--cond); }
+.drv-now .ass { margin: 8px 0; }
+.drv-read { background: var(--panel-2); border-left: 3px solid var(--buoy); padding: 12px 16px; margin-bottom: 14px; }
+.drv-read h3 { margin: 0 0 6px; font-size: 1.15rem; } .drv-read ul { margin: 0; padding-left: 18px; } .drv-read li { margin: 4px 0; color: var(--ink-2); } .drv-read b { color: var(--ink); }
 </style>
 </head>
 <body>
@@ -1809,6 +1814,34 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     const B = H.base || {};
     return `<div class="why" style="margin-top:6px"><b>Lịch sử từ 2022 (${x.n} ngày như vậy):</b> BTC 7 ngày sau tăng ở ${x.up7}% số lần, trung vị ${pct(x.med7, 1)} (mọi ngày: ${B.up7}%, ${pct(B.med7, 1)})${x.cont7 != null ? `; đà ${x.cont7 >= 55 ? "thường tiếp diễn" : x.cont7 <= 45 ? "thường đảo chiều" : "lúc tiếp diễn lúc đảo chiều"} (${x.cont7}% tiếp diễn)` : ""}.${x.n < 20 ? " Mẫu còn nhỏ." : ""}</div>`;
   }
+  // Đọc 2 biểu đồ 4 ngày thành câu (giá – open interest; mua bán chủ động spot – futures)
+  function drvRead(sr) {
+    const first = (a) => a && a.length ? a[0][1] : null, last = (a) => a && a.length ? a[a.length - 1][1] : null;
+    const out = [];
+    if (sr.price && sr.oi && sr.price.length > 3) {
+      const dp = (last(sr.price) / first(sr.price) - 1) * 100, doi = (last(sr.oi) / first(sr.oi) - 1) * 100;
+      const p = `giá ${pct(dp, 1)}, open interest ${pct(doi, 1)}`;
+      let t;
+      if (dp <= -1 && doi >= 1) t = `${p}: giá giảm mà vị thế mở tăng, tức là <b>short đòn bẩy đang dồn vào</b>. Nếu giá bật lên, phe short dễ bị ép đóng và đẩy giá tăng nhanh.`;
+      else if (dp <= -1 && doi <= -1) t = `${p}: giá giảm cùng vị thế mở giảm, tức là <b>long đang đóng lệnh hoặc bị thanh lý</b>, đòn bẩy được xả bớt.`;
+      else if (dp >= 1 && doi >= 1) t = `${p}: giá và vị thế mở cùng tăng, tức là <b>long đòn bẩy đang kéo giá</b>; đà tăng kiểu này dễ gãy khi bị thanh lý.`;
+      else if (dp >= 1 && doi <= -1) t = `${p}: giá tăng mà vị thế mở giảm, tức là <b>short bị ép đóng</b> chứ chưa phải lực mua mới.`;
+      else t = `${p}: chưa có thay đổi đáng kể về đòn bẩy.`;
+      out.push(t);
+    }
+    if (sr.cvd_spot && sr.cvd_spot.length > 3) {
+      const s = last(sr.cvd_spot) - first(sr.cvd_spot), f = sr.cvd_perp && sr.cvd_perp.length > 3 ? last(sr.cvd_perp) - first(sr.cvd_perp) : null;
+      const sp = `spot ${s >= 0 ? "mua" : "bán"} chủ động ròng ${num(Math.abs(s))} BTC`, fu = f == null ? "" : `, futures ${f >= 0 ? "mua" : "bán"} ròng ${num(Math.abs(f), 0)} triệu $`;
+      let t;
+      if (f == null) t = `${sp}.`;
+      else if (s < 0 && f < 0) t = `${sp}${fu}: <b>cả hai phía cùng bán</b>, áp lực giảm có thật.`;
+      else if (s > 0 && f > 0) t = `${sp}${fu}: <b>cả hai phía cùng mua</b>.`;
+      else if (s > 0 && f < 0) t = `${sp}${fu}: <b>người mua thật (spot) đang gom</b> trong khi bên futures bán; thường là dấu hiệu tích cực hơn nhìn bề ngoài.`;
+      else t = `${sp}${fu}: <b>bên futures mua nhưng spot bán</b>; đà tăng nếu có chủ yếu do đòn bẩy, thiếu tiền thật đỡ.`;
+      out.push(t);
+    }
+    return out.length ? `<div class="drv-read"><h3>Biểu đồ 4 ngày nói gì</h3><ul>${out.map((x) => `<li>${x.charAt(0).toUpperCase() + x.slice(1)}</li>`).join("")}</ul></div>` : "";
+  }
   function renderDrivers() {
     const D = S.mkt && S.mkt.drivers, box = $("drv-card"), det = $("drv-detail");
     if (!D || !D.windows) {
@@ -1835,9 +1868,10 @@ if (typeof module !== "undefined") module.exports = ENGINE;
     box.querySelectorAll("button[data-w]").forEach((b) => b.addEventListener("click", () => { DRV_VIEW.w = b.dataset.w; renderDrivers(); }));
     if (!det) return;
     const sr = D.series || {}, dm = (ts) => { const d = new Date(ts + 7 * 3600e3); return `${d.getUTCDate()}/${d.getUTCMonth() + 1} ${String(d.getUTCHours()).padStart(2, "0")}h`; };
-    det.innerHTML = `<p class="note" style="margin-top:0">Cách đọc: giá tăng mà open interest giảm là short bị ép đóng; giá, open interest và funding cùng tăng là long đòn bẩy; giá tăng kèm mua spot ròng và Coinbase Premium dương là tiền thật. ${/Coinalyze/.test(D.oi_src || "") ? "Open interest và thanh lý là tổng các sàn lớn; lệnh mua bán chủ động lấy từ OKX (một sàn lớn, đại diện)." : "Open interest và lệnh mua bán chủ động lấy từ OKX (một sàn lớn, đại diện cho thị trường)."}</p>
+    det.innerHTML = `<div class="drv-now">${box.innerHTML}</div>${drvRead(sr)}<p class="note" style="margin-top:0">Cách đọc: giá tăng mà open interest giảm là short bị ép đóng; giá, open interest và funding cùng tăng là long đòn bẩy; giá tăng kèm mua spot ròng và Coinbase Premium dương là tiền thật. ${/Coinalyze/.test(D.oi_src || "") ? "Open interest và thanh lý là tổng các sàn lớn; lệnh mua bán chủ động lấy từ OKX (một sàn lớn, đại diện)." : "Open interest và lệnh mua bán chủ động lấy từ OKX (một sàn lớn, đại diện cho thị trường)."}</p>
       <div class="two"><div><h3>Giá và open interest, 4 ngày (gốc 100)</h3><div class="legend"><span><i style="background:var(--s1)"></i>Giá BTC</span><span><i style="background:var(--s2)"></i>Open interest (BTC)</span></div><div class="chart" id="c-drv-oi"></div></div>
       <div><h3>Mua bán chủ động cộng dồn, 4 ngày</h3><div class="legend"><span><i style="background:var(--s3)"></i>Spot (BTC)</span><span><i style="background:var(--s2)"></i>Futures (triệu $)</span></div><div class="chart" id="c-drv-cvd"></div><p class="note">Đường đi lên nghĩa là bên mua chủ động áp đảo. Hai đường khác đơn vị; xem hướng đi, không so độ lớn.</p></div></div>`;
+    det.querySelectorAll("button[data-w]").forEach((b) => b.addEventListener("click", () => { DRV_VIEW.w = b.dataset.w; renderDrivers(); }));
     if (sr.price && sr.oi && sr.price.length > 3 && sr.oi.length > 3) {
       const t = sr.oi.map((p) => p[0]), pm = new Map(sr.price.map((p) => [p[0], p[1]]));
       const pv = t.map((x) => pm.get(x) ?? null), base = pv.find((v) => v != null), ob = sr.oi[0][1];
